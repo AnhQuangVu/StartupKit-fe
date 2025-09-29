@@ -64,8 +64,8 @@ const Register = () => {
                   value={formData.userName}
                   onChange={handleInputChange}
                   required
-                  className="w-full px-3 py-2 text-sm border rounded-md focus:ring-2 focus:ring-[#FFCE23] focus:border-[#FFCE23] transition-colors"
-                  placeholder="Nhập tên đăng nhập"
+                  className="w-full px-3 py-2 text-sm border  border-gray-300 rounded-md focus:ring-2 focus:ring-[#FFCE23] focus:border-[#FFCE23] transition-colors"
+                  placeholder="Nhập họ tên"
                 />
               </div>
 
