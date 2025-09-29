@@ -1,5 +1,6 @@
 import { Routes, Route } from "react-router-dom";
 import TrangChu from "./pages/TrangChu";
+import Profile from "./pages/Profile";
 import Register from "./pages/Register";
 import DangNhap from "./pages/DangNhap";
 import Dashboard from "./pages/Dashboard";
@@ -17,7 +18,8 @@ export default function App() {
       <Route path="/dangnhap" element={<DangNhap />} />
       <Route path="/register" element={<Register />} />
       <Route path="/dashboard" element={<Dashboard />} />
-      <Route path="/profile-management" element={<ProfileManagement />} />
+  <Route path="/profile-management" element={<ProfileManagement />} />
+  <Route path="/profile" element={<Profile />} />
       <Route path="/create-project" element={<CreateProjectDashboard />} />
       <Route path="/custom-profile-builder" element={<CustomProfileBuilder />} />
       <Route path="/connections" element={<Connections />} />

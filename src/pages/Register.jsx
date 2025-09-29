@@ -1,8 +1,11 @@
 import { useState } from "react";
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faRocket, faDollarSign, faChalkboardTeacher } from "@fortawesome/free-solid-svg-icons";
+import { ToastContainer, toast } from "react-toastify";
+import "react-toastify/dist/ReactToastify.css";
 import logo from "../assets/images/logo.png";
+import { useAuth } from "../context/AuthContext";
 
 const Register = () => {
   const [formData, setFormData] = useState({
@@ -17,6 +20,8 @@ const Register = () => {
 
   const [showPassword, setShowPassword] = useState(false);
   const [showConfirmPassword, setShowConfirmPassword] = useState(false);
+  const navigate = useNavigate();
+  const { login } = useAuth();
 
   const handleInputChange = (e) => {
     const { name, value, type, checked } = e.target;
@@ -26,10 +31,42 @@ const Register = () => {
     }));
   };
 
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
-    // Xử lý đăng ký ở đây
-    console.log("Registration data:", formData);
+
+    const payload = {
+      full_name: formData.userName,
+      email: formData.email,
+      password: formData.password,
+      password_confirm: formData.confirmPassword,
+      role: formData.userType,
+    };
+
+    try {
+      const response = await fetch("http://localhost:8000/auth/register", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify(payload),
+      });
+
+      const data = await response.json();
+
+      if (response.ok) {
+        // Gọi login để cập nhật trạng thái đăng nhập
+        login(data.token, data.user);
+        toast.success("Đăng ký thành công! Đang chuyển về trang chủ...");
+        setTimeout(() => {
+          navigate("/");
+        }, 1500);
+      } else {
+        toast.error(data.message || "Đăng ký thất bại. Vui lòng thử lại.");
+        console.error("Lỗi đăng ký:", data);
+      }
+    } catch (error) {
+      toast.error("Có lỗi xảy ra. Vui lòng thử lại sau.");
+    }
   };
 
   return (
@@ -272,6 +309,7 @@ const Register = () => {
           </div>
         </div>
       </main>
+      <ToastContainer position="top-center" autoClose={2000} />
     </div>
   );
 };
