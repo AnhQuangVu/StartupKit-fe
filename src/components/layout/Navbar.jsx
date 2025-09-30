@@ -71,9 +71,8 @@ function Navbar() {
             </React.Fragment>
           ) : (
             <React.Fragment>
-              <Link to="/Profile" className="flex items-center font-semibold text-[#374151] mr-2 hover:text-[#FFCE23] transition-colors">
-                <FontAwesomeIcon icon={faUserCircle} className="mr-1" />
-                {user?.full_name || user?.email}
+              <Link to="/Profile" className="flex items-center mr-2 hover:text-[#FFCE23] transition-colors">
+                <FontAwesomeIcon icon={faUserCircle} className="w-5 h-5" />
               </Link>
             </React.Fragment>
           )}

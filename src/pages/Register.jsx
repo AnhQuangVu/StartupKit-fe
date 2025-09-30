@@ -57,12 +57,10 @@ const Register = () => {
 
 
       if (response.ok) {
-        // Gọi login để cập nhật trạng thái đăng nhập
-        login(data.token, data.user);
-        toast.success("Đăng ký thành công! Đang chuyển về trang chủ...");
+        toast.success("Đăng ký thành công! Vui lòng đăng nhập.");
         setTimeout(() => {
-          setIsSubmitting(false); // Cho phép bấm lại sau 1.5s
-          navigate("/");
+          setIsSubmitting(false);
+          navigate("/dangnhap");
         }, 1500);
       } else {
         setIsSubmitting(false); // Cho phép bấm lại nếu lỗi

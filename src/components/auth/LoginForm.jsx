@@ -1,26 +1,32 @@
 import React, { useState } from 'react';
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faGoogle, faLinkedin } from "@fortawesome/free-brands-svg-icons";
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import logo from "../../assets/images/logo.png";
+import { useAuth } from "../../context/AuthContext";
 
 export default function LoginForm() {
-  const [fullName, setFullName] = useState('');
+  const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
-  const [errorFullName, setErrorFullName] = useState('');
+  const [errorEmail, setErrorEmail] = useState('');
   const [errorPassword, setErrorPassword] = useState('');
   const [formError, setFormError] = useState('');
+  const { login } = useAuth();
+  const navigate = useNavigate();
 
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
     let valid = true;
 
-    // Full name validation
-    if (!fullName.trim()) {
-      setErrorFullName('Vui lòng nhập họ tên.');
+    // Email validation
+    if (!email.trim()) {
+      setErrorEmail('Vui lòng nhập email.');
+      valid = false;
+    } else if (!/\S+@\S+\.\S+/.test(email)) {
+      setErrorEmail('Email không hợp lệ.');
       valid = false;
     } else {
-      setErrorFullName('');
+      setErrorEmail('');
     }
 
     // Password validation
@@ -40,14 +46,46 @@ export default function LoginForm() {
     }
 
     setFormError('');
-    // Xử lý đăng nhập
-    console.log('Login attempt:', { fullName, password });
+    try {
+      console.log("Login payload:", { username: email, password });
+      const response = await fetch("http://localhost:8000/auth/token", {
+        method: "POST",
+        headers: { "Content-Type": "application/x-www-form-urlencoded" },
+        body: new URLSearchParams({
+          username: email,
+          password: password
+        })
+      });
+      const data = await response.json();
+      console.log("Login response:", data); // DEBUG
+
+      if (response.ok && data.access_token) {
+        // Gọi API lấy thông tin user
+        const userRes = await fetch("http://localhost:8000/auth/me", {
+          headers: { Authorization: `Bearer ${data.access_token}` }
+        });
+        const user = await userRes.json();
+        console.log("User info:", user); // DEBUG
+
+        // Lưu vào context
+        login(data.access_token, user);
+        navigate("/profile");
+      } else {
+        setFormError(
+          Array.isArray(data.detail)
+            ? data.detail.map((d) => d.msg).join(", ")
+            : data.detail || data.message || "Đăng nhập thất bại. Vui lòng thử lại."
+        );
+      }
+    } catch (error) {
+      setFormError("Có lỗi xảy ra. Vui lòng thử lại sau.");
+    }
   };
 
   return (
     <div className="flex items-center justify-center min-h-screen bg-gradient-to-br from-yellow-100 via-white to-yellow-50 px-2">
       <div className="w-full max-w-sm bg-white rounded-2xl shadow-xl border border-gray-100 p-6">
-        
+
         {/* Logo thay cho tiêu đề */}
         <div className="flex justify-center mb-7">
           <img
@@ -64,20 +102,20 @@ export default function LoginForm() {
 
         {/* Form */}
         <form className="space-y-5" onSubmit={handleSubmit} noValidate>
-          {/* Full Name */}
+          {/* Email */}
           <div>
             <label className="block text-sm font-semibold text-gray-700 mb-2">
-              Họ và tên
+              Email
             </label>
             <input
-              type="text"
-              value={fullName}
-              onChange={(e) => setFullName(e.target.value)}
-              placeholder="Nhập họ và tên của bạn"
+              type="email"
+              value={email}
+              onChange={(e) => setEmail(e.target.value)}
+              placeholder="Nhập email của bạn"
               className="w-full border border-gray-300 rounded-lg px-3 py-2 text-sm bg-yellow-50 focus:outline-none focus:ring-2 focus:ring-yellow-400 focus:border-yellow-400 transition-all"
             />
-            {errorFullName && (
-              <div className="mt-1 text-xs text-red-500">{errorFullName}</div>
+            {errorEmail && (
+              <div className="mt-1 text-xs text-red-500">{errorEmail}</div>
             )}
           </div>
 
