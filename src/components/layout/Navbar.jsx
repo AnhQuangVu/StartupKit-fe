@@ -9,10 +9,17 @@ function Navbar() {
   const [showMenu, setShowMenu] = useState(false);
   const location = useLocation();
   const navigate = useNavigate();
+
+  // DEBUG
+  console.log("Navbar - isLoggedIn:", isLoggedIn);
+  console.log("Navbar - user:", user);
+  console.log("Navbar - localStorage token:", localStorage.getItem("token"));
+  console.log("Navbar - localStorage user:", localStorage.getItem("user"));
+
   const handleRegister = () => {
     navigate("/register");
   };
-
+  
   return (
     <header className="w-full bg-white shadow-md border-b border-gray-100 overflow-visible">
       <div className="flex items-center justify-between px-4 md:px-8 h-16 overflow-visible">
@@ -23,6 +30,7 @@ function Navbar() {
           className="h-12 md:h-16 w-auto object-contain origin-left cursor-pointer"
           style={{ transform: "scale(1.8) translateX(12px)" }}
         />
+        
 
         {/* Desktop menu với highlight tab đang active */}
         <nav className="hidden md:flex gap-8 ml-auto text-[#374151] text-xs md:text-sm font-medium">
@@ -74,5 +82,6 @@ function Navbar() {
     </header>
   );
 }
+
 
 export default Navbar;

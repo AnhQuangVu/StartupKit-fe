@@ -13,12 +13,7 @@ export default function Profile() {
   console.log("Profile - user:", user);
 
   // Redirect nếu chưa đăng nhập
-  React.useEffect(() => {
-    if (!isLoggedIn) {
-      console.log("Chưa đăng nhập, chuyển hướng về /dangnhap");
-      navigate("/dangnhap");
-    }
-  }, [isLoggedIn, navigate]);
+
 
   if (!user) {
     return (

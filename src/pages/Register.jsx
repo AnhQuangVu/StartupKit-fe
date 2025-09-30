@@ -20,6 +20,7 @@ const Register = () => {
 
   const [showPassword, setShowPassword] = useState(false);
   const [showConfirmPassword, setShowConfirmPassword] = useState(false);
+  const [isSubmitting, setIsSubmitting] = useState(false);
   const navigate = useNavigate();
   const { login } = useAuth();
 
@@ -33,6 +34,7 @@ const Register = () => {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
+    setIsSubmitting(true);
 
     const payload = {
       full_name: formData.userName,
@@ -53,14 +55,17 @@ const Register = () => {
 
       const data = await response.json();
 
+
       if (response.ok) {
         // Gọi login để cập nhật trạng thái đăng nhập
         login(data.token, data.user);
         toast.success("Đăng ký thành công! Đang chuyển về trang chủ...");
         setTimeout(() => {
+          setIsSubmitting(false); // Cho phép bấm lại sau 1.5s
           navigate("/");
         }, 1500);
       } else {
+        setIsSubmitting(false); // Cho phép bấm lại nếu lỗi
         toast.error(data.message || "Đăng ký thất bại. Vui lòng thử lại.");
         console.error("Lỗi đăng ký:", data);
       }
@@ -289,7 +294,7 @@ const Register = () => {
               {/* Submit Button */}
               <button
                 type="submit"
-                disabled={!formData.agreeTerms}
+                disabled={!formData.agreeTerms || isSubmitting}
                 className="w-full bg-[#FFCE23] hover:bg-[#FFD600] disabled:bg-gray-300 disabled:cursor-not-allowed text-black font-bold py-2 px-4 rounded-md text-sm md:text-base transition-all duration-200"
               >
                 Tạo tài khoản
