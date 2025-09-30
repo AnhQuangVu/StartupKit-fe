@@ -1,28 +1,32 @@
 import React from "react";
 import { useNavigate, useLocation } from "react-router-dom";
 
-const menuItemsLoggedIn = [
-	{
-		label: "Không Gian Làm Việc",
-		path: "/dashboard",
-		active: false
-	},
-	{
-		label: "Quản Lý Hồ Sơ",
-		path: "/profile-management",
-		active: false
-	},
-	{
-		label: "Tạo Dự Án",
-		path: "/create-project",
-		active: false
-	},
-	{
-		label: "Tìm Kiếm Kết Nối",
-		path: "/connections",
-		active: false
-	}
-];
+const menuItemsByRole = {
+	startup: [
+		{ label: "Không Gian Làm Việc", path: "/dashboard" },
+		{ label: "Quản Lý Hồ Sơ", path: "/profile-management" },
+		{ label: "Tạo Dự Án", path: "/create-project" },
+		{ label: "Tìm Kiếm Kết Nối", path: "/connections" },
+	],
+	mentor: [
+		{ label: "Mentor Board", path: "/dashboard" },
+		{ label: "Dự Án Tư Vấn", path: "/mentor-projects" },
+		{ label: "Sự Kiện", path: "/events" },
+		{ label: "Kết Nối", path: "/connections" },
+	],
+	investor: [
+		{ label: "Investor Board", path: "/dashboard" },
+		{ label: "Dự Án Tiềm Năng", path: "/investor-projects" },
+		{ label: "Sự Kiện", path: "/events" },
+		{ label: "Kết Nối", path: "/connections" },
+	],
+	admin: [
+		{ label: "Admin Panel", path: "/dashboard" },
+		{ label: "Quản Lý Người Dùng", path: "/admin-users" },
+		{ label: "Quản Lý Dự Án", path: "/admin-projects" },
+		{ label: "Sự Kiện", path: "/events" },
+	],
+};
 
 const menuItemsLoggedOut = [
 	{
@@ -32,12 +36,15 @@ const menuItemsLoggedOut = [
 	}
 ];
 
-export default function DashboardMenu({ isLoggedIn = true }) {
+import { useAuth } from '../../context/AuthContext';
+export default function DashboardMenu({ isLoggedIn = true, userType }) {
 	const navigate = useNavigate();
 	const location = useLocation();
 	
-	// Chọn menu items dựa vào trạng thái đăng nhập
-	let menuItems = isLoggedIn ? [...menuItemsLoggedIn] : [...menuItemsLoggedOut];
+	// Lấy vai trò thực tế từ context nếu không truyền vào
+	const { user } = useAuth();
+	const role = userType || user?.role || 'startup';
+	let menuItems = isLoggedIn ? [...(menuItemsByRole[role] || menuItemsByRole['startup'])] : [...menuItemsLoggedOut];
 	
 	// Xác định tab đang active dựa trên đường dẫn hiện tại
 	menuItems = menuItems.map(item => ({

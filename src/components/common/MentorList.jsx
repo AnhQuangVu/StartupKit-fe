@@ -69,7 +69,7 @@ export default function MentorList() {
   });
 
   return (
-    <section className="max-w-6xl mx-auto mt-10 text-center px-4 sm:px-6">
+  <section className="max-w-6xl mx-auto mt-5 text-center px-4 sm:px-6">
       <h2 className="text-2xl md:text-3xl font-bold mb-2">
         Kết nối với Mentor
       </h2>

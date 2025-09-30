@@ -1,16 +1,37 @@
 import React, { useState } from "react";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faCaretRight } from "@fortawesome/free-solid-svg-icons";
+import { useAuth } from '../../context/AuthContext';
 
-export default function PriorityTasks() {
-  const initialTasks = [
-    { text: "Sử dụng số liệu cụ thể về quy mô thị trường", completed: false },
-    { text: "Phân tích SWOT so với đối thủ", completed: false },
-    { text: "Xác định rõ lợi thế cạnh tranh độc đáo", completed: false },
-    { text: "Bổ sung mô hình kinh doanh", completed: false },
-    { text: "Hoàn thiện phần trình bày tài chính", completed: false }
-  ];
+export default function PriorityTasks({ userType }) {
+  const { user } = useAuth();
+  const role = userType || user?.role || 'startup';
 
+  const tasksByRole = {
+    startup: [
+      { text: "Sử dụng số liệu cụ thể về quy mô thị trường", completed: false },
+      { text: "Phân tích SWOT so với đối thủ", completed: false },
+      { text: "Xác định rõ lợi thế cạnh tranh độc đáo", completed: false },
+      { text: "Bổ sung mô hình kinh doanh", completed: false },
+      { text: "Hoàn thiện phần trình bày tài chính", completed: false }
+    ],
+    mentor: [
+      { text: "Kiểm tra tiến độ dự án tư vấn", completed: false },
+      { text: "Đánh giá hồ sơ startup gửi lên", completed: false },
+      { text: "Chuẩn bị tài liệu cho buổi tư vấn", completed: false }
+    ],
+    investor: [
+      { text: "Xem xét dự án tiềm năng", completed: false },
+      { text: "Đánh giá hồ sơ tài chính", completed: false },
+      { text: "Chuẩn bị câu hỏi cho buổi demo", completed: false }
+    ],
+    admin: [
+      { text: "Kiểm tra tiến độ toàn hệ thống", completed: false },
+      { text: "Duyệt hồ sơ mới", completed: false },
+      { text: "Quản lý sự kiện", completed: false }
+    ],
+  };
+  const initialTasks = tasksByRole[role] || tasksByRole['startup'];
   const [tasks, setTasks] = useState(initialTasks);
 
   const handleComplete = (idx) => {

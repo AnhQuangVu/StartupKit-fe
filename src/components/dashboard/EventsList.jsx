@@ -1,23 +1,30 @@
 import React from "react";
+import { useAuth } from '../../context/AuthContext';
 
-export default function EventsList() {
-  const events = [
-    {
-      title: "Tư vấn với mentor Lê Tuấn Đạt",
-      date: "15/01/2025",
-      time: "09:00"
-    },
-    {
-      title: "Thông báo sự kiện",
-      date: "22/01/2025",
-      time: "14:30"
-    },
-    {
-      title: "Hạn chót HOU Start UP",
-      date: "28/01/2025",
-      time: "16:00"
-    }
-  ];
+export default function EventsList({ userType }) {
+  const { user } = useAuth();
+  const role = userType || user?.role || 'startup';
+
+  const eventsByRole = {
+    startup: [
+      { title: "Tư vấn với mentor Lê Tuấn Đạt", date: "15/01/2025", time: "09:00" },
+      { title: "Thông báo sự kiện", date: "22/01/2025", time: "14:30" },
+      { title: "Hạn chót HOU Start UP", date: "28/01/2025", time: "16:00" },
+    ],
+    mentor: [
+      // { title: "Lịch tư vấn với startup TechFlow", date: "16/01/2025", time: "10:00" },
+      // { title: "Họp mentor nội bộ", date: "23/01/2025", time: "15:00" },
+    ],
+    investor: [
+      // { title: "Demo dự án FinanceHub", date: "18/01/2025", time: "13:00" },
+      // { title: "Sự kiện đầu tư HOU", date: "25/01/2025", time: "17:00" },
+    ],
+    admin: [
+      { title: "Quản lý sự kiện toàn hệ thống", date: "20/01/2025", time: "09:00" },
+      { title: "Kiểm tra tiến độ dự án", date: "27/01/2025", time: "11:00" },
+    ],
+  };
+  const events = eventsByRole[role] || eventsByRole['startup'];
 
   return (
     <div className="bg-white rounded-lg border border-gray-300 p-4 shadow-sm">

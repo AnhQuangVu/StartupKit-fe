@@ -8,6 +8,8 @@ export default function Profile() {
   const { user, isLoggedIn, logout } = useAuth();
   const navigate = useNavigate();
   const [activeTab, setActiveTab] = useState("hoso");
+  const [avatar, setAvatar] = useState(null);
+  const [avatarPreview, setAvatarPreview] = useState(null);
 
   if (!user) {
     return (
@@ -71,6 +73,42 @@ export default function Profile() {
                     Thông tin cá nhân
                   </h2>
                   <form className="space-y-3 max-w-lg" autoComplete="off">
+                    <div className="flex flex-col items-center justify-center py-4">
+                      <span className="font-semibold text-gray-700 text-sm mb-2">Ảnh cá nhân:</span>
+                      <label htmlFor="avatar-upload" className="cursor-pointer">
+                        <div className="w-28 h-28 rounded-full border-2 border-yellow-300 bg-gray-100 flex items-center justify-center shadow-lg overflow-hidden">
+                          {avatarPreview ? (
+                            <img
+                              src={avatarPreview}
+                              alt="Avatar preview"
+                              className="w-full h-full object-cover rounded-full"
+                            />
+                          ) : (
+                            <span className="text-gray-400 text-xs">Chọn ảnh</span>
+                          )}
+                        </div>
+                      </label>
+                      <input
+                        id="avatar-upload"
+                        type="file"
+                        accept="image/*"
+                        className="hidden"
+                        onChange={e => {
+                          const file = e.target.files[0];
+                          setAvatar(file);
+                          if (file) {
+                            const reader = new FileReader();
+                            reader.onloadend = () => {
+                              setAvatarPreview(reader.result);
+                            };
+                            reader.readAsDataURL(file);
+                          } else {
+                            setAvatarPreview(null);
+                          }
+                        }}
+                      />
+                      <span className="text-xs text-gray-500 mt-2">Nhấn vào ô tròn để chọn ảnh</span>
+                    </div>
                     <div>
                       <span className="font-semibold text-gray-700 text-sm">
                         Tên:

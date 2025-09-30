@@ -2,42 +2,30 @@ import React, { useState, useEffect } from 'react';
 import { useLocation } from 'react-router-dom';
 
 const DashboardHeader = ({ userType = 'startup', isLoggedIn = false }) => {
+  const location = useLocation();
   const [welcomeMessage, setWelcomeMessage] = useState({
     title: 'Chào mừng !',
     role: 'Nhà Khởi Nghiệp'
   });
 
   useEffect(() => {
-    // Set welcome message based on user type
     switch(userType) {
       case 'investor':
-        setWelcomeMessage({
-          title: 'Chào mừng !',
-          role: 'Nhà Đầu Tư'
-        });
+        setWelcomeMessage({ title: 'Chào mừng !', role: 'Nhà Đầu Tư' });
         break;
       case 'mentor':
-        setWelcomeMessage({
-          title: 'Chào mừng !',
-          role: 'Mentor'
-        });
+        setWelcomeMessage({ title: 'Chào mừng !', role: 'Mentor' });
         break;
       case 'startup':
       default:
-        setWelcomeMessage({
-          title: 'Chào mừng !',
-          role: 'Nhà Khởi Nghiệp'
-        });
+        setWelcomeMessage({ title: 'Chào mừng !', role: 'Nhà Khởi Nghiệp' });
         break;
     }
   }, [userType]);
 
-  // Nếu người dùng chưa đăng nhập, không hiển thị gì cả
   if (!isLoggedIn) {
     return null;
   }
-
-  const location = useLocation();
   const isWorkspaceTab = location.pathname === '/dashboard';
 
   return (
@@ -52,12 +40,12 @@ const DashboardHeader = ({ userType = 'startup', isLoggedIn = false }) => {
         </span>
         <span className="block text-sm text-gray-600">
           Bạn đang làm việc với tư cách{' '}
-          <span className="font-semibold text-yellow-500">{welcomeMessage.role}</span>!
+          <span className="font-semibold text-yellow-500">{welcomeMessage.role}</span> !
         </span>
       </div>
 
-      {/* Nút thêm dự án chỉ hiển thị ở tab Không Gian Làm Việc */}
-      {isWorkspaceTab && (
+      {/* Nút thêm dự án chỉ hiển thị nếu là startup và ở tab Không Gian Làm Việc */}
+      {isWorkspaceTab && userType === 'startup' && (
         <button
           className="mt-4 md:mt-0 bg-yellow-400 hover:bg-yellow-500 text-gray-800 font-semibold px-4 py-1 rounded-md shadow transition text-sm flex items-center gap-2 mr-6"
           onClick={() => alert('Thêm dự án mới!')}

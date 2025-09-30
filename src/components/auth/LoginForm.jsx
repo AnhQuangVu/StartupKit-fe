@@ -1,4 +1,6 @@
 import React, { useState } from "react";
+import { ToastContainer, toast } from "react-toastify";
+import "react-toastify/dist/ReactToastify.css";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faGoogle, faLinkedin } from "@fortawesome/free-brands-svg-icons";
 import { Link, useNavigate } from "react-router-dom";
@@ -11,6 +13,7 @@ export default function LoginForm() {
   const [errorEmail, setErrorEmail] = useState("");
   const [errorPassword, setErrorPassword] = useState("");
   const [formError, setFormError] = useState("");
+  const [successMsg, setSuccessMsg] = useState("");
   const { login } = useAuth();
   const navigate = useNavigate();
 
@@ -69,7 +72,10 @@ export default function LoginForm() {
 
         // Lưu vào context
         login(data.access_token, user);
-        navigate("/");
+        toast.success("Đăng nhập thành công! Chào mừng bạn.");
+        setTimeout(() => {
+          navigate("/");
+        }, 2000);
       } else {
         setFormError(
           Array.isArray(data.detail)
@@ -96,6 +102,7 @@ export default function LoginForm() {
           />
         </div>
 
+        <ToastContainer position="top-center" autoClose={2000} />
         {/* Error message */}
         {formError && (
           <div className="mb-4 text-red-500 text-xs text-center">

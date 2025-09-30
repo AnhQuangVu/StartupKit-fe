@@ -76,7 +76,7 @@ export default function StartupList() {
   });
 
   return (
-    <section className="max-w-5xl mx-auto mt-16 text-center px-4 sm:px-6">
+  <section className="max-w-5xl mx-auto mt-8 text-center px-4 sm:px-6">
       <h2 className="text-2xl md:text-3xl font-bold mb-2">Các Startup Nổi Bật</h2>
       <p className="text-gray-500 mb-8 text-xs md:text-base">
         Khám phá những công ty sáng tạo đang tìm kiếm đối tác và cơ hội phát triển

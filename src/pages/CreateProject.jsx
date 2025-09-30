@@ -3,6 +3,7 @@ import ProjectBasicInfoForm from "../components/project/ProjectBasicInfoForm";
 import ProjectSteps from "../components/project/ProjectSteps";
 import RecentActivitySidebar from "../components/project/RecentActivitySidebar";
 import AiAssistantSidebar from "../components/project/AiAssistantSidebar";
+import { useAuth } from '../context/AuthContext';
 
 // Component: Chọn mẫu hồ sơ
 function ProjectTemplateSelector({ onSelect }) {
@@ -59,12 +60,22 @@ function ProjectTemplateSelector({ onSelect }) {
   );
 }
 
-// Layout trang tạo dự án
 export default function CreateProject() {
+  const { user } = useAuth();
+  const role = user?.role || 'startup';
+  if (role !== 'startup') {
+    return (
+      <div className="max-w-xl mx-auto mt-10 p-6 bg-white rounded shadow text-center">
+        <h2 className="text-xl font-bold mb-4 text-gray-800">Chức năng này chỉ dành cho Startup</h2>
+        <p className="text-gray-600">Vui lòng đăng nhập với vai trò Startup để khởi tạo dự án mới.</p>
+      </div>
+    );
+  }
   const [currentStep, setCurrentStep] = useState(0);
   const [selectedTemplate, setSelectedTemplate] = useState(null);
   const [showAI, setShowAI] = useState(true);
   const [showProjectProfileModal, setShowProjectProfileModal] = useState(false);
+
 
   return (
     <div className="min-h-screen bg-gray-50 flex flex-col px-6 py-6">
