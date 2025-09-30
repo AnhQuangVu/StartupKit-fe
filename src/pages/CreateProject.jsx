@@ -1,4 +1,6 @@
 import React, { useState } from "react";
+import { PDFDownloadLink, Document, Page, Text, Image, StyleSheet } from '@react-pdf/renderer';
+import { exportProjectPDF } from '../utils/pdfExport';
 import RecentActivitySidebar from "../components/project/RecentActivitySidebar";
 import AiAssistantSidebar from "../components/project/AiAssistantSidebar";
 import { useAuth } from '../context/AuthContext';
@@ -263,6 +265,60 @@ function ProjectBasicForm({ form, setForm, onCreate }) {
 
 // Component preview hồ sơ
 function ProjectPreview({ form, setForm, onBack }) {
+  // Tạo mẫu PDF bằng react-pdf
+  const styles = StyleSheet.create({
+    page: { padding: 32, fontSize: 12 },
+    section: { marginBottom: 12 },
+    label: { fontWeight: 'bold' },
+    image: { width: 80, height: 80, marginBottom: 8, borderRadius: 8 },
+  });
+
+  function ProjectPDF({ form }) {
+    return (
+      <Document>
+        <Page style={styles.page}>
+          <Text style={{ fontSize: 18, marginBottom: 16, color: '#FFCE23', fontWeight: 'bold' }}>Hồ sơ dự án khởi nghiệp</Text>
+          <Text style={styles.section}><Text style={styles.label}>Tên dự án / Startup: </Text>{form.name}</Text>
+          <Text style={styles.section}><Text style={styles.label}>Slogan: </Text>{form.slogan}</Text>
+          <Text style={styles.section}><Text style={styles.label}>Lĩnh vực / ngành nghề: </Text>{form.industry}</Text>
+          <Text style={styles.section}><Text style={styles.label}>Địa điểm triển khai: </Text>{form.location}</Text>
+          <Text style={styles.section}><Text style={styles.label}>Giai đoạn hiện tại: </Text>{form.stage}</Text>
+          <Text style={styles.section}><Text style={styles.label}>Mô tả ngắn gọn về ý tưởng: </Text>{form.idea}</Text>
+          <Text style={styles.section}><Text style={styles.label}>Mô tả sản phẩm/dịch vụ: </Text>{form.product}</Text>
+          <Text style={styles.section}><Text style={styles.label}>Vấn đề khách hàng: </Text>{form.painPoint}</Text>
+          <Text style={styles.section}><Text style={styles.label}>Giải pháp: </Text>{form.solution}</Text>
+          <Text style={styles.section}><Text style={styles.label}>Phân khúc khách hàng mục tiêu: </Text>{form.customerSegment}</Text>
+          <Text style={styles.section}><Text style={styles.label}>Đặc điểm khách hàng: </Text>{form.customerFeatures}</Text>
+          <Text style={styles.section}><Text style={styles.label}>Quy mô thị trường: </Text>{form.marketSize}</Text>
+          <Text style={styles.section}><Text style={styles.label}>Khu vực thị trường nhắm tới: </Text>{form.marketArea}</Text>
+          <Text style={styles.section}><Text style={styles.label}>Mô hình kinh doanh: </Text>{form.businessModel}</Text>
+          <Text style={styles.section}><Text style={styles.label}>Cách thức tạo doanh thu: </Text>{form.revenueMethod}</Text>
+          <Text style={styles.section}><Text style={styles.label}>Kênh phân phối / tiếp cận khách hàng: </Text>{form.distributionChannel}</Text>
+          <Text style={styles.section}><Text style={styles.label}>Đối tác chính: </Text>{form.partners}</Text>
+          <Text style={styles.section}><Text style={styles.label}>Số lượng thành viên: </Text>{form.memberCount}</Text>
+          <Text style={styles.section}><Text style={styles.label}>Vai trò chính / kỹ năng: </Text>{form.memberSkills}</Text>
+          <Text style={styles.section}><Text style={styles.label}>Nguồn lực hiện có: </Text>{form.resources}</Text>
+          <Text style={styles.section}><Text style={styles.label}>Chi phí lớn nhất dự kiến: </Text>{form.costEstimate}</Text>
+          <Text style={styles.section}><Text style={styles.label}>Nguồn vốn hiện tại: </Text>{form.capitalSource}</Text>
+          <Text style={styles.section}><Text style={styles.label}>Mục tiêu doanh thu ngắn hạn: </Text>{form.revenueGoal}</Text>
+          {form.logoPreview && (
+            <Image src={form.logoPreview} style={styles.image} />
+          )}
+          {form.productImagePreview && (
+            <Image src={form.productImagePreview} style={styles.image} />
+          )}
+          {form.teamImagePreview && (
+            <Image src={form.teamImagePreview} style={styles.image} />
+          )}
+        </Page>
+      </Document>
+    );
+  }
+
+  // Sử dụng hàm xuất PDF đã tách riêng
+  const handleExportPDF = () => {
+    exportProjectPDF(form);
+  };
   const handleChange = e => {
     setForm({ ...form, [e.target.name]: e.target.value });
   };
@@ -436,14 +492,20 @@ function ProjectPreview({ form, setForm, onBack }) {
           />
         </div>
       </div>
-      <div className="flex justify-between mt-8">
-        <button type="button" onClick={onBack} className="bg-gray-200 hover:bg-gray-300 text-base font-semibold px-8 py-3 rounded-lg shadow">
+      <div className="flex justify-between mt-8 gap-2">
+        <button type="button" onClick={onBack} className="bg-gray-200 hover:bg-gray-300 text-xs font-semibold px-4 py-2 rounded shadow">
           Quay lại
         </button>
-        <button type="button" className="bg-[#FFCE23] hover:bg-yellow-500 text-base font-semibold px-8 py-3 rounded-lg shadow">
-          Xác nhận & Lưu hồ sơ
+        <PDFDownloadLink
+          document={<ProjectPDF form={form} />}
+          fileName="ho-so-du-an.pdf"
+          className="bg-blue-400 hover:bg-blue-500 text-xs font-semibold px-4 py-2 rounded shadow"
+        >
+          {({ loading }) => loading ? "Đang tạo mẫu PDF..." : "Xem mẫu PDF"}
+        </PDFDownloadLink>
+        <button type="button" onClick={handleExportPDF} className="bg-[#FFCE23] hover:bg-yellow-500 text-xs font-semibold px-4 py-2 rounded shadow">
+          Xuất PDF
         </button>
-        {/* <button type="button" onClick={handleExportPDF}>Xuất PDF</button> */}
       </div>
     </div>
   );

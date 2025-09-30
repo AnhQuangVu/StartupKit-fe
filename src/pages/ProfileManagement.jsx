@@ -194,13 +194,12 @@ function ProfileManagement({ userType = 'startup', isLoggedIn = true }) {
           {/* Danh sách hồ sơ - 1/3 chiều rộng */}
           <div className="bg-white rounded-lg border border-gray-200 shadow-sm p-4 h-fit" style={{ transform: 'translateX(20px)' }}>
             <h2 className="text-lg font-semibold mb-4">Danh sách hồ sơ</h2>
-            
-            {/* Nút thêm hồ sơ */}
-            <button className="w-full bg-yellow-400 hover:bg-yellow-500 text-gray-800 font-medium rounded-md py-2 mb-4 flex items-center justify-center gap-2">
+
+            <button className="w-full bg-yellow-400 hover:bg-yellow-500 text-gray-800 font-medium rounded-md py-2 mb-4 flex items-center justify-center gap-2" onClick={() => window.location.href = '/create-project'}>
               <span className="text-lg">+</span>
               <span>Tạo hồ sơ mới</span>
             </button>
-            
+
             {/* Ô tìm kiếm */}
             <div className="relative mb-4">
               <input
