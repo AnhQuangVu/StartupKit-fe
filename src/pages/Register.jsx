@@ -21,6 +21,7 @@ const Register = () => {
   const [showPassword, setShowPassword] = useState(false);
   const [showConfirmPassword, setShowConfirmPassword] = useState(false);
   const [isSubmitting, setIsSubmitting] = useState(false);
+  const [errors, setErrors] = useState({});
   const navigate = useNavigate();
   const { login } = useAuth();
 
@@ -32,9 +33,27 @@ const Register = () => {
     }));
   };
 
+  const validate = () => {
+    const newErrors = {};
+    if (!formData.userName.trim()) newErrors.userName = "Vui lòng nhập họ tên.";
+    if (!formData.email.trim()) newErrors.email = "Vui lòng nhập email.";
+    else if (!/\S+@\S+\.\S+/.test(formData.email)) newErrors.email = "Email không hợp lệ.";
+    if (!formData.password) newErrors.password = "Vui lòng nhập mật khẩu.";
+    else if (formData.password.length < 6) newErrors.password = "Mật khẩu phải ít nhất 6 ký tự.";
+    if (formData.password !== formData.confirmPassword) newErrors.confirmPassword = "Mật khẩu nhập lại không khớp.";
+    if (!formData.agreeTerms) newErrors.agreeTerms = "Bạn phải đồng ý với điều khoản.";
+    return newErrors;
+  };
+
   const handleSubmit = async (e) => {
     e.preventDefault();
     setIsSubmitting(true);
+    const newErrors = validate();
+    setErrors(newErrors);
+    if (Object.keys(newErrors).length > 0) {
+      setIsSubmitting(false);
+      return;
+    }
 
     const payload = {
       full_name: formData.userName,
@@ -60,7 +79,7 @@ const Register = () => {
         toast.success("Đăng ký thành công! Vui lòng đăng nhập.");
         setTimeout(() => {
           setIsSubmitting(false);
-          navigate("/dangnhap");
+          navigate("/dang-nhap");
         }, 1500);
       } else {
         setIsSubmitting(false); // Cho phép bấm lại nếu lỗi
@@ -107,6 +126,7 @@ const Register = () => {
                   className="w-full px-3 py-2 text-sm border  border-gray-300 rounded-md focus:ring-2 focus:ring-[#FFCE23] focus:border-[#FFCE23] transition-colors"
                   placeholder="Nhập họ tên"
                 />
+                {errors.userName && <div className="text-xs text-red-500 mt-1">{errors.userName}</div>}
               </div>
 
               {/* Email */}
@@ -121,6 +141,7 @@ const Register = () => {
                   className="w-full px-3 py-2 text-sm border border-gray-300 rounded-md focus:ring-2 focus:ring-[#FFCE23] focus:border-[#FFCE23] transition-colors"
                   placeholder="Nhập địa chỉ email"
                 />
+                {errors.email && <div className="text-xs text-red-500 mt-1">{errors.email}</div>}
               </div>
 
               {/* Company/Organization (conditional) */}
@@ -156,6 +177,7 @@ const Register = () => {
                     className="w-full px-3 py-2 text-sm pr-10 border border-gray-300 rounded-md focus:ring-2 focus:ring-[#FFCE23] focus:border-[#FFCE23] transition-colors"
                     placeholder="Nhập mật khẩu"
                   />
+                  {errors.password && <div className="text-xs text-red-500 mt-1">{errors.password}</div>}
                 </div>
               </div>
 
@@ -172,6 +194,7 @@ const Register = () => {
                     className="w-full px-3 py-2 text-sm pr-10 border border-gray-300 rounded-md focus:ring-2 focus:ring-[#FFCE23] focus:border-[#FFCE23] transition-colors"
                     placeholder="Nhập lại mật khẩu"
                   />
+                  {errors.confirmPassword && <div className="text-xs text-red-500 mt-1">{errors.confirmPassword}</div>}
                 </div>
               </div>
               
@@ -288,6 +311,7 @@ const Register = () => {
                   của StartupKit
                 </label>
               </div>
+              {errors.agreeTerms && <div className="text-xs text-red-500 mt-1">{errors.agreeTerms}</div>}
 
               {/* Submit Button */}
               <button
@@ -302,7 +326,7 @@ const Register = () => {
               <div className="text-center text-xs text-gray-600">
                 Đã có tài khoản?{" "}
                 <Link
-                  to="/dangnhap"
+                  to="/dang-nhap"
                   className="text-[#FFCE23] hover:underline font-medium"
                 >
                   Đăng nhập ngay

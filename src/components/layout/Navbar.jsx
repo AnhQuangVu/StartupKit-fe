@@ -29,6 +29,7 @@ function Navbar() {
           alt="Logo"
           className="h-12 md:h-16 w-auto object-contain origin-left cursor-pointer"
           style={{ transform: "scale(1.8) translateX(12px)" }}
+          onClick={() => navigate("/")}
         />
         
 

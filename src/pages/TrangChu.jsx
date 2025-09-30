@@ -15,18 +15,12 @@ export default function TrangChu() {
     <div className="flex flex-col min-h-screen">
       <Navbar isLoggedIn={isLoggedIn} user={user} />
       <main className="flex-1">
-        <Hero />
-        <SearchBox />
-        <StartupList />
-        <CompetitionList />
-        <InvestorList />
-        <MentorList />
-        {/* Nếu đã đăng nhập, hiển thị thông tin user */}
-        {isLoggedIn && user && (
-          <div className="text-center mt-4 text-lg font-semibold text-green-600">
-            Xin chào, {user.full_name || user.email}!
-          </div>
-        )}
+        <Hero small />
+        <SearchBox small />
+        <StartupList small />
+        <CompetitionList small />
+        <InvestorList small />
+        <MentorList small />
       </main>
       <Footer />
     </div>

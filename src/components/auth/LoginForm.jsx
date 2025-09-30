@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState } from "react";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faGoogle, faLinkedin } from "@fortawesome/free-brands-svg-icons";
 import { Link, useNavigate } from "react-router-dom";
@@ -6,11 +6,11 @@ import logo from "../../assets/images/logo.png";
 import { useAuth } from "../../context/AuthContext";
 
 export default function LoginForm() {
-  const [email, setEmail] = useState('');
-  const [password, setPassword] = useState('');
-  const [errorEmail, setErrorEmail] = useState('');
-  const [errorPassword, setErrorPassword] = useState('');
-  const [formError, setFormError] = useState('');
+  const [email, setEmail] = useState("");
+  const [password, setPassword] = useState("");
+  const [errorEmail, setErrorEmail] = useState("");
+  const [errorPassword, setErrorPassword] = useState("");
+  const [formError, setFormError] = useState("");
   const { login } = useAuth();
   const navigate = useNavigate();
 
@@ -20,32 +20,32 @@ export default function LoginForm() {
 
     // Email validation
     if (!email.trim()) {
-      setErrorEmail('Vui lòng nhập email.');
+      setErrorEmail("Vui lòng nhập email.");
       valid = false;
     } else if (!/\S+@\S+\.\S+/.test(email)) {
-      setErrorEmail('Email không hợp lệ.');
+      setErrorEmail("Email không hợp lệ.");
       valid = false;
     } else {
-      setErrorEmail('');
+      setErrorEmail("");
     }
 
     // Password validation
     if (!password.trim()) {
-      setErrorPassword('Vui lòng nhập mật khẩu.');
+      setErrorPassword("Vui lòng nhập mật khẩu.");
       valid = false;
     } else if (password.length < 6) {
-      setErrorPassword('Mật khẩu phải có ít nhất 6 ký tự.');
+      setErrorPassword("Mật khẩu phải có ít nhất 6 ký tự.");
       valid = false;
     } else {
-      setErrorPassword('');
+      setErrorPassword("");
     }
 
     if (!valid) {
-      setFormError('');
+      setFormError("");
       return;
     }
 
-    setFormError('');
+    setFormError("");
     try {
       console.log("Login payload:", { username: email, password });
       const response = await fetch("http://localhost:8000/auth/token", {
@@ -53,28 +53,30 @@ export default function LoginForm() {
         headers: { "Content-Type": "application/x-www-form-urlencoded" },
         body: new URLSearchParams({
           username: email,
-          password: password
-        })
+          password: password,
+        }),
       });
       const data = await response.json();
       console.log("Login response:", data); // DEBUG
 
       if (response.ok && data.access_token) {
         // Gọi API lấy thông tin user
-        const userRes = await fetch("http://localhost:8000/auth/me", {
-          headers: { Authorization: `Bearer ${data.access_token}` }
+        const userRes = await fetch("http://localhost:8000/users/me", {
+          headers: { Authorization: `Bearer ${data.access_token}` },
         });
         const user = await userRes.json();
         console.log("User info:", user); // DEBUG
 
         // Lưu vào context
         login(data.access_token, user);
-        navigate("/profile");
+        navigate("/");
       } else {
         setFormError(
           Array.isArray(data.detail)
             ? data.detail.map((d) => d.msg).join(", ")
-            : data.detail || data.message || "Đăng nhập thất bại. Vui lòng thử lại."
+            : data.detail ||
+                data.message ||
+                "Đăng nhập thất bại. Vui lòng thử lại."
         );
       }
     } catch (error) {
@@ -85,7 +87,6 @@ export default function LoginForm() {
   return (
     <div className="flex items-center justify-center min-h-screen bg-gradient-to-br from-yellow-100 via-white to-yellow-50 px-2">
       <div className="w-full max-w-sm bg-white rounded-2xl shadow-xl border border-gray-100 p-6">
-
         {/* Logo thay cho tiêu đề */}
         <div className="flex justify-center mb-7">
           <img
@@ -97,7 +98,9 @@ export default function LoginForm() {
 
         {/* Error message */}
         {formError && (
-          <div className="mb-4 text-red-500 text-xs text-center">{formError}</div>
+          <div className="mb-4 text-red-500 text-xs text-center">
+            {formError}
+          </div>
         )}
 
         {/* Form */}
@@ -165,14 +168,20 @@ export default function LoginForm() {
         {/* Social login */}
         <div className="space-y-3">
           <button className="flex items-center justify-center gap-2 w-full border border-gray-300 py-2 rounded-lg bg-white hover:bg-yellow-50 transition-all shadow-sm text-xs">
-            <FontAwesomeIcon icon={faGoogle} className="w-5 h-5 text-gray-700" />
+            <FontAwesomeIcon
+              icon={faGoogle}
+              className="w-5 h-5 text-gray-700"
+            />
             <span className="font-medium text-gray-700">
               Đăng nhập với Google
             </span>
           </button>
 
           <button className="flex items-center justify-center gap-2 w-full border border-gray-300 py-2 rounded-lg bg-white hover:bg-yellow-50 transition-all shadow-sm text-xs">
-            <FontAwesomeIcon icon={faLinkedin} className="w-5 h-5 text-gray-700" />
+            <FontAwesomeIcon
+              icon={faLinkedin}
+              className="w-5 h-5 text-gray-700"
+            />
             <span className="font-medium text-gray-700">
               Đăng nhập với LinkedIn
             </span>
