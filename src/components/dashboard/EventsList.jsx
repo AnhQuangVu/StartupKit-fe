@@ -7,9 +7,9 @@ export default function EventsList({ userType }) {
 
   const eventsByRole = {
     startup: [
-      { title: "Tư vấn với mentor Lê Tuấn Đạt", date: "15/01/2025", time: "09:00" },
-      { title: "Thông báo sự kiện", date: "22/01/2025", time: "14:30" },
-      { title: "Hạn chót HOU Start UP", date: "28/01/2025", time: "16:00" },
+      // { title: "Tư vấn với mentor Lê Tuấn Đạt", date: "15/01/2025", time: "09:00" },
+      // { title: "Thông báo sự kiện", date: "22/01/2025", time: "14:30" },
+      // { title: "Hạn chót HOU Start UP", date: "28/01/2025", time: "16:00" },
     ],
     mentor: [
       // { title: "Lịch tư vấn với startup TechFlow", date: "16/01/2025", time: "10:00" },

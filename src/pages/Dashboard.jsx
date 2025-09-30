@@ -37,14 +37,16 @@ function Dashboard({ userType: propUserType, isLoggedIn: propIsLoggedIn }) {
         {isLoggedIn ? (
           <>
             {userType === 'startup' && (
-              <div className="grid grid-cols-1 lg:grid-cols-3 gap-6 px-4 md:px-8">
-                <div className="lg:col-span-2 order-2 lg:order-1">
-                  <ProjectList />
-                </div>
-                <div className="space-y-6 order-1 lg:order-2">
-                  <PriorityTasks />
-                  <EventsList />
-                  <RecentActivity />
+              <div className="px-4 md:px-6">
+                <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
+                  <div className="lg:col-span-2 order-2 lg:order-1">
+                    <ProjectList />
+                  </div>
+                  <div className="space-y-6 order-1 lg:order-2">
+                    <PriorityTasks />
+                    <EventsList />
+                    <RecentActivity />
+                  </div>
                 </div>
               </div>
             )}

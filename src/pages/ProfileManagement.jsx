@@ -19,25 +19,11 @@ function ProfileManagement({ userType = 'startup', isLoggedIn = true }) {
   const [newUserEmail, setNewUserEmail] = useState("");
 
   // Danh sách hồ sơ (demo)
-  const [profiles, setProfiles] = useState([
-    {
-      id: 1,
-      name: "Edutech Platform",
-      description: "Nền tảng giáo dục trực tuyến",
-      progress: 75,
-      status: "Đang xác định mục tiêu"
-    },
-    {
-      id: 2,
-      name: "Fintech Solution",
-      description: "Ứng dụng tài chính",
-      progress: 60,
-      status: "Đang xác định ý tưởng thị trường"
-    }
-  ]);
+  // NOTE: Dữ liệu hồ sơ sẽ truyền từ backend
+  const [profiles, setProfiles] = useState([]);
 
   // State để quản lý hồ sơ đang được chọn
-  const [selectedProfile, setSelectedProfile] = useState(profiles[0]);
+  const [selectedProfile, setSelectedProfile] = useState(null);
   
   // State để quản lý animation tiến trình
   const [animateProgress, setAnimateProgress] = useState(false);
@@ -57,19 +43,19 @@ function ProfileManagement({ userType = 'startup', isLoggedIn = true }) {
 
   // Hàm lọc hồ sơ theo từ khóa
   const filteredProfiles = profiles.filter(profile =>
-    profile.name.toLowerCase().includes(searchTerm.toLowerCase())
+    profile?.name?.toLowerCase().includes(searchTerm.toLowerCase())
   );
 
   // Dữ liệu lịch sử chỉnh sửa hồ sơ (demo)
   const profileHistory = {
-    "Edutech Platform": [
-      { time: "2025-09-10 09:12", action: "Cập nhật tiến độ 75%" },
-      { time: "2025-09-08 15:30", action: "Tạo hồ sơ" }
-    ],
-    "Fintech Solution": [
-      { time: "2025-09-11 10:00", action: "Cập nhật tiến độ 60%" },
-      { time: "2025-09-09 14:20", action: "Tạo hồ sơ" }
-    ]
+    // "Edutech Platform": [
+    //   { time: "2025-09-10 09:12", action: "Cập nhật tiến độ 75%" },
+    //   { time: "2025-09-08 15:30", action: "Tạo hồ sơ" }
+    // ],
+    // "Fintech Solution": [
+    //   { time: "2025-09-11 10:00", action: "Cập nhật tiến độ 60%" },
+    //   { time: "2025-09-09 14:20", action: "Tạo hồ sơ" }
+    // ]
   };
 
   // Modal quản lý quyền truy cập
@@ -177,10 +163,10 @@ function ProfileManagement({ userType = 'startup', isLoggedIn = true }) {
 
   return (
     <div className="min-h-screen bg-gray-50 flex flex-col">
-      <style jsx>{`
+      <style>{`
         @keyframes progress-bar {
           0% { width: 0; }
-          100% { width: ${selectedProfile.progress}%; }
+          100% { width: ${selectedProfile?.progress ?? 0}%; }
         }
         
         @keyframes shimmer {
@@ -237,20 +223,24 @@ function ProfileManagement({ userType = 'startup', isLoggedIn = true }) {
             
             {/* Danh sách các hồ sơ */}
             <div className="space-y-2">
-              {filteredProfiles.map((profile) => (
-                <div 
-                  key={profile.id}
-                  className={`p-3 rounded-md cursor-pointer transition-all ${
-                    selectedProfile.id === profile.id 
-                      ? "bg-yellow-50 border border-yellow-400" 
-                      : "hover:bg-gray-50 border border-gray-100"
-                  }`}
-                  onClick={() => setSelectedProfile(profile)}
-                >
-                  <h3 className="font-medium text-sm">{profile.name}</h3>
-                  <p className="text-xs text-gray-500">{profile.description}</p>
-                </div>
-              ))}
+              {filteredProfiles.length === 0 ? (
+                <div className="text-xs text-gray-400 text-center py-4">Không có hồ sơ nào.</div>
+              ) : (
+                filteredProfiles.map((profile) => (
+                  <div 
+                    key={profile.id}
+                    className={`p-3 rounded-md cursor-pointer transition-all ${
+                      selectedProfile?.id === profile.id 
+                        ? "bg-yellow-50 border border-yellow-400" 
+                        : "hover:bg-gray-50 border border-gray-100"
+                    }`}
+                    onClick={() => setSelectedProfile(profile)}
+                  >
+                    <h3 className="font-medium text-sm">{profile.name}</h3>
+                    <p className="text-xs text-gray-500">{profile.description}</p>
+                  </div>
+                ))
+              )}
             </div>
           </div>
 
@@ -260,7 +250,7 @@ function ProfileManagement({ userType = 'startup', isLoggedIn = true }) {
               <h2 className="text-base font-semibold">Hồ sơ dự án</h2>
             </div>
             
-            {selectedProfile && (
+            {selectedProfile ? (
               <>
                 <div className="grid grid-cols-3 gap-2 mb-3">
                   <div className="border-r border-gray-200 pr-2">
@@ -276,7 +266,7 @@ function ProfileManagement({ userType = 'startup', isLoggedIn = true }) {
                             animateProgress ? "animate-progress-bar" : ""
                           }`} 
                           style={{ 
-                            width: `${selectedProfile.progress}%`,
+                            width: `${selectedProfile.progress ?? 0}%`,
                             boxShadow: animateProgress ? '0 0 5px rgba(250, 204, 21, 0.7)' : 'none'
                           }}
                         ></div>
@@ -291,7 +281,7 @@ function ProfileManagement({ userType = 'startup', isLoggedIn = true }) {
                           animateProgress ? 'text-yellow-600 scale-110' : ''
                         }`}
                       >
-                        {selectedProfile.progress}%
+                        {selectedProfile.progress ?? 0}%
                       </span>
                     </div>
                   </div>
@@ -347,6 +337,8 @@ function ProfileManagement({ userType = 'startup', isLoggedIn = true }) {
                   </div>
                 </div>
               </>
+            ) : (
+              <div className="text-xs text-gray-400 text-center py-8">Chọn một hồ sơ để xem chi tiết.</div>
             )}
           </div>
         </div>

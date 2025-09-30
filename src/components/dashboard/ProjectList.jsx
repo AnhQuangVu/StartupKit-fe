@@ -5,30 +5,30 @@ import { faCaretDown, faCaretRight } from '@fortawesome/free-solid-svg-icons';
 import React, { useState, useEffect } from "react";
 
 const initialProjects = [
-  {
-    id: 1,
-    title: "Edutech Platform",
-    description: "Nền tảng giáo dục trực tuyến",
-    progress: 75,
-    status: "Đang xác định mục tiêu",
-    tasks: [
-      { text: "Phân tích nhu cầu học tập", completed: false },
-      { text: "Thiết kế giao diện người dùng", completed: false },
-      { text: "Tích hợp hệ thống quản lý khóa học", completed: false }
-    ]
-  },
-  {
-    id: 2,
-    title: "Fintech Solution",
-    description: "Ứng dụng tài chính",
-    progress: 60,
-    status: "Đang xác định ý tưởng thị trường",
-    tasks: [
-      { text: "Nghiên cứu thị trường tài chính", completed: false },
-      { text: "Phát triển API thanh toán", completed: false },
-      { text: "Kiểm thử bảo mật hệ thống", completed: false }
-    ]
-  }
+  // {
+  //   id: 1,
+  //   title: "Edutech Platform",
+  //   description: "Nền tảng giáo dục trực tuyến",
+  //   progress: 75,
+  //   status: "Đang xác định mục tiêu",
+  //   tasks: [
+  //     { text: "Phân tích nhu cầu học tập", completed: false },
+  //     { text: "Thiết kế giao diện người dùng", completed: false },
+  //     { text: "Tích hợp hệ thống quản lý khóa học", completed: false }
+  //   ]
+  // },
+  // {
+  //   id: 2,
+  //   title: "Fintech Solution",
+  //   description: "Ứng dụng tài chính",
+  //   progress: 60,
+  //   status: "Đang xác định ý tưởng thị trường",
+  //   tasks: [
+  //     { text: "Nghiên cứu thị trường tài chính", completed: false },
+  //     { text: "Phát triển API thanh toán", completed: false },
+  //     { text: "Kiểm thử bảo mật hệ thống", completed: false }
+  //   ]
+  // }
 ];
 
 export default function ProjectList() {

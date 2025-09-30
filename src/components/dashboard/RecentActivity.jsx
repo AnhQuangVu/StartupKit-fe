@@ -2,21 +2,21 @@ import React from "react";
 
 export default function RecentActivity() {
   const activities = [
-    {
-      user: "Nguyễn Văn A",
-      action: "đã thêm dự án mới",
-      time: "2 phút trước"
-    },
-    {
-      user: "Trần Thị B",
-      action: "đã cập nhật tiến độ dự án",
-      time: "1 giờ trước"
-    },
-    {
-      user: "Startup HOU",
-      action: "đã đăng thông báo sự kiện",
-      time: "hôm qua"
-    }
+    // {
+    //   user: "Nguyễn Văn A",
+    //   action: "đã thêm dự án mới",
+    //   time: "2 phút trước"
+    // },
+    // {
+    //   user: "Trần Thị B",
+    //   action: "đã cập nhật tiến độ dự án",
+    //   time: "1 giờ trước"
+    // },
+    // {
+    //   user: "Startup HOU",
+    //   action: "đã đăng thông báo sự kiện",
+    //   time: "hôm qua"
+    // }
   ];
 
   return (

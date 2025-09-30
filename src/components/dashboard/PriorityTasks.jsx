@@ -9,11 +9,11 @@ export default function PriorityTasks({ userType }) {
 
   const tasksByRole = {
     startup: [
-      { text: "Sử dụng số liệu cụ thể về quy mô thị trường", completed: false },
-      { text: "Phân tích SWOT so với đối thủ", completed: false },
-      { text: "Xác định rõ lợi thế cạnh tranh độc đáo", completed: false },
-      { text: "Bổ sung mô hình kinh doanh", completed: false },
-      { text: "Hoàn thiện phần trình bày tài chính", completed: false }
+      // { text: "Sử dụng số liệu cụ thể về quy mô thị trường", completed: false },
+      // { text: "Phân tích SWOT so với đối thủ", completed: false },
+      // { text: "Xác định rõ lợi thế cạnh tranh độc đáo", completed: false },
+      // { text: "Bổ sung mô hình kinh doanh", completed: false },
+      // { text: "Hoàn thiện phần trình bày tài chính", completed: false }
     ],
     mentor: [
       { text: "Kiểm tra tiến độ dự án tư vấn", completed: false },
