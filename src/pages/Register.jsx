@@ -13,7 +13,7 @@ const Register = () => {
     email: "",
     password: "",
     confirmPassword: "",
-    userType: "startup",
+    userType: "founder", // Đổi mặc định thành founder
     company: "",
     agreeTerms: false,
   });
@@ -60,7 +60,7 @@ const Register = () => {
       email: formData.email,
       password: formData.password,
       password_confirm: formData.confirmPassword,
-      role: formData.userType,
+      role: formData.userType, // sẽ là founder nếu chọn founder
     };
 
     try {
@@ -206,22 +206,22 @@ const Register = () => {
                 <div className="grid grid-cols-1 md:grid-cols-3 gap-2">
                   <div
                     className={`border rounded-lg p-3 cursor-pointer transition-all duration-200 ${
-                      formData.userType === "startup"
+                      formData.userType === "founder"
                         ? "border-[#FFCE23] bg-[#FFF9E0]"
                         : "border-gray-200 hover:border-[#FFCE23]"
                     }`}
                     onClick={() =>
                       setFormData((prev) => ({
                         ...prev,
-                        userType: "startup",
+                        userType: "founder",
                       }))
                     }
                   >
                     <input
                       type="radio"
                       name="userType"
-                      value="startup"
-                      checked={formData.userType === "startup"}
+                      value="founder"
+                      checked={formData.userType === "founder"}
                       onChange={handleInputChange}
                       className="sr-only"
                     />
@@ -229,7 +229,7 @@ const Register = () => {
                       <div className="text-base mb-1">
                         <FontAwesomeIcon icon={faRocket} />
                       </div>
-                      <div className="font-medium text-xs">Startup</div>
+                      <div className="font-medium text-xs">Founder</div>
                     </div>
                   </div>
                   <div
