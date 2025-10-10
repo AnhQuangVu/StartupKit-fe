@@ -18,10 +18,10 @@ export default function TrangChu() {
 
           <Hero small />
 
-  <section className="home-search mb-2 scale-[0.85] origin-top">
+  <section className="home-search mb-9 scale-[0.85] origin-top">
           <SearchBox small />
         </section>
-  <section className="home-startuplist mb-2 scale-[0.85] origin-top">
+  <section className="home-startuplist mb-9 scale-[0.85] origin-top">
           <StartupList small />
         </section>
   <section className="home-competition mb-9 scale-[0.85] origin-top">
