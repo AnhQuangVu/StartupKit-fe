@@ -1,30 +1,45 @@
-export default function ProfileCard({ avatar, name, desc, tag, button }) {
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+import { faUserTie, faMapMarkerAlt, faBriefcase, faLink, faChartLine, faStar, faEnvelope, faCheckCircle } from "@fortawesome/free-solid-svg-icons";
+
+export default function ProfileCard({ avatar, name, focus, notableInvestments, status, button }) {
   return (
-    <div className="bg-white border rounded-xl shadow p-2 w-full max-w-xs md:w-[180px] flex flex-col items-center mx-auto">
-      {avatar && (
-        <div className="w-full h-24 md:w-32 md:h-20 mb-2 flex items-center justify-center">
+  <div className="bg-white border border-gray-200 rounded-xl shadow-lg p-5 w-full max-w-md flex flex-col gap-2 hover:shadow-2xl hover:-translate-y-1 transition-all duration-200 relative">
+      <div className="flex gap-4 items-center">
+        {avatar && (
           <img
             src={avatar}
             alt={name}
-            className="w-full h-24 md:w-32 md:h-20 rounded-xl object-cover border-2 border-[#FFCE23]"
+            className="w-16 h-16 object-cover rounded-lg border flex-shrink-0"
             style={{ objectFit: "cover" }}
           />
-        </div>
-      )}
-      <h3 className="font-bold text-base md:text-sm mb-1 text-center truncate w-full">
-        {name}
-      </h3>
-      <p className="text-gray-500 text-xs md:text-xs mb-2 text-center truncate w-full">
-        {desc}
-      </p>
-      <div className="flex items-center justify-center gap-2 w-full mt-auto">
-        {tag && (
-          <span className="bg-gray-100 text-gray-700 text-xs md:text-[10px] px-2 py-0.5 rounded truncate">
-            {tag}
-          </span>
         )}
+        <div className="flex flex-col flex-1 min-w-0">
+          <h3 className="font-bold text-lg text-gray-900 mb-1 truncate flex items-center gap-2">
+            {name}
+            {status && (
+              <FontAwesomeIcon icon={faCheckCircle} className="text-green-500" title="Đang hoạt động" />
+            )}
+          </h3>
+          {focus && (
+            <div className="flex items-center gap-1 text-xs text-gray-700 mb-1">
+              <FontAwesomeIcon icon={faChartLine} />
+              <span className="font-semibold">Lĩnh vực:</span> {focus}
+            </div>
+          )}
+          {notableInvestments && notableInvestments.length > 0 && (
+            <div className="flex items-center gap-1 text-xs text-gray-700 mb-1 flex-wrap">
+              <FontAwesomeIcon icon={faStar} />
+              <span className="font-semibold">Khoản đầu tư nổi bật:</span>
+              {notableInvestments.map((inv, idx) => (
+                <span key={idx} className="bg-yellow-50 text-yellow-700 px-2 py-1 rounded-full border border-yellow-200 mx-1">{inv}</span>
+              ))}
+            </div>
+          )}
+        </div>
+      </div>
+      <div className="flex flex-wrap gap-2 items-center mt-2 justify-end">
         {button && (
-          <button className="bg-[#FFCE23] hover:bg-yellow-400 text-black font-semibold px-3 py-2 rounded text-xs md:text-xs transition w-full md:w-auto">
+          <button className="bg-[#fdc142] hover:bg-yellow-400 text-black font-semibold px-4 py-2 rounded-full text-sm shadow transition">
             {button}
           </button>
         )}

@@ -1,4 +1,4 @@
-import { useState, useEffect } from "react";
+import { useState } from "react";
 import StartupCard from "./StartupCard";
 
 export default function StartupList() {
@@ -6,88 +6,224 @@ export default function StartupList() {
     {
       img: "https://logo.clearbit.com/stripe.com",
       title: "TechFlow",
-      desc: "Tự động hóa quy trình bằng AI",
+      desc: "Nền tảng tự động hóa quy trình bằng AI, giúp doanh nghiệp tăng hiệu suất và giảm chi phí.",
       tag: "SaaS",
-      stage: "Series A",
+      members: 25,
+      raised: "$2M",
+      badge: "Hot",
+      link: "https://stripe.com",
     },
     {
       img: "https://logo.clearbit.com/wise.com",
       title: "FinanceHub",
-      desc: "Giải pháp tài chính thông minh",
+      desc: "Giải pháp tài chính thông minh, tối ưu hóa dòng tiền cho doanh nghiệp vừa và nhỏ.",
       tag: "Fintech",
-      stage: "Seed",
+      members: 12,
+      raised: "$500K",
+      badge: "Đề xuất",
+      link: "https://wise.com",
     },
     {
       img: "https://logo.clearbit.com/khanacademy.org",
       title: "EduSpace",
-      desc: "Nền tảng học trực tuyến",
+      desc: "Nền tảng học trực tuyến miễn phí, giúp hàng triệu học sinh tiếp cận tri thức.",
       tag: "Edtech",
-      stage: "Pre-seed",
+      members: 8,
+      raised: "$100K",
+      badge: "Mới",
+      link: "https://khanacademy.org",
     },
     {
       img: "https://logo.clearbit.com/healthline.com",
       title: "HealthPlus",
-      desc: "Giải pháp y tế số",
+      desc: "Giải pháp y tế số, kết nối bệnh nhân với chuyên gia hàng đầu.",
       tag: "Healthtech",
-      stage: "Series B",
+      members: 30,
+      raised: "$3M",
+      badge: "Đang gọi vốn",
+      link: "https://healthline.com",
     },
     {
       img: "https://logo.clearbit.com/tesla.com",
       title: "GreenTech",
-      desc: "Khởi nghiệp năng lượng xanh",
+      desc: "Khởi nghiệp năng lượng xanh, phát triển công nghệ sạch cho tương lai.",
       tag: "Energy",
-      stage: "Seed",
+      members: 15,
+      raised: "$800K",
+      badge: "Hot",
+      link: "https://tesla.com",
     },
     {
       img: "https://logo.clearbit.com/airbnb.com",
       title: "StayConnect",
       desc: "Nền tảng kết nối chỗ ở toàn cầu",
       tag: "Travel",
-      stage: "Series A",
     },
     {
       img: "https://logo.clearbit.com/duolingo.com",
       title: "LinguaPro",
       desc: "Ứng dụng học ngôn ngữ thông minh",
       tag: "Edtech",
-      stage: "Seed",
     },
     {
       img: "https://logo.clearbit.com/robinhood.com",
       title: "Investly",
       desc: "Đầu tư dễ dàng cho mọi người",
       tag: "Fintech",
-      stage: "Series B",
+    },
+    // Dữ liệu mẫu bổ sung
+    {
+      img: "https://logo.clearbit.com/shopify.com",
+      title: "ShopMaster",
+      desc: "Nền tảng thương mại điện tử cho SMEs",
+      tag: "Ecommerce",
+    },
+    {
+      img: "https://logo.clearbit.com/booking.com",
+      title: "TravelGo",
+      desc: "Đặt vé du lịch toàn cầu",
+      tag: "Travel",
+    },
+    {
+      img: "https://logo.clearbit.com/uber.com",
+      title: "RideNow",
+      desc: "Ứng dụng gọi xe thông minh",
+      tag: "Mobility",
+    },
+    {
+      img: "https://logo.clearbit.com/foodpanda.com",
+      title: "Foodie",
+      desc: "Giao đồ ăn nhanh chóng",
+      tag: "Foodtech",
+    },
+    {
+      img: "https://logo.clearbit.com/zoom.us",
+      title: "MeetPro",
+      desc: "Giải pháp họp trực tuyến cho doanh nghiệp",
+      tag: "SaaS",
+    },
+    {
+      img: "https://logo.clearbit.com/slack.com",
+      title: "TeamSync",
+      desc: "Kết nối nhóm làm việc hiệu quả",
+      tag: "Productivity",
+    },
+    {
+      img: "https://logo.clearbit.com/coinbase.com",
+      title: "CryptoBase",
+      desc: "Nền tảng giao dịch tiền số",
+      tag: "Fintech",
+    },
+    {
+      img: "https://logo.clearbit.com/spotify.com",
+      title: "MusicWave",
+      desc: "Ứng dụng nghe nhạc thông minh",
+      tag: "Entertainment",
+    },
+    {
+      img: "https://logo.clearbit.com/medium.com",
+      title: "BlogMaster",
+      desc: "Nền tảng chia sẻ kiến thức",
+      tag: "Content",
+    },
+    {
+      img: "https://logo.clearbit.com/figma.com",
+      title: "DesignHub",
+      desc: "Thiết kế cộng tác cho startup",
+      tag: "Design",
+    },
+    {
+      img: "https://logo.clearbit.com/github.com",
+      title: "CodeBase",
+      desc: "Quản lý mã nguồn cho nhóm dev",
+      tag: "Devtools",
+    },
+    {
+      img: "https://logo.clearbit.com/trello.com",
+      title: "TaskFlow",
+      desc: "Quản lý dự án trực quan",
+      tag: "Productivity",
+    },
+    {
+      img: "https://logo.clearbit.com/adobe.com",
+      title: "CreativePro",
+      desc: "Giải pháp sáng tạo cho doanh nghiệp",
+      tag: "Design",
+    },
+    {
+      img: "https://logo.clearbit.com/booking.com",
+      title: "StayMaster",
+      desc: "Đặt phòng khách sạn toàn cầu",
+      tag: "Travel",
     },
   ];
 
-  const [startIndex, setStartIndex] = useState(0);
 
-  useEffect(() => {
-    const timer = setTimeout(() => {
-      setStartIndex((prev) => (prev + 1) % startups.length);
-    }, 3000); // đổi thời gian nếu muốn nhanh/chậm hơn
-    return () => clearTimeout(timer);
-  }, [startIndex, startups.length]);
+  // Pagination logic
+  const ITEMS_PER_ROW = 3;
+  const ROWS = 3;
+  const ITEMS_PER_PAGE = ITEMS_PER_ROW * ROWS;
+  const [page, setPage] = useState(0);
+  const totalPages = Math.ceil(startups.length / ITEMS_PER_PAGE);
 
-  // Lấy 5 startup liên tiếp, nếu vượt quá thì quay lại đầu
-  const visibleStartups = Array.from({ length: 5 }, (_, i) => {
-    return startups[(startIndex + i) % startups.length];
-  });
+  const visibleStartups = startups.slice(
+    page * ITEMS_PER_PAGE,
+    page * ITEMS_PER_PAGE + ITEMS_PER_PAGE
+  );
 
   return (
-  <section className="max-w-5xl mx-auto mt-8 text-center px-4 sm:px-6">
+    <section className="max-w-6xl mx-auto mt-8 text-center px-4 sm:px-6">
       <h2 className="text-2xl md:text-3xl font-bold mb-2">Các Startup Nổi Bật</h2>
       <p className="text-gray-500 mb-8 text-xs md:text-base">
         Khám phá những công ty sáng tạo đang tìm kiếm đối tác và cơ hội phát triển
       </p>
-      <div className="flex flex-col gap-3 md:flex-row md:gap-6 justify-center pb-4">
-        {visibleStartups.map((s, i) => (
-          <div key={i + startIndex} className="flex-shrink-0">
-            <StartupCard {...s} />
+      <div className="flex flex-col gap-8 pb-4">
+        {[...Array(ROWS)].map((_, rowIdx) => (
+          <div key={rowIdx} className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-3 gap-10 justify-center">
+            {visibleStartups
+              .slice(rowIdx * ITEMS_PER_ROW, (rowIdx + 1) * ITEMS_PER_ROW)
+              .map((s, i) => (
+                <StartupCard key={rowIdx * ITEMS_PER_ROW + i} {...s} />
+              ))}
           </div>
         ))}
       </div>
+        {totalPages > 1 && (
+          <div className="flex justify-center mt-8 gap-2">
+            {page > 0 && (
+              <button
+                className={`w-9 h-9 flex items-center justify-center rounded-full border-2 transition-all duration-150 text-lg font-bold bg-white border-gray-200 text-gray-500 hover:bg-[#fff6e0] hover:border-[#fdc142] hover:text-[#fdc142]`}
+                onClick={() => setPage(page - 1)}
+                aria-label="Trang trước"
+              >
+                &#8592;
+              </button>
+            )}
+            {[...Array(totalPages)].map((_, idx) => (
+              <button
+                key={idx}
+                className={`w-9 h-9 flex items-center justify-center rounded-full border-2 mx-1 transition-all duration-150 text-base font-semibold ${
+                  idx === page
+                    ? 'bg-[#fdc142] border-[#fdc142] text-white shadow-lg'
+                    : 'bg-white border-gray-200 text-gray-700 hover:bg-[#fff6e0] hover:border-[#fdc142] hover:text-[#fdc142]'
+                }`}
+                onClick={() => setPage(idx)}
+                aria-label={`Trang ${idx + 1}`}
+              >
+                {idx + 1}
+              </button>
+            ))}
+            {page < totalPages - 1 && (
+              <button
+                className={`w-9 h-9 flex items-center justify-center rounded-full border-2 transition-all duration-150 text-lg font-bold bg-white border-gray-200 text-gray-500 hover:bg-[#fff6e0] hover:border-[#fdc142] hover:text-[#fdc142]`}
+                onClick={() => setPage(page + 1)}
+                aria-label="Trang sau"
+              >
+                &#8594;
+              </button>
+            )}
+          </div>
+        )}
     </section>
   );
 }
