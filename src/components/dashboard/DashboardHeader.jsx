@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { useLocation } from 'react-router-dom';
 
-const DashboardHeader = ({ userType = 'startup', isLoggedIn = false }) => {
+const DashboardHeader = ({ userType = 'founder', isLoggedIn = false }) => {
   const location = useLocation();
   const [welcomeMessage, setWelcomeMessage] = useState({
     title: 'Chào mừng !',
@@ -16,7 +16,7 @@ const DashboardHeader = ({ userType = 'startup', isLoggedIn = false }) => {
       case 'mentor':
         setWelcomeMessage({ title: 'Chào mừng !', role: 'Mentor' });
         break;
-      case 'startup':
+  case 'founder':
       default:
         setWelcomeMessage({ title: 'Chào mừng !', role: 'Nhà Khởi Nghiệp' });
         break;
@@ -44,8 +44,8 @@ const DashboardHeader = ({ userType = 'startup', isLoggedIn = false }) => {
         </span>
       </div>
 
-      {/* Nút thêm dự án chỉ hiển thị nếu là startup và ở tab Không Gian Làm Việc */}
-      {isWorkspaceTab && userType === 'startup' && (
+  {/* Nút thêm dự án chỉ hiển thị nếu là founder và ở tab Không Gian Làm Việc */}
+  {isWorkspaceTab && userType === 'founder' && (
         <button
           className="mt-4 md:mt-0 bg-yellow-400 hover:bg-yellow-500 text-gray-800 font-semibold px-4 py-1 rounded-md shadow transition text-sm flex items-center gap-2 mr-6"
           onClick={() => alert('Thêm dự án mới!')}

@@ -1,3 +1,17 @@
+  // Hàm mã hóa HTML để chống XSS
+  function encodeHTML(str) {
+    return str.replace(/&/g, "&amp;")
+      .replace(/</g, "&lt;")
+      .replace(/>/g, "&gt;")
+      .replace(/"/g, "&quot;")
+      .replace(/'/g, "&#39;");
+  }
+
+  // Sử dụng encodeHTML khi nhập các trường input
+  const safeInputChange = e => {
+    const { name, value } = e.target;
+    setUser(prev => ({ ...prev, [name]: encodeHTML(value) }));
+  };
 import React, { useState } from "react";
 import { useAuth } from "../context/AuthContext";
 import { useNavigate } from "react-router-dom";
@@ -116,7 +130,9 @@ export default function Profile() {
                       <input
                         type="text"
                         className="w-full border border-gray-300 rounded px-2 py-1 text-sm mt-1"
-                        defaultValue={user.full_name}
+                        name="full_name"
+                        value={user.full_name}
+                        onChange={safeInputChange}
                         placeholder="Nhập tên"
                       />
                     </div>
@@ -139,7 +155,9 @@ export default function Profile() {
                       <input
                         type="text"
                         className="w-full border border-gray-300 rounded px-2 py-1 text-sm mt-1"
-                        defaultValue={user.phone}
+                        name="phone"
+                        value={user.phone}
+                        onChange={safeInputChange}
                         placeholder="Nhập số điện thoại"
                       />
                     </div>
@@ -150,7 +168,9 @@ export default function Profile() {
                       <input
                         type="text"
                         className="w-full border border-gray-300 rounded px-2 py-1 text-sm mt-1"
-                        defaultValue={user.address}
+                        name="address"
+                        value={user.address}
+                        onChange={safeInputChange}
                         placeholder="Nhập địa chỉ"
                       />
                     </div>
@@ -174,7 +194,9 @@ export default function Profile() {
                         <input
                           type="text"
                           className="w-full border border-gray-300 rounded px-2 py-1 text-sm mt-1"
-                          defaultValue={user.company}
+                          name="company"
+                          value={user.company}
+                          onChange={safeInputChange}
                           placeholder="Nhập tên công ty"
                         />
                       </div>
@@ -212,7 +234,9 @@ export default function Profile() {
                       <input
                         type="text"
                         className="w-full border border-gray-300 rounded px-2 py-1 text-sm mt-1"
-                        defaultValue={user.facebook}
+                        name="facebook"
+                        value={user.facebook}
+                        onChange={safeInputChange}
                         placeholder="Link Facebook cá nhân"
                       />
                     </div>

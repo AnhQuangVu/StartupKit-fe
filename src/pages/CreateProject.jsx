@@ -1,3 +1,21 @@
+  // Sử dụng encodeHTML cho tất cả input
+  const safeInputChange = e => {
+    setForm({ ...form, [e.target.name]: encodeHTML(e.target.value) });
+  };
+  // Hàm mã hóa HTML để chống XSS
+  function encodeHTML(str) {
+    return str.replace(/&/g, "&amp;")
+      .replace(/</g, "&lt;")
+      .replace(/>/g, "&gt;")
+      .replace(/"/g, "&quot;")
+      .replace(/'/g, "&#39;");
+  }
+
+  // Sử dụng encodeHTML khi nhập các trường text/textarea
+  const safeHandleChange = e => {
+    setForm({ ...form, [e.target.name]: encodeHTML(e.target.value) });
+  };
+
 import React, { useState } from "react";
 import { PDFDownloadLink, Document, Page, Text, Image, StyleSheet } from '@react-pdf/renderer';
 import { exportProjectPDF } from '../utils/pdfExport';
@@ -19,7 +37,7 @@ function ProjectSteps({ currentStep, onStepClick }) {
         {steps.map((step, idx) => (
           <button
             key={step.value}
-            className={`w-full px-4 py-3 rounded-full font-semibold text-left transition ${
+            className={`w-full px-4 py-3 rounded-md font-semibold text-left transition ${
               currentStep === step.value
                 ? "bg-[#FFCE23] text-black"
                 : "bg-gray-100 text-gray-600 hover:bg-yellow-100"
@@ -94,19 +112,19 @@ function ProjectBasicForm({ form, setForm, onCreate }) {
       <div className="grid grid-cols-1 md:grid-cols-3 gap-x-6 gap-y-4">
         <div>
           <label className="font-semibold">Tên dự án / Startup</label>
-          <input name="name" value={form.name} onChange={handleChange} className="w-full border rounded px-2 py-2 mt-1 text-sm" />
+          <textarea name="name" value={form.name} onChange={safeHandleChange} rows={4} className="w-full border rounded px-2 py-2 mt-1 text-sm resize-none overflow-hidden" onInput={e => { e.target.style.height = 'auto'; e.target.style.height = e.target.scrollHeight + 'px'; }} />
         </div>
         <div>
           <label className="font-semibold">Slogan (nếu có)</label>
-          <input name="slogan" value={form.slogan} onChange={handleChange} className="w-full border rounded px-2 py-2 mt-1 text-sm" />
+          <textarea name="slogan" value={form.slogan} onChange={safeHandleChange} rows={4} className="w-full border rounded px-2 py-2 mt-1 text-sm resize-none overflow-hidden" onInput={e => { e.target.style.height = 'auto'; e.target.style.height = e.target.scrollHeight + 'px'; }} />
         </div>
         <div>
           <label className="font-semibold">Lĩnh vực / ngành nghề</label>
-          <input name="industry" value={form.industry} onChange={handleChange} className="w-full border rounded px-2 py-2 mt-1 text-sm" />
+          <textarea name="industry" value={form.industry} onChange={safeHandleChange} rows={4} className="w-full border rounded px-2 py-2 mt-1 text-sm resize-none overflow-hidden" onInput={e => { e.target.style.height = 'auto'; e.target.style.height = e.target.scrollHeight + 'px'; }} />
         </div>
         <div>
           <label className="font-semibold">Địa điểm triển khai</label>
-          <input name="location" value={form.location} onChange={handleChange} className="w-full border rounded px-2 py-2 mt-1 text-sm" />
+          <textarea name="location" value={form.location} onChange={safeHandleChange} rows={4} className="w-full border rounded px-2 py-2 mt-1 text-sm resize-none overflow-hidden" onInput={e => { e.target.style.height = 'auto'; e.target.style.height = e.target.scrollHeight + 'px'; }} />
         </div>
         <div>
           <label className="font-semibold">Giai đoạn hiện tại</label>
@@ -136,86 +154,90 @@ function ProjectBasicForm({ form, setForm, onCreate }) {
           />
         </div>
       </div>
-      <div className="grid grid-cols-1 md:grid-cols-3 gap-x-6 gap-y-4">
+      {/* Nhóm trường dài, mỗi trường một hàng riêng */}
+      <div className="grid grid-cols-1 gap-y-6">
         <div>
           <label className="font-semibold">Mô tả ngắn gọn về ý tưởng</label>
-          <textarea name="idea" value={form.idea} onChange={handleChange} className="w-full border rounded px-2 py-2 mt-1 text-sm" />
+          <textarea name="idea" value={form.idea} onChange={handleChange} rows={4} className="w-full border rounded px-2 py-2 mt-1 text-sm resize-none overflow-hidden" onInput={e => { e.target.style.height = 'auto'; e.target.style.height = e.target.scrollHeight + 'px'; }} />
         </div>
         <div>
           <label className="font-semibold">Mô tả sản phẩm/dịch vụ</label>
-          <textarea name="product" value={form.product} onChange={handleChange} className="w-full border rounded px-2 py-2 mt-1 text-sm" />
+          <textarea name="product" value={form.product} onChange={handleChange} rows={4} className="w-full border rounded px-2 py-2 mt-1 text-sm resize-none overflow-hidden" onInput={e => { e.target.style.height = 'auto'; e.target.style.height = e.target.scrollHeight + 'px'; }} />
         </div>
         <div>
           <label className="font-semibold">Vấn đề khách hàng đang gặp phải (Pain point)</label>
-          <textarea name="painPoint" value={form.painPoint} onChange={handleChange} className="w-full border rounded px-2 py-2 mt-1 text-sm" />
+          <textarea name="painPoint" value={form.painPoint} onChange={handleChange} rows={4} className="w-full border rounded px-2 py-2 mt-1 text-sm resize-none overflow-hidden" onInput={e => { e.target.style.height = 'auto'; e.target.style.height = e.target.scrollHeight + 'px'; }} />
         </div>
         <div>
           <label className="font-semibold">Giải pháp của ý tưởng</label>
-          <textarea name="solution" value={form.solution} onChange={handleChange} className="w-full border rounded px-2 py-2 mt-1 text-sm" />
+          <textarea name="solution" value={form.solution} onChange={handleChange} rows={4} className="w-full border rounded px-2 py-2 mt-1 text-sm resize-none overflow-hidden" onInput={e => { e.target.style.height = 'auto'; e.target.style.height = e.target.scrollHeight + 'px'; }} />
         </div>
       </div>
-      <div className="grid grid-cols-1 md:grid-cols-3 gap-x-6 gap-y-4">
+      {/* Nhóm trường ngắn, xếp cùng hàng */}
+      <div className="grid grid-cols-1 md:grid-cols-3 gap-x-6 gap-y-4 mt-8">
         <div>
           <label className="font-semibold">Phân khúc khách hàng mục tiêu</label>
-          <input name="customerSegment" value={form.customerSegment} onChange={handleChange} className="w-full border rounded px-2 py-2 mt-1 text-sm" />
+          <textarea name="customerSegment" value={form.customerSegment} onChange={handleChange} rows={4} className="w-full border rounded px-2 py-2 mt-1 text-sm resize-none overflow-hidden" onInput={e => { e.target.style.height = 'auto'; e.target.style.height = e.target.scrollHeight + 'px'; }} />
         </div>
         <div>
           <label className="font-semibold">Đặc điểm khách hàng</label>
-          <input name="customerFeatures" value={form.customerFeatures} onChange={handleChange} className="w-full border rounded px-2 py-2 mt-1 text-sm" />
+          <textarea name="customerFeatures" value={form.customerFeatures} onChange={handleChange} rows={4} className="w-full border rounded px-2 py-2 mt-1 text-sm resize-none overflow-hidden" onInput={e => { e.target.style.height = 'auto'; e.target.style.height = e.target.scrollHeight + 'px'; }} />
         </div>
         <div>
           <label className="font-semibold">Quy mô thị trường</label>
-          <input name="marketSize" value={form.marketSize} onChange={handleChange} className="w-full border rounded px-2 py-2 mt-1 text-sm" />
+          <textarea name="marketSize" value={form.marketSize} onChange={handleChange} rows={4} className="w-full border rounded px-2 py-2 mt-1 text-sm resize-none overflow-hidden" onInput={e => { e.target.style.height = 'auto'; e.target.style.height = e.target.scrollHeight + 'px'; }} />
         </div>
+      </div>
+      <div className="grid grid-cols-1 gap-y-6 mt-8">
         <div>
           <label className="font-semibold">Khu vực thị trường nhắm tới</label>
-          <input name="marketArea" value={form.marketArea} onChange={handleChange} className="w-full border rounded px-2 py-2 mt-1 text-sm" />
+          <textarea name="marketArea" value={form.marketArea} onChange={handleChange} rows={4} className="w-full border rounded px-2 py-2 mt-1 text-sm resize-none overflow-hidden" onInput={e => { e.target.style.height = 'auto'; e.target.style.height = e.target.scrollHeight + 'px'; }} />
         </div>
       </div>
       <div className="grid grid-cols-1 md:grid-cols-3 gap-x-6 gap-y-4">
         <div>
           <label className="font-semibold">Mô hình kinh doanh</label>
-          <input name="businessModel" value={form.businessModel} onChange={handleChange} className="w-full border rounded px-2 py-2 mt-1 text-sm" />
+          <textarea name="businessModel" value={form.businessModel} onChange={handleChange} rows={4} className="w-full border rounded px-2 py-2 mt-1 text-sm resize-none overflow-hidden" onInput={e => { e.target.style.height = 'auto'; e.target.style.height = e.target.scrollHeight + 'px'; }} />
         </div>
         <div>
           <label className="font-semibold">Cách thức tạo doanh thu</label>
-          <input name="revenueMethod" value={form.revenueMethod} onChange={handleChange} className="w-full border rounded px-2 py-2 mt-1 text-sm" />
+          <textarea name="revenueMethod" value={form.revenueMethod} onChange={handleChange} rows={4} className="w-full border rounded px-2 py-2 mt-1 text-sm resize-none overflow-hidden" onInput={e => { e.target.style.height = 'auto'; e.target.style.height = e.target.scrollHeight + 'px'; }} />
         </div>
         <div>
           <label className="font-semibold">Kênh phân phối / tiếp cận khách hàng</label>
-          <input name="distributionChannel" value={form.distributionChannel} onChange={handleChange} className="w-full border rounded px-2 py-2 mt-1 text-sm" />
+          <textarea name="distributionChannel" value={form.distributionChannel} onChange={handleChange} rows={4} className="w-full border rounded px-2 py-2 mt-1 text-sm resize-none overflow-hidden" onInput={e => { e.target.style.height = 'auto'; e.target.style.height = e.target.scrollHeight + 'px'; }} />
         </div>
         <div>
           <label className="font-semibold">Đối tác chính</label>
-          <input name="partners" value={form.partners} onChange={handleChange} className="w-full border rounded px-2 py-2 mt-1 text-sm" />
+          <textarea name="partners" value={form.partners} onChange={handleChange} rows={4} className="w-full border rounded px-2 py-2 mt-1 text-sm resize-none overflow-hidden" onInput={e => { e.target.style.height = 'auto'; e.target.style.height = e.target.scrollHeight + 'px'; }} />
         </div>
       </div>
       <div className="grid grid-cols-1 md:grid-cols-3 gap-x-6 gap-y-4">
         <div>
           <label className="font-semibold">Số lượng thành viên đang có</label>
-          <input name="memberCount" value={form.memberCount} onChange={handleChange} className="w-full border rounded px-2 py-2 mt-1 text-sm" />
+          <textarea name="memberCount" value={form.memberCount} onChange={handleChange} rows={4} className="w-full border rounded px-2 py-2 mt-1 text-sm resize-none overflow-hidden" onInput={e => { e.target.style.height = 'auto'; e.target.style.height = e.target.scrollHeight + 'px'; }} />
         </div>
         <div>
           <label className="font-semibold">Vai trò chính / kỹ năng nổi bật của từng thành viên</label>
-          <textarea name="memberSkills" value={form.memberSkills} onChange={handleChange} className="w-full border rounded px-2 py-2 mt-1 text-sm" />
+          <textarea name="memberSkills" value={form.memberSkills} onChange={handleChange} rows={4} className="w-full border rounded px-2 py-2 mt-1 text-sm resize-none overflow-hidden" onInput={e => { e.target.style.height = 'auto'; e.target.style.height = e.target.scrollHeight + 'px'; }} />
         </div>
         <div>
           <label className="font-semibold">Nguồn lực hiện có</label>
-          <textarea name="resources" value={form.resources} onChange={handleChange} className="w-full border rounded px-2 py-2 mt-1 text-sm" />
+          <textarea name="resources" value={form.resources} onChange={handleChange} rows={4} className="w-full border rounded px-2 py-2 mt-1 text-sm resize-none overflow-hidden" onInput={e => { e.target.style.height = 'auto'; e.target.style.height = e.target.scrollHeight + 'px'; }} />
         </div>
       </div>
       <div className="grid grid-cols-1 md:grid-cols-3 gap-x-6 gap-y-4">
         <div>
           <label className="font-semibold">Chi phí lớn nhất dự kiến</label>
-          <input name="costEstimate" value={form.costEstimate} onChange={handleChange} className="w-full border rounded px-2 py-2 mt-1 text-sm" />
+          <textarea name="costEstimate" value={form.costEstimate} onChange={handleChange} rows={4} className="w-full border rounded px-2 py-2 mt-1 text-sm resize-none overflow-hidden" onInput={e => { e.target.style.height = 'auto'; e.target.style.height = e.target.scrollHeight + 'px'; }} />
         </div>
         <div>
           <label className="font-semibold">Nguồn vốn hiện tại</label>
-          <input name="capitalSource" value={form.capitalSource} onChange={handleChange} className="w-full border rounded px-2 py-2 mt-1 text-sm" />
+          <textarea name="capitalSource" value={form.capitalSource} onChange={handleChange} rows={4} className="w-full border rounded px-2 py-2 mt-1 text-sm resize-none overflow-hidden" onInput={e => { e.target.style.height = 'auto'; e.target.style.height = e.target.scrollHeight + 'px'; }} />
         </div>
         <div>
           <label className="font-semibold">Mục tiêu doanh thu ngắn hạn (6–12 tháng)</label>
-          <input name="revenueGoal" value={form.revenueGoal} onChange={handleChange} className="w-full border rounded px-2 py-2 mt-1 text-sm" />
+          <textarea name="revenueGoal" value={form.revenueGoal} onChange={handleChange} rows={4} className="w-full border rounded px-2 py-2 mt-1 text-sm resize-none overflow-hidden" onInput={e => { e.target.style.height = 'auto'; e.target.style.height = e.target.scrollHeight + 'px'; }} />
         </div>
       </div>
       {/* Hình ảnh sản phẩm */}
@@ -340,11 +362,12 @@ function ProjectPreview({ form, setForm, onBack }) {
         </div>
         <div>
           <label className="font-semibold">Lĩnh vực / ngành nghề</label>
-          <input name="industry" value={form.industry} onChange={handleChange} className="w-full border rounded px-2 py-2 mt-1 text-sm" />
+          <input name="industry" value={form.industry} onChange={safeInputChange} className="w-full border rounded px-2 py-2 mt-1 text-sm" />
         </div>
         <div>
           <label className="font-semibold">Địa điểm triển khai</label>
           <input name="location" value={form.location} onChange={handleChange} className="w-full border rounded px-2 py-2 mt-1 text-sm" />
+          <input name="location" value={form.location} onChange={safeInputChange} className="w-full border rounded px-2 py-2 mt-1 text-sm" />
         </div>
         <div>
           <label className="font-semibold">Giai đoạn hiện tại</label>
@@ -414,24 +437,29 @@ function ProjectPreview({ form, setForm, onBack }) {
         <div>
           <label className="font-semibold">Mô hình kinh doanh</label>
           <input name="businessModel" value={form.businessModel} onChange={handleChange} className="w-full border rounded px-2 py-2 mt-1 text-sm" />
+          <input name="businessModel" value={form.businessModel} onChange={safeInputChange} className="w-full border rounded px-2 py-2 mt-1 text-sm" />
         </div>
         <div>
           <label className="font-semibold">Cách thức tạo doanh thu</label>
           <input name="revenueMethod" value={form.revenueMethod} onChange={handleChange} className="w-full border rounded px-2 py-2 mt-1 text-sm" />
+          <input name="revenueMethod" value={form.revenueMethod} onChange={safeInputChange} className="w-full border rounded px-2 py-2 mt-1 text-sm" />
         </div>
         <div>
           <label className="font-semibold">Kênh phân phối / tiếp cận khách hàng</label>
           <input name="distributionChannel" value={form.distributionChannel} onChange={handleChange} className="w-full border rounded px-2 py-2 mt-1 text-sm" />
+          <input name="distributionChannel" value={form.distributionChannel} onChange={safeInputChange} className="w-full border rounded px-2 py-2 mt-1 text-sm" />
         </div>
         <div>
           <label className="font-semibold">Đối tác chính</label>
           <input name="partners" value={form.partners} onChange={handleChange} className="w-full border rounded px-2 py-2 mt-1 text-sm" />
+          <input name="partners" value={form.partners} onChange={safeInputChange} className="w-full border rounded px-2 py-2 mt-1 text-sm" />
         </div>
       </div>
       <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
         <div>
           <label className="font-semibold">Số lượng thành viên đang có</label>
           <input name="memberCount" value={form.memberCount} onChange={handleChange} className="w-full border rounded px-2 py-2 mt-1 text-sm" />
+          <input name="memberCount" value={form.memberCount} onChange={safeInputChange} className="w-full border rounded px-2 py-2 mt-1 text-sm" />
         </div>
         <div>
           <label className="font-semibold">Vai trò chính / kỹ năng nổi bật của từng thành viên</label>
@@ -446,14 +474,21 @@ function ProjectPreview({ form, setForm, onBack }) {
         <div>
           <label className="font-semibold">Chi phí lớn nhất dự kiến</label>
           <input name="costEstimate" value={form.costEstimate} onChange={handleChange} className="w-full border rounded px-2 py-2 mt-1 text-sm" />
+          <input name="costEstimate" value={form.costEstimate} onChange={safeInputChange} className="w-full border rounded px-2 py-2 mt-1 text-sm" />
         </div>
         <div>
           <label className="font-semibold">Nguồn vốn hiện tại</label>
           <input name="capitalSource" value={form.capitalSource} onChange={handleChange} className="w-full border rounded px-2 py-2 mt-1 text-sm" />
+          <input name="capitalSource" value={form.capitalSource} onChange={safeInputChange} className="w-full border rounded px-2 py-2 mt-1 text-sm" />
         </div>
         <div>
           <label className="font-semibold">Mục tiêu doanh thu ngắn hạn (6–12 tháng)</label>
           <input name="revenueGoal" value={form.revenueGoal} onChange={handleChange} className="w-full border rounded px-2 py-2 mt-1 text-sm" />
+          <input name="revenueGoal" value={form.revenueGoal} onChange={safeInputChange} className="w-full border rounded px-2 py-2 mt-1 text-sm" />
+          <input type="text" placeholder="Tên thành viên" value={memberInput.name} onChange={e => setMemberInput({ ...memberInput, name: encodeHTML(e.target.value) })} className="border rounded px-3 py-2 text-sm w-full md:w-1/4" />
+          <input type="email" placeholder="Email thành viên" value={memberInput.email} onChange={e => setMemberInput({ ...memberInput, email: encodeHTML(e.target.value) })} className="border rounded px-3 py-2 text-sm w-full md:w-1/4" />
+                    <input type="text" value={m.name} onChange={e => updateMember(idx, "name", encodeHTML(e.target.value))} className="border rounded px-2 py-1 w-full" />
+                    <input type="email" value={m.email} onChange={e => updateMember(idx, "email", encodeHTML(e.target.value))} className="border rounded px-2 py-1 w-full" />
         </div>
       </div>
       {/* Hình ảnh sản phẩm */}
@@ -513,7 +548,7 @@ function ProjectPreview({ form, setForm, onBack }) {
 
 export default function CreateProject() {
   const { user } = useAuth();
-  const role = user?.role || 'startup';
+  const role = user?.role || 'founder';
   const [currentStep, setCurrentStep] = useState(0); // 0: chọn mẫu, 1: tạo hồ sơ, 2: preview
   const [selectedTemplate, setSelectedTemplate] = useState(null);
   const [form, setForm] = useState({
@@ -542,13 +577,14 @@ export default function CreateProject() {
     revenueGoal: "",
     image: null,
     imagePreview: null,
+    members: user ? [{ name: user.name || "Tác giả", email: user.email || "", role: "Founder", permission: "Quản lý" }] : [],
   });
 
-  if (role !== 'startup') {
+  if (role !== 'founder') {
     return (
       <div className="max-w-xl mx-auto mt-10 p-6 bg-white rounded shadow text-center">
-        <h2 className="text-xl font-bold mb-4 text-gray-800">Chức năng này chỉ dành cho Startup</h2>
-        <p className="text-gray-600">Vui lòng đăng nhập với vai trò Startup để khởi tạo dự án mới.</p>
+        <h2 className="text-xl font-bold mb-4 text-gray-800">Chức năng này chỉ dành cho Founder</h2>
+        <p className="text-gray-600">Vui lòng đăng nhập với vai trò Founder để khởi tạo dự án mới.</p>
       </div>
     );
   }
@@ -559,7 +595,6 @@ export default function CreateProject() {
         {/* Sidebar trái: các bước + hoạt động gần đây */}
         <div className="lg:col-span-3 flex flex-col gap-6">
           <ProjectSteps currentStep={currentStep} onStepClick={setCurrentStep} />
-          <RecentActivitySidebar />
         </div>
         {/* Nội dung chính */}
         <div className="lg:col-span-9 flex items-center justify-center">

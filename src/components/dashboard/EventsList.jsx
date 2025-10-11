@@ -3,10 +3,10 @@ import { useAuth } from '../../context/AuthContext';
 
 export default function EventsList({ userType }) {
   const { user } = useAuth();
-  const role = userType || user?.role || 'startup';
+  const role = userType || user?.role || 'founder';
 
   const eventsByRole = {
-    startup: [
+  founder: [
       // { title: "Tư vấn với mentor Lê Tuấn Đạt", date: "15/01/2025", time: "09:00" },
       // { title: "Thông báo sự kiện", date: "22/01/2025", time: "14:30" },
       // { title: "Hạn chót HOU Start UP", date: "28/01/2025", time: "16:00" },
@@ -24,7 +24,7 @@ export default function EventsList({ userType }) {
       { title: "Kiểm tra tiến độ dự án", date: "27/01/2025", time: "11:00" },
     ],
   };
-  const events = eventsByRole[role] || eventsByRole['startup'];
+  const events = eventsByRole[role] || eventsByRole['founder'];
 
   return (
     <div className="bg-white rounded-lg border border-gray-300 p-4 shadow-sm">

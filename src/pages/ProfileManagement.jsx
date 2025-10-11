@@ -1,3 +1,16 @@
+  // Hàm mã hóa HTML để chống XSS
+  function encodeHTML(str) {
+    return str.replace(/&/g, "&amp;")
+      .replace(/</g, "&lt;")
+      .replace(/>/g, "&gt;")
+      .replace(/"/g, "&quot;")
+      .replace(/'/g, "&#39;");
+  }
+
+  // Sử dụng encodeHTML khi nhập các trường input
+  const safeInputChange = e => {
+    setNewUserEmail(encodeHTML(e.target.value));
+  };
 import React, { useState, useEffect } from "react";
 import Navbar from "../components/layout/Navbar";
 import Footer from "../components/layout/Footer";
@@ -102,7 +115,7 @@ function ProfileManagement({ userType = 'startup', isLoggedIn = true }) {
               className="flex-1 border border-gray-300 rounded px-2 py-1 text-xs"
               placeholder="Nhập địa chỉ email..."
               value={newUserEmail}
-              onChange={e => setNewUserEmail(e.target.value)}
+              onChange={safeInputChange}
             />
             <button
               className="bg-yellow-400 hover:bg-yellow-500 text-xs font-semibold px-3 rounded"

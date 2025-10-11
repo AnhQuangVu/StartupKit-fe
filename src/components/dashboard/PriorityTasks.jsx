@@ -5,10 +5,10 @@ import { useAuth } from '../../context/AuthContext';
 
 export default function PriorityTasks({ userType }) {
   const { user } = useAuth();
-  const role = userType || user?.role || 'startup';
+  const role = userType || user?.role || 'founder';
 
   const tasksByRole = {
-    startup: [
+  founder: [
       // { text: "Sử dụng số liệu cụ thể về quy mô thị trường", completed: false },
       // { text: "Phân tích SWOT so với đối thủ", completed: false },
       // { text: "Xác định rõ lợi thế cạnh tranh độc đáo", completed: false },
@@ -17,7 +17,7 @@ export default function PriorityTasks({ userType }) {
     ],
     mentor: [
       { text: "Kiểm tra tiến độ dự án tư vấn", completed: false },
-      { text: "Đánh giá hồ sơ startup gửi lên", completed: false },
+  { text: "Đánh giá hồ sơ founder gửi lên", completed: false },
       { text: "Chuẩn bị tài liệu cho buổi tư vấn", completed: false }
     ],
     investor: [
@@ -31,7 +31,7 @@ export default function PriorityTasks({ userType }) {
       { text: "Quản lý sự kiện", completed: false }
     ],
   };
-  const initialTasks = tasksByRole[role] || tasksByRole['startup'];
+  const initialTasks = tasksByRole[role] || tasksByRole['founder'];
   const [tasks, setTasks] = useState(initialTasks);
 
   const handleComplete = (idx) => {

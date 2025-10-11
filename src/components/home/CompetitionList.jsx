@@ -44,7 +44,7 @@ export default function CompetitionList() {
   const comp = competitions[current];
 
   return (
-  <section className="max-w-4xl mx-auto text-center px-2">
+    <section className="max-w-4xl mx-auto mt-0 mb-0 text-center px-2">
       <h2 className="text-2xl md:text-3xl font-bold mb-2">
         Các cuộc thi <span className="text-[#FFCE23]">Startup</span>
       </h2>

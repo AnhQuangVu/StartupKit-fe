@@ -2,7 +2,7 @@ import React from "react";
 import { useNavigate, useLocation } from "react-router-dom";
 
 const menuItemsByRole = {
-	startup: [
+	founder: [
 		{ label: "Không Gian Làm Việc", path: "/dashboard" },
 		{ label: "Quản Lý Hồ Sơ", path: "/profile-management" },
 		{ label: "Tạo Dự Án", path: "/create-project" },
@@ -43,8 +43,8 @@ export default function DashboardMenu({ isLoggedIn = true, userType }) {
 	
 	// Lấy vai trò thực tế từ context nếu không truyền vào
 	const { user } = useAuth();
-	const role = userType || user?.role || 'startup';
-	let menuItems = isLoggedIn ? [...(menuItemsByRole[role] || menuItemsByRole['startup'])] : [...menuItemsLoggedOut];
+	const role = userType || user?.role || 'founder';
+	let menuItems = isLoggedIn ? [...(menuItemsByRole[role] || menuItemsByRole['founder'])] : [...menuItemsLoggedOut];
 	
 	// Xác định tab đang active dựa trên đường dẫn hiện tại
 	menuItems = menuItems.map(item => ({
