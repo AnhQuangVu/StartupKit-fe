@@ -44,6 +44,10 @@ export default function LoginForm() {
     }
 
     if (!valid) {
+      let msg = [];
+      if (errorEmail) msg.push(errorEmail);
+      if (errorPassword) msg.push(errorPassword);
+      if (msg.length) toast.error(msg.join("\n"));
       setFormError("");
       return;
     }
@@ -77,16 +81,15 @@ export default function LoginForm() {
           navigate("/");
         }, 2000);
       } else {
-        setFormError(
-          Array.isArray(data.detail)
-            ? data.detail.map((d) => d.msg).join(", ")
-            : data.detail ||
-                data.message ||
-                "Đăng nhập thất bại. Vui lòng thử lại."
-        );
+        const msg = Array.isArray(data.detail)
+          ? data.detail.map((d) => d.msg).join(", ")
+          : data.detail || data.message || "Đăng nhập thất bại. Vui lòng thử lại.";
+        toast.error(msg);
+        setFormError("");
       }
     } catch (error) {
-      setFormError("Có lỗi xảy ra. Vui lòng thử lại sau.");
+  toast.error("Có lỗi xảy ra. Vui lòng thử lại sau.");
+  setFormError("");
     }
   };
 
@@ -103,12 +106,7 @@ export default function LoginForm() {
         </div>
 
         <ToastContainer position="top-center" autoClose={2000} />
-        {/* Error message */}
-        {formError && (
-          <div className="mb-4 text-red-500 text-xs text-center">
-            {formError}
-          </div>
-        )}
+        {/* Error message đã chuyển sang toast, không hiện dưới input */}
 
         {/* Form */}
         <form className="space-y-5" onSubmit={handleSubmit} noValidate>

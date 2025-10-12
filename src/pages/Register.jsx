@@ -1,22 +1,4 @@
-  // Hàm mã hóa HTML để chống XSS
-  function encodeHTML(str) {
-    return str.replace(/&/g, "&amp;")
-      .replace(/</g, "&lt;")
-      .replace(/>/g, "&gt;")
-      .replace(/"/g, "&quot;")
-      .replace(/'/g, "&#39;");
-  }
-
-  // Sử dụng encodeHTML khi nhập các trường input
-  const safeInputChange = e => {
-    const { name, value, type } = e.target;
-    let safeValue = value;
-    // Không mã hóa cho checkbox, radio, password
-    if (type !== "checkbox" && type !== "radio" && type !== "password") {
-      safeValue = encodeHTML(value);
-    }
-    setFormData(prev => ({ ...prev, [name]: safeValue }));
-  };
+// Đã loại bỏ hàm encodeHTML và safeInputChange
 import { useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
@@ -135,16 +117,16 @@ const Register = () => {
             <form onSubmit={handleSubmit} className="space-y-4">
               {/* Full Name */}
               <div>
-                <input
-                  type="text"
-                  id="userName"
-                  name="userName"
-                  value={formData.userName}
-                  onChange={safeInputChange}
-                  required
-                  className="w-full px-3 py-2 text-sm border  border-gray-300 rounded-md focus:ring-2 focus:ring-[#FFCE23] focus:border-[#FFCE23] transition-colors"
-                  placeholder="Nhập họ tên"
-                />
+                  <input
+                    type="text"
+                    id="userName"
+                    name="userName"
+                    value={formData.userName}
+                    onChange={handleInputChange}
+                    required
+                    className="w-full px-3 py-2 text-sm border  border-gray-300 rounded-md focus:ring-2 focus:ring-[#FFCE23] focus:border-[#FFCE23] transition-colors"
+                    placeholder="Nhập họ tên"
+                  />
                 {errors.userName && <div className="text-xs text-red-500 mt-1">{errors.userName}</div>}
               </div>
 
@@ -155,7 +137,7 @@ const Register = () => {
                   id="email"
                   name="email"
                   value={formData.email}
-                  onChange={safeInputChange}
+                  onChange={handleInputChange}
                   required
                   className="w-full px-3 py-2 text-sm border border-gray-300 rounded-md focus:ring-2 focus:ring-[#FFCE23] focus:border-[#FFCE23] transition-colors"
                   placeholder="Nhập địa chỉ email"
@@ -172,7 +154,7 @@ const Register = () => {
                     id="company"
                     name="company"
                     value={formData.company}
-                    onChange={safeInputChange}
+                    onChange={handleInputChange}
                     className="w-full px-3 py-2 text-sm border border-gray-300 rounded-md focus:ring-2 focus:ring-[#FFCE23] focus:border-[#FFCE23] transition-colors"
                     placeholder={
                       formData.userType === "investor"
@@ -191,7 +173,7 @@ const Register = () => {
                     id="password"
                     name="password"
                     value={formData.password}
-                    onChange={safeInputChange}
+                    onChange={handleInputChange}
                     required
                     className="w-full px-3 py-2 text-sm pr-10 border border-gray-300 rounded-md focus:ring-2 focus:ring-[#FFCE23] focus:border-[#FFCE23] transition-colors"
                     placeholder="Nhập mật khẩu"
@@ -208,7 +190,7 @@ const Register = () => {
                     id="confirmPassword"
                     name="confirmPassword"
                     value={formData.confirmPassword}
-                    onChange={safeInputChange}
+                    onChange={handleInputChange}
                     required
                     className="w-full px-3 py-2 text-sm pr-10 border border-gray-300 rounded-md focus:ring-2 focus:ring-[#FFCE23] focus:border-[#FFCE23] transition-colors"
                     placeholder="Nhập lại mật khẩu"
@@ -241,7 +223,7 @@ const Register = () => {
                       name="userType"
                       value="founder"
                       checked={formData.userType === "founder"}
-                      onChange={safeInputChange}
+                      onChange={handleInputChange}
                       className="sr-only"
                     />
                     <div className="text-center">
@@ -269,7 +251,7 @@ const Register = () => {
                       name="userType"
                       value="investor"
                       checked={formData.userType === "investor"}
-                      onChange={safeInputChange}
+                      onChange={handleInputChange}
                       className="sr-only"
                     />
                     <div className="text-center">
@@ -294,7 +276,7 @@ const Register = () => {
                       name="userType"
                       value="mentor"
                       checked={formData.userType === "mentor"}
-                      onChange={safeInputChange}
+                      onChange={handleInputChange}
                       className="sr-only"
                     />
                     <div className="text-center">
@@ -314,7 +296,7 @@ const Register = () => {
                   id="agreeTerms"
                   name="agreeTerms"
                   checked={formData.agreeTerms}
-                  onChange={safeInputChange}
+                  onChange={handleInputChange}
                   required
                   className="mt-1 w-4 h-4 text-[#FFCE23] border-gray-300 rounded focus:ring-[#FFCE23]"
                 />

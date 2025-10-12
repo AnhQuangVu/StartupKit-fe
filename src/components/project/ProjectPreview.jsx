@@ -13,7 +13,7 @@ function ProjectPreview({ form, setForm, onBack }) {
     return (
       <Document>
         <Page style={styles.page}>
-          {/* ...existing code... */}
+
         </Page>
       </Document>
     );

@@ -20,7 +20,13 @@ function ProjectTemplateSelector({ onSelect }) {
                     ? "text-yellow-600 border-yellow-400"
                     : "text-gray-700 border-gray-200"
                 }`}
-                onClick={() => onSelect(item)}
+                onClick={() => {
+                  if (group.type === "Trạng trắng") {
+                    onSelect("blank"); // chuyển sang bước tạo hồ sơ
+                  } else {
+                    onSelect(item);
+                  }
+                }}
               >
                 {item}
               </button>
