@@ -23,12 +23,71 @@ export default function ProjectProfilePreview({ form, setForm, onBack, sectionId
         if (data && data.content) {
           setForm((prev) => ({ ...prev, ...data.content }));
         }
+        // Nếu server gửi về thông báo lỗi hoặc trạng thái
+        if (data && data.error) {
+          const errorMsg = data.error;
+          if (window.$) {
+            window.$('<div class="my-toast">'+errorMsg+'</div>')
+              .appendTo('body').fadeIn().delay(2000).fadeOut();
+          } else {
+            var toast = document.createElement('div');
+            toast.className = 'my-toast';
+            toast.innerText = errorMsg;
+            toast.style.position = 'fixed';
+            toast.style.top = '30px';
+            toast.style.left = '50%';
+            toast.style.transform = 'translateX(-50%)';
+            toast.style.background = '#333';
+            toast.style.color = '#fff';
+            toast.style.padding = '12px 24px';
+            toast.style.borderRadius = '8px';
+            toast.style.zIndex = '9999';
+            document.body.appendChild(toast);
+            setTimeout(function(){ toast.remove(); }, 2000);
+          }
+        }
       } catch (e) {
-        console.error("WS message parse error", e);
+        if (window.$) {
+          window.$('<div class="my-toast">WS message parse error</div>')
+            .appendTo('body').fadeIn().delay(2000).fadeOut();
+        } else {
+          var toast = document.createElement('div');
+          toast.className = 'my-toast';
+          toast.innerText = 'WS message parse error';
+          toast.style.position = 'fixed';
+          toast.style.top = '30px';
+          toast.style.left = '50%';
+          toast.style.transform = 'translateX(-50%)';
+          toast.style.background = '#333';
+          toast.style.color = '#fff';
+          toast.style.padding = '12px 24px';
+          toast.style.borderRadius = '8px';
+          toast.style.zIndex = '9999';
+          document.body.appendChild(toast);
+          setTimeout(function(){ toast.remove(); }, 2000);
+        }
       }
     };
     ws.onerror = (err) => {
-      console.error("WebSocket error", err);
+      if (window.$) {
+        window.$('<div class="my-toast">WebSocket error</div>')
+          .appendTo('body').fadeIn().delay(2000).fadeOut();
+      } else {
+        var toast = document.createElement('div');
+        toast.className = 'my-toast';
+        toast.innerText = 'WebSocket error';
+        toast.style.position = 'fixed';
+        toast.style.top = '30px';
+        toast.style.left = '50%';
+        toast.style.transform = 'translateX(-50%)';
+        toast.style.background = '#333';
+        toast.style.color = '#fff';
+        toast.style.padding = '12px 24px';
+        toast.style.borderRadius = '8px';
+        toast.style.zIndex = '9999';
+        document.body.appendChild(toast);
+        setTimeout(function(){ toast.remove(); }, 2000);
+      }
     };
     ws.onclose = () => {
       console.log("WebSocket closed");

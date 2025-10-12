@@ -734,23 +734,60 @@ function CreateProject() {
         body: JSON.stringify(payload),
       });
       if (!res.ok) {
-        let errorMsg = "Tạo dự án thất bại";
+        let errorMsg = "Tạo dự án thất bại. Vui lòng kiểm tra lại thông tin hoặc thử lại sau.";
         try {
           const errorData = await res.json();
           if (errorData && errorData.message)
-            errorMsg += ": " + errorData.message;
-          else if (typeof errorData === "string") errorMsg += ": " + errorData;
+            errorMsg = errorData.message;
+          else if (typeof errorData === "string") errorMsg = errorData;
           else if (errorData && errorData.detail)
-            errorMsg += ": " + errorData.detail;
+            errorMsg = errorData.detail;
         } catch {
-          errorMsg += ": " + res.statusText;
+          errorMsg = res.statusText || errorMsg;
         }
-        alert(errorMsg);
+        if (window.$) {
+          window.$('<div class="my-toast">'+errorMsg+'</div>')
+            .appendTo('body').fadeIn().delay(2000).fadeOut();
+        } else {
+          // Fallback: create a simple toast manually if jQuery is not available
+          var toast = document.createElement('div');
+          toast.className = 'my-toast';
+          toast.innerText = errorMsg;
+          toast.style.position = 'fixed';
+          toast.style.top = '30px';
+          toast.style.left = '50%';
+          toast.style.transform = 'translateX(-50%)';
+          toast.style.background = '#333';
+          toast.style.color = '#fff';
+          toast.style.padding = '12px 24px';
+          toast.style.borderRadius = '8px';
+          toast.style.zIndex = '9999';
+          document.body.appendChild(toast);
+          setTimeout(function(){ toast.remove(); }, 2000);
+        }
         return null;
       }
       return await res.json();
     } catch (err) {
-      alert(err.message);
+      if (window.$) {
+        window.$('<div class="my-toast">Có lỗi xảy ra. Vui lòng thử lại sau.</div>')
+          .appendTo('body').fadeIn().delay(2000).fadeOut();
+      } else {
+        var toast = document.createElement('div');
+        toast.className = 'my-toast';
+        toast.innerText = 'Có lỗi xảy ra. Vui lòng thử lại sau.';
+        toast.style.position = 'fixed';
+        toast.style.top = '30px';
+        toast.style.left = '50%';
+        toast.style.transform = 'translateX(-50%)';
+        toast.style.background = '#333';
+        toast.style.color = '#fff';
+        toast.style.padding = '12px 24px';
+        toast.style.borderRadius = '8px';
+        toast.style.zIndex = '9999';
+        document.body.appendChild(toast);
+        setTimeout(function(){ toast.remove(); }, 2000);
+      }
       return null;
     }
   }
