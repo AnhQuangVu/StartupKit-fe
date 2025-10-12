@@ -10,11 +10,6 @@ function Navbar() {
   const location = useLocation();
   const navigate = useNavigate();
 
-  // DEBUG
-  console.log("Navbar - isLoggedIn:", isLoggedIn);
-  console.log("Navbar - user:", user);
-  console.log("Navbar - localStorage token:", localStorage.getItem("token"));
-  console.log("Navbar - localStorage user:", localStorage.getItem("user"));
 
   const handleRegister = () => {
     navigate("/register");

@@ -1,5 +1,6 @@
 import { Routes, Route } from "react-router-dom";
 import TrangChu from "./pages/TrangChu";
+import ProjectProfilePreview from "./components/project/ProjectProfilePreview";
 import Profile from "./pages/Profile";
 import Register from "./pages/Register";
 import DangNhap from "./pages/DangNhap";
@@ -21,11 +22,19 @@ export default function App() {
       <Route path="/profile-management" element={<ProfileManagement />} />
       <Route path="/profile" element={<Profile />} />
       <Route path="/create-project" element={<CreateProjectDashboard />} />
-      <Route path="/custom-profile-builder" element={<CustomProfileBuilder />} />
+      <Route
+        path="/custom-profile-builder"
+        element={<CustomProfileBuilder />}
+      />
       <Route path="/connections" element={<Connections />} />
-      <Route path="/custom-project-builder" element={<CustomProjectBuilder />} />
+      <Route
+        path="/custom-project-builder"
+        element={<CustomProjectBuilder />}
+      />
       <Route path="/coming-soon" element={<FeatureComingSoon />} />
       <Route path="/dang-nhap" element={<DangNhap />} />
+      <Route path="/project-profile-preview" element={<ProjectProfilePreview />} />
+      <Route path="/projectProfilePreview" element={<ProjectProfilePreview />} />
     </Routes>
   );
 }
