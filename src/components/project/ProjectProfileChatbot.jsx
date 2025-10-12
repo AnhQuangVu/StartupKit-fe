@@ -9,15 +9,21 @@ export default function ProjectProfileChatbot() {
   const handleSend = () => {
     if (!input.trim()) return;
     setMessages([...messages, { sender: "user", text: input }]);
-    // Giả lập phản hồi bot
+    // Phản hồi bot theo nội dung nhập
     setTimeout(() => {
-      setMessages(msgs => [...msgs, { sender: "bot", text: "Cảm ơn bạn! Chức năng AI sẽ sớm hỗ trợ trả lời thông minh hơn." }]);
+      const devKeywords = ["phát triển", "develop", "development", "dev", "quá trình phát triển", "đang phát triển"];
+      const lowerInput = input.toLowerCase();
+      if (devKeywords.some(k => lowerInput.includes(k))) {
+        setMessages(msgs => [...msgs, { sender: "bot", text: "Bạn đang hỏi về quá trình phát triển. Hãy sử dụng chức năng AI sau khi hệ thống cập nhật để nhận tư vấn thông minh hơn nhé!" }]);
+      } else {
+        setMessages(msgs => [...msgs, { sender: "bot", text: "Cảm ơn bạn! Chức năng AI sẽ sớm hỗ trợ trả lời thông minh hơn." }]);
+      }
     }, 700);
     setInput("");
   };
 
   return (
-    <div className="bg-white border rounded-xl shadow-lg p-4 w-full max-w-xs flex flex-col h-[400px]">
+    <div className="bg-white border rounded-xl shadow-lg p-4 w-full max-w-xs flex flex-col h-[500px]">
       <h3 className="font-bold text-yellow-600 mb-2 text-center">Chat hỗ trợ hồ sơ</h3>
       <div className="flex-1 overflow-y-auto mb-2">
         {messages.map((msg, idx) => (

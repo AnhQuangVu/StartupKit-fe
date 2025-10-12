@@ -225,11 +225,13 @@ function ProfileManagement({ userType = 'startup', isLoggedIn = true }) {
         {showAccessModal && <AccessModal />}
         {showHistoryModal && <HistoryModal profile={showHistoryModal} />}
         {showDeleteModal && <DeleteConfirmModal />}
-        <DashboardMenu isLoggedIn={isLoggedIn} />
+        <div className="mt-7">
+          <DashboardMenu isLoggedIn={isLoggedIn} />
+        </div>
         <DashboardHeader userType={userType} isLoggedIn={isLoggedIn} />
 
 
-  <div className="grid grid-cols-1 lg:grid-cols-3 gap-6 px-4 md:px-8 -mt-6">
+  <div className="grid grid-cols-1 lg:grid-cols-3 gap-6 px-4 md:px-8 -mt-4">
           {/* Danh sách hồ sơ - 1/3 chiều rộng */}
           <div className="bg-white rounded-lg border border-gray-200 shadow-sm p-4 h-fit" style={{ transform: 'translateX(20px)' }}>
             <h2 className="text-lg font-semibold mb-4">Danh sách dự án</h2>
@@ -306,9 +308,8 @@ function ProfileManagement({ userType = 'startup', isLoggedIn = true }) {
           </div>
 
           {/* Chi tiết hồ sơ - 2/3 chiều rộng */}
-          <div className="lg:col-span-2 bg-white rounded-xl border border-gray-200 shadow-lg p-6 min-h-[400px] flex flex-col">
+          <div className="lg:col-span-2 bg-white rounded-xl border border-gray-200 shadow-lg p-6 flex flex-col" style={{ maxHeight: '450px', minHeight: '300px', overflowY: 'auto' }}>
             <div className="flex items-center gap-2 mb-4 border-b pb-2">
-              <svg className="h-6 w-6 text-yellow-400" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 17v-6a2 2 0 012-2h2a2 2 0 012 2v6m-6 0h6" /></svg>
               <h2 className="text-xl font-bold text-gray-800">Chi tiết dự án</h2>
             </div>
             {selectedProfile ? (
