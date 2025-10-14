@@ -52,8 +52,10 @@ function ProfileManagement({ userType = 'startup', isLoggedIn = true }) {
         });
         if (!res.ok) throw new Error("Không thể tải danh sách dự án");
         const data = await res.json();
-        setProfiles(data);
-        setSelectedProfile(data[0] || null);
+        // Đảm bảo dữ liệu là mảng
+        const projects = Array.isArray(data) ? data : [data];
+        setProfiles(projects);
+        setSelectedProfile(projects[0] || null);
       } catch (err) {
         setError(err.message || "Lỗi không xác định");
       } finally {
@@ -78,11 +80,64 @@ function ProfileManagement({ userType = 'startup', isLoggedIn = true }) {
 
   // State để quản lý từ khóa tìm kiếm
   const [searchTerm, setSearchTerm] = useState("");
+  const [searchLoading, setSearchLoading] = useState(false);
+  const [searchTimeout, setSearchTimeout] = useState(null);
+  const [searchResults, setSearchResults] = useState([]);
+  
+  // Hàm tìm kiếm dự án - chỉ sử dụng lọc cục bộ, không gọi API search
+  const searchProjects = async (term) => {
+    if (!term.trim()) {
+      setSearchResults([]);
+      return;
+    }
+    
+    setSearchLoading(true);
+    try {
+      // Sử dụng tìm kiếm cục bộ thay vì gọi API để tránh lỗi 422
+      const term_lower = term.toLowerCase();
+      const results = profiles.filter(profile => {
+        return (
+          (profile?.name || '').toLowerCase().includes(term_lower) ||
+          (profile?.tagline || '').toLowerCase().includes(term_lower) ||
+          (profile?.description || '').toLowerCase().includes(term_lower) ||
+          (profile?.industry || '').toLowerCase().includes(term_lower) ||
+          (profile?.stage || '').toLowerCase().includes(term_lower) ||
+          (profile?.pain_point || '').toLowerCase().includes(term_lower) ||
+          (profile?.solution || '').toLowerCase().includes(term_lower) ||
+          (profile?.product || '').toLowerCase().includes(term_lower)
+        );
+      });
+      setSearchResults(results);
+    } catch (err) {
+      console.error("Lỗi tìm kiếm:", err);
+      setSearchResults([]);
+    } finally {
+      setSearchLoading(false);
+    }
+  };
+  
+  // Effect để debounce tìm kiếm
+  useEffect(() => {
+    // Clear previous timeout
+    if (searchTimeout) clearTimeout(searchTimeout);
+    
+    // Set new timeout
+    const timeout = setTimeout(() => {
+      searchProjects(searchTerm);
+    }, 300); // Giảm xuống 300ms cho tìm kiếm cục bộ
+    
+    setSearchTimeout(timeout);
+    
+    return () => {
+      if (searchTimeout) clearTimeout(searchTimeout);
+    };
+  }, [searchTerm, profiles]); // Thêm profiles vào dependencies để cập nhật kết quả khi profiles thay đổi
 
-  // Hàm lọc hồ sơ theo từ khóa
-  const filteredProfiles = profiles.filter(profile =>
-    profile?.name?.toLowerCase().includes(searchTerm.toLowerCase())
-  );
+  // Thông báo về các trường được tìm kiếm
+  const searchInfo = "";
+  
+  // Sử dụng kết quả tìm kiếm hoặc danh sách gốc
+  const filteredProfiles = searchTerm.trim() ? searchResults : profiles;
 
   // Dữ liệu lịch sử chỉnh sửa hồ sơ (demo)
   const profileHistory = {
@@ -256,27 +311,46 @@ function ProfileManagement({ userType = 'startup', isLoggedIn = true }) {
               <>
                 {/* Ô tìm kiếm */}
                 <div className="relative mb-4">
+                  <div className="mb-1">
+                    <span className="text-xs text-gray-500">{searchInfo}</span>
+                  </div>
                   <input
                     type="text"
                     placeholder="Tìm kiếm dự án..."
                     className="w-full border border-gray-300 rounded-md py-2 px-3 pl-8 text-sm focus:outline-none focus:ring-2 focus:ring-yellow-400 focus:border-transparent"
                     value={searchTerm}
                     onChange={(e) => setSearchTerm(e.target.value)}
+                    title={searchInfo}
                   />
-                  <svg 
-                    className="absolute left-2.5 top-2.5 h-4 w-4 text-gray-400"
-                    xmlns="http://www.w3.org/2000/svg" 
-                    fill="none" 
-                    viewBox="0 0 24 24" 
-                    stroke="currentColor"
-                  >
-                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
-                  </svg>
+                  {searchLoading ? (
+                    <div className="absolute right-2.5 top-2.5">
+                      <svg className="animate-spin h-4 w-4 text-yellow-400" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+                        <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"></circle>
+                        <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8v8H4z"></path>
+                      </svg>
+                    </div>
+                  ) : (
+                    <svg 
+                      className="absolute left-2.5 top-2.5 h-4 w-4 text-gray-400"
+                      xmlns="http://www.w3.org/2000/svg" 
+                      fill="none" 
+                      viewBox="0 0 24 24" 
+                      stroke="currentColor"
+                    >
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
+                    </svg>
+                  )}
                 </div>
                 {/* Danh sách các dự án */}
                 <div className="space-y-2">
-                  {filteredProfiles.length === 0 ? (
-                    <div className="text-xs text-gray-400 text-center py-4">Không có dự án nào.</div>
+                  {searchLoading ? (
+                    <div className="flex justify-center items-center py-4">
+                      <span className="text-xs text-gray-500">Đang tìm kiếm...</span>
+                    </div>
+                  ) : filteredProfiles.length === 0 ? (
+                    <div className="text-xs text-gray-400 text-center py-4">
+                      {searchTerm.trim() ? "Không tìm thấy dự án nào phù hợp." : "Không có dự án nào."}
+                    </div>
                   ) : (
                     filteredProfiles.map((profile) => (
                       <div 
@@ -286,7 +360,10 @@ function ProfileManagement({ userType = 'startup', isLoggedIn = true }) {
                             ? "bg-yellow-50 border border-yellow-400" 
                             : "hover:bg-gray-50 border border-gray-100"
                         }`}
-                        onClick={() => setSelectedProfile(profile)}
+                        onClick={() => {
+                          // Khi click vào dự án mới mới đặt selected profile
+                          setSelectedProfile(profile);
+                        }}
                       >
                         <div className="flex items-center gap-2">
                           {profile.logo_url && (
@@ -298,7 +375,7 @@ function ProfileManagement({ userType = 'startup', isLoggedIn = true }) {
                           </div>
                         </div>
                         {/* Bỏ hiển thị ID dự án */}
-                        <div className="text-[10px] text-gray-400">Giai đoạn: {profile.stage} | Ngày tạo: {profile.created_at ? new Date(profile.created_at).toLocaleDateString('vi-VN') : ''}</div>
+                        <div className="text-[10px] text-gray-400">Giai đoạn: {profile.stage || ""} | Ngày tạo: {profile.created_at ? new Date(profile.created_at).toLocaleDateString('vi-VN') : ""}</div>
                       </div>
                     ))
                   )}
@@ -318,19 +395,23 @@ function ProfileManagement({ userType = 'startup', isLoggedIn = true }) {
                   <div className="space-y-2">
                     <div>
                       <span className="text-xs text-gray-500">Tên dự án</span>
-                      <div className="font-semibold text-base text-gray-900">{selectedProfile.name}</div>
+                      <div className="font-semibold text-base text-gray-900">{selectedProfile.name || ""}</div>
                     </div>
                     <div>
                       <span className="text-xs text-gray-500">Slogan</span>
-                      <div className="text-sm text-gray-700">{selectedProfile.tagline}</div>
+                      <div className="text-sm text-gray-700">{selectedProfile.tagline || ""}</div>
                     </div>
                     <div>
                       <span className="text-xs text-gray-500">Giai đoạn </span>
-                      <span className="inline-block px-2 py-0.5 rounded bg-yellow-100 text-yellow-700 text-xs font-medium">{selectedProfile.stage}</span>
+                      <span className="inline-block px-2 py-0.5 rounded bg-yellow-100 text-yellow-700 text-xs font-medium">{selectedProfile.stage || ""}</span>
                     </div>
                     <div>
                       <span className="text-xs text-gray-500">Website </span>
-                      <a href={selectedProfile.website_url} target="_blank" rel="noopener noreferrer" className="text-xs text-blue-600 underline break-all">{selectedProfile.website_url}</a>
+                      {selectedProfile.website_url ? (
+                        <a href={selectedProfile.website_url} target="_blank" rel="noopener noreferrer" className="text-xs text-blue-600 underline break-all">{selectedProfile.website_url}</a>
+                      ) : (
+                        <span className="text-xs text-gray-400">Chưa có website</span>
+                      )}
                     </div>
                   </div>
                   <div className="space-y-2">
@@ -344,16 +425,16 @@ function ProfileManagement({ userType = 'startup', isLoggedIn = true }) {
                     </div>
                     <div>
                       <span className="text-xs text-gray-500">Ngày tạo</span>
-                      <div className="text-xs text-gray-700">{selectedProfile.created_at}</div>
+                      <div className="text-xs text-gray-700">{selectedProfile.created_at ? new Date(selectedProfile.created_at).toLocaleString('vi-VN') : ""}</div>
                     </div>
                     <div>
                       <span className="text-xs text-gray-500">Ngày cập nhật</span>
-                      <div className="text-xs text-gray-700">{selectedProfile.updated_at}</div>
+                      <div className="text-xs text-gray-700">{selectedProfile.updated_at ? new Date(selectedProfile.updated_at).toLocaleString('vi-VN') : ""}</div>
                     </div>
                   </div>
                   <div className="md:col-span-2">
                     <span className="text-xs text-gray-500">Mô tả</span>
-                    <div className="text-sm text-gray-700 whitespace-pre-line bg-gray-50 rounded p-3 border mt-1">{selectedProfile.description}</div>
+                    <div className="text-sm text-gray-700 whitespace-pre-line bg-gray-50 rounded p-3 border mt-1">{selectedProfile.description || ""}</div>
                   </div>
                 </div>
                 <div className="flex justify-end gap-2 mt-auto">

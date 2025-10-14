@@ -5,30 +5,7 @@ import { faCaretDown, faCaretRight } from '@fortawesome/free-solid-svg-icons';
 import React, { useState, useEffect } from "react";
 
 const initialProjects = [
-  // {
-  //   id: 1,
-  //   title: "Edutech Platform",
-  //   description: "Nền tảng giáo dục trực tuyến",
-  //   progress: 75,
-  //   status: "Đang xác định mục tiêu",
-  //   tasks: [
-  //     { text: "Phân tích nhu cầu học tập", completed: false },
-  //     { text: "Thiết kế giao diện người dùng", completed: false },
-  //     { text: "Tích hợp hệ thống quản lý khóa học", completed: false }
-  //   ]
-  // },
-  // {
-  //   id: 2,
-  //   title: "Fintech Solution",
-  //   description: "Ứng dụng tài chính",
-  //   progress: 60,
-  //   status: "Đang xác định ý tưởng thị trường",
-  //   tasks: [
-  //     { text: "Nghiên cứu thị trường tài chính", completed: false },
-  //     { text: "Phát triển API thanh toán", completed: false },
-  //     { text: "Kiểm thử bảo mật hệ thống", completed: false }
-  //   ]
-  // }
+
 ];
 
 export default function ProjectList() {
@@ -43,76 +20,102 @@ export default function ProjectList() {
     }
   }, [animateId]);
 
+  useEffect(() => {
+    async function fetchProjects() {
+      try {
+        const token = localStorage.getItem("token");
+        const res = await fetch("http://127.0.0.1:8000/projects/", {
+          method: "GET",
+          headers: {
+            "Authorization": `Bearer ${token}`,
+            "Content-Type": "application/json"
+          }
+        });
+        if (!res.ok) {
+          let errorMsg = "Không thể lấy danh sách dự án.";
+          try {
+            const errorData = await res.json();
+            if (errorData && errorData.message) errorMsg = errorData.message;
+            else if (typeof errorData === "string") errorMsg = errorData;
+            else if (errorData && errorData.detail) errorMsg = errorData.detail;
+          } catch {}
+          if (window.$) {
+            window.$('<div class="my-toast">'+errorMsg+'</div>')
+              .appendTo('body').fadeIn().delay(2000).fadeOut();
+          } else {
+            var toast = document.createElement('div');
+            toast.className = 'my-toast';
+            toast.innerText = errorMsg;
+            toast.style.position = 'fixed';
+            toast.style.top = '30px';
+            toast.style.left = '50%';
+            toast.style.transform = 'translateX(-50%)';
+            toast.style.background = '#333';
+            toast.style.color = '#fff';
+            toast.style.padding = '12px 24px';
+            toast.style.borderRadius = '8px';
+            toast.style.zIndex = '9999';
+            document.body.appendChild(toast);
+            setTimeout(function(){ toast.remove(); }, 2000);
+          }
+          return;
+        }
+        const data = await res.json();
+        setProjectList(data);
+      } catch (err) {
+        if (window.$) {
+          window.$('<div class="my-toast">Lỗi kết nối API dự án</div>')
+            .appendTo('body').fadeIn().delay(2000).fadeOut();
+        } else {
+          var toast = document.createElement('div');
+          toast.className = 'my-toast';
+          toast.innerText = 'Lỗi kết nối API dự án';
+          toast.style.position = 'fixed';
+          toast.style.top = '30px';
+          toast.style.left = '50%';
+          toast.style.transform = 'translateX(-50%)';
+          toast.style.background = '#333';
+          toast.style.color = '#fff';
+          toast.style.padding = '12px 24px';
+          toast.style.borderRadius = '8px';
+          toast.style.zIndex = '9999';
+          document.body.appendChild(toast);
+          setTimeout(function(){ toast.remove(); }, 2000);
+        }
+      }
+    }
+    fetchProjects();
+  }, []);
+
   return (
     <div className="px-4 md:px-8 mb-8">
-      <style>{`
-        @keyframes progress-bar {
-          0% { width: 0; }
-          100% { width: var(--progress-width); }
-        }
-        .animate-progress-bar {
-          animation: progress-bar 1s cubic-bezier(.4,0,.2,1);
-        }
-      `}</style>
-      <h2 className="text-lg font-semibold mb-4">Các dự án của bạn</h2>
-      <div className="space-y-4">
-        {projectList.map(project => (
-          <div key={project.id} className="bg-white rounded-lg border border-gray-200 p-4 shadow-sm">
-            <div className="flex justify-between items-start mb-2">
-              <div>
-                <h3 className="font-bold text-sm">{project.title}</h3>
-                <div className="text-xs text-gray-500">{project.description}</div>
-              </div>
-              <span className="text-xs font-bold">{project.progress}%</span>
-            </div>
-            {/* Progress bar with animation */}
-            <div className="w-full bg-gray-200 rounded-full h-1.5 mb-4 overflow-hidden">
-              <div
-                className={`h-1.5 rounded-full transition-all duration-1000 ${animateId === project.id ? 'animate-progress-bar' : ''}`}
-                style={{
-                  width: `${project.progress}%`,
-                  background: project.progress === 100 ? '#4ade80' : project.progress < 30 ? '#f87171' : '#facc15',
-                  boxShadow: animateId === project.id ? '0 0 6px #facc15' : 'none',
-                  '--progress-width': `${project.progress}%`
-                }}
-                onMouseEnter={() => setAnimateId(project.id)}
-              ></div>
-            </div>
-            <div className="flex items-center gap-2 text-xs text-gray-600 mb-2">
-              <span className="font-medium text-green-600">{project.status}</span>
-            </div>
-            {/* Hiển thị danh sách các task */}
-            <div className="mb-2">
-              <span className="text-xs font-semibold text-gray-700">Tasks:</span>
-              <ul className="pl-4 mt-1 space-y-1">
-                {project.tasks && project.tasks.length > 0 ? (
-                  project.tasks.map((task, idx) => (
-                    <li key={idx} className="flex items-center justify-between text-xs">
-                      <span className={task.completed ? "line-through text-gray-400" : "text-gray-700"}>{task.text}</span>
-                      <button
-                        className="px-2 py-0.5 bg-green-100 text-green-700 rounded text-xs hover:bg-green-200 transition"
-                        onClick={() => {
-                          setProjectList(prev =>
-                            prev.map(p =>
-                              p.id === project.id
-                                ? {
-                                    ...p,
-                                    tasks: p.tasks.filter((_, i) => i !== idx)
-                                  }
-                                : p
-                            )
-                          );
-                        }}
-                      >Hoàn thành</button>
-                    </li>
-                  ))
-                ) : (
-                  <li className="text-xs text-gray-400">Không có nhiệm vụ nào.</li>
+      <div className="bg-white rounded-xl border border-gray-300 shadow-lg p-6">
+        <h2 className="text-lg font-semibold mb-4">Các dự án của bạn</h2>
+        <div className="space-y-4">
+          {projectList.length === 0 && (
+            <div className="text-gray-500 text-center py-8">Không có dự án nào.</div>
+          )}
+          {projectList.map(project => (
+            <div key={project.id} className="bg-white rounded-lg border border-gray-200 p-4 shadow-sm">
+              <div className="flex justify-between items-start mb-2">
+                <div>
+                  <h3 className="font-bold text-base text-[#FFCE23]">{project.name}</h3>
+                  {project.tagline && <div className="text-xs text-gray-500 mb-1">{project.tagline}</div>}
+                  <div className="flex flex-wrap gap-2 text-xs text-gray-400 mb-1">
+                    {project.stage && <span>Giai đoạn: <b>{project.stage}</b></span>}
+                    {project.created_at && <span>Tạo lúc: {new Date(project.created_at).toLocaleDateString()}</span>}
+                    {project.updated_at && <span>Cập nhật: {new Date(project.updated_at).toLocaleDateString()}</span>}
+                  </div>
+                </div>
+                {/* Nếu có logo_url thì hiển thị logo */}
+                {project.logo_url && (
+                  <img src={project.logo_url} alt="Logo" className="w-14 h-14 object-cover rounded-xl border ml-4" />
                 )}
-              </ul>
+              </div>
+              {/* Bỏ phần hiển thị section */}
             </div>
-          </div>
-        ))}
+          ))}
+        </div>
       </div>
     </div>
   );

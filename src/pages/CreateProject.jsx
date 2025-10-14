@@ -1,21 +1,4 @@
-// Sử dụng encodeHTML cho tất cả input
-const safeInputChange = (e) => {
-  setForm({ ...form, [e.target.name]: encodeHTML(e.target.value) });
-};
-// Hàm mã hóa HTML để chống XSS
-function encodeHTML(str) {
-  return str
-    .replace(/&/g, "&amp;")
-    .replace(/</g, "&lt;")
-    .replace(/>/g, "&gt;")
-    .replace(/"/g, "&quot;")
-    .replace(/'/g, "&#39;");
-}
-
-// Sử dụng encodeHTML khi nhập các trường text/textarea
-const safeHandleChange = (e) => {
-  setForm({ ...form, [e.target.name]: encodeHTML(e.target.value) });
-};
+// File CreateProject.jsx
 
 import React, { useState, useEffect } from "react";
 import {
@@ -133,9 +116,12 @@ function ProjectTemplateSelector({ onSelect }) {
 
 // Component nhập form hồ sơ
 function ProjectBasicForm({ form, setForm, onCreate, useAI, setUseAI }) {
+  // Xử lý thay đổi giá trị input
   const handleChange = (e) => {
+    console.log('Input changed:', e.target.name, e.target.value);
     setForm({ ...form, [e.target.name]: e.target.value });
   };
+  
   const handleImageChange = (e, field) => {
     const file = e.target.files[0];
     if (file) {
@@ -177,8 +163,8 @@ function ProjectBasicForm({ form, setForm, onCreate, useAI, setUseAI }) {
         <div>
           <label className="font-semibold">Slogan (nếu có)</label>
           <textarea
-            name="slogan"
-            value={form.slogan}
+            name="tagline"
+            value={form.tagline}
             onChange={handleChange}
             rows={4}
             className="w-full border rounded px-2 py-2 mt-1 text-sm resize-none overflow-hidden"
@@ -271,10 +257,10 @@ function ProjectBasicForm({ form, setForm, onCreate, useAI, setUseAI }) {
       {/* Nhóm trường dài, mỗi trường một hàng riêng */}
       <div className="grid grid-cols-1 gap-y-6">
         <div>
-          <label className="font-semibold">Mô tả ngắn gọn về ý tưởng</label>
+          <label className="font-semibold">Mô tả dự án</label>
           <textarea
-            name="idea"
-            value={form.idea}
+            name="description"
+            value={form.description}
             onChange={handleChange}
             rows={4}
             className="w-full border rounded px-2 py-2 mt-1 text-sm resize-none overflow-hidden"
@@ -685,40 +671,33 @@ function CreateProject() {
   async function createProjectAPI(form) {
     const payload = {
       name: form.name || "",
-      tagline: form.slogan || "",
-      description: form.idea || "",
-      logo_url: form.logoPreview || "",
+      tagline: form.tagline || "",
       stage: form.stage ? form.stage.toLowerCase() : "",
-      website_url: form.website || "",
-      // 💡 Sản phẩm & thị trường
-      pain_point: form.painPoint || "", // <textarea name="painPoint"> — Vấn đề thị trường
-      solution: form.solution || "", // <textarea name="solution"> — Giải pháp
-      product: form.product || "", // <textarea name="product"> — Mô tả sản phẩm
-      customer_segment: form.customerSegment || "", // <textarea name="customerSegment"> — Nhóm khách hàng
-      customer_features: form.customerFeatures || "", // <textarea name="customerFeatures"> — Đặc điểm khách hàng
-      market_size: form.marketSize || "", // <input name="marketSize"> — Quy mô thị trường
-      market_area: form.marketArea || "", // <input name="marketArea"> — Khu vực thị trường
-
-      // 💼 Kinh doanh & tài chính
-      business_model: form.businessModel || "", // <textarea name="businessModel"> — Mô hình kinh doanh
-      revenue_method: form.revenueMethod || "", // <textarea name="revenueMethod"> — Cách tạo doanh thu
-      distribution_channel: form.distributionChannel || "", // <textarea name="distributionChannel"> — Kênh phân phối
-      partners: form.partners || "", // <textarea name="partners"> — Đối tác
-      cost_estimate: form.costEstimate || "", // <input name="costEstimate"> — Chi phí ước tính
-      capital_source: form.capitalSource || "", // <textarea name="capitalSource"> — Nguồn vốn
-      revenue_goal: form.revenueGoal || "", // <input name="revenueGoal"> — Mục tiêu doanh thu
-
-      // 👥 Đội ngũ & nguồn lực
-      member_count: form.memberCount || "", // <input type="number" name="memberCount"> — Số lượng thành viên
-      member_skills: form.memberSkills || "", // <textarea name="memberSkills"> — Kỹ năng thành viên
-      resources: form.resources || "", // <textarea name="resources"> — Nguồn lực hiện có
-      team_image_url: form.teamImagePreview || "", // <input type="file" name="teamImage"> — Ảnh đội ngũ
-
-      // 📦 Hình ảnh / đặc trưng sản phẩm
-      product_image_url: form.productImagePreview || "", // <input type="file" name="productImage"> — Ảnh sản phẩm
-
-      // ⚙️ Khác
-      use_ai: form.useAI || false, // <input type="checkbox" name="useAI"> — Có dùng AI không
+      description: form.description || form.idea || "",
+      logo_url: form.logo_url || form.logoPreview || "",
+      website_url: form.website_url || form.website || "",
+      industry: form.industry || "",
+      pain_point: form.pain_point || form.painPoint || "",
+      solution: form.solution || "",
+      product: form.product || "",
+      customer_segment: form.customer_segment || form.customerSegment || "",
+      customer_features: form.customer_features || form.customerFeatures || "",
+      market_size: form.market_size || form.marketSize || "",
+      market_area: form.market_area || form.marketArea || "",
+      deployment_location: form.location || "",
+      business_model: form.business_model || form.businessModel || "",
+      revenue_method: form.revenue_method || form.revenueMethod || "",
+      distribution_channel: form.distribution_channel || form.distributionChannel || "",
+      partners: form.partners || "",
+      cost_estimate: form.cost_estimate || form.costEstimate || "",
+      capital_source: form.capital_source || form.capitalSource || "",
+      revenue_goal: form.revenue_goal || form.revenueGoal || "",
+      member_count: Number(form.member_count || form.memberCount || 0),
+      member_skills: form.member_skills || form.memberSkills || "",
+      resources: form.resources || "",
+      team_image_url: form.team_image_url || form.teamImagePreview || "",
+      product_image_url: form.product_image_url || form.productImagePreview || "",
+      use_ai: !!form.use_ai || !!form.useAI,
     };
     try {
       const token = localStorage.getItem("token");
@@ -728,6 +707,9 @@ function CreateProject() {
       if (token) {
         headers["Authorization"] = `Bearer ${token}`;
       }
+      // Log the payload to make sure location is included
+      console.log("Sending payload to API:", payload);
+      
       const res = await fetch("http://127.0.0.1:8000/projects/", {
         method: "POST",
         headers,
