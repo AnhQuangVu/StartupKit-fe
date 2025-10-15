@@ -65,36 +65,38 @@ export default function DashboardMenu({ isLoggedIn = true, userType }) {
 	};
 
 		return (
-			<nav className="flex gap-2 md:gap-4 py-1 px-[30px] bg-gray-50 rounded-lg border border-gray-200 mb-4 overflow-x-auto mx-auto" style={{ width: '1430px', transform: 'translateX(9px)' }}>
-				<style>{`
-					.menu-anim {
-						transition: background 0.35s cubic-bezier(.4,0,.2,1),
-												color 0.35s cubic-bezier(.4,0,.2,1),
-												border 0.35s cubic-bezier(.4,0,.2,1),
-												box-shadow 0.35s cubic-bezier(.4,0,.2,1),
-												transform 0.25s cubic-bezier(.4,0,.2,1);
-					}
-					.menu-active {
-						transform: scale(1.08);
-					}
-				`}</style>
-				{menuItems.map((item, idx) => (
-					<button
-						key={idx}
-						title={item.tooltip}
-						onClick={() => handleNavigate(item.path)}
-						className={`menu-anim px-3 py-1 text-xs md:text-xs rounded-lg border whitespace-nowrap ${
-							item.active
-								? "menu-active border-yellow-400 bg-white text-gray-900 font-semibold shadow-sm"
-								: "border-transparent bg-gray-50 text-gray-500 hover:bg-white hover:text-yellow-600"
-						} ${!isLoggedIn && item.label === "Tìm Kiếm Kết Nối" ? "relative" : ""}`}
-					>
-						{item.label}
-						{!isLoggedIn && item.label === "Tìm Kiếm Kết Nối" && (
-							<span className="absolute -top-1 -right-1 h-2 w-2 bg-yellow-400 rounded-full"></span>
-						)}
-					</button>
-				))}
-			</nav>
+			   <nav className="flex justify-center items-center py-2 px-2 sm:px-4 md:px-8 bg-transparent mb-4 overflow-x-auto mx-auto max-w-full" style={{ minWidth: 0 }}>
+				   <div className="flex gap-2 sm:gap-3 md:gap-4 bg-gray-50 border border-gray-200 rounded-lg shadow px-2 py-1">
+					   <style>{`
+						   .menu-anim {
+							   transition: background 0.35s cubic-bezier(.4,0,.2,1),
+													   color 0.35s cubic-bezier(.4,0,.2,1),
+													   border 0.35s cubic-bezier(.4,0,.2,1),
+													   box-shadow 0.35s cubic-bezier(.4,0,.2,1),
+													   transform 0.25s cubic-bezier(.4,0,.2,1);
+						   }
+						   .menu-active {
+							   transform: scale(1.08);
+						   }
+					   `}</style>
+					   {menuItems.map((item, idx) => (
+						   <button
+							   key={idx}
+							   title={item.tooltip}
+							   onClick={() => handleNavigate(item.path)}
+							   className={`menu-anim px-2 py-1 text-xs md:text-xs rounded-lg border whitespace-nowrap flex items-center justify-center transition-all duration-200 ${
+								   item.active
+									   ? "menu-active border-yellow-400 bg-white text-gray-900 font-semibold shadow-sm"
+									   : "border-transparent bg-gray-50 text-gray-500 hover:bg-white hover:text-yellow-600"
+							   } ${!isLoggedIn && item.label === "Tìm Kiếm Kết Nối" ? "relative" : ""}`}
+						   >
+							   {item.label}
+							   {!isLoggedIn && item.label === "Tìm Kiếm Kết Nối" && (
+								   <span className="absolute -top-1 -right-1 h-2 w-2 bg-yellow-400 rounded-full"></span>
+							   )}
+						   </button>
+					   ))}
+				   </div>
+			   </nav>
 		);
 }

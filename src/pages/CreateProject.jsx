@@ -226,10 +226,11 @@ function ProjectBasicForm({ form, setForm, onCreate, useAI, setUseAI }) {
             className="w-full border rounded px-2 py-2 mt-1 text-sm"
           >
             <option value="">Chọn</option>
-            <option value="idea">Ý tưởng (idea)</option>
-            <option value="prototype">Prototype</option>
-            <option value="seed">Seed</option>
-            <option value="series_a">Series A</option>
+            <option value="y-tuong">Ý tưởng</option>
+            <option value="nghien-cuu-thi-truong">Nghiên cứu thị trường</option>
+            <option value="hoan-thien-san-pham">Hoàn thiện sản phẩm</option>
+            <option value="khao-sat">Khảo sát</option>
+            <option value="launch">Launch</option>
           </select>
         </div>
         {/* Logo dự án */}
@@ -601,6 +602,7 @@ function ProjectBasicForm({ form, setForm, onCreate, useAI, setUseAI }) {
 import ProjectPreview from "../components/project/ProjectPreview";
 import ProjectProfilePreview from "../components/project/ProjectProfilePreview";
 import ProjectProfileChatbot from "../components/project/ProjectProfileChatbot";
+import StartupCard from "../components/common/StartupCard";
 
 // Main page component
 function CreateProject() {
@@ -830,10 +832,45 @@ function CreateProject() {
                     setForm={setForm}
                     onBack={() => setCurrentStep(1)}
                   />
+                  <div className="flex justify-end mt-8">
+                    <button
+                        className="border border-yellow-400 bg-white text-black font-semibold px-6 py-2 rounded-full shadow text-base flex items-center gap-2 hover:bg-yellow-50 hover:border-yellow-500 transition"
+                        onClick={() => setCurrentStep(4)}
+                      >
+                        <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5 text-yellow-500" viewBox="0 0 20 20" fill="currentColor">
+                          <path fillRule="evenodd" d="M3 17a1 1 0 011-1h12a1 1 0 110 2H4a1 1 0 01-1-1zM6.293 6.707a1 1 0 010-1.414l3-3a1 1 0 011.414 0l3 3a1 1 0 01-1.414 1.414L11 5.414V13a1 1 0 11-2 0V5.414L7.707 6.707a1 1 0 01-1.414 0z" clipRule="evenodd" />
+                        </svg>
+                        Đăng tải lên nền tảng
+                      </button>
+                  </div>
                 </div>
                 <div className="w-[320px] min-w-[260px]">
                   <ProjectProfileChatbot />
                 </div>
+              </div>
+            )}
+            {currentStep === 4 && (
+              <div className="flex flex-col items-center justify-center py-12">
+                <h2 className="text-2xl font-bold mb-6 text-[#fdc142]">Hồ sơ Startup vừa đăng tải</h2>
+                <div className="mb-8">
+                  {/* Hiển thị StartupCard với dữ liệu form */}
+                  <StartupCard
+                    img={form.logo_url || form.logoPreview || "https://via.placeholder.com/64"}
+                    title={form.name || "Tên Startup"}
+                    desc={form.tagline || form.slogan || form.idea || "Mô tả dự án"}
+                    tag={form.industry || "Lĩnh vực"}
+                    stage={form.stage || "Giai đoạn"}
+                    members={form.memberCount || 1}
+                    raised={form.raised || ""}
+                    badge={"Đã đăng tải"}
+                  />
+                </div>
+                <button
+                  className="bg-gray-200 hover:bg-gray-300 text-base font-semibold px-4 py-2 rounded-full shadow"
+                  onClick={() => setCurrentStep(2)}
+                >
+                  Quay lại chỉnh sửa
+                </button>
               </div>
             )}
             {currentStep === 3 && (

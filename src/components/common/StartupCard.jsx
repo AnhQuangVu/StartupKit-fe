@@ -1,13 +1,9 @@
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faUsers, faMoneyBillWave } from "@fortawesome/free-solid-svg-icons";
 
-export default function StartupCard({ img, title, desc, tag, stage, members, raised, badge }) {
+export default function StartupCard({ img, title, desc, tag, stage, members, raised, onPublish }) {
   return (
     <div className="bg-white border border-gray-200 rounded-xl shadow-lg p-5 w-full max-w-md flex flex-col gap-2 hover:shadow-2xl hover:-translate-y-1 transition-all duration-200 relative">
-      {/* Badge nổi bật */}
-      {badge && (
-        <span className="absolute top-4 right-4 bg-[#fdc142] text-white text-xs px-3 py-1 rounded-full font-bold shadow">{badge}</span>
-      )}
       <div className="flex gap-4 items-center">
         <img
           src={img}
@@ -32,8 +28,19 @@ export default function StartupCard({ img, title, desc, tag, stage, members, rai
         </span>
       </div>
       {/* CTA */}
-      <div className="flex justify-end mt-4">
+      <div className="flex justify-end mt-4 gap-2">
         <button className="bg-[#fdc142] hover:bg-yellow-400 text-black font-semibold px-4 py-2 rounded-full text-sm shadow transition">Xem chi tiết</button>
+        {typeof onPublish === 'function' && (
+          <button
+            className="bg-blue-500 hover:bg-blue-600 text-white font-semibold px-4 py-2 rounded-full text-sm shadow transition flex items-center gap-2"
+            onClick={onPublish}
+          >
+            <svg xmlns="http://www.w3.org/2000/svg" className="h-4 w-4" viewBox="0 0 20 20" fill="currentColor">
+              <path fillRule="evenodd" d="M3 17a1 1 0 011-1h12a1 1 0 110 2H4a1 1 0 01-1-1zM6.293 6.707a1 1 0 010-1.414l3-3a1 1 0 011.414 0l3 3a1 1 0 01-1.414 1.414L11 5.414V13a1 1 0 11-2 0V5.414L7.707 6.707a1 1 0 01-1.414 0z" clipRule="evenodd" />
+            </svg>
+            Đăng tải lên nền tảng
+          </button>
+        )}
       </div>
     </div>
   );
