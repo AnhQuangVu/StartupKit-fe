@@ -1,6 +1,20 @@
 // File CreateProject.jsx
 
 import React, { useState, useEffect } from "react";
+// Cloudinary upload
+const CLOUDINARY_UPLOAD_PRESET = "startupkit_unsigned";
+const CLOUDINARY_CLOUD_NAME = "dkzcttywh"; // Thay bằng cloud_name của bạn
+async function uploadToCloudinary(file) {
+  const formData = new FormData();
+  formData.append("file", file);
+  formData.append("upload_preset", CLOUDINARY_UPLOAD_PRESET);
+  const res = await fetch(`https://api.cloudinary.com/v1_1/${CLOUDINARY_CLOUD_NAME}/image/upload`, {
+    method: "POST",
+    body: formData,
+  });
+  const data = await res.json();
+  return data.secure_url;
+}
 import {
   PDFDownloadLink,
   Document,
@@ -122,16 +136,21 @@ function ProjectBasicForm({ form, setForm, onCreate, useAI, setUseAI }) {
     setForm({ ...form, [e.target.name]: e.target.value });
   };
   
-  const handleImageChange = (e, field) => {
+  const handleImageChange = async (e, field) => {
     const file = e.target.files[0];
     if (file) {
-      setForm({
-        ...form,
-        [field]: file,
-        [`${field}Preview`]: URL.createObjectURL(file),
-      });
+      try {
+        const url = await uploadToCloudinary(file);
+        setForm({
+          ...form,
+          [`${field}Preview`]: url,
+          [`${field}Url`]: url,
+        });
+      } catch (err) {
+        alert("Lỗi upload ảnh lên Cloudinary");
+      }
     }
-  };
+  }
 
   return (
     <form
@@ -676,7 +695,7 @@ function CreateProject() {
       tagline: form.tagline || "",
       stage: form.stage ? form.stage.toLowerCase() : "",
       description: form.description || form.idea || "",
-      logo_url: form.logo_url || form.logoPreview || "",
+  logo_url: form.logoUrl || form.logoPreview || "",
       website_url: form.website_url || form.website || "",
       industry: form.industry || "",
       pain_point: form.pain_point || form.painPoint || "",
@@ -697,8 +716,8 @@ function CreateProject() {
       member_count: Number(form.member_count || form.memberCount || 0),
       member_skills: form.member_skills || form.memberSkills || "",
       resources: form.resources || "",
-      team_image_url: form.team_image_url || form.teamImagePreview || "",
-      product_image_url: form.product_image_url || form.productImagePreview || "",
+  team_image_url: form.teamImageUrl || form.teamImagePreview || "",
+  product_image_url: form.productImageUrl || form.productImagePreview || "",
       use_ai: !!form.use_ai || !!form.useAI,
     };
     try {

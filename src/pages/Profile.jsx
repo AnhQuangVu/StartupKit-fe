@@ -1,5 +1,7 @@
 
 import React, { useState } from "react";
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+import { faUpload } from "@fortawesome/free-solid-svg-icons";
 import { useAuth } from "../context/AuthContext";
 import { useNavigate } from "react-router-dom";
 import Navbar from "../components/layout/Navbar";
@@ -37,6 +39,20 @@ export default function Profile() {
       });
     }
   }, [authUser]);
+  // Cloudinary upload
+  const CLOUDINARY_UPLOAD_PRESET = "startupkit_unsigned";
+  const CLOUDINARY_CLOUD_NAME = "dkzcttywh"; // Thay bằng cloud_name của bạn
+  async function uploadToCloudinary(file) {
+    const formData = new FormData();
+    formData.append("file", file);
+    formData.append("upload_preset", CLOUDINARY_UPLOAD_PRESET);
+    const res = await fetch(`https://api.cloudinary.com/v1_1/${CLOUDINARY_CLOUD_NAME}/image/upload`, {
+      method: "POST",
+      body: formData,
+    });
+    const data = await res.json();
+    return data.secure_url;
+  }
   
   // Sử dụng encodeHTML khi nhập các trường input
   const handleInputChange = (e) => {
@@ -75,32 +91,13 @@ export default function Profile() {
     try {
       // Sử dụng formData làm payload
       const payload = {...formData};
-      
-      // Nếu có avatar mới, xử lý upload ảnh trước
+      // Nếu có avatar mới, upload lên Cloudinary
       let avatar_url = authUser.avatar_url;
       if (avatar) {
-        const imageFormData = new FormData();
-        imageFormData.append('file', avatar);
-        
         try {
-          const token = localStorage.getItem('token');
-          const uploadResponse = await fetch('http://localhost:8000/upload-image/', {
-            method: 'POST',
-            headers: {
-              'Authorization': `Bearer ${token}`
-            },
-            body: imageFormData
-          });
-          
-          if (!uploadResponse.ok) {
-            throw new Error('Không thể tải lên ảnh đại diện');
-          }
-          
-          const imageData = await uploadResponse.json();
-          avatar_url = imageData.url;
+          avatar_url = await uploadToCloudinary(avatar);
           payload.avatar_url = avatar_url;
         } catch (imageError) {
-          console.error('Lỗi khi tải ảnh:', imageError);
           setUpdateMessage({
             type: 'error',
             text: 'Không thể tải lên ảnh đại diện. Vui lòng thử lại.'
@@ -413,7 +410,7 @@ export default function Profile() {
                         placeholder="Link LinkedIn cá nhân"
                       />
                     </div>
-                    <div className="pt-2">
+                    <div className="pt-2 flex gap-2">
                       <button
                         type="submit"
                         className={`bg-[#FFCE23] text-black font-semibold px-4 py-2 rounded-md hover:bg-[#FFD600] transition-all text-xs ${
@@ -423,6 +420,17 @@ export default function Profile() {
                       >
                         {isSubmitting ? 'Đang cập nhật...' : 'Cập nhật hồ sơ'}
                       </button>
+                      {/* Nút đăng tải hồ sơ lên nền tảng cho investor/mentor */}
+                      {(authUser?.role === 'investor' || authUser?.role === 'mentor') && (
+                        <button
+                          type="button"
+                          className="border border-yellow-400 bg-white text-black font-semibold px-4 py-2 rounded-md hover:bg-yellow-50 hover:border-yellow-500 transition-all text-xs flex items-center gap-2"
+                          onClick={() => alert('Đăng tải hồ sơ lên nền tảng!')}
+                        >
+                          <FontAwesomeIcon icon={faUpload} className="text-yellow-400" />
+                          Đăng tải hồ sơ lên nền tảng
+                        </button>
+                      )}
                     </div>
                   </form>
                 </section>
