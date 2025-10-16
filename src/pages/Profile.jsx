@@ -1,5 +1,5 @@
-
 import React, { useState } from "react";
+import { uploadToCloudinary } from "../utils/cloudinary";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faUpload } from "@fortawesome/free-solid-svg-icons";
 import { useAuth } from "../context/AuthContext";
@@ -7,59 +7,42 @@ import { useNavigate } from "react-router-dom";
 import Navbar from "../components/layout/Navbar";
 import Footer from "../components/layout/Footer";
 
-// Hàm mã hóa HTML để chống XSS
-function encodeHTML(str) {
-  return str.replace(/&/g, "&amp;")
-    .replace(/</g, "&lt;")
-    .replace(/>/g, "&gt;")
-    .replace(/"/g, "&quot;")
-    .replace(/'/g, "&#39;");
-}
-
 export default function Profile() {
   const { user: authUser, isLoggedIn, logout, updateUser } = useAuth();
   const navigate = useNavigate();
   const [activeTab, setActiveTab] = useState("hoso");
   const [avatar, setAvatar] = useState(null);
   const [formData, setFormData] = useState({});
-  const [avatarPreview, setAvatarPreview] = useState(authUser?.avatar_url || null);
+  const [avatarPreview, setAvatarPreview] = useState("");
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [updateMessage, setUpdateMessage] = useState({ type: '', text: '' });
   
-  // Khởi tạo formData từ authUser
+  // Khởi tạo formData từ authUser và fetch dữ liệu user từ API khi vào trang
   React.useEffect(() => {
     if (authUser) {
+      const avatarUrl = authUser.profile?.avatar_url;
       setFormData({
         full_name: authUser.full_name || '',
-        phone: authUser.phone || '',
-        address: authUser.address || '',
-        company: authUser.company || '',
-        facebook: authUser.facebook || '',
-        linkedin: authUser.linkedin || '',
+        avatar_url: avatarUrl || '',
+        bio: authUser.profile?.bio || '',
+        website_url: authUser.profile?.website_url || '',
+        location: authUser.profile?.location || '',
+        phone: authUser.profile?.phone || '',
+        address: authUser.profile?.address || '',
+        company: authUser.profile?.company || '',
+        facebook: authUser.profile?.facebook || '',
+        linkedin: authUser.profile?.linkedin || ''
       });
+      // Không gán lại avatarPreview ở đây, chỉ khởi tạo giá trị mặc định khi tạo state
     }
   }, [authUser]);
-  // Cloudinary upload
-  const CLOUDINARY_UPLOAD_PRESET = "startupkit_unsigned";
-  const CLOUDINARY_CLOUD_NAME = "dkzcttywh"; // Thay bằng cloud_name của bạn
-  async function uploadToCloudinary(file) {
-    const formData = new FormData();
-    formData.append("file", file);
-    formData.append("upload_preset", CLOUDINARY_UPLOAD_PRESET);
-    const res = await fetch(`https://api.cloudinary.com/v1_1/${CLOUDINARY_CLOUD_NAME}/image/upload`, {
-      method: "POST",
-      body: formData,
-    });
-    const data = await res.json();
-    return data.secure_url;
-  }
   
-  // Sử dụng encodeHTML khi nhập các trường input
+  // Xử lý input change - KHÔNG encode HTML
   const handleInputChange = (e) => {
     const { name, value } = e.target;
     setFormData(prev => ({
       ...prev,
-      [name]: encodeHTML(value)
+      [name]: value // Giữ nguyên giá trị gốc
     }));
   };
 
@@ -89,24 +72,33 @@ export default function Profile() {
     setUpdateMessage({ type: '', text: '' });
     
     try {
-      // Sử dụng formData làm payload
-      const payload = {...formData};
-      // Nếu có avatar mới, upload lên Cloudinary
-      let avatar_url = authUser.avatar_url;
+      // Tạo payload phẳng cho backend
+      let payload = { ...formData };
       if (avatar) {
         try {
-          avatar_url = await uploadToCloudinary(avatar);
-          payload.avatar_url = avatar_url;
+          const avatar_url = await uploadToCloudinary(avatar);
+          if (avatar_url && typeof avatar_url === 'string' && avatar_url.startsWith('http')) {
+            payload.avatar_url = avatar_url;
+          } else {
+            payload.avatar_url = authUser.profile?.avatar_url || '';
+          }
         } catch (imageError) {
+          console.error('Image upload error:', imageError);
           setUpdateMessage({
             type: 'error',
             text: 'Không thể tải lên ảnh đại diện. Vui lòng thử lại.'
           });
           setIsSubmitting(false);
-          return;
+          payload.avatar_url = authUser.profile?.avatar_url || '';
         }
       }
-      
+      // Chuyển chuỗi rỗng thành null để khớp với lược đồ backend
+      Object.keys(payload).forEach(key => {
+        if (payload[key] === '') payload[key] = null;
+      });
+
+  // ...existing code...
+
       // Gọi API cập nhật hồ sơ
       const token = localStorage.getItem('token');
       const response = await fetch('http://localhost:8000/users/me', {
@@ -119,6 +111,7 @@ export default function Profile() {
       });
       
       const responseData = await response.json();
+    // ...existing code...
       
       if (!response.ok) {
         throw new Error(responseData.detail || 'Không thể cập nhật hồ sơ');
@@ -126,12 +119,38 @@ export default function Profile() {
       
       // Cập nhật thông tin user trong context
       if (updateUser) {
-        updateUser({
-          ...authUser,
-          ...responseData,
-          avatar_url
-        });
+        // Sau khi cập nhật, gọi lại API lấy user mới nhất
+        try {
+          const token = localStorage.getItem("token");
+          const userRes = await fetch("http://localhost:8000/users/me", {
+            method: "GET",
+            headers: {
+              "Authorization": `Bearer ${token}`,
+              "Content-Type": "application/json"
+            }
+          });
+          const userData = await userRes.json();
+          updateUser(userData);
+        } catch (err) {
+          // Nếu lỗi thì vẫn dùng responseData
+          updateUser(responseData);
+        }
       }
+      // Cập nhật formData với dữ liệu mới từ server
+      setFormData({
+        full_name: responseData.full_name || '',
+        phone: responseData.profile?.phone || '',
+        address: responseData.profile?.address || '',
+        company: responseData.profile?.company || '',
+        facebook: responseData.profile?.facebook || '',
+        linkedin: responseData.profile?.linkedin || '',
+        avatar_url: responseData.profile?.avatar_url || ''
+      });
+      const newAvatarUrl = responseData.profile?.avatar_url;
+      setAvatarPreview(newAvatarUrl || '');
+      
+      // Reset avatar state
+      setAvatar(null);
       
       setUpdateMessage({
         type: 'success',
@@ -139,25 +158,8 @@ export default function Profile() {
       });
       
       // Hiển thị toast message
-      if (window.$) {
-        window.$('<div class="my-toast">Cập nhật hồ sơ thành công!</div>')
-          .appendTo('body').fadeIn().delay(2000).fadeOut();
-      } else {
-        var toast = document.createElement('div');
-        toast.className = 'my-toast';
-        toast.innerText = 'Cập nhật hồ sơ thành công!';
-        toast.style.position = 'fixed';
-        toast.style.top = '30px';
-        toast.style.left = '50%';
-        toast.style.transform = 'translateX(-50%)';
-        toast.style.background = '#333';
-        toast.style.color = '#fff';
-        toast.style.padding = '12px 24px';
-        toast.style.borderRadius = '8px';
-        toast.style.zIndex = '9999';
-        document.body.appendChild(toast);
-        setTimeout(function(){ toast.remove(); }, 2000);
-      }
+      showToast('Cập nhật hồ sơ thành công!', 'success');
+      
     } catch (error) {
       console.error('Lỗi khi cập nhật hồ sơ:', error);
       setUpdateMessage({
@@ -165,29 +167,29 @@ export default function Profile() {
         text: error.message || 'Có lỗi xảy ra khi cập nhật hồ sơ.'
       });
       
-      // Hiển thị toast message lỗi
-      if (window.$) {
-        window.$('<div class="my-toast" style="background-color:#f44336;">Có lỗi xảy ra: ' + error.message + '</div>')
-          .appendTo('body').fadeIn().delay(3000).fadeOut();
-      } else {
-        var toast = document.createElement('div');
-        toast.className = 'my-toast';
-        toast.innerText = 'Có lỗi xảy ra: ' + error.message;
-        toast.style.position = 'fixed';
-        toast.style.top = '30px';
-        toast.style.left = '50%';
-        toast.style.transform = 'translateX(-50%)';
-        toast.style.background = '#f44336';
-        toast.style.color = '#fff';
-        toast.style.padding = '12px 24px';
-        toast.style.borderRadius = '8px';
-        toast.style.zIndex = '9999';
-        document.body.appendChild(toast);
-        setTimeout(function(){ toast.remove(); }, 3000);
-      }
+      showToast('Có lỗi xảy ra: ' + error.message, 'error');
     } finally {
       setIsSubmitting(false);
     }
+  };
+  
+  // Helper function để hiển thị toast
+  const showToast = (message, type = 'success') => {
+    const toast = document.createElement('div');
+    toast.className = 'my-toast';
+    toast.innerText = message;
+    toast.style.position = 'fixed';
+    toast.style.top = '30px';
+    toast.style.left = '50%';
+    toast.style.transform = 'translateX(-50%)';
+    toast.style.background = type === 'success' ? '#4CAF50' : '#f44336';
+    toast.style.color = '#fff';
+    toast.style.padding = '12px 24px';
+    toast.style.borderRadius = '8px';
+    toast.style.zIndex = '9999';
+    toast.style.boxShadow = '0 4px 6px rgba(0,0,0,0.1)';
+    document.body.appendChild(toast);
+    setTimeout(() => { toast.remove(); }, 3000);
   };
 
   return (
@@ -246,15 +248,11 @@ export default function Profile() {
                       <span className="font-semibold text-gray-700 text-sm mb-2">Ảnh cá nhân:</span>
                       <label htmlFor="avatar-upload" className="cursor-pointer">
                         <div className="w-28 h-28 rounded-full border-2 border-yellow-300 bg-gray-100 flex items-center justify-center shadow-lg overflow-hidden">
-                          {avatarPreview ? (
-                            <img
-                              src={avatarPreview}
-                              alt="Avatar preview"
-                              className="w-full h-full object-cover rounded-full"
-                            />
-                          ) : (
-                            <span className="text-gray-400 text-xs">Chọn ảnh</span>
-                          )}
+                          <img
+                            src={avatarPreview || authUser.profile?.avatar_url || ''}
+                            alt="Avatar preview"
+                            className="w-full h-full object-cover rounded-full"
+                          />
                         </div>
                       </label>
                       <input
@@ -263,14 +261,18 @@ export default function Profile() {
                         accept="image/*"
                         className="hidden"
                         onChange={e => {
-                          const file = e.target.files[0];
+                          const file = e.target.files && e.target.files[0];
                           if (file) {
                             setAvatar(file);
+                            // Hiển thị preview ngay khi chọn
                             const reader = new FileReader();
                             reader.onloadend = () => {
                               setAvatarPreview(reader.result);
                             };
                             reader.readAsDataURL(file);
+                          } else {
+                            setAvatar(null);
+                            setAvatarPreview("");
                           }
                         }}
                       />
@@ -289,13 +291,46 @@ export default function Profile() {
                         placeholder="Nhập tên"
                       />
                     </div>
+                      <div>
+                        <span className="font-semibold text-gray-700 text-sm">Chức danh/Bio:</span>
+                        <input
+                          type="text"
+                          className="w-full border border-gray-300 rounded px-2 py-1 text-sm mt-1"
+                          name="bio"
+                          value={formData.bio || ''}
+                          onChange={handleInputChange}
+                          placeholder="Founder & CEO"
+                        />
+                      </div>
+                      <div>
+                        <span className="font-semibold text-gray-700 text-sm">Website:</span>
+                        <input
+                          type="text"
+                          className="w-full border border-gray-300 rounded px-2 py-1 text-sm mt-1"
+                          name="website_url"
+                          value={formData.website_url || ''}
+                          onChange={handleInputChange}
+                          placeholder="https://startup.vn"
+                        />
+                      </div>
+                      <div>
+                        <span className="font-semibold text-gray-700 text-sm">Địa điểm:</span>
+                        <input
+                          type="text"
+                          className="w-full border border-gray-300 rounded px-2 py-1 text-sm mt-1"
+                          name="location"
+                          value={formData.location || ''}
+                          onChange={handleInputChange}
+                          placeholder="Hà Nội"
+                        />
+                      </div>
                     <div>
                       <span className="font-semibold text-gray-700 text-sm">
                         Email:
                       </span>
                       <input
                         type="email"
-                        className="w-full border border-gray-300 rounded px-2 py-1 text-sm mt-1"
+                        className="w-full border border-gray-300 rounded px-2 py-1 text-sm mt-1 bg-gray-100"
                         defaultValue={authUser?.email}
                         placeholder="Nhập email"
                         disabled
@@ -333,7 +368,7 @@ export default function Profile() {
                       </span>
                       <input
                         type="text"
-                        className="w-full border border-gray-300 rounded px-2 py-1 text-sm mt-1"
+                        className="w-full border border-gray-300 rounded px-2 py-1 text-sm mt-1 bg-gray-100"
                         value={authUser?.role || ''}
                         disabled
                       />
