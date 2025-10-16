@@ -117,27 +117,38 @@ function ProjectTemplateSelector({ onSelect }) {
 
 // Component nhập form hồ sơ
 function ProjectBasicForm({ form, setForm, onCreate, useAI, setUseAI }) {
-  // Xử lý thay đổi giá trị input
+  // =============================
+  // XỬ LÝ LƯU ẢNH TRONG TẠO HỒ SƠ
+  // =============================
+  // Khi người dùng chọn file ảnh (logo, sản phẩm, đội ngũ), hàm này sẽ upload lên Cloudinary
+  // Sau khi upload thành công, trả về URL ảnh và lưu vào state để hiển thị preview và gửi lên backend
+  // Ví dụ: chọn logo => gọi handleImageChange(e, "logo")
+  // Hàm này dùng cho các trường: logo, productImage, teamImage
   const handleChange = (e) => {
-    console.log('Input changed:', e.target.name, e.target.value);
+    // Xử lý thay đổi giá trị input
     setForm({ ...form, [e.target.name]: e.target.value });
   };
-  
+
   const handleImageChange = async (e, field) => {
     const file = e.target.files[0];
     if (file) {
       try {
+        // Upload ảnh lên Cloudinary
         const url = await uploadToCloudinary(file);
+        // Lưu URL vào state để preview và gửi lên backend
         setForm({
           ...form,
-          [`${field}Preview`]: url,
-          [`${field}Url`]: url,
+          [`${field}Preview`]: url, // Hiển thị ảnh ngay trên giao diện
+          [`${field}Url`]: url,     // Lưu URL để gửi lên backend
         });
       } catch (err) {
         alert("Lỗi upload ảnh lên Cloudinary");
       }
     }
-  }
+  };
+
+  // Khi submit form, các trường ảnh sẽ lấy URL từ state và gửi lên backend
+  // Ví dụ: logo_url: form.logoUrl, product_image_url: form.productImageUrl, team_image_url: form.teamImageUrl
 
   return (
     <form
@@ -677,12 +688,16 @@ function CreateProject() {
 
   // Hàm gọi API tạo dự án
   async function createProjectAPI(form) {
+    // =============================
+    // Khi gửi dữ liệu lên backend, các trường ảnh sẽ lấy URL đã upload
+    // Ví dụ: logo_url, product_image_url, team_image_url
+    // =============================
     const payload = {
       name: form.name || "",
       tagline: form.tagline || "",
       stage: form.stage ? form.stage.toLowerCase() : "",
       description: form.description || form.idea || "",
-  logo_url: form.logoUrl || form.logoPreview || "",
+      logo_url: form.logoUrl || form.logoPreview || "", // URL ảnh logo
       website_url: form.website_url || form.website || "",
       industry: form.industry || "",
       pain_point: form.pain_point || form.painPoint || "",
@@ -703,8 +718,8 @@ function CreateProject() {
       member_count: Number(form.member_count || form.memberCount || 0),
       member_skills: form.member_skills || form.memberSkills || "",
       resources: form.resources || "",
-  team_image_url: form.teamImageUrl || form.teamImagePreview || "",
-  product_image_url: form.productImageUrl || form.productImagePreview || "",
+      team_image_url: form.teamImageUrl || form.teamImagePreview || "", // URL ảnh đội ngũ
+      product_image_url: form.productImageUrl || form.productImagePreview || "", // URL ảnh sản phẩm
       use_ai: !!form.use_ai || !!form.useAI,
     };
     try {

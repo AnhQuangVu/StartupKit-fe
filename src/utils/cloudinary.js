@@ -11,9 +11,22 @@ export async function uploadToCloudinary(file) {
     method: "POST",
     body: formData,
   });
-  const data = await res.json();
+  let data;
+  try {
+    data = await res.json();
+  } catch (err) {
+    throw new Error("Không thể đọc phản hồi từ Cloudinary. Kiểm tra kết nối mạng hoặc cấu hình.");
+  }
   if (data.error) {
-    throw new Error(data.error.message || "Lỗi upload ảnh lên Cloudinary");
+    // Hiển thị chi tiết lỗi cho người dùng
+    let msg = "Lỗi upload ảnh lên Cloudinary.";
+    if (data.error.message) msg += "\n" + data.error.message;
+    if (data.error.http_code) msg += ` (HTTP ${data.error.http_code})`;
+    if (data.error.name) msg += `\n${data.error.name}`;
+    throw new Error(msg);
+  }
+  if (!data.secure_url) {
+    throw new Error("Upload thành công nhưng không nhận được URL ảnh. Kiểm tra lại preset và cloud_name.");
   }
   return data.secure_url;
 }
