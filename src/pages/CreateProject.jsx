@@ -14,6 +14,7 @@ import { exportProjectPDF } from "../utils/pdfExport";
 import RecentActivitySidebar from "../components/project/RecentActivitySidebar";
 import AiAssistantSidebar from "../components/project/AiAssistantSidebar";
 import { useAuth } from "../context/AuthContext";
+import { uploadToCloudinary } from "../utils/cloudinary";
 
 // Sidebar các bước tạo hồ sơ
 function ProjectSteps({ currentStep, onStepClick }) {
@@ -129,22 +130,60 @@ function ProjectBasicForm({ form, setForm, onCreate, useAI, setUseAI }) {
     setForm({ ...form, [e.target.name]: e.target.value });
   };
 
-  const handleImageChange = async (e, field) => {
+  // Khi chọn file, chỉ lưu file vào state, chưa upload
+  const handleImageChange = (e, field) => {
     const file = e.target.files[0];
     if (file) {
+      setForm({
+        ...form,
+        [`${field}File`]: file,
+        [`${field}Preview`]: URL.createObjectURL(file), // Hiển thị preview tạm thời
+      });
+    }
+  };
+
+  // Khi submit, upload file lên Cloudinary rồi gọi onCreate
+  const handleSubmit = async (e) => {
+    e.preventDefault();
+    let newForm = { ...form };
+    // Upload logo nếu có file
+    if (form.logoFile) {
       try {
-        // Upload ảnh lên Cloudinary
-        const url = await uploadToCloudinary(file);
-        // Lưu URL vào state để preview và gửi lên backend
-        setForm({
-          ...form,
-          [`${field}Preview`]: url, // Hiển thị ảnh ngay trên giao diện
-          [`${field}Url`]: url,     // Lưu URL để gửi lên backend
-        });
+        const url = await uploadToCloudinary(form.logoFile);
+        newForm.logoUrl = url;
+        newForm.logoPreview = url; // Đảm bảo cập nhật preview bằng URL Cloudinary
+        console.log("Logo Cloudinary URL:", url); // Debug
       } catch (err) {
-        alert("Lỗi upload ảnh lên Cloudinary");
+        alert("Lỗi upload logo lên Cloudinary\n" + (err?.message || ""));
+        return;
       }
     }
+    // Upload productImage nếu có file
+    if (form.productImageFile) {
+      try {
+        const url = await uploadToCloudinary(form.productImageFile);
+        newForm.productImageUrl = url;
+        newForm.productImagePreview = url;
+      } catch (err) {
+        alert(
+          "Lỗi upload ảnh sản phẩm lên Cloudinary\n" + (err?.message || "")
+        );
+        return;
+      }
+    }
+    // Upload teamImage nếu có file
+    if (form.teamImageFile) {
+      try {
+        const url = await uploadToCloudinary(form.teamImageFile);
+        newForm.teamImageUrl = url;
+        newForm.teamImagePreview = url;
+      } catch (err) {
+        alert("Lỗi upload ảnh đội ngũ lên Cloudinary\n" + (err?.message || ""));
+        return;
+      }
+    }
+    setForm(newForm);
+    await onCreate(newForm);
   };
 
   // Khi submit form, các trường ảnh sẽ lấy URL từ state và gửi lên backend
@@ -154,10 +193,7 @@ function ProjectBasicForm({ form, setForm, onCreate, useAI, setUseAI }) {
     <form
       className="bg-white rounded-xl border border-gray-200 shadow-lg p-8 w-full max-w-6xl mx-auto mt-4 space-y-8"
       style={{ marginTop: "0px" }} // dịch lên cao hơn
-      onSubmit={(e) => {
-        e.preventDefault();
-        onCreate();
-      }}
+      onSubmit={handleSubmit}
     >
       <h2 className="text-2xl font-bold mb-8 text-center text-[#FFCE23]">
         Thông tin cơ bản dự án
@@ -459,16 +495,14 @@ function ProjectBasicForm({ form, setForm, onCreate, useAI, setUseAI }) {
       <div className="grid grid-cols-1 md:grid-cols-3 gap-x-6 gap-y-4">
         <div>
           <label className="font-semibold">Số lượng thành viên đang có</label>
-          <textarea
+          <input
             name="memberCount"
+            type="number"
+            min={0}
             value={form.memberCount}
             onChange={handleChange}
-            rows={4}
-            className="w-full border rounded px-2 py-2 mt-1 text-sm resize-none overflow-hidden"
-            onInput={(e) => {
-              e.target.style.height = "auto";
-              e.target.style.height = e.target.scrollHeight + "px";
-            }}
+            className="w-full border rounded px-2 py-2 mt-1 text-sm"
+            placeholder="Nhập số lượng thành viên"
           />
         </div>
         <div>
@@ -505,16 +539,14 @@ function ProjectBasicForm({ form, setForm, onCreate, useAI, setUseAI }) {
       <div className="grid grid-cols-1 md:grid-cols-3 gap-x-6 gap-y-4">
         <div>
           <label className="font-semibold">Chi phí lớn nhất dự kiến</label>
-          <textarea
+          <input
             name="costEstimate"
+            type="number"
+            min={0}
             value={form.costEstimate}
             onChange={handleChange}
-            rows={4}
-            className="w-full border rounded px-2 py-2 mt-1 text-sm resize-none overflow-hidden"
-            onInput={(e) => {
-              e.target.style.height = "auto";
-              e.target.style.height = e.target.scrollHeight + "px";
-            }}
+            className="w-full border rounded px-2 py-2 mt-1 text-sm"
+            placeholder="Nhập chi phí dự kiến"
           />
         </div>
         <div>
@@ -535,16 +567,14 @@ function ProjectBasicForm({ form, setForm, onCreate, useAI, setUseAI }) {
           <label className="font-semibold">
             Mục tiêu doanh thu ngắn hạn (6–12 tháng)
           </label>
-          <textarea
+          <input
             name="revenueGoal"
+            type="number"
+            min={0}
             value={form.revenueGoal}
             onChange={handleChange}
-            rows={4}
-            className="w-full border rounded px-2 py-2 mt-1 text-sm resize-none overflow-hidden"
-            onInput={(e) => {
-              e.target.style.height = "auto";
-              e.target.style.height = e.target.scrollHeight + "px";
-            }}
+            className="w-full border rounded px-2 py-2 mt-1 text-sm"
+            placeholder="Nhập mục tiêu doanh thu"
           />
         </div>
       </div>
@@ -688,17 +718,103 @@ function CreateProject() {
 
   // Hàm gọi API tạo dự án
   async function createProjectAPI(form) {
-    // =============================
-    // Khi gửi dữ liệu lên backend, các trường ảnh sẽ lấy URL đã upload
-    // Ví dụ: logo_url, product_image_url, team_image_url
-    // =============================
+    const payload = normalizePayload(form);
+    try {
+      const token = localStorage.getItem("token");
+      const headers = {
+        "Content-Type": "application/json",
+      };
+      if (token) {
+        headers["Authorization"] = `Bearer ${token}`;
+      }
+      // Log the payload to make sure location is included
+      console.log("Sending payload to API:", payload);
+
+      const res = await fetch("http://127.0.0.1:8000/projects/", {
+        method: "POST",
+        headers,
+        body: JSON.stringify(payload),
+      });
+      if (!res.ok) {
+        let errorMsg =
+          "Tạo dự án thất bại. Vui lòng kiểm tra lại thông tin hoặc thử lại sau.";
+        try {
+          const errorData = await res.json();
+          if (errorData && errorData.message) errorMsg = errorData.message;
+          else if (typeof errorData === "string") errorMsg = errorData;
+          else if (errorData && errorData.detail) errorMsg = errorData.detail;
+        } catch {
+          errorMsg = res.statusText || errorMsg;
+        }
+        if (window.$) {
+          window
+            .$('<div class="my-toast">' + errorMsg + "</div>")
+            .appendTo("body")
+            .fadeIn()
+            .delay(2000)
+            .fadeOut();
+        } else {
+          // Fallback: create a simple toast manually if jQuery is not available
+          var toast = document.createElement("div");
+          toast.className = "my-toast";
+          toast.innerText = errorMsg;
+          toast.style.position = "fixed";
+          toast.style.top = "30px";
+          toast.style.left = "50%";
+          toast.style.transform = "translateX(-50%)";
+          toast.style.background = "#333";
+          toast.style.color = "#fff";
+          toast.style.padding = "12px 24px";
+          toast.style.borderRadius = "8px";
+          toast.style.zIndex = "9999";
+          document.body.appendChild(toast);
+          setTimeout(function () {
+            toast.remove();
+          }, 2000);
+        }
+        return null;
+      }
+      return await res.json();
+    } catch (err) {
+      if (window.$) {
+        window
+          .$('<div class="my-toast">Có lỗi xảy ra. Vui lòng thử lại sau.</div>')
+          .appendTo("body")
+          .fadeIn()
+          .delay(2000)
+          .fadeOut();
+      } else {
+        var toast = document.createElement("div");
+        toast.className = "my-toast";
+        toast.innerText = "Có lỗi xảy ra. Vui lòng thử lại sau.";
+        toast.style.position = "fixed";
+        toast.style.top = "30px";
+        toast.style.left = "50%";
+        toast.style.transform = "translateX(-50%)";
+        toast.style.background = "#333";
+        toast.style.color = "#fff";
+        toast.style.padding = "12px 24px";
+        toast.style.borderRadius = "8px";
+        toast.style.zIndex = "9999";
+        document.body.appendChild(toast);
+        setTimeout(function () {
+          toast.remove();
+        }, 2000);
+      }
+      return null;
+    }
+  }
+
+  // Chuẩn hóa payload trước khi gửi lên backend
+  function normalizePayload(form) {
+    // Chỉ gửi các trường có giá trị, đúng kiểu dữ liệu
     const payload = {
       name: form.name || "",
       tagline: form.tagline || "",
-      stage: form.stage ? form.stage.toLowerCase() : "",
+      stage: form.stage && form.stage !== "" ? form.stage : null, // Enum hoặc null
       description: form.description || form.idea || "",
-      logo_url: form.logoUrl || form.logoPreview || "", // URL ảnh logo
-      website_url: form.website_url || form.website || "",
+      logo_url: form.logoUrl || form.logoPreview || null,
+      website_url: form.website_url || form.website || null,
       industry: form.industry || "",
       pain_point: form.pain_point || form.painPoint || "",
       solution: form.solution || "",
@@ -710,91 +826,26 @@ function CreateProject() {
       deployment_location: form.location || "",
       business_model: form.business_model || form.businessModel || "",
       revenue_method: form.revenue_method || form.revenueMethod || "",
-      distribution_channel: form.distribution_channel || form.distributionChannel || "",
+      distribution_channel:
+        form.distribution_channel || form.distributionChannel || "",
       partners: form.partners || "",
       cost_estimate: form.cost_estimate || form.costEstimate || "",
       capital_source: form.capital_source || form.capitalSource || "",
       revenue_goal: form.revenue_goal || form.revenueGoal || "",
-      member_count: Number(form.member_count || form.memberCount || 0),
+      member_count:
+        form.member_count && form.member_count !== ""
+          ? Number(form.member_count)
+          : form.memberCount && form.memberCount !== ""
+          ? Number(form.memberCount)
+          : null,
       member_skills: form.member_skills || form.memberSkills || "",
       resources: form.resources || "",
-      team_image_url: form.teamImageUrl || form.teamImagePreview || "", // URL ảnh đội ngũ
-      product_image_url: form.productImageUrl || form.productImagePreview || "", // URL ảnh sản phẩm
+      team_image_url: form.teamImageUrl || form.teamImagePreview || null,
+      product_image_url:
+        form.productImageUrl || form.productImagePreview || null,
       use_ai: !!form.use_ai || !!form.useAI,
     };
-    try {
-      const token = localStorage.getItem("token");
-      const headers = {
-        "Content-Type": "application/json",
-      };
-      if (token) {
-        headers["Authorization"] = `Bearer ${token}`;
-      }
-      // Log the payload to make sure location is included
-      console.log("Sending payload to API:", payload);
-      
-      const res = await fetch("http://127.0.0.1:8000/projects/", {
-        method: "POST",
-        headers,
-        body: JSON.stringify(payload),
-      });
-      if (!res.ok) {
-        let errorMsg = "Tạo dự án thất bại. Vui lòng kiểm tra lại thông tin hoặc thử lại sau.";
-        try {
-          const errorData = await res.json();
-          if (errorData && errorData.message)
-            errorMsg = errorData.message;
-          else if (typeof errorData === "string") errorMsg = errorData;
-          else if (errorData && errorData.detail)
-            errorMsg = errorData.detail;
-        } catch {
-          errorMsg = res.statusText || errorMsg;
-        }
-        if (window.$) {
-          window.$('<div class="my-toast">'+errorMsg+'</div>')
-            .appendTo('body').fadeIn().delay(2000).fadeOut();
-        } else {
-          // Fallback: create a simple toast manually if jQuery is not available
-          var toast = document.createElement('div');
-          toast.className = 'my-toast';
-          toast.innerText = errorMsg;
-          toast.style.position = 'fixed';
-          toast.style.top = '30px';
-          toast.style.left = '50%';
-          toast.style.transform = 'translateX(-50%)';
-          toast.style.background = '#333';
-          toast.style.color = '#fff';
-          toast.style.padding = '12px 24px';
-          toast.style.borderRadius = '8px';
-          toast.style.zIndex = '9999';
-          document.body.appendChild(toast);
-          setTimeout(function(){ toast.remove(); }, 2000);
-        }
-        return null;
-      }
-      return await res.json();
-    } catch (err) {
-      if (window.$) {
-        window.$('<div class="my-toast">Có lỗi xảy ra. Vui lòng thử lại sau.</div>')
-          .appendTo('body').fadeIn().delay(2000).fadeOut();
-      } else {
-        var toast = document.createElement('div');
-        toast.className = 'my-toast';
-        toast.innerText = 'Có lỗi xảy ra. Vui lòng thử lại sau.';
-        toast.style.position = 'fixed';
-        toast.style.top = '30px';
-        toast.style.left = '50%';
-        toast.style.transform = 'translateX(-50%)';
-        toast.style.background = '#333';
-        toast.style.color = '#fff';
-        toast.style.padding = '12px 24px';
-        toast.style.borderRadius = '8px';
-        toast.style.zIndex = '9999';
-        document.body.appendChild(toast);
-        setTimeout(function(){ toast.remove(); }, 2000);
-      }
-      return null;
-    }
+    return payload;
   }
 
   if (role !== "founder") {
@@ -833,77 +884,62 @@ function CreateProject() {
                 <ProjectBasicForm
                   form={form}
                   setForm={setForm}
-                  onCreate={async () => {
-                    const result = await createProjectAPI(form);
+                  onCreate={async (finalForm) => {
+                    // Debug: Hiển thị toàn bộ dữ liệu form khi submit
+                    console.log("Form dữ liệu gửi lên:", finalForm);
+                    const result = await createProjectAPI(finalForm);
                     if (result) {
-                      setCurrentStep(2);
+                      // Hiển thị thông báo jQuery
+                      if (window.$) {
+                        window
+                          .$(
+                            '<div class="my-toast">Tạo hồ sơ thành công!</div>'
+                          )
+                          .appendTo("body")
+                          .fadeIn()
+                          .delay(2000)
+                          .fadeOut();
+                      } else {
+                        var toast = document.createElement("div");
+                        toast.className = "my-toast";
+                        toast.innerText = "Tạo hồ sơ thành công!";
+                        toast.style.position = "fixed";
+                        toast.style.top = "30px";
+                        toast.style.left = "50%";
+                        toast.style.transform = "translateX(-50%)";
+                        toast.style.background = "#333";
+                        toast.style.color = "#fff";
+                        toast.style.padding = "12px 24px";
+                        toast.style.borderRadius = "8px";
+                        toast.style.zIndex = "9999";
+                        document.body.appendChild(toast);
+                        setTimeout(function () {
+                          toast.remove();
+                        }, 2000);
+                      }
+                      setSelectedTemplate("HOU Sinh Viên Startup"); // Đảm bảo tab xem hồ sơ hiển thị
+                      setCurrentStep(2); // Chuyển qua tab xem hồ sơ
                     }
                   }}
                 />
               </div>
             )}
             {currentStep === 2 && (
-              <div
-                className="flex flex-row gap-8 items-start"
-                style={{ marginTop: "-97px" }}
-              >
-                <div className="flex-1">
-                  <ProjectProfilePreview
-                    form={form}
-                    setForm={setForm}
-                    onBack={() => setCurrentStep(1)}
-                  />
-                  <div className="flex justify-end mt-8">
-                    <button
-                        className="border border-yellow-400 bg-white text-black font-semibold px-6 py-2 rounded-full shadow text-base flex items-center gap-2 hover:bg-yellow-50 hover:border-yellow-500 transition"
-                        onClick={() => setCurrentStep(4)}
-                      >
-                        <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5 text-yellow-500" viewBox="0 0 20 20" fill="currentColor">
-                          <path fillRule="evenodd" d="M3 17a1 1 0 011-1h12a1 1 0 110 2H4a1 1 0 01-1-1zM6.293 6.707a1 1 0 010-1.414l3-3a1 1 0 011.414 0l3 3a1 1 0 01-1.414 1.414L11 5.414V13a1 1 0 11-2 0V5.414L7.707 6.707a1 1 0 01-1.414 0z" clipRule="evenodd" />
-                        </svg>
-                        Đăng tải lên nền tảng
-                      </button>
+              <div className="w-full">
+                <div className="grid grid-cols-1 md:grid-cols-9 gap-6">
+                  <div className="md:col-span-6 bg-white rounded-lg border border-gray-200 shadow-sm p-8">
+                    <h3 className="text-lg font-semibold mb-6">
+                      Xem trước hồ sơ khởi nghiệp
+                    </h3>
+                    <ProjectProfilePreview form={form} setForm={setForm} />
+                  </div>
+                  <div className="md:col-span-3 bg-white rounded-lg border border-gray-200 shadow-sm p-8">
+                    <ProjectProfileChatbot form={form} />
                   </div>
                 </div>
-                <div className="w-[320px] min-w-[260px]">
-                  <ProjectProfileChatbot />
-                </div>
               </div>
             )}
-            {currentStep === 4 && (
-              <div className="flex flex-col items-center justify-center py-12">
-                <h2 className="text-2xl font-bold mb-6 text-[#fdc142]">Hồ sơ Startup vừa đăng tải</h2>
-                <div className="mb-8">
-                  {/* Hiển thị StartupCard với dữ liệu form */}
-                  <StartupCard
-                    img={form.logo_url || form.logoPreview || "https://via.placeholder.com/64"}
-                    title={form.name || "Tên Startup"}
-                    desc={form.tagline || form.slogan || form.idea || "Mô tả dự án"}
-                    tag={form.industry || "Lĩnh vực"}
-                    stage={form.stage || "Giai đoạn"}
-                    members={form.memberCount || 1}
-                    raised={form.raised || ""}
-                    badge={"Đã đăng tải"}
-                  />
-                </div>
-                <button
-                  className="bg-gray-200 hover:bg-gray-300 text-base font-semibold px-4 py-2 rounded-full shadow"
-                  onClick={() => setCurrentStep(2)}
-                >
-                  Quay lại chỉnh sửa
-                </button>
-              </div>
-            )}
-            {currentStep === 3 && (
-              <div
-                className="bg-white rounded-xl border border-gray-200 shadow-lg p-8 w-full max-w-6xl mx-auto mt-4 flex flex-col items-center"
-                style={{ marginTop: "-97px" }}
-              >
-                <h2 className="text-2xl font-bold mb-8 text-center text-[#FFCE23]">
-                  Xuất hồ sơ dự án
-                </h2>
-              </div>
-            )}
+            {currentStep === 3 && <div className="w-full"></div>}
           </div>
         </div>
       </div>

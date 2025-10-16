@@ -1,4 +1,5 @@
 import React, { useEffect, useRef } from "react";
+import { uploadToCloudinary } from '../../utils/cloudinary';
 import { PDFDownloadLink } from '@react-pdf/renderer';
 import { exportProjectPDF } from '../../utils/pdfExport';
 
@@ -34,13 +35,47 @@ export default function ProjectProfilePreview({ form, setForm, onBack, sectionId
     }
     setIsSaving(true);
     
+    // Xử lý upload ảnh lên Cloudinary nếu có file mới
+    let logoUrl = form.logo_url || form.logoPreview || "";
+    let productImageUrl = form.product_image_url || form.productImagePreview || "";
+    let teamImageUrl = form.team_image_url || form.teamImagePreview || "";
+
+    // Nếu có file mới thì upload lên Cloudinary
+    if (form.logo && form.logo instanceof File) {
+      try {
+        logoUrl = await uploadToCloudinary(form.logo);
+      } catch (err) {
+        alert("Lỗi upload logo lên Cloudinary\n" + (err?.message || ""));
+        setIsSaving(false);
+        return;
+      }
+    }
+    if (form.productImage && form.productImage instanceof File) {
+      try {
+        productImageUrl = await uploadToCloudinary(form.productImage);
+      } catch (err) {
+        alert("Lỗi upload ảnh sản phẩm lên Cloudinary\n" + (err?.message || ""));
+        setIsSaving(false);
+        return;
+      }
+    }
+    if (form.teamImage && form.teamImage instanceof File) {
+      try {
+        teamImageUrl = await uploadToCloudinary(form.teamImage);
+      } catch (err) {
+        alert("Lỗi upload ảnh đội ngũ lên Cloudinary\n" + (err?.message || ""));
+        setIsSaving(false);
+        return;
+      }
+    }
+
     // Tạo payload từ form data
     const payload = {
       name: form.name || "",
       tagline: form.tagline || "",
       stage: form.stage ? form.stage.toLowerCase() : "",
       description: form.description || form.idea || "",
-      logo_url: form.logo_url || form.logoPreview || "",
+      logo_url: logoUrl,
       website_url: form.website_url || form.website || "",
       industry: form.industry || "",
       pain_point: form.painPoint || "",
@@ -61,8 +96,8 @@ export default function ProjectProfilePreview({ form, setForm, onBack, sectionId
       member_count: Number(form.memberCount || 0),
       member_skills: form.memberSkills || "",
       resources: form.resources || "",
-      team_image_url: form.team_image_url || form.teamImagePreview || "",
-      product_image_url: form.product_image_url || form.productImagePreview || ""
+      team_image_url: teamImageUrl,
+      product_image_url: productImageUrl
     };
 
     try {
