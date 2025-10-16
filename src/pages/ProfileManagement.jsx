@@ -12,6 +12,8 @@
     setNewUserEmail(encodeHTML(e.target.value));
   };
 import React, { useState, useEffect } from "react";
+import { ToastContainer, toast } from "react-toastify";
+import "react-toastify/dist/ReactToastify.css";
 import Navbar from "../components/layout/Navbar";
 import Footer from "../components/layout/Footer";
 import DashboardMenu from "../components/dashboard/DashboardMenu";
@@ -245,9 +247,30 @@ function ProfileManagement({ userType = 'startup', isLoggedIn = true }) {
         <p className="text-xs mb-4">Bạn có chắc muốn xoá hồ sơ này khỏi dự án?</p>
         <div className="flex gap-2">
           <button className="flex-1 bg-gray-100 hover:bg-gray-200 text-gray-700 font-medium rounded py-2" onClick={() => setShowDeleteModal(false)}>Huỷ</button>
-          <button className="flex-1 bg-red-500 hover:bg-red-600 text-white font-medium rounded py-2" onClick={() => {
+          <button className="flex-1 bg-red-500 hover:bg-red-600 text-white font-medium rounded py-2" onClick={async () => {
             setShowDeleteModal(false);
-            // Thực hiện xoá hồ sơ ở đây nếu cần
+            if (!selectedProfile) return;
+            try {
+              const token = localStorage.getItem("token");
+              const res = await fetch(`http://127.0.0.1:8000/projects/${selectedProfile.id}`, {
+                method: "DELETE",
+                headers: {
+                  "Authorization": `Bearer ${token}`,
+                  "Content-Type": "application/json"
+                }
+              });
+              if (!res.ok) {
+                const err = await res.json();
+                toast.error(err.detail || "Xoá hồ sơ thất bại");
+                return;
+              }
+              // Xoá thành công, cập nhật lại danh sách hồ sơ
+              setProfiles(prev => prev.filter(p => p.id !== selectedProfile.id));
+              setSelectedProfile(null);
+              toast.success("Đã xoá hồ sơ thành công");
+            } catch (e) {
+              toast.error("Lỗi khi xoá hồ sơ");
+            }
           }}>Xoá</button>
         </div>
       </div>
@@ -256,6 +279,7 @@ function ProfileManagement({ userType = 'startup', isLoggedIn = true }) {
 
   return (
     <div className="min-h-screen bg-gray-50 flex flex-col">
+      <ToastContainer position="top-right" autoClose={3000} hideProgressBar={false} newestOnTop closeOnClick pauseOnFocusLoss draggable pauseOnHover />
       <style>{`
         @keyframes progress-bar {
           0% { width: 0; }
