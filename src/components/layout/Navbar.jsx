@@ -54,13 +54,13 @@ function Navbar() {
             <FontAwesomeIcon icon={faRocket} className="mr-2" />
             Khởi tạo dự án
           </Link>
-          <span
-            className="cursor-pointer hover:text-[#FFCE23] transition-colors duration-200"
-            onClick={() => (window.location.href = "/coming-soon")}
+          <Link
+            to="/kham-pha"
+            className="cursor-pointer transition-colors duration-200 hover:text-[#FFCE23] flex items-center"
           >
             <FontAwesomeIcon icon={faCompass} className="mr-2" />
             Khám phá
-          </span>
+          </Link>
           <span
             className="cursor-pointer hover:text-[#FFCE23] transition-colors duration-200"
             onClick={() => (window.location.href = "/coming-soon")}
