@@ -933,7 +933,7 @@ function CreateProject() {
                     </h3>
                     <ProjectProfilePreview form={form} setForm={setForm} />
                   </div>
-                  <div className="md:col-span-3 bg-white rounded-lg border border-gray-200 shadow-sm p-8">
+                  <div className="md:col-span-3 ">
                     <ProjectProfileChatbot form={form} />
                   </div>
                 </div>
