@@ -1,7 +1,7 @@
 import { useState } from "react";
 import ProfileCard from "./ProfileCard";
 
-export default function InvestorList() {
+export default function InvestorList({ small = false }) {
   const investors = [
     {
       avatar: "https://randomuser.me/api/portraits/men/32.jpg",
@@ -114,12 +114,34 @@ export default function InvestorList() {
       tag: "Quỹ đầu tư",
       button: "Kết nối",
     },
+    {
+      avatar: "https://randomuser.me/api/portraits/women/68.jpg",
+      name: "L. H. Phương",
+      focus: "Edtech, SaaS",
+      portfolioSize: "10 dự án, $5M",
+      notableInvestments: ["EduSpace", "LinguaPro"],
+      contact: "phuong.lh@email.com",
+      status: true,
+      tag: "NĐT thiên thần",
+      button: "Kết nối",
+    },
+    {
+      avatar: "https://unavatar.io/temasek.com",
+      name: "Tech Growth Fund",
+      focus: "AI, Deep Tech",
+      portfolioSize: "50 dự án, $200M",
+      notableInvestments: ["TechFlow", "DesignHub"],
+      contact: "contact@techgrowthfund.com",
+      status: true,
+      tag: "Quỹ đầu tư",
+      button: "Kết nối",
+    },
   ];
 
 
-  // Pagination logic
-  const ITEMS_PER_ROW = 3;
-  const ROWS = 3;
+  // Pagination logic (kept, but layout simplified)
+  const ITEMS_PER_ROW = small ? 2 : 3;
+  const ROWS = small ? 2 : 3;
   const ITEMS_PER_PAGE = ITEMS_PER_ROW * ROWS;
   const [page, setPage] = useState(0);
   const totalPages = Math.ceil(investors.length / ITEMS_PER_PAGE);
@@ -131,23 +153,17 @@ export default function InvestorList() {
 
   return (
     <section className="max-w-6xl mx-auto mt-10 text-center px-4 sm:px-6">
-      <h2 className="text-2xl md:text-3xl font-bold mb-2">
-         Nhà đầu tư & Quỹ đầu tư tiêu biểu
-      </h2>
-      <p className="text-gray-500 mb-6 text-sm md:text-base">
-        Khám phá các nhà đầu tư cá nhân và quỹ đầu tư nổi bật
-      </p>
-      <div className="flex flex-col gap-8 pb-4">
-        {[...Array(ROWS)].map((_, rowIdx) => (
-          <div key={rowIdx} className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-3 gap-10 justify-center">
-            {visibleInvestors
-              .slice(rowIdx * ITEMS_PER_ROW, (rowIdx + 1) * ITEMS_PER_ROW)
-              .map((i, idx) => (
-                <ProfileCard key={rowIdx * ITEMS_PER_ROW + idx} {...i} />
-              ))}
+      <h2 className="text-2xl md:text-3xl font-bold mb-2">Nhà đầu tư & Quỹ đầu tư tiêu biểu</h2>
+      <p className="text-gray-500 mb-6 text-sm md:text-base">Khám phá các nhà đầu tư cá nhân và quỹ đầu tư nổi bật</p>
+
+      <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-8 pb-4 auto-rows-fr">
+        {visibleInvestors.map((i, idx) => (
+          <div className="h-full" key={idx}>
+            <ProfileCard {...i} />
           </div>
         ))}
       </div>
+
       {totalPages > 1 && (
         <div className="flex justify-center mt-8 gap-2">
           {page > 0 && (

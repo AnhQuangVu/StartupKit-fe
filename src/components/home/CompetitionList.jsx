@@ -14,6 +14,7 @@ export default function CompetitionList() {
       desc: "Cuộc thi lập trình, đổi mới sáng tạo dành cho startup trẻ.",
       date: "10–12/4/2025",
       location: "Hà Nội",
+      registerLink: "https://example.com/hackathon-2025",
     },
     {
       img: "https://images.unsplash.com/photo-1515378791036-0648a3ef77b2?auto=format&fit=crop&w=400&q=80",
@@ -21,6 +22,7 @@ export default function CompetitionList() {
       desc: "Thi đấu trí tuệ nhân tạo, sáng tạo giải pháp thực tiễn.",
       date: "5–7/6/2025",
       location: "TP. Hồ Chí Minh",
+      registerLink: "https://example.com/ai-challenge-2025",
     },
     {
       img: "https://images.unsplash.com/photo-1504384308090-c894fdcc538d?auto=format&fit=crop&w=400&q=80",
@@ -28,6 +30,23 @@ export default function CompetitionList() {
       desc: "Cuộc thi phát triển giải pháp tài chính số cho tương lai.",
       date: "20–22/8/2025",
       location: "Đà Nẵng",
+      registerLink: "https://example.com/fintech-2025",
+    },
+    {
+      img: "https://images.unsplash.com/photo-1498050108023-c5249f4df085?auto=format&fit=crop&w=400&q=80",
+      title: "Startup Pitch Night",
+      desc: "Buổi trình bày ý tưởng trước nhà đầu tư và ban cố vấn.",
+      date: "15/9/2025",
+      location: "Hà Nội",
+      registerLink: "https://example.com/pitchnight-2025",
+    },
+    {
+      img: "https://images.unsplash.com/photo-1532619675605-efd93b0a1f0b?auto=format&fit=crop&w=400&q=80",
+      title: "Demo Day Accelerator",
+      desc: "Ngày trình diễn sản phẩm của các đội tăng tốc với cơ hội gọi vốn.",
+      date: "30/11/2025",
+      location: "TP. Hồ Chí Minh",
+      registerLink: "https://example.com/demoday-2025",
     },
   ];
 
@@ -77,9 +96,11 @@ export default function CompetitionList() {
               <span className="font-semibold">Địa điểm:</span> {comp.location}
             </span>
           </div>
-          <button className="bg-[#FFCE23] hover:bg-[#FFD600] text-black font-bold px-4 py-2 md:px-6 rounded-lg shadow-md transition-all duration-200 text-xs md:text-base">
-            Đăng ký ngay
-          </button>
+          {comp.registerLink ? (
+            <a href={comp.registerLink} target="_blank" rel="noopener noreferrer" className="bg-[#FFCE23] hover:bg-[#FFD600] text-black font-bold px-4 py-2 md:px-6 rounded-lg shadow-md transition-all duration-200 text-xs md:text-base inline-block">Đăng ký</a>
+          ) : (
+            <button className="bg-[#FFCE23] hover:bg-[#FFD600] text-black font-bold px-4 py-2 md:px-6 rounded-lg shadow-md transition-all duration-200 text-xs md:text-base">Đăng ký ngay</button>
+          )}
         </div>
         {/* Ảnh minh họa */}
         <div className="flex-1 flex items-center justify-center mt-4 md:mt-0">

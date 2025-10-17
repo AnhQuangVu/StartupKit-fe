@@ -2,8 +2,8 @@ import React, { useState } from "react";
 import { useAuth } from "../../context/AuthContext";
 import { Link, useLocation, useNavigate } from "react-router-dom";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { faUserCircle } from "@fortawesome/free-solid-svg-icons";
-import { faRocket, faCompass, faCubes } from "@fortawesome/free-solid-svg-icons";
+import { faIdBadge } from "@fortawesome/free-solid-svg-icons";
+import { faPlusCircle, faGlobe, faLayerGroup } from "@fortawesome/free-solid-svg-icons";
 import logo from "../../assets/images/logo.png";
 function Navbar() {
   const { isLoggedIn, user, logout } = useAuth();
@@ -51,23 +51,23 @@ function Navbar() {
                 : "hover:text-[#FFCE23]"
             }`}
           >
-            <FontAwesomeIcon icon={faRocket} className="mr-2" />
+            <FontAwesomeIcon icon={faPlusCircle} className="mr-2" />
             Khởi tạo dự án
           </Link>
           <Link
             to="/kham-pha"
-            className="cursor-pointer transition-colors duration-200 hover:text-[#FFCE23] flex items-center"
+            className={`cursor-pointer transition-colors duration-200 ${location.pathname.startsWith('/kham-pha') ? 'text-[#FFCE23] font-bold border-b-2 border-[#FFCE23]' : 'hover:text-[#FFCE23]'} flex items-center`}
           >
-            <FontAwesomeIcon icon={faCompass} className="mr-2" />
+            <FontAwesomeIcon icon={faGlobe} className="mr-2" />
             Khám phá
           </Link>
-          <span
-            className="cursor-pointer hover:text-[#FFCE23] transition-colors duration-200"
-            onClick={() => (window.location.href = "/coming-soon")}
+          <Link
+            to="/platform"
+            className={`cursor-pointer transition-colors duration-200 ${location.pathname.startsWith('/platform') ? 'text-[#FFCE23] font-bold border-b-2 border-[#FFCE23]' : 'hover:text-[#FFCE23]'} flex items-center`}
           >
-            <FontAwesomeIcon icon={faCubes} className="mr-2" />
+            <FontAwesomeIcon icon={faLayerGroup} className="mr-2" />
             Nền tảng của chúng tôi
-          </span>
+          </Link>
         </nav>
 
         {/* Desktop buttons hoặc icon người dùng */}
@@ -93,7 +93,7 @@ function Navbar() {
                 to="/Profile"
                 className="flex items-center mr-2 hover:text-[#FFCE23] transition-colors"
               >
-                <FontAwesomeIcon icon={faUserCircle} className="w-5 h-5" />
+                <FontAwesomeIcon icon={faIdBadge} className="w-5 h-5" />
               </Link>
             </React.Fragment>
           )}

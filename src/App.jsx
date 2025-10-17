@@ -13,6 +13,7 @@ import CustomProjectBuilder from "./pages/CustomProjectBuilder";
 import FeatureComingSoon from "./pages/FeatureComingSoon";
 import LoginForm from "./components/auth/LoginForm";
 import KhamPha from "./pages/KhamPha";
+import Platform from "./pages/Platform";
 
 export default function App() {
   return (
@@ -37,6 +38,7 @@ export default function App() {
       <Route path="/project-profile-preview" element={<ProjectProfilePreview />} />
       <Route path="/projectProfilePreview" element={<ProjectProfilePreview />} />
       <Route path="/kham-pha" element={<KhamPha />} />
+      <Route path="/platform" element={<Platform />} />
     </Routes>
   );
 }

@@ -1,7 +1,7 @@
 import { useState } from "react";
 import StartupCard from "./StartupCard";
 
-export default function StartupList() {
+export default function StartupList({ small = false, columns, rows }) {
   const startups = [
     {
       img: "https://logo.clearbit.com/stripe.com",
@@ -159,9 +159,11 @@ export default function StartupList() {
   ];
 
 
-  // Pagination logic
-  const ITEMS_PER_ROW = 3;
-  const ROWS = 3;
+  // Pagination logic (kept, but layout simplified)
+  // Pagination logic (kept, but when small=true we show a compact subset and no pagination)
+  // allow explicit override via props; otherwise fall back to small/default behavior
+  const ITEMS_PER_ROW = columns ?? (small ? 2 : 3);
+  const ROWS = rows ?? (small ? 2 : 3);
   const ITEMS_PER_PAGE = ITEMS_PER_ROW * ROWS;
   const [page, setPage] = useState(0);
   const totalPages = Math.ceil(startups.length / ITEMS_PER_PAGE);
@@ -174,56 +176,60 @@ export default function StartupList() {
   return (
     <section className="max-w-6xl mx-auto mt-8 text-center px-4 sm:px-6">
       <h2 className="text-2xl md:text-3xl font-bold mb-2">Các Startup Nổi Bật</h2>
-      <p className="text-gray-500 mb-8 text-xs md:text-base">
-        Khám phá những công ty sáng tạo đang tìm kiếm đối tác và cơ hội phát triển
-      </p>
-      <div className="flex flex-col gap-8 pb-4">
-        {[...Array(ROWS)].map((_, rowIdx) => (
-          <div key={rowIdx} className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-3 gap-10 justify-center">
-            {visibleStartups
-              .slice(rowIdx * ITEMS_PER_ROW, (rowIdx + 1) * ITEMS_PER_ROW)
-              .map((s, i) => (
-                <StartupCard key={rowIdx * ITEMS_PER_ROW + i} {...s} />
-              ))}
+      <p className="text-gray-500 mb-8 text-xs md:text-base">Khám phá những công ty sáng tạo đang tìm kiếm đối tác và cơ hội phát triển</p>
+
+      {/* Single responsive grid for consistent layout */}
+      <div
+        className={`pb-4 auto-rows-fr grid gap-${small ? '6' : '8'}`}
+        style={{
+          gridTemplateColumns: `repeat(${ITEMS_PER_ROW}, minmax(0, 1fr))`,
+          gap: '1.5rem',
+        }}
+      >
+        {visibleStartups.map((s, i) => (
+          <div className="h-full" key={i}>
+            <StartupCard small={small} {...s} />
           </div>
         ))}
       </div>
-        {totalPages > 1 && (
-          <div className="flex justify-center mt-8 gap-2">
-            {page > 0 && (
-              <button
-                className={`w-9 h-9 flex items-center justify-center rounded-full border-2 transition-all duration-150 text-lg font-bold bg-white border-gray-200 text-gray-500 hover:bg-[#fff6e0] hover:border-[#fdc142] hover:text-[#fdc142]`}
-                onClick={() => setPage(page - 1)}
-                aria-label="Trang trước"
-              >
-                &#8592;
-              </button>
-            )}
-            {[...Array(totalPages)].map((_, idx) => (
-              <button
-                key={idx}
-                className={`w-9 h-9 flex items-center justify-center rounded-full border-2 mx-1 transition-all duration-150 text-base font-semibold ${
-                  idx === page
-                    ? 'bg-[#fdc142] border-[#fdc142] text-white shadow-lg'
-                    : 'bg-white border-gray-200 text-gray-700 hover:bg-[#fff6e0] hover:border-[#fdc142] hover:text-[#fdc142]'
-                }`}
-                onClick={() => setPage(idx)}
-                aria-label={`Trang ${idx + 1}`}
-              >
-                {idx + 1}
-              </button>
-            ))}
-            {page < totalPages - 1 && (
-              <button
-                className={`w-9 h-9 flex items-center justify-center rounded-full border-2 transition-all duration-150 text-lg font-bold bg-white border-gray-200 text-gray-500 hover:bg-[#fff6e0] hover:border-[#fdc142] hover:text-[#fdc142]`}
-                onClick={() => setPage(page + 1)}
-                aria-label="Trang sau"
-              >
-                &#8594;
-              </button>
-            )}
-          </div>
-        )}
+
+      {/* Hide pagination when small (compact mode) */}
+      {!small && totalPages > 1 && (
+        <div className="flex justify-center mt-8 gap-2">
+          {page > 0 && (
+            <button
+              className={`w-9 h-9 flex items-center justify-center rounded-full border-2 transition-all duration-150 text-lg font-bold bg-white border-gray-200 text-gray-500 hover:bg-[#fff6e0] hover:border-[#fdc142] hover:text-[#fdc142]`}
+              onClick={() => setPage(page - 1)}
+              aria-label="Trang trước"
+            >
+              &#8592;
+            </button>
+          )}
+          {[...Array(totalPages)].map((_, idx) => (
+            <button
+              key={idx}
+              className={`w-9 h-9 flex items-center justify-center rounded-full border-2 mx-1 transition-all duration-150 text-base font-semibold ${
+                idx === page
+                  ? 'bg-[#fdc142] border-[#fdc142] text-white shadow-lg'
+                  : 'bg-white border-gray-200 text-gray-700 hover:bg-[#fff6e0] hover:border-[#fdc142] hover:text-[#fdc142]'
+              }`}
+              onClick={() => setPage(idx)}
+              aria-label={`Trang ${idx + 1}`}
+            >
+              {idx + 1}
+            </button>
+          ))}
+          {page < totalPages - 1 && (
+            <button
+              className={`w-9 h-9 flex items-center justify-center rounded-full border-2 transition-all duration-150 text-lg font-bold bg-white border-gray-200 text-gray-500 hover:bg-[#fff6e0] hover:border-[#fdc142] hover:text-[#fdc142]`}
+              onClick={() => setPage(page + 1)}
+              aria-label="Trang sau"
+            >
+              &#8594;
+            </button>
+          )}
+        </div>
+      )}
     </section>
   );
 }

@@ -84,9 +84,9 @@ export default function TrangChu() {
       <div className="absolute inset-0 w-full h-full pointer-events-none z-0">
         <div className="absolute inset-0 bg-[radial-gradient(circle,#3b82f618_1px,transparent_1px)] bg-[size:32px_32px]"></div>
         <div className="absolute inset-0 bg-[linear-gradient(to_right,#3b82f608_1px,transparent_1px),linear-gradient(to_bottom,#3b82f608_1px,transparent_1px)] bg-[size:80px_80px]"></div>
-        <div className="absolute top-[-100px] left-[-60px] w-[320px] h-[320px] rounded-full bg-gradient-to-br from-blue-400 via-blue-500 to-indigo-500 opacity-25 blur-3xl"></div>
-        <div className="absolute top-[35%] right-[8%] w-[280px] h-[280px] rounded-full bg-gradient-to-br from-emerald-400 via-green-500 to-teal-500 opacity-22 blur-3xl"></div>
-        <div className="absolute bottom-[-80px] left-[15%] w-[260px] h-[260px] rounded-full bg-gradient-to-br from-purple-400 via-violet-500 to-indigo-500 opacity-20 blur-2xl"></div>
+        <div className="absolute top-[-100px] left-[-60px] w-[320px] h-[320px] rounded-full bg-gradient-to-br from-amber-400 via-orange-400 to-yellow-500  opacity-25 blur-3xl"></div>
+        <div className="absolute top-[35%] right-[8%] w-[280px] h-[280px] rounded-full bg-gradient-to-br from-amber-400 via-orange-400 to-yellow-500  opacity-22 blur-3xl"></div>
+        <div className="absolute bottom-[-80px] left-[15%] w-[260px] h-[260px] rounded-full bg-gradient-to-br from-amber-400 via-orange-400 to-yellow-500 opacity-20 blur-2xl"></div>
         <div className="absolute top-[50%] left-[5%] w-[180px] h-[180px] rounded-full bg-gradient-to-br from-amber-400 via-orange-400 to-yellow-500 opacity-18 blur-2xl"></div>
         <div className="absolute inset-0 bg-gradient-to-b from-transparent via-white/20 to-white/40"></div>
       </div>
