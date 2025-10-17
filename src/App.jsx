@@ -12,6 +12,7 @@ import Connections from "./pages/Connections";
 import CustomProjectBuilder from "./pages/CustomProjectBuilder";
 import FeatureComingSoon from "./pages/FeatureComingSoon";
 import LoginForm from "./components/auth/LoginForm";
+import KhamPha from "./pages/KhamPha";
 
 export default function App() {
   return (
@@ -35,6 +36,7 @@ export default function App() {
       <Route path="/dang-nhap" element={<DangNhap />} />
       <Route path="/project-profile-preview" element={<ProjectProfilePreview />} />
       <Route path="/projectProfilePreview" element={<ProjectProfilePreview />} />
+      <Route path="/kham-pha" element={<KhamPha />} />
     </Routes>
   );
 }
