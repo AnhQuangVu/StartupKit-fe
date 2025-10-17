@@ -1,7 +1,11 @@
+import { useAuth } from '../../context/AuthContext';
+
 export default function Hero() {
+  const { isLoggedIn } = useAuth();
+  const joinHref = isLoggedIn ? '/dashboard?tab=create-project' : '/dang-nhap';
   return (
     <section
-  className="w-full flex flex-col items-center justify-center py-20 md:py-32 border-b px-3 relative overflow-hidden"
+      className="w-full flex flex-col items-center justify-center py-20 md:py-32 border-b px-3 relative overflow-hidden"
       aria-label="Hero Khởi nghiệp - Khởi đầu ý tưởng của bạn"
       style={{
         background: 'linear-gradient(120deg, #FFCE23 0%, #FFF9E0 100%)',
@@ -40,7 +44,7 @@ export default function Hero() {
           Từ cảm hứng đến thành công – chúng tôi đồng hành cùng bạn trên mọi chặng đường khởi nghiệp.
         </p>
         <a
-          href="/dashboard?tab=create-project"
+          href={joinHref}
           className="bg-[#FFCE23] hover:bg-[#FFD600] text-black font-bold px-5 py-3 md:px-8 md:py-4 rounded-lg text-base md:text-lg inline-flex items-center gap-2 shadow-lg border-2 border-white drop-shadow-[0_2px_8px_rgba(255,206,35,0.5)] transition-transform duration-200 hover:scale-105 focus:scale-105 focus:outline-none"
           aria-label="Tham gia ngay"
         >
