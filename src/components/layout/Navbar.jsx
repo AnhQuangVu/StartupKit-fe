@@ -3,6 +3,7 @@ import { useAuth } from "../../context/AuthContext";
 import { Link, useLocation, useNavigate } from "react-router-dom";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faUserCircle } from "@fortawesome/free-solid-svg-icons";
+import { faRocket, faCompass, faCubes } from "@fortawesome/free-solid-svg-icons";
 import logo from "../../assets/images/logo.png";
 function Navbar() {
   const { isLoggedIn, user, logout } = useAuth();
@@ -50,18 +51,21 @@ function Navbar() {
                 : "hover:text-[#FFCE23]"
             }`}
           >
+            <FontAwesomeIcon icon={faRocket} className="mr-2" />
             Khởi tạo dự án
           </Link>
           <span
             className="cursor-pointer hover:text-[#FFCE23] transition-colors duration-200"
             onClick={() => (window.location.href = "/coming-soon")}
           >
+            <FontAwesomeIcon icon={faCompass} className="mr-2" />
             Khám phá
           </span>
           <span
             className="cursor-pointer hover:text-[#FFCE23] transition-colors duration-200"
             onClick={() => (window.location.href = "/coming-soon")}
           >
+            <FontAwesomeIcon icon={faCubes} className="mr-2" />
             Nền tảng của chúng tôi
           </span>
         </nav>
