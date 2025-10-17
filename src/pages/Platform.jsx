@@ -80,7 +80,7 @@ export default function Platform() {
       <Navbar isLoggedIn={isLoggedIn} user={user} />
       <main className="flex-1 max-w-6xl mx-auto w-full px-4 py-12">
         <header className="text-center mb-10">
-          <p className={`text-sm font-medium uppercase tracking-wider ${primaryText} mb-2`}>Khám phá</p>
+          <p className={`text-sm font-medium uppercase tracking-wider ${primaryText} mb-2`}>NỀN TẢNG</p>
           <h1 className="text-4xl sm:text-5xl font-extrabold text-gray-900 leading-tight">Nền tảng của chúng tôi</h1>
           <p className="mt-4 text-lg text-gray-600 max-w-3xl mx-auto">Kết nối hệ sinh thái khởi nghiệp Việt Nam — từ mentor, nhà đầu tư đến tài nguyên vận hành.</p>
         </header>
@@ -117,7 +117,7 @@ export default function Platform() {
           <h2 className="text-2xl font-bold text-gray-900 mb-6 text-center">Gói tiện ích</h2>
           <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
             {/** Card common style for consistent heights */}
-            <div className="flex flex-col border border-gray-200 rounded-xl p-6">
+            <div className="flex flex-col h-full border border-gray-200 rounded-xl p-6">
               <div>
                 <h3 className="text-xl font-semibold mb-1">Gói Basic</h3>
                 <p className="text-gray-500 mb-4">Phù hợp cho nhóm mới bắt đầu.</p>
@@ -129,13 +129,16 @@ export default function Platform() {
                 </ul>
               </div>
               <div className="mt-auto">
-                <button onClick={() => handlePlanClick('basic')} className="w-full bg-gray-100 text-gray-800 font-semibold px-4 py-3 rounded-lg hover:bg-gray-200">Bắt đầu miễn phí</button>
+                <button onClick={() => handlePlanClick('basic')} className={`w-full ${primaryBg} text-gray-900 font-semibold px-4 py-3 rounded-lg hover:bg-yellow-400 transition`}>Bắt đầu miễn phí</button>
               </div>
             </div>
 
-            <div className="flex flex-col rounded-xl p-6 shadow-lg ring-2 ring-offset-2 ring-[#FFCE23] bg-white">
+            <div className="flex flex-col h-full rounded-xl p-6 shadow-lg ring-2 ring-offset-2 ring-[#FFCE23] bg-white">
               <div>
-                <h3 className="text-xl font-semibold mb-1">Gói Pro (Khuyên dùng)</h3>
+                <div className="flex items-center gap-3 mb-2">
+                  <h3 className="text-xl font-semibold">Gói Pro</h3>
+                  <span className="ml-2 inline-flex items-center px-2 py-0.5 rounded-full text-xs font-medium bg-[#FFCE23] text-gray-900">Khuyên dùng</span>
+                </div>
                 <p className="text-gray-600 mb-4">Cho startup muốn tăng tốc phát triển và gọi vốn.</p>
                 <div className="text-3xl font-extrabold mb-4">$29<span className="text-base font-medium">/tháng</span></div>
                 <ul className="space-y-2 text-gray-700 mb-6">
@@ -150,7 +153,7 @@ export default function Platform() {
               </div>
             </div>
 
-            <div className="flex flex-col border border-gray-200 rounded-xl p-6">
+            <div className="flex flex-col h-full border border-gray-200 rounded-xl p-6">
               <div>
                 <h3 className="text-xl font-semibold mb-1">Gói Enterprise</h3>
                 <p className="text-gray-600 mb-4">Giải pháp cho tổ chức, quỹ và đơn vị lớn.</p>
@@ -190,7 +193,7 @@ export default function Platform() {
               </div>
             </div>
 
-            <div ref={formRef} className="p-4 bg-gray-50 rounded-lg border">
+            <div ref={formRef} className="p-4 bg-white rounded-lg border shadow-sm">
               {contactSent && (
                 <div className="mb-4 p-3 bg-green-100 border border-green-300 rounded text-green-800 font-medium">Cảm ơn bạn — tin nhắn đã được gửi thành công. Chúng tôi sẽ phản hồi sớm nhất.</div>
               )}
@@ -200,24 +203,24 @@ export default function Platform() {
 
               <form onSubmit={handleContactSubmit} className="space-y-4">
                 <label className="block">
-                  <span className="sr-only">Tên của bạn</span>
-                  <div className="relative">
+                  <span className="text-sm font-medium text-gray-700">Tên của bạn</span>
+                  <div className="relative mt-1">
                     <UserIcon className="absolute left-3 top-1/2 -translate-y-1/2 w-5 h-5 text-gray-400" />
                     <input value={contactName} onChange={(e) => setContactName(e.target.value)} placeholder="Tên của bạn" className="w-full pl-10 pr-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-[#FFCE23] focus:border-[#FFCE23]" aria-label="Tên của bạn" />
                   </div>
                 </label>
 
                 <label className="block">
-                  <span className="sr-only">Email</span>
-                  <div className="relative">
+                  <span className="text-sm font-medium text-gray-700">Email</span>
+                  <div className="relative mt-1">
                     <EnvelopeIcon className="absolute left-3 top-1/2 -translate-y-1/2 w-5 h-5 text-gray-400" />
                     <input value={contactEmail} onChange={(e) => setContactEmail(e.target.value)} placeholder="Email" className="w-full pl-10 pr-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-[#FFCE23] focus:border-[#FFCE23]" aria-label="Email" />
                   </div>
                 </label>
 
                 <label className="block">
-                  <span className="sr-only">Nội dung tin nhắn</span>
-                  <div className="relative">
+                  <span className="text-sm font-medium text-gray-700">Nội dung tin nhắn</span>
+                  <div className="relative mt-1">
                     <ChatBubbleBottomCenterTextIcon className="absolute left-3 top-4 w-5 h-5 text-gray-400" />
                     <textarea value={contactMessage} onChange={(e) => setContactMessage(e.target.value)} placeholder="Nội dung tin nhắn" className="w-full pl-10 pr-4 py-3 border border-gray-300 rounded-lg h-32 resize-none focus:ring-2 focus:ring-[#FFCE23] focus:border-[#FFCE23]" aria-label="Nội dung tin nhắn" />
                   </div>
