@@ -165,7 +165,7 @@ export default function Platform() {
                 </ul>
               </div>
               <div className="mt-auto">
-                <button onClick={() => handlePlanClick('enterprise')} className="w-full bg-blue-600 text-white font-semibold px-4 py-3 rounded-lg hover:bg-blue-700">Nhận tư vấn</button>
+                <button onClick={() => handlePlanClick('enterprise')} className={`w-full ${primaryBg} text-gray-900 font-semibold px-4 py-3 rounded-lg hover:bg-yellow-400 transition`}>Nhận tư vấn</button>
               </div>
             </div>
           </div>
@@ -184,11 +184,11 @@ export default function Platform() {
                 </div>
                 <div className="flex items-center space-x-3">
                   <EnvelopeIcon className={`w-6 h-6 ${primaryText} flex-shrink-0`} />
-                  <a href="mailto:startupkit.hou@gmail.com" className="text-blue-600 hover:underline">startupkit.hou@gmail.com</a>
+                  <a href="mailto:startupkit.hou@gmail.com" className="text-black hover:underline">startupkit.hou@gmail.com</a>
                 </div>
                 <div className="flex items-center space-x-3">
                   <UserIcon className={`w-6 h-6 ${primaryText} flex-shrink-0`} />
-                  <a href="https://www.facebook.com/startupkit.page" target="_blank" rel="noopener noreferrer" className="text-blue-600 hover:underline">Facebook: startupkit.page</a>
+                  <a href="https://www.facebook.com/startupkit.page" target="_blank" rel="noopener noreferrer" className="text-black hover:underline">Facebook: startupkit.page</a>
                 </div>
               </div>
             </div>
