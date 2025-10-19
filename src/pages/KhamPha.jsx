@@ -55,32 +55,38 @@ export default function KhamPha() {
 
       <main className="max-w-6xl mx-auto px-4 py-10">
         <header className="text-center mb-8">
-          <h1 className="text-3xl md:text-4xl font-extrabold text-gray-900">Khám Phá</h1>
-          <p className="text-gray-600 mt-2">Tìm kiếm startup, sự kiện, nhà đầu tư và mentor phù hợp với bạn.</p>
+          <div className="inline-block bg-white border border-gray-200 rounded-2xl px-6 py-5 shadow-md">
+            <h1 className="text-3xl md:text-4xl font-extrabold text-gray-900">Khám Phá</h1>
+            <p className="text-gray-600 mt-2">Tìm kiếm startup, sự kiện, nhà đầu tư và mentor phù hợp với bạn.</p>
+          </div>
         </header>
 
         {/* search + filters compact */}
-        <div className="flex flex-col md:flex-row gap-4 items-center mb-6">
-          <div className="flex-1 relative">
-            <span className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400"><FontAwesomeIcon icon={faSearch} /></span>
-            <input value={query} onChange={handleSearchChange} placeholder="Tìm kiếm startup, sự kiện, nhà đầu tư..." className="w-full pl-10 pr-4 py-3 rounded-lg border border-gray-200 shadow-sm" />
-          </div>
-          <div className="flex items-center gap-2">
-            <div className="hidden sm:flex gap-2">
-              {categories.map(c => (
-                <button key={c.key} onClick={() => handleCategoryClick(c.key)} className={`px-3 py-2 rounded-full text-sm font-medium ${category===c.key ? 'bg-[#FFCE23] text-black' : 'bg-white text-gray-700 border border-gray-200'}`}>
-                  {c.label}
-                </button>
-              ))}
+        <div className="mb-6">
+          <div className="bg-white rounded-xl p-4 border border-gray-200 shadow-md">
+            <div className="flex flex-col md:flex-row gap-4 items-center">
+              <div className="flex-1 relative">
+                <span className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400"><FontAwesomeIcon icon={faSearch} /></span>
+                <input value={query} onChange={handleSearchChange} placeholder="Tìm kiếm startup, sự kiện, nhà đầu tư..." className="w-full pl-10 pr-4 py-3 rounded-lg border border-gray-200" />
+              </div>
+              <div className="flex items-center gap-2">
+                <div className="hidden sm:flex gap-2">
+                  {categories.map(c => (
+                    <button key={c.key} onClick={() => handleCategoryClick(c.key)} className={`px-3 py-2 rounded-full text-sm font-medium ${category===c.key ? 'bg-[#FFCE23] text-black' : 'bg-white text-gray-700 border border-gray-200'}`}>
+                      {c.label}
+                    </button>
+                  ))}
+                </div>
+                <button onClick={() => { setQuery(''); setCategory('all'); setStage('all'); }} className="px-4 py-2 rounded-lg bg-white border border-gray-200">Reset</button>
+              </div>
             </div>
-            <button onClick={() => { setQuery(''); setCategory('all'); setStage('all'); }} className="px-4 py-2 rounded-lg bg-white border border-gray-200 shadow-sm">Reset</button>
           </div>
         </div>
 
         {/* stats */}
         <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-4 mb-8">
           {stats.map((s,i) => (
-            <div key={i} className="bg-white rounded-xl p-5 shadow-sm border border-gray-100 text-center">
+            <div key={i} className="bg-white rounded-xl p-5 shadow-md border border-gray-200 text-center">
               <div className="text-2xl font-bold text-gray-900">{s.number}</div>
               <div className="text-sm text-gray-600">{s.label}</div>
             </div>
@@ -89,40 +95,52 @@ export default function KhamPha() {
 
         {/* Trends */}
         <section className="mb-8">
-          <h3 className="text-xl font-semibold mb-4">Xu hướng Khởi nghiệp 2025</h3>
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-            <div className="bg-white rounded-lg p-4 shadow-sm"> <h4 className="font-semibold">AI & Automation</h4><p className="text-sm text-gray-600">AI trong SaaS và tự động hoá quy trình.</p></div>
-            <div className="bg-white rounded-lg p-4 shadow-sm"> <h4 className="font-semibold">Sustainability</h4><p className="text-sm text-gray-600">Năng lượng sạch & kinh doanh tuần hoàn.</p></div>
-            <div className="bg-white rounded-lg p-4 shadow-sm"> <h4 className="font-semibold">Healthtech & EduTech</h4><p className="text-sm text-gray-600">Chăm sóc sức khoẻ số & công nghệ giáo dục.</p></div>
+          <div className="bg-white rounded-xl p-4 border border-gray-200 shadow-md">
+            <h3 className="text-xl font-semibold mb-4">Xu hướng Khởi nghiệp 2025</h3>
+            <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+              <div className="bg-white rounded-lg p-4 shadow-md border border-gray-100"> <h4 className="font-semibold">AI & Automation</h4><p className="text-sm text-gray-600">AI trong SaaS và tự động hoá quy trình.</p></div>
+              <div className="bg-white rounded-lg p-4 shadow-md border border-gray-100"> <h4 className="font-semibold">Sustainability</h4><p className="text-sm text-gray-600">Năng lượng sạch & kinh doanh tuần hoàn.</p></div>
+              <div className="bg-white rounded-lg p-4 shadow-md border border-gray-100"> <h4 className="font-semibold">Healthtech & EduTech</h4><p className="text-sm text-gray-600">Chăm sóc sức khoẻ số & công nghệ giáo dục.</p></div>
+            </div>
           </div>
         </section>
 
         {/* Lists */}
         <section className="mb-8">
-          <StartupList columns={3} rows={4} />
+          <div className="bg-white rounded-xl p-4 border border-gray-200 shadow-md">
+            <StartupList columns={3} rows={4} />
+          </div>
         </section>
 
         <section className="mb-8">
-          <CompetitionList />
+          <div className="bg-white rounded-xl p-4 border border-gray-200 shadow-md">
+            <CompetitionList />
+          </div>
         </section>
 
         <section className="mb-8">
-          <InvestorList />
+          <div className="bg-white rounded-xl p-4 border border-gray-200 shadow-md">
+            <InvestorList />
+          </div>
         </section>
 
         <section className="mb-8">
-          <MentorList />
+          <div className="bg-white rounded-xl p-4 border border-gray-200 shadow-md">
+            <MentorList />
+          </div>
         </section>
 
 
 
         {/* resources */}
         <section className="mb-8">
-          <h3 className="text-lg font-semibold mb-4">Tài nguyên hữu ích</h3>
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-            {["Hướng dẫn gọi vốn (checklist)","Mẫu pitchdeck","Hợp đồng mẫu","Chương trình hỗ trợ sinh viên","Danh sách quỹ","Khu vực pháp lý","Tài liệu phát triển sản phẩm","Mạng lưới mentor"].map((t,i)=>(
-              <a key={i} className="block p-4 bg-white rounded-lg shadow-sm border border-gray-200" href="/coming-soon">{t}</a>
-            ))}
+          <div className="bg-white rounded-xl p-4 border border-gray-200 shadow-md">
+            <h3 className="text-lg font-semibold mb-4">Tài nguyên hữu ích</h3>
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+              {["Hướng dẫn gọi vốn (checklist)","Mẫu pitchdeck","Hợp đồng mẫu","Chương trình hỗ trợ sinh viên","Danh sách quỹ","Khu vực pháp lý","Tài liệu phát triển sản phẩm","Mạng lưới mentor"].map((t,i)=>(
+                <a key={i} className="block p-4 bg-white rounded-lg shadow-sm border border-gray-200" href="/coming-soon">{t}</a>
+              ))}
+            </div>
           </div>
         </section>
 

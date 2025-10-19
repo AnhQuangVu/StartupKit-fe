@@ -1,6 +1,7 @@
 // File CreateProject.jsx
 
 import React, { useState, useEffect } from "react";
+import { useNavigate } from 'react-router-dom';
 // Cloudinary upload
 import {
   PDFDownloadLink,
@@ -50,22 +51,26 @@ function ProjectSteps({ currentStep, onStepClick }) {
 // Component: Chọn mẫu hồ sơ
 function ProjectTemplateSelector({ onSelect }) {
   const [showModal, setShowModal] = useState(false);
+  const [uploadedFile, setUploadedFile] = useState(null);
+  const [showUploadSection, setShowUploadSection] = useState(false);
+  const navigate = useNavigate();
   const templates = [
     { type: "Từ cuộc thi", items: ["HOU Sinh Viên Startup"] },
     { type: "Trang trắng", items: ["Chọn mẫu trống"] },
+    { type: "Tải hồ sơ" , items: ["Tải hồ sơ đã có "] },
   ];
   return (
     <div className="bg-white rounded-lg border border-gray-200 shadow-sm p-8 w-full">
       <h3 className="text-lg font-semibold mb-6">Chọn mẫu hồ sơ khởi nghiệp</h3>
       <div className="flex gap-6 mb-6 flex-wrap">
+  
+
         {templates.map((group, idx) => (
           <div
             key={group.type + "-" + idx}
             className="bg-gray-50 rounded-lg border border-gray-200 p-6 flex-1 flex flex-col items-center"
           >
-            <span className="text-sm font-bold text-yellow-500 mb-3">
-              {group.type}
-            </span>
+            <span className="text-sm font-bold text-yellow-500 mb-3">{group.type}</span>
             {group.items.map((item, i) =>
               group.type === "Trang trắng" ? (
                 <React.Fragment key={group.type + "-" + i}>
@@ -82,23 +87,21 @@ function ProjectTemplateSelector({ onSelect }) {
                       className="fixed inset-0 z-50 flex items-center justify-center bg-black bg-opacity-40"
                     >
                       <div className="bg-white rounded-lg shadow-lg p-8 max-w-sm w-full text-center">
-                        <h3 className="text-xl font-bold mb-4 text-yellow-600">
-                          Chức năng đang được phát triển
-                        </h3>
-                        <p className="mb-6 text-gray-700">
-                          Tính năng tạo hồ sơ từ mẫu trống sẽ sớm được cập nhật.
-                          Vui lòng chọn mẫu khác hoặc quay lại sau.
-                        </p>
-                        <button
-                          className="bg-[#FFCE23] hover:bg-yellow-500 text-base font-semibold px-6 py-2 rounded"
-                          onClick={() => setShowModal(false)}
-                        >
-                          Đóng
-                        </button>
+                        <h3 className="text-xl font-bold mb-4 text-yellow-600">Chức năng đang được phát triển</h3>
+                        <p className="mb-6 text-gray-700">Tính năng tạo hồ sơ từ mẫu trống sẽ sớm được cập nhật. Vui lòng chọn mẫu khác hoặc quay lại sau.</p>
+                        <button className="bg-[#FFCE23] hover:bg-yellow-500 text-base font-semibold px-6 py-2 rounded" onClick={() => setShowModal(false)}>Đóng</button>
                       </div>
                     </div>
                   )}
                 </React.Fragment>
+              ) : group.type === "Tải hồ sơ" ? (
+                <button
+                  key={group.type + "-" + i + "-btn"}
+                  className="w-full bg-white hover:bg-yellow-100 text-sm rounded px-4 py-2 border mb-2 font-semibold text-gray-700 border-gray-200"
+                  onClick={() => navigate('/profile/upload')}
+                >
+                  {item}
+                </button>
               ) : (
                 <button
                   key={group.type + "-" + i + "-btn"}
@@ -112,6 +115,42 @@ function ProjectTemplateSelector({ onSelect }) {
           </div>
         ))}
       </div>
+
+      {/* Inline upload section (acts like UploadProfile section but embedded) */}
+      {showUploadSection && (
+        <div className="bg-white rounded-lg border border-gray-200 p-6 mt-4">
+          <h4 className="text-lg font-semibold mb-3">Tải hồ sơ lên</h4>
+          <p className="text-sm text-gray-600 mb-3">Bạn có thể chọn file CV (PDF/DOC/DOCX) để tiếp tục chỉnh sửa hồ sơ.</p>
+          <div className="flex items-center gap-3">
+            <input
+              type="file"
+              accept=".pdf,.doc,.docx"
+              onChange={(e) => {
+                const f = e.target.files && e.target.files[0];
+                if (f) {
+                  setUploadedFile(f);
+                }
+              }}
+            />
+            {uploadedFile && <div className="text-sm text-gray-700">{uploadedFile.name}</div>}
+          </div>
+          <div className="mt-4 flex gap-3">
+            <button
+              onClick={() => {
+                if (uploadedFile) {
+                  onSelect && onSelect({ type: "uploaded", file: uploadedFile });
+                  setShowUploadSection(false);
+                  setUploadedFile(null);
+                }
+              }}
+              className="bg-[#FFCE23] text-black px-4 py-2 rounded font-semibold"
+            >
+              Tiếp tục chỉnh sửa hồ sơ
+            </button>
+            <button onClick={() => { setShowUploadSection(false); setUploadedFile(null); }} className="bg-white border border-gray-300 px-4 py-2 rounded">Hủy</button>
+          </div>
+        </div>
+      )}
     </div>
   );
 }
@@ -179,6 +218,17 @@ function ProjectBasicForm({ form, setForm, onCreate, useAI, setUseAI }) {
         newForm.teamImagePreview = url;
       } catch (err) {
         alert("Lỗi upload ảnh đội ngũ lên Cloudinary\n" + (err?.message || ""));
+        return;
+      }
+    }
+    // Upload profile (CV) nếu có
+    if (form.profileFile) {
+      try {
+        const url = await uploadToCloudinary(form.profileFile);
+        newForm.profileUrl = url;
+        console.log("Profile uploaded to Cloudinary:", url);
+      } catch (err) {
+        alert("Lỗi upload hồ sơ lên Cloudinary\n" + (err?.message || ""));
         return;
       }
     }
@@ -650,6 +700,7 @@ import ProjectPreview from "../components/project/ProjectPreview";
 import ProjectProfilePreview from "../components/project/ProjectProfilePreview";
 import ProjectProfileChatbot from "../components/project/ProjectProfileChatbot";
 import StartupCard from "../components/common/StartupCard";
+import { useLocation } from 'react-router-dom';
 
 // Main page component
 function CreateProject() {
@@ -695,6 +746,26 @@ function CreateProject() {
       : [],
     website: "",
   });
+
+  const location = useLocation();
+
+  // If navigated here with a file from UploadProfile, pick it up and set form
+  useEffect(() => {
+    const state = location.state || {};
+    if (state.file) {
+      setForm((prev) => ({ ...prev, profileFile: state.file }));
+      if (state.extractedText) {
+        setForm((prev) => ({ ...prev, profileExtractedText: state.extractedText }));
+      }
+      setCurrentStep(1);
+      // Clear history state so repeated reloads don't reapply
+      try {
+        window.history.replaceState({}, document.title);
+      } catch (e) {
+        // ignore
+      }
+    }
+  }, [location.state]);
 
   // Nếu vào từ tab quản lý dự án (step=2), lấy dữ liệu từ localStorage
   useEffect(() => {
@@ -843,6 +914,7 @@ function CreateProject() {
       team_image_url: form.teamImageUrl || form.teamImagePreview || null,
       product_image_url:
         form.productImageUrl || form.productImagePreview || null,
+      profile_url: form.profileUrl || null,
       use_ai: !!form.use_ai || !!form.useAI,
     };
     return payload;
@@ -876,7 +948,20 @@ function CreateProject() {
           <div className="w-full min-h-[500px] max-w-[1800px] mx-auto">
             {currentStep === 0 && (
               <div style={{ marginTop: "-97px" }}>
-                <ProjectTemplateSelector onSelect={() => setCurrentStep(1)} />
+                <ProjectTemplateSelector
+                  onSelect={(val) => {
+                    // If user uploaded a file, val will be {type: 'uploaded', file}
+                    if (val && val.type === "uploaded" && val.file) {
+                      // Save file into form state for future upload when creating project
+                      setForm((prev) => ({ ...prev, profileFile: val.file }));
+                      setSelectedTemplate("Uploaded CV");
+                      setCurrentStep(1);
+                      return;
+                    }
+                    // Otherwise proceed to template selection (default behavior)
+                    setCurrentStep(1);
+                  }}
+                />
               </div>
             )}
             {currentStep === 1 && (

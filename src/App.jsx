@@ -14,6 +14,7 @@ import FeatureComingSoon from "./pages/FeatureComingSoon";
 import LoginForm from "./components/auth/LoginForm";
 import KhamPha from "./pages/KhamPha";
 import Platform from "./pages/Platform";
+import UploadProfile from "./pages/profile/UploadProfile";
 
 export default function App() {
   return (
@@ -39,6 +40,7 @@ export default function App() {
       <Route path="/projectProfilePreview" element={<ProjectProfilePreview />} />
       <Route path="/kham-pha" element={<KhamPha />} />
       <Route path="/platform" element={<Platform />} />
+  <Route path="/profile/upload" element={<UploadProfile />} />
     </Routes>
   );
 }
