@@ -14,12 +14,20 @@ const menuItemsByRole = {
 		{ label: "Sự Kiện", path: "/events" },
 		{ label: "Kết Nối", path: "/connections" },
 	],
+	// investor: [
+	// 	{ label: "Không Gian Làm Việc", path: "/dashboard" },
+	// 	{ label: "Xây dựng hồ sơ chuyên gia", path: "/investor-projects" },
+	// 	{ label: "Tìm Kiếm Kết Nối", path: "/events" },
+	// 	{ label: "Quản lý quy trình đầu tư", path: "/connections" },
+	// ],
+
 	investor: [
-		{ label: "Investor Board", path: "/dashboard" },
-		{ label: "Dự Án Tiềm Năng", path: "/investor-projects" },
-		{ label: "Sự Kiện", path: "/events" },
-		{ label: "Kết Nối", path: "/connections" },
-	],
+        { label: "Không Gian Làm Việc", path: "/dashboard" },
+        { label: "Xây dựng hồ sơ chuyên gia", path: "/expert-profile" },
+        { label: "Tìm Kiếm Kết Nối", path: "/search-connections" },
+        { label: "Quản lý quy trình đầu tư", path: "/investment-process" },
+    ],
+
 	admin: [
 		{ label: "Admin Panel", path: "/dashboard" },
 		{ label: "Quản Lý Người Dùng", path: "/admin-users" },
