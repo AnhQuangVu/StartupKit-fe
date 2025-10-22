@@ -1,0 +1,80 @@
+.quill-editor-active {
+  border: 2.5px solid #2563eb;
+  border-radius: 14px;
+  background: #fff;
+  box-shadow: 0 8px 32px 0 rgba(37,99,235,0.18), 0 1.5px 8px 0 rgba(0,0,0,0.07);
+  padding: 8px 16px 8px 16px;
+  transition: box-shadow 0.22s cubic-bezier(.4,2,.6,1), border 0.18s, transform 0.18s;
+  min-height: 60px;
+  transform: scale(1.03);
+  z-index: 10;
+}
+.quill-editor-active .ql-toolbar {
+  display: none !important;
+}
+.quill-editor-active .ql-container {
+  border: none;
+  font-size: 1rem;
+  min-height: 80px;
+  padding: 0;
+}
+.quill-editor-active .ql-editor {
+  min-height: 80px;
+  padding: 6px 0 0 0;
+}
+.quill-editor-preview {
+  min-height: 48px;
+  border: 1.5px solid #d1d5db;
+  border-radius: 8px;
+  background: #fff;
+  padding: 10px 12px;
+  cursor: pointer;
+  transition: border 0.2s, box-shadow 0.2s;
+  box-shadow: 0 1px 4px 0 rgba(0,0,0,0.03);
+}
+.quill-editor-preview:hover {
+  border: 2px solid #2563eb;
+  box-shadow: 0 2px 8px 0 rgba(37,99,235,0.10);
+}
+.quill-editor-preview span.text-gray-400 {
+  color: #9ca3af;
+  font-style: italic;
+}
+
+/* Custom file picker styles */
+.file-picker-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  background: linear-gradient(180deg,#fff,#f3f6fb);
+  border: 1px solid rgba(37,99,235,0.12);
+  padding: 8px 12px;
+  border-radius: 8px;
+  cursor: pointer;
+  color: #1f2937;
+  font-weight: 600;
+  box-shadow: 0 4px 18px rgba(15,23,42,0.06);
+}
+.file-picker-btn:hover { background: linear-gradient(180deg,#fff,#eef6ff); }
+.file-input-hidden { display: none; }
+.thumbnails { display:flex; gap:8px; flex-wrap:wrap; margin-top:8px; }
+.thumb { width:110px; height:80px; border-radius:6px; overflow:hidden; background:#f3f4f6; display:inline-block; position:relative }
+.thumb img { width:100%; height:100%; object-fit:cover }
+.removeBtn {
+  position: absolute;
+  top: 6px;
+  right: 6px;
+  width: 26px;
+  height: 26px;
+  border-radius: 50%;
+  background: rgba(0,0,0,0.6);
+  color: #fff;
+  border: none;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 14px;
+  line-height: 1;
+  cursor: pointer;
+}
+.removeBtn:hover { background: rgba(0,0,0,0.75); }
