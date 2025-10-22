@@ -1,0 +1,13 @@
+/* Ẩn banner TinyMCE trial ở góc phải */
+.tox-notifications-container {
+  display: none !important;
+}
+/* Ẩn khung popup lớn, chỉ hiện inline nhỏ gọn */
+.tox-tinymce-aux {
+  display: none !important;
+}
+
+/* Đảm bảo thanh công cụ TinyMCE inline luôn nổi trên cùng */
+.tox-tinymce-inline {
+  z-index: 9999 !important;
+}
