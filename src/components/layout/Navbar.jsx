@@ -3,7 +3,7 @@ import { useAuth } from "../../context/AuthContext";
 import { Link, useLocation, useNavigate } from "react-router-dom";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faIdBadge } from "@fortawesome/free-solid-svg-icons";
-import { faPlusCircle, faGlobe, faLayerGroup } from "@fortawesome/free-solid-svg-icons";
+import { faPlusCircle, faGlobe, faLayerGroup, faComments } from "@fortawesome/free-solid-svg-icons";
 import logo from "../../assets/images/logo.png";
 function Navbar() {
   const { isLoggedIn, user, logout } = useAuth();
@@ -53,6 +53,13 @@ function Navbar() {
           >
             <FontAwesomeIcon icon={faPlusCircle} className="mr-2" />
             Khởi tạo dự án
+          </Link>
+          <Link
+            to="/dien-dan"
+            className={`cursor-pointer transition-colors duration-200 ${location.pathname.startsWith('/dien-dan') ? 'text-[#FFCE23] font-bold border-b-2 border-[#FFCE23]' : 'hover:text-[#FFCE23]'} flex items-center`}
+          >
+            <FontAwesomeIcon icon={faComments} className="mr-2" />
+            Diễn đàn
           </Link>
           <Link
             to="/kham-pha"
