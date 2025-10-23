@@ -14,6 +14,7 @@ const FORM_SECTIONS = [
       { label: 'Lĩnh vực', key: 'field', type: 'input', placeholder: 'Giáo dục, Dịch vụ, Tài chính, Du lịch' },
       { label: 'Đơn vị thực hiện', key: 'organization', type: 'input', placeholder: 'TRƯỜNG ĐẠI HỌC MỞ HÀ NỘI' },
       { label: 'Thời gian thực hiện', key: 'time', type: 'input', placeholder: 'Hà Nội, Tháng 12/2023' },
+      { label: 'Giai đoạn hiện tại', key: 'currentStage', type: 'select', placeholder: '' },
   { label: 'Nhóm thực hiện & Giảng viên hướng dẫn', key: 'teamInfo', type: 'rich', placeholder: 'Nhập thông tin các thành viên' },
     ]
   },
@@ -63,6 +64,7 @@ const FORM_SECTIONS = [
     fields: [
       { label: 'Kế hoạch kinh doanh (theo giai đoạn)', key: 'businessPlan', type: 'rich', placeholder: 'Nhập kế hoạch kinh doanh...' },
       { label: 'Kênh phân phối', key: 'distribution', type: 'rich', placeholder: 'Nhập kênh phân phối...' },
+  { label: 'Lộ trình phát triển', key: 'stages', type: 'stages', placeholder: '' },
       { label: 'Phát triển, mở rộng thị trường', key: 'marketDevelopment', type: 'rich', placeholder: 'Nhập phát triển, mở rộng thị trường...' },
       { label: 'Kết quả tiềm năng', key: 'potentialResult', type: 'rich', placeholder: 'Nhập kết quả tiềm năng...' },
       { label: 'Khả năng tăng trưởng, tác động xã hội', key: 'growthImpact', type: 'rich', placeholder: 'Nhập khả năng tăng trưởng, tác động xã hội...' },
@@ -96,12 +98,23 @@ export default function ProjectProfileFullForm({ initialData = {}, onChange }) {
   const TOOLBAR_BG = 'linear-gradient(180deg, rgba(255,255,255,0.99), #ececec)';
   const [form, setForm] = useState(() => {
     const obj = {};
-    FORM_SECTIONS.forEach(sec => sec.fields.forEach(f => { obj[f.key] = initialData[f.key] || ''; }));
+    FORM_SECTIONS.forEach(sec => sec.fields.forEach(f => {
+      if (initialData[f.key] !== undefined) obj[f.key] = initialData[f.key];
+      else if (f.type === 'images' || f.type === 'stages') obj[f.key] = [];
+      else obj[f.key] = '';
+    }));
     return obj;
   });
   const [focusKey, setFocusKey] = useState(null);
   const editorRefs = useRef({});
   const [uploading, setUploading] = useState({}); // { fieldKey: boolean }
+  const PHASE_OPTIONS = [
+    { value: 'idea', label: 'Ý tưởng' },
+    { value: 'research', label: 'Nghiên cứu thị trường' },
+    { value: 'product', label: 'Hoàn thiện sản phẩm' },
+    { value: 'survey', label: 'Khảo sát' },
+    { value: 'launch', label: 'Launch' }
+  ];
   // helpers for image uploads/previews
   function readFileAsDataURL(file) {
     return new Promise((resolve, reject) => {
@@ -164,6 +177,52 @@ export default function ProjectProfileFullForm({ initialData = {}, onChange }) {
     } finally {
       setUploading(u => ({ ...u, [key]: false }));
     }
+  }
+
+  // stages helpers
+  function addStage() {
+    const nextStage = {
+      id: `stage-${Date.now()}`,
+      title: '',
+      description_html: '',
+      start_date: '',
+      end_date: '',
+      status: 'planned',
+      deliverables: [],
+      budget: 0,
+      progress_percent: 0,
+      dependencies: []
+    };
+    const arr = Array.isArray(form.stages) ? form.stages.slice() : [];
+    arr.push(nextStage);
+    handleChange('stages', arr);
+  }
+
+  const ROADMAP_TEMPLATES = {
+    basic: [
+      { id: 't-idea', title: 'Ý tưởng', description_html: '', start_date: '', end_date: '', status: 'planned', deliverables: [], budget: 0, progress_percent: 0, dependencies: [] },
+      { id: 't-research', title: 'Nghiên cứu thị trường', description_html: '', start_date: '', end_date: '', status: 'planned', deliverables: [], budget: 0, progress_percent: 0, dependencies: [] },
+      { id: 't-product', title: 'Hoàn thiện sản phẩm', description_html: '', start_date: '', end_date: '', status: 'planned', deliverables: [], budget: 0, progress_percent: 0, dependencies: [] },
+      { id: 't-survey', title: 'Khảo sát', description_html: '', start_date: '', end_date: '', status: 'planned', deliverables: [], budget: 0, progress_percent: 0, dependencies: [] },
+      { id: 't-launch', title: 'Launch', description_html: '', start_date: '', end_date: '', status: 'planned', deliverables: [], budget: 0, progress_percent: 0, dependencies: [] }
+    ]
+  };
+
+  function applyTemplate(key) {
+    if (!ROADMAP_TEMPLATES[key]) return;
+    handleChange('stages', ROADMAP_TEMPLATES[key].map(s => ({ ...s, id: `${s.id}-${Date.now()}` })) );
+  }
+
+  function updateStage(idx, patch) {
+    const arr = Array.isArray(form.stages) ? form.stages.slice() : [];
+    arr[idx] = { ...arr[idx], ...patch };
+    handleChange('stages', arr);
+  }
+
+  function removeStage(idx) {
+    const arr = Array.isArray(form.stages) ? form.stages.slice() : [];
+    arr.splice(idx, 1);
+    handleChange('stages', arr);
   }
 
   function removeImageAt(key, idx) {
@@ -247,6 +306,63 @@ export default function ProjectProfileFullForm({ initialData = {}, onChange }) {
                           </div>
                         ))}
                       </div>
+                    )}
+                  </div>
+                )}
+                {field.type === 'select' && (
+                  <div>
+                    <select className="border rounded p-2 bg-white" value={form[field.key] || ''} onChange={e => handleChange(field.key, e.target.value)}>
+                      <option value="">-- Chọn giai đoạn hiện tại --</option>
+                      {PHASE_OPTIONS.map(opt => (
+                        <option key={opt.value} value={opt.value}>{opt.label}</option>
+                      ))}
+                    </select>
+                   
+                  </div>
+                )}
+                {field.type === 'stages' && (
+                  <div>
+                    <div className="flex items-center justify-between">
+                      <div className="flex items-center gap-3">
+                        <span className="text-sm text-gray-600">Danh sách giai đoạn</span>
+                        <select className="border rounded p-1 text-sm" onChange={e => { if (e.target.value) applyTemplate(e.target.value); e.target.value = ''; }}>
+                          <option value="">-- Chọn mẫu lộ trình --</option>
+                          <option value="basic">Mẫu cơ bản</option>
+                        </select>
+                      </div>
+                      <button type="button" className="text-sm text-blue-600" onClick={addStage}>+ Thêm giai đoạn</button>
+                    </div>
+                    {Array.isArray(form.stages) && form.stages.length > 0 ? (
+                      <div className="mt-3 space-y-3">
+                        {form.stages.map((stage, i) => (
+                          <div key={stage.id || i} className="border rounded p-3 bg-gray-50">
+                            <div className="flex justify-between items-start">
+                              <strong>Giai đoạn {i + 1}</strong>
+                              <div className="flex gap-2">
+                                <button type="button" className="text-sm text-red-500" onClick={() => removeStage(i)}>Xóa</button>
+                              </div>
+                            </div>
+                            <div className="mt-2 grid grid-cols-1 md:grid-cols-2 gap-2">
+                              <input type="text" className="border rounded p-2" placeholder="Tiêu đề giai đoạn" value={stage.title || ''} onChange={e => updateStage(i, { title: e.target.value })} />
+                              <input type="date" className="border rounded p-2" value={stage.start_date || ''} onChange={e => updateStage(i, { start_date: e.target.value })} />
+                              <input type="date" className="border rounded p-2" value={stage.end_date || ''} onChange={e => updateStage(i, { end_date: e.target.value })} />
+                              <select className="border rounded p-2" value={stage.status || 'planned'} onChange={e => updateStage(i, { status: e.target.value })}>
+                                <option value="planned">Planned</option>
+                                <option value="in_progress">In progress</option>
+                                <option value="completed">Completed</option>
+                                <option value="blocked">Blocked</option>
+                              </select>
+                              <input type="number" min="0" max="100" className="border rounded p-2" placeholder="Progress %" value={stage.progress_percent || 0} onChange={e => updateStage(i, { progress_percent: Number(e.target.value) })} />
+                              <input type="number" min="0" className="border rounded p-2" placeholder="Ngân sách" value={stage.budget || 0} onChange={e => updateStage(i, { budget: Number(e.target.value) })} />
+                            </div>
+                            <div className="mt-2">
+                              <textarea className="border rounded p-2 w-full" rows={3} placeholder="Mô tả/Deliverables" value={stage.description_html || ''} onChange={e => updateStage(i, { description_html: e.target.value })} />
+                            </div>
+                          </div>
+                        ))}
+                      </div>
+                    ) : (
+                      <div className="mt-2 text-sm text-gray-500">Chưa có giai đoạn nào. Nhấn "Thêm giai đoạn" để bắt đầu.</div>
                     )}
                   </div>
                 )}
