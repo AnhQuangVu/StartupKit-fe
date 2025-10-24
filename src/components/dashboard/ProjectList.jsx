@@ -38,7 +38,7 @@ export default function ProjectList() {
     async function fetchProjects() {
       try {
         const token = localStorage.getItem("token");
-        const res = await fetch(`${API_BASE}/projects/`, {
+        const res = await fetch(`${API_BASE}/projects?skip=0&limit=50`, {
           method: "GET",
           headers: {
             ...authHeaders(token),

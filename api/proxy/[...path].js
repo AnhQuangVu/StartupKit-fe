@@ -41,7 +41,8 @@ export default async function handler(req, res) {
       method: req.method,
       headers: forwardHeaders,
       body,
-      redirect: 'manual',
+      // Follow backend redirects to avoid 3xx leaking to browser (which can look like failures)
+      redirect: 'follow',
     });
 
     // Copy response headers (exclude hop-by-hop)
