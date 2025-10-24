@@ -27,28 +27,47 @@ export default function StartupList({ small = false, columns, rows }) {
       const data = await response.json();
       const allProjects = Array.isArray(data) ? data : [];
       
-      // Lọc chỉ projects published
-      const published = allProjects.filter(p => p.status === 'published' || p.published_at);
+      console.log('📊 Raw data from API:', allProjects);
       
-      // Sort theo created_at mới nhất phía trước
-      const sorted = published.sort((a, b) => {
-        const dateA = new Date(a.created_at || a.published_at);
-        const dateB = new Date(b.created_at || b.published_at);
+      // Debug: log chi tiết từng project
+      allProjects.forEach(p => {
+        console.log(`🔍 Full Project Data:`, p);
+        console.table({
+          name: p.name,
+          industry: p.industry,
+          stage: p.stage,
+          member_count: p.member_count,
+          capital_source: p.capital_source,
+          logo_url: p.logo_url,
+          description: p.description,
+          tagline: p.tagline,
+          website_url: p.website_url,
+          created_at: p.created_at
+        });
+      });
+      
+      // Nếu endpoint `/public/projects/published` trả về, thì chính là published rồi!
+      // Không cần filter, chỉ cần transform
+      const sorted = allProjects.sort((a, b) => {
+        const dateA = new Date(a.created_at);
+        const dateB = new Date(b.created_at);
         return dateB - dateA;
       });
       
       // Transform to StartupCard format
       const transformed = sorted.map(p => ({
         id: p.id,
-        img: p.logo_url || 'https://logo.clearbit.com/example.com',
+        img: p.logo_url || 'https://picsum.photos/300/300?random=' + p.id,
         title: p.name,
         desc: p.tagline || p.description || 'Khởi nghiệp sáng tạo',
         tag: p.industry || 'Startup',
+        stage: p.stage,
         members: p.member_count || 0,
         raised: p.capital_source || 'N/A',
         link: `/projects/${p.id}`
       }));
       
+      console.log('✅ Transformed data:', transformed);
       setStartups(transformed.length > 0 ? transformed : getMockData());
     } catch (error) {
       console.error('Fetch projects error:', error);
@@ -59,12 +78,12 @@ export default function StartupList({ small = false, columns, rows }) {
     }
   };
 
-  // Mock data as fallback
+  // Mock data as fallback - with random images from picsum.photos
   const getMockData = () => {
     return [
       {
         id: 1,
-        img: "https://logo.clearbit.com/stripe.com",
+        img: "https://picsum.photos/300/300?random=1",
         title: "TechFlow",
         desc: "Nền tảng tự động hóa quy trình bằng AI, giúp doanh nghiệp tăng hiệu suất và giảm chi phí.",
         tag: "SaaS",
@@ -75,7 +94,7 @@ export default function StartupList({ small = false, columns, rows }) {
       },
       {
         id: 2,
-        img: "https://logo.clearbit.com/wise.com",
+        img: "https://picsum.photos/300/300?random=2",
         title: "FinanceHub",
         desc: "Giải pháp tài chính thông minh, tối ưu hóa dòng tiền cho doanh nghiệp vừa và nhỏ.",
         tag: "Fintech",
@@ -86,7 +105,7 @@ export default function StartupList({ small = false, columns, rows }) {
       },
       {
         id: 3,
-        img: "https://logo.clearbit.com/khanacademy.org",
+        img: "https://picsum.photos/300/300?random=3",
         title: "EduSpace",
         desc: "Nền tảng học trực tuyến miễn phí, giúp hàng triệu học sinh tiếp cận tri thức.",
         tag: "Edtech",
@@ -97,7 +116,7 @@ export default function StartupList({ small = false, columns, rows }) {
       },
       {
         id: 4,
-        img: "https://logo.clearbit.com/healthline.com",
+        img: "https://picsum.photos/300/300?random=4",
         title: "HealthPlus",
         desc: "Giải pháp y tế số, kết nối bệnh nhân với chuyên gia hàng đầu.",
         tag: "Healthtech",
@@ -108,7 +127,7 @@ export default function StartupList({ small = false, columns, rows }) {
       },
       {
         id: 5,
-        img: "https://logo.clearbit.com/tesla.com",
+        img: "https://picsum.photos/300/300?random=5",
         title: "GreenTech",
         desc: "Khởi nghiệp năng lượng xanh, phát triển công nghệ sạch cho tương lai.",
         tag: "Energy",
@@ -119,7 +138,7 @@ export default function StartupList({ small = false, columns, rows }) {
       },
       {
         id: 6,
-        img: "https://logo.clearbit.com/airbnb.com",
+        img: "https://picsum.photos/300/300?random=6",
         title: "StayConnect",
         desc: "Nền tảng kết nối chỗ ở toàn cầu",
         tag: "Travel",
@@ -129,7 +148,7 @@ export default function StartupList({ small = false, columns, rows }) {
       },
       {
         id: 7,
-        img: "https://logo.clearbit.com/duolingo.com",
+        img: "https://picsum.photos/300/300?random=7",
         title: "LinguaPro",
         desc: "Ứng dụng học ngôn ngữ thông minh",
         tag: "Edtech",
@@ -139,7 +158,7 @@ export default function StartupList({ small = false, columns, rows }) {
       },
       {
         id: 8,
-        img: "https://logo.clearbit.com/robinhood.com",
+        img: "https://picsum.photos/300/300?random=8",
         title: "Investly",
         desc: "Đầu tư dễ dàng cho mọi người",
         tag: "Fintech",
@@ -149,7 +168,7 @@ export default function StartupList({ small = false, columns, rows }) {
       },
       {
         id: 9,
-        img: "https://logo.clearbit.com/shopify.com",
+        img: "https://picsum.photos/300/300?random=9",
         title: "ShopMaster",
         desc: "Nền tảng thương mại điện tử cho SMEs",
         tag: "Ecommerce",
@@ -159,7 +178,7 @@ export default function StartupList({ small = false, columns, rows }) {
       },
       {
         id: 10,
-        img: "https://logo.clearbit.com/booking.com",
+        img: "https://picsum.photos/300/300?random=10",
         title: "TravelGo",
         desc: "Đặt vé du lịch toàn cầu",
         tag: "Travel",
@@ -169,7 +188,7 @@ export default function StartupList({ small = false, columns, rows }) {
       },
       {
         id: 11,
-        img: "https://logo.clearbit.com/uber.com",
+        img: "https://picsum.photos/300/300?random=11",
         title: "RideNow",
         desc: "Ứng dụng gọi xe thông minh",
         tag: "Mobility",
@@ -179,7 +198,7 @@ export default function StartupList({ small = false, columns, rows }) {
       },
       {
         id: 12,
-        img: "https://logo.clearbit.com/foodpanda.com",
+        img: "https://picsum.photos/300/300?random=12",
         title: "Foodie",
         desc: "Giao đồ ăn nhanh chóng",
         tag: "Foodtech",
@@ -189,7 +208,7 @@ export default function StartupList({ small = false, columns, rows }) {
       },
       {
         id: 13,
-        img: "https://logo.clearbit.com/zoom.us",
+        img: "https://picsum.photos/300/300?random=13",
         title: "MeetPro",
         desc: "Giải pháp họp trực tuyến cho doanh nghiệp",
         tag: "SaaS",
@@ -199,7 +218,7 @@ export default function StartupList({ small = false, columns, rows }) {
       },
       {
         id: 14,
-        img: "https://logo.clearbit.com/slack.com",
+        img: "https://picsum.photos/300/300?random=14",
         title: "TeamSync",
         desc: "Kết nối nhóm làm việc hiệu quả",
         tag: "Productivity",
@@ -209,7 +228,7 @@ export default function StartupList({ small = false, columns, rows }) {
       },
       {
         id: 15,
-        img: "https://logo.clearbit.com/coinbase.com",
+        img: "https://picsum.photos/300/300?random=15",
         title: "CryptoBase",
         desc: "Nền tảng giao dịch tiền số",
         tag: "Fintech",
@@ -219,7 +238,7 @@ export default function StartupList({ small = false, columns, rows }) {
       },
       {
         id: 16,
-        img: "https://logo.clearbit.com/spotify.com",
+        img: "https://picsum.photos/300/300?random=16",
         title: "MusicWave",
         desc: "Ứng dụng nghe nhạc thông minh",
         tag: "Entertainment",
@@ -229,7 +248,7 @@ export default function StartupList({ small = false, columns, rows }) {
       },
       {
         id: 17,
-        img: "https://logo.clearbit.com/medium.com",
+        img: "https://picsum.photos/300/300?random=17",
         title: "BlogMaster",
         desc: "Nền tảng chia sẻ kiến thức",
         tag: "Content",
@@ -239,7 +258,7 @@ export default function StartupList({ small = false, columns, rows }) {
       },
       {
         id: 18,
-        img: "https://logo.clearbit.com/figma.com",
+        img: "https://picsum.photos/300/300?random=18",
         title: "DesignHub",
         desc: "Thiết kế cộng tác cho startup",
         tag: "Design",
@@ -249,7 +268,7 @@ export default function StartupList({ small = false, columns, rows }) {
       },
       {
         id: 19,
-        img: "https://logo.clearbit.com/github.com",
+        img: "https://picsum.photos/300/300?random=19",
         title: "CodeBase",
         desc: "Quản lý mã nguồn cho nhóm dev",
         tag: "Devtools",
@@ -259,7 +278,7 @@ export default function StartupList({ small = false, columns, rows }) {
       },
       {
         id: 20,
-        img: "https://logo.clearbit.com/trello.com",
+        img: "https://picsum.photos/300/300?random=20",
         title: "TaskFlow",
         desc: "Quản lý dự án trực quan",
         tag: "Productivity",

@@ -21,6 +21,19 @@ import DashboardMenu from "../components/dashboard/DashboardMenu";
 import DashboardHeader from "../components/dashboard/DashboardHeader";
 
 function ProfileManagement({ userType = 'startup', isLoggedIn = true }) {
+  // Stage mapping
+  const stageMap = {
+    'y-tuong': '(ý tưởng)',
+    'nghien-cuu-thi-truong': '(nghiên cứu thị trường)',
+    'hoan-thien-san-pham': '(hoàn thiện sản phẩm)',
+    'khao-sat': '(khảo sát)',
+    'launch': '(ra mắt)',
+  };
+  
+  const getDisplayStage = (stage) => {
+    return stageMap[stage] || stage || "";
+  };
+
   // State cho modal quản lý quyền truy cập
   const [showAccessModal, setShowAccessModal] = useState(false);
   const [showHistoryModal, setShowHistoryModal] = useState(false);
@@ -400,7 +413,7 @@ function ProfileManagement({ userType = 'startup', isLoggedIn = true }) {
                           </div>
                         </div>
                         {/* Bỏ hiển thị ID dự án */}
-                        <div className="text-[10px] text-gray-400">Giai đoạn: {profile.stage || ""} | Ngày tạo: {profile.created_at ? new Date(profile.created_at).toLocaleDateString('vi-VN') : ""}</div>
+                        <div className="text-[10px] text-gray-400">Giai đoạn: {getDisplayStage(profile.stage)} | Ngày tạo: {profile.created_at ? new Date(profile.created_at).toLocaleDateString('vi-VN') : ""}</div>
                       </div>
                     ))
                   )}
@@ -428,7 +441,7 @@ function ProfileManagement({ userType = 'startup', isLoggedIn = true }) {
                     </div>
                     <div>
                       <span className="text-xs text-gray-500">Giai đoạn </span>
-                      <span className="inline-block px-2 py-0.5 rounded bg-yellow-100 text-yellow-700 text-xs font-medium">{selectedProfile.stage || ""}</span>
+                      <span className="inline-block px-2 py-0.5 rounded bg-yellow-100 text-yellow-700 text-xs font-medium">{getDisplayStage(selectedProfile.stage)}</span>
                     </div>
                     <div>
                       <span className="text-xs text-gray-500">Website </span>

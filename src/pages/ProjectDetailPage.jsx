@@ -87,7 +87,9 @@ export default function ProjectDetailPage() {
   const fetchProjectDetail = async () => {
     try {
       setLoading(true);
-      const response = await fetch(`${API_BASE}/projects/${projectId}`);
+      const token = localStorage.getItem('token');
+      const headers = token ? { Authorization: `Bearer ${token}` } : {};
+      const response = await fetch(`${API_BASE}/projects/${projectId}`, { headers });
       if (!response.ok) throw new Error('Không thể lấy thông tin project');
       const data = await response.json();
       setProject(data);
@@ -101,7 +103,9 @@ export default function ProjectDetailPage() {
 
   const fetchProjectFollowers = async () => {
     try {
-      const response = await fetch(`${API_BASE}/projects/${projectId}/followers`);
+      const token = localStorage.getItem('token');
+      const headers = token ? { Authorization: `Bearer ${token}` } : {};
+      const response = await fetch(`${API_BASE}/projects/${projectId}/followers`, { headers });
       if (response.ok) {
         const data = await response.json();
         setFollowers(Array.isArray(data) ? data : []);
@@ -117,7 +121,9 @@ export default function ProjectDetailPage() {
 
   const fetchProjectMembers = async () => {
     try {
-      const response = await fetch(`${API_BASE}/projects/${projectId}/members`);
+      const token = localStorage.getItem('token');
+      const headers = token ? { Authorization: `Bearer ${token}` } : {};
+      const response = await fetch(`${API_BASE}/projects/${projectId}/members`, { headers });
       if (response.ok) {
         const data = await response.json();
         setMembers(Array.isArray(data) ? data : []);
@@ -129,7 +135,9 @@ export default function ProjectDetailPage() {
 
   const fetchProjectPosts = async () => {
     try {
-      const response = await fetch(`${API_BASE}/projects/${projectId}/posts?limit=50`);
+      const token = localStorage.getItem('token');
+      const headers = token ? { Authorization: `Bearer ${token}` } : {};
+      const response = await fetch(`${API_BASE}/projects/${projectId}/posts?limit=50`, { headers });
       if (response.ok) {
         const data = await response.json();
         setPosts(Array.isArray(data) ? data : []);

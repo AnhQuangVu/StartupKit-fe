@@ -13,6 +13,19 @@ export default function ProjectList() {
   const [projectList, setProjectList] = useState(initialProjects);
   const [animateId, setAnimateId] = useState(null);
 
+  // Stage mapping
+  const stageMap = {
+    'y-tuong': '(ý tưởng)',
+    'nghien-cuu-thi-truong': '(nghiên cứu thị trường)',
+    'hoan-thien-san-pham': '(hoàn thiện sản phẩm)',
+    'khao-sat': '(khảo sát)',
+    'launch': '(ra mắt)',
+  };
+  
+  const getDisplayStage = (stage) => {
+    return stageMap[stage] || stage;
+  };
+
   // Kích hoạt animation khi chọn dự án mới
   useEffect(() => {
     if (animateId !== null) {
@@ -103,7 +116,7 @@ export default function ProjectList() {
                   <h3 className="font-bold text-base text-[#FFCE23]">{project.name}</h3>
                   {project.tagline && <div className="text-xs text-gray-500 mb-1">{project.tagline}</div>}
                   <div className="flex flex-wrap gap-2 text-xs text-gray-400 mb-1">
-                    {project.stage && <span>Giai đoạn: <b>{project.stage}</b></span>}
+                    {project.stage && <span>Giai đoạn: <b>{getDisplayStage(project.stage)}</b></span>}
                     {project.created_at && <span>Tạo lúc: {new Date(project.created_at).toLocaleDateString()}</span>}
                     {project.updated_at && <span>Cập nhật: {new Date(project.updated_at).toLocaleDateString()}</span>}
                   </div>
