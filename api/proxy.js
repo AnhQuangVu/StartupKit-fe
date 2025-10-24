@@ -6,13 +6,20 @@ export default async function handler(req, res) {
     console.log(`[PROXY] ${req.method} ${req.url} → ${target}`);
     console.log(`[PROXY] PROXY_TARGET=${process.env.PROXY_TARGET}`);
     
+    // Prepare body - req.body is already parsed
+    let bodyToSend = undefined;
+    if (req.method !== "GET" && req.method !== "HEAD") {
+      // req.body is already an object from Vercel, don't stringify again
+      bodyToSend = typeof req.body === 'string' ? req.body : JSON.stringify(req.body);
+    }
+    
     const response = await fetch(target, {
       method: req.method,
       headers: {
         "Content-Type": req.headers["content-type"] || "application/json",
         ...req.headers,
       },
-      body: req.method !== "GET" && req.method !== "HEAD" ? JSON.stringify(req.body) : undefined,
+      body: bodyToSend,
     });
 
     const data = await response.text();
