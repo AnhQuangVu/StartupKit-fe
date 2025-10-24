@@ -3,14 +3,18 @@ import { useAuth } from "../../context/AuthContext";
 import { Link, useLocation, useNavigate } from "react-router-dom";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faIdBadge } from "@fortawesome/free-solid-svg-icons";
-import { faPlusCircle, faGlobe, faLayerGroup, faComments } from "@fortawesome/free-solid-svg-icons";
+import {
+  faPlusCircle,
+  faGlobe,
+  faLayerGroup,
+  faComments,
+} from "@fortawesome/free-solid-svg-icons";
 import logo from "../../assets/images/logo.png";
 function Navbar() {
   const { isLoggedIn, user, logout } = useAuth();
   const [showMenu, setShowMenu] = useState(false);
   const location = useLocation();
   const navigate = useNavigate();
-
 
   const handleRegister = () => {
     navigate("/register");
@@ -54,23 +58,37 @@ function Navbar() {
             <FontAwesomeIcon icon={faPlusCircle} className="mr-2" />
             Khởi tạo dự án
           </Link>
-          <Link
-            to="/dien-dan"
-            className={`cursor-pointer transition-colors duration-200 ${location.pathname.startsWith('/dien-dan') ? 'text-[#FFCE23] font-bold border-b-2 border-[#FFCE23]' : 'hover:text-[#FFCE23]'} flex items-center`}
-          >
-            <FontAwesomeIcon icon={faComments} className="mr-2" />
-            Diễn đàn
-          </Link>
+          {isLoggedIn && (
+            <Link
+              to="/dien-dan"
+              className={`cursor-pointer transition-colors duration-200 ${
+                location.pathname.startsWith("/dien-dan")
+                  ? "text-[#FFCE23] font-bold border-b-2 border-[#FFCE23]"
+                  : "hover:text-[#FFCE23]"
+              } flex items-center`}
+            >
+              <FontAwesomeIcon icon={faComments} className="mr-2" />
+              Diễn đàn
+            </Link>
+          )}
           <Link
             to="/kham-pha"
-            className={`cursor-pointer transition-colors duration-200 ${location.pathname.startsWith('/kham-pha') ? 'text-[#FFCE23] font-bold border-b-2 border-[#FFCE23]' : 'hover:text-[#FFCE23]'} flex items-center`}
+            className={`cursor-pointer transition-colors duration-200 ${
+              location.pathname.startsWith("/kham-pha")
+                ? "text-[#FFCE23] font-bold border-b-2 border-[#FFCE23]"
+                : "hover:text-[#FFCE23]"
+            } flex items-center`}
           >
             <FontAwesomeIcon icon={faGlobe} className="mr-2" />
             Khám phá
           </Link>
           <Link
             to="/platform"
-            className={`cursor-pointer transition-colors duration-200 ${location.pathname.startsWith('/platform') ? 'text-[#FFCE23] font-bold border-b-2 border-[#FFCE23]' : 'hover:text-[#FFCE23]'} flex items-center`}
+            className={`cursor-pointer transition-colors duration-200 ${
+              location.pathname.startsWith("/platform")
+                ? "text-[#FFCE23] font-bold border-b-2 border-[#FFCE23]"
+                : "hover:text-[#FFCE23]"
+            } flex items-center`}
           >
             <FontAwesomeIcon icon={faLayerGroup} className="mr-2" />
             Nền tảng của chúng tôi
@@ -100,7 +118,15 @@ function Navbar() {
                 to="/Profile"
                 className="flex items-center mr-2 hover:text-[#FFCE23] transition-colors"
               >
-                <FontAwesomeIcon icon={faIdBadge} className="w-5 h-5" />
+                {/* <FontAwesomeIcon icon={faIdBadge} className="w-5 h-5" /> */}
+                <FontAwesomeIcon
+                  icon={faIdBadge}
+                  className={`w-5 h-5 ${
+                    location.pathname.startsWith("/Profile")
+                      ? "text-[#FFCE23] font-bold border-b-2 border-[#FFCE23]"
+                      : "hover:text-[#FFCE23]"
+                  } flex items-center`}
+                />
               </Link>
             </React.Fragment>
           )}
