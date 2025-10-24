@@ -16,6 +16,8 @@ export default async function handler(req, res) {
 
     const target = `${DEFAULT_TARGET}${forwardPath}`;
 
+    console.log(`[PROXY] ${req.method} ${incoming} → ${target}`);
+
     // Clone headers but remove hop-by-hop / host that shouldn't be forwarded
     const forwardHeaders = { ...req.headers };
     delete forwardHeaders.host;
@@ -49,6 +51,8 @@ export default async function handler(req, res) {
     });
 
     res.statusCode = forwarded.status;
+
+    console.log(`[PROXY] Response: ${forwarded.status}`);
 
     // Stream response body back to client
     const arrayBuffer = await forwarded.arrayBuffer();
