@@ -7,6 +7,16 @@ const DEFAULT_TARGET = process.env.PROXY_TARGET || process.env.VITE_API_BASE || 
 
 export default async function handler(req, res) {
   try {
+    // Validate target configuration
+    if (!DEFAULT_TARGET || !/^https?:\/\//i.test(DEFAULT_TARGET)) {
+      res.statusCode = 500;
+      res.setHeader('content-type', 'application/json');
+      res.end(JSON.stringify({
+        error: 'Proxy misconfigured',
+        detail: 'PROXY_TARGET missing or invalid. Set a reachable http(s) URL in Vercel env.',
+      }));
+      return;
+    }
     // Build forward path: keep query string (req.url already contains it)
     const incoming = req.url || '';
     // Remove the leading /api/proxy prefix
@@ -36,14 +46,18 @@ export default async function handler(req, res) {
       if (body && body.length === 0) body = undefined;
     }
 
-    // Forward request to target
+    // Forward request to target with timeout
+    const ac = new AbortController();
+    const timeout = setTimeout(() => ac.abort(), 15000);
     const forwarded = await fetch(target, {
       method: req.method,
       headers: forwardHeaders,
       body,
       // Follow backend redirects to avoid 3xx leaking to browser (which can look like failures)
       redirect: 'follow',
+      signal: ac.signal,
     });
+    clearTimeout(timeout);
 
     // Copy response headers (exclude hop-by-hop)
     forwarded.headers.forEach((value, name) => {
@@ -63,6 +77,11 @@ export default async function handler(req, res) {
     console.error('Proxy error:', err);
     res.statusCode = 500;
     res.setHeader('content-type', 'application/json');
-    res.end(JSON.stringify({ error: String(err.message || err) }));
+    res.end(JSON.stringify({
+      error: 'fetch failed',
+      message: err && err.message ? err.message : String(err),
+      code: err && err.code ? err.code : undefined,
+      target: DEFAULT_TARGET,
+    }));
   }
 }
