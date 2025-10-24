@@ -416,10 +416,15 @@ export default function UploadProfile() {
         let errorMessage = 'Lưu project thất bại';
         // Đọc body một lần dưới dạng text, sau đó thử parse JSON
         const raw = await res.text();
+        console.log('Save project response:', raw);
         try {
           const errorData = raw ? JSON.parse(raw) : null;
           if (errorData) {
-            if (errorData.detail) {
+            if (errorData.backend_response) {
+              // Enhanced proxy error with backend details
+              console.log('Backend error details:', errorData.backend_response);
+              errorMessage = errorData.message || JSON.stringify(errorData.backend_response);
+            } else if (errorData.detail) {
               errorMessage = typeof errorData.detail === 'string' 
                 ? errorData.detail 
                 : JSON.stringify(errorData.detail);
@@ -429,6 +434,8 @@ export default function UploadProfile() {
               errorMessage = Object.entries(errorData.errors)
                 .map(([field, msg]) => `${field}: ${msg}`)
                 .join('; ');
+            } else if (errorData.error === 'fetch failed') {
+              errorMessage = `Không kết nối được tới backend (${errorData.message || 'unknown error'}). URL: ${errorData.request_url}`;
             } else {
               errorMessage = JSON.stringify(errorData).slice(0, 200);
             }

@@ -69,9 +69,34 @@ export default async function handler(req, res) {
 
     console.log(`[PROXY] Response: ${forwarded.status}`);
 
-    // Stream response body back to client
+    // Read and log response for debugging
     const arrayBuffer = await forwarded.arrayBuffer();
     const buffer = Buffer.from(arrayBuffer);
+    
+    // Try to parse and log response content for debugging
+    let responseText = buffer.toString('utf-8');
+    console.log(`[PROXY] Response body (${buffer.length} bytes):`, responseText.slice(0, 500));
+    
+    try {
+      // If it's JSON and has error details, enhance them
+      const responseJson = JSON.parse(responseText);
+      if (!forwarded.ok && responseJson) {
+        console.log('[PROXY] Parsed error response:', responseJson);
+        res.setHeader('content-type', 'application/json');
+        res.end(JSON.stringify({
+          error: 'backend_error',
+          statusCode: forwarded.status,
+          message: responseJson.detail || responseJson.message || JSON.stringify(responseJson),
+          backend_response: responseJson,
+          target: DEFAULT_TARGET
+        }));
+        return;
+      }
+    } catch (parseErr) {
+      // Not JSON or parse failed, continue with normal response
+      console.log('[PROXY] Response not JSON:', parseErr.message);
+    }
+    
     res.end(buffer);
   } catch (err) {
     console.error('Proxy error:', err);
@@ -82,6 +107,7 @@ export default async function handler(req, res) {
       message: err && err.message ? err.message : String(err),
       code: err && err.code ? err.code : undefined,
       target: DEFAULT_TARGET,
+      request_url: `${DEFAULT_TARGET}${forwardPath}`
     }));
   }
 }
