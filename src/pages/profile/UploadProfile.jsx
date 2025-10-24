@@ -361,36 +361,50 @@ export default function UploadProfile() {
         team_image_url = undefined;
       }
 
-      // ✅ Payload: gửi đơn giản, tránh xung đột schema (không gửi object lồng logo/team_image)
-      const rawPayload = {
-        name: projectData.name,
-        tagline: projectData.tagline,
-        description: projectData.description,
+      // Tạo payload tối giản với các trường bắt buộc trước
+      const requiredFields = {
+        name: projectData.name?.trim(),
+        description: projectData.description?.trim(),
+        stage: projectData.stage || 'y-tuong'
+      };
+
+      // Thêm các trường có giá trị (đã được xác thực) vào payload
+      const optionalFields = {
+        logo_url: logo_url,
+        team_image_url: team_image_url,
         website_url: normalizedWebsiteUrl,
-        industry: projectData.industry,
-        stage: projectData.stage,
-        // Chỉ gửi URL đơn giản để backend xử lý ổn định
-        logo_url: logo_url || undefined,
-        team_image_url: team_image_url || undefined,
-        // Các trường khác
-        pain_point: projectData.pain_point,
-        solution: projectData.solution,
-        product: projectData.product,
-        customer_segment: projectData.customer_segment,
-        customer_features: projectData.customer_features,
-        market_size: projectData.market_size,
-        market_area: projectData.market_area,
-        business_model: projectData.business_model,
-        revenue_method: projectData.revenue_method,
-        distribution_channel: projectData.distribution_channel,
-        partners: projectData.partners,
-        cost_estimate: projectData.cost_estimate,
-        capital_source: projectData.capital_source,
-        revenue_goal: projectData.revenue_goal,
-        member_count: typeof projectData.member_count === 'number' ? projectData.member_count : parseInt(projectData.member_count) || undefined,
-        member_skills: projectData.member_skills,
-        resources: projectData.resources,
-        deployment_location: projectData.deployment_location
+        industry: projectData.industry?.trim(),
+        tagline: projectData.tagline?.trim(),
+        pain_point: projectData.pain_point?.trim(),
+        solution: projectData.solution?.trim(),
+        product: projectData.product?.trim(),
+        customer_segment: projectData.customer_segment?.trim(),
+        customer_features: projectData.customer_features?.trim(),
+        market_size: projectData.market_size?.trim(),
+        market_area: projectData.market_area?.trim(),
+        business_model: projectData.business_model?.trim(),
+        revenue_method: projectData.revenue_method?.trim(),
+        distribution_channel: projectData.distribution_channel?.trim(),
+        partners: projectData.partners?.trim(),
+        cost_estimate: projectData.cost_estimate?.trim(),
+        capital_source: projectData.capital_source?.trim(),
+        revenue_goal: projectData.revenue_goal?.trim(),
+        // Chuyển đổi member_count thành số
+        member_count: typeof projectData.member_count === 'string' 
+          ? parseInt(projectData.member_count, 10) 
+          : (typeof projectData.member_count === 'number' ? projectData.member_count : undefined),
+        member_skills: projectData.member_skills?.trim(),
+        resources: projectData.resources?.trim(),
+        deployment_location: projectData.deployment_location?.trim()
+      };
+
+      // Kết hợp và lọc bỏ các giá trị undefined/null/empty string
+      const rawPayload = {
+        ...requiredFields,
+        ...Object.fromEntries(
+          Object.entries(optionalFields)
+            .filter(([_, v]) => v !== undefined && v !== null && v !== '')
+        )
       };
 
       // ✅ Loại bỏ key rỗng/undefined để tránh 500 từ backend
@@ -406,9 +420,18 @@ export default function UploadProfile() {
   // Backend của bạn chấp nhận đường dẫn không có trailing slash
   const url = projectId ? `${API_BASE}/projects/${projectId}` : `${API_BASE}/projects`;
 
+      // Log payload để debug
+      console.log('Final payload:', JSON.stringify(payload, null, 2));
+
       const res = await fetch(url, {
         method,
-        headers: { ...authHeaders(token), 'Content-Type': 'application/json', 'Accept': 'application/json' },
+        headers: {
+          ...authHeaders(token),
+          'Content-Type': 'application/json',
+          'Accept': 'application/json',
+          // Thêm header để backend biết request từ đâu
+          'X-Request-Source': 'startup-kit-fe'
+        },
         body: JSON.stringify(payload)
       });
 
