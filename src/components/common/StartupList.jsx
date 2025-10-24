@@ -309,62 +309,60 @@ export default function StartupList({ small = false, columns, rows }) {
   }
 
   return (
-    <section className="max-w-6xl mx-auto mt-8 text-center px-4 sm:px-6">
-      <h2 className="text-2xl md:text-3xl font-bold mb-2">Các Startup Nổi Bật</h2>
-      <p className="text-gray-500 mb-8 text-xs md:text-base">Khám phá những công ty sáng tạo đang tìm kiếm đối tác và cơ hội phát triển</p>
-
-      {/* Single responsive grid for consistent layout */}
-      <div
-        className={`pb-4 auto-rows-fr grid gap-${small ? '6' : '8'}`}
-        style={{
-          gridTemplateColumns: `repeat(${ITEMS_PER_ROW}, minmax(0, 1fr))`,
-          gap: '1.5rem',
-        }}
-      >
-        {visibleStartups.map((s, i) => (
-          <div className="h-full" key={i}>
-            <StartupCard small={small} {...s} />
-          </div>
-        ))}
-      </div>
-
-      {/* Hide pagination when small (compact mode) */}
-      {!small && totalPages > 1 && (
-        <div className="flex justify-center mt-8 gap-2">
-          {page > 0 && (
-            <button
-              className={`w-9 h-9 flex items-center justify-center rounded-full border-2 transition-all duration-150 text-lg font-bold bg-white border-gray-200 text-gray-500 hover:bg-[#fff6e0] hover:border-[#fdc142] hover:text-[#fdc142]`}
-              onClick={() => setPage(page - 1)}
-              aria-label="Trang trước"
-            >
-              &#8592;
-            </button>
-          )}
-          {[...Array(totalPages)].map((_, idx) => (
-            <button
-              key={idx}
-              className={`w-9 h-9 flex items-center justify-center rounded-full border-2 mx-1 transition-all duration-150 text-base font-semibold ${
-                idx === page
-                  ? 'bg-[#fdc142] border-[#fdc142] text-white shadow-lg'
-                  : 'bg-white border-gray-200 text-gray-700 hover:bg-[#fff6e0] hover:border-[#fdc142] hover:text-[#fdc142]'
-              }`}
-              onClick={() => setPage(idx)}
-              aria-label={`Trang ${idx + 1}`}
-            >
-              {idx + 1}
-            </button>
-          ))}
-          {page < totalPages - 1 && (
-            <button
-              className={`w-9 h-9 flex items-center justify-center rounded-full border-2 transition-all duration-150 text-lg font-bold bg-white border-gray-200 text-gray-500 hover:bg-[#fff6e0] hover:border-[#fdc142] hover:text-[#fdc142]`}
-              onClick={() => setPage(page + 1)}
-              aria-label="Trang sau"
-            >
-              &#8594;
-            </button>
-          )}
+    <section className="w-full mt-8 px-3 sm:px-4 md:px-6">
+      <div className="max-w-6xl mx-auto">
+        <div className="text-center mb-8">
+          <h2 className="text-xl sm:text-2xl md:text-3xl font-bold mb-2">Các Startup Nổi Bật</h2>
+          <p className="text-gray-500 text-xs sm:text-sm md:text-base">Khám phá những công ty sáng tạo đang tìm kiếm đối tác và cơ hội phát triển</p>
         </div>
-      )}
+
+        {/* Responsive grid - auto adjust columns on different screen sizes */}
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 sm:gap-6 pb-4">
+          {visibleStartups.map((s, i) => (
+            <div className="w-full" key={i}>
+              <StartupCard small={small} {...s} />
+            </div>
+          ))}
+        </div>
+
+        {/* Hide pagination when small (compact mode) */}
+        {!small && totalPages > 1 && (
+          <div className="flex justify-center mt-6 sm:mt-8 gap-2 flex-wrap">
+            {page > 0 && (
+              <button
+                className={`w-9 h-9 flex items-center justify-center rounded-full border-2 transition-all duration-150 text-lg font-bold bg-white border-gray-200 text-gray-500 hover:bg-[#fff6e0] hover:border-[#fdc142] hover:text-[#fdc142]`}
+                onClick={() => setPage(page - 1)}
+                aria-label="Trang trước"
+              >
+                &#8592;
+              </button>
+            )}
+            {[...Array(totalPages)].map((_, idx) => (
+              <button
+                key={idx}
+                className={`w-9 h-9 flex items-center justify-center rounded-full border-2 transition-all duration-150 text-sm font-semibold ${
+                  idx === page
+                    ? 'bg-[#fdc142] border-[#fdc142] text-white shadow-lg'
+                    : 'bg-white border-gray-200 text-gray-700 hover:bg-[#fff6e0] hover:border-[#fdc142] hover:text-[#fdc142]'
+                }`}
+                onClick={() => setPage(idx)}
+                aria-label={`Trang ${idx + 1}`}
+              >
+                {idx + 1}
+              </button>
+            ))}
+            {page < totalPages - 1 && (
+              <button
+                className={`w-9 h-9 flex items-center justify-center rounded-full border-2 transition-all duration-150 text-lg font-bold bg-white border-gray-200 text-gray-500 hover:bg-[#fff6e0] hover:border-[#fdc142] hover:text-[#fdc142]`}
+                onClick={() => setPage(page + 1)}
+                aria-label="Trang sau"
+              >
+                &#8594;
+              </button>
+            )}
+          </div>
+        )}
+      </div>
     </section>
   );
 }
