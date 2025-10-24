@@ -354,7 +354,7 @@ export default function UploadProfile() {
       }
 
       // ✅ Payload: gửi đơn giản, tránh xung đột schema (không gửi object lồng logo/team_image)
-      const payload = {
+      const rawPayload = {
         name: projectData.name,
         tagline: projectData.tagline,
         description: projectData.description,
@@ -365,34 +365,42 @@ export default function UploadProfile() {
         logo_url: logo_url || undefined,
         team_image_url: team_image_url || undefined,
         // Các trường khác
-        pain_point: projectData.pain_point || '',
-        solution: projectData.solution || '',
-        product: projectData.product || '',
-        customer_segment: projectData.customer_segment || '',
-        customer_features: projectData.customer_features || '',
-        market_size: projectData.market_size || '',
-        market_area: projectData.market_area || '',
-        business_model: projectData.business_model || '',
-        revenue_method: projectData.revenue_method || '',
-        distribution_channel: projectData.distribution_channel || '',
-        partners: projectData.partners || '',
-        cost_estimate: projectData.cost_estimate || '',
-        capital_source: projectData.capital_source || '',
-        revenue_goal: projectData.revenue_goal || '',
-        member_count: projectData.member_count || 0,
-        member_skills: projectData.member_skills || '',
-        resources: projectData.resources || '',
-        deployment_location: projectData.deployment_location || ''
+        pain_point: projectData.pain_point,
+        solution: projectData.solution,
+        product: projectData.product,
+        customer_segment: projectData.customer_segment,
+        customer_features: projectData.customer_features,
+        market_size: projectData.market_size,
+        market_area: projectData.market_area,
+        business_model: projectData.business_model,
+        revenue_method: projectData.revenue_method,
+        distribution_channel: projectData.distribution_channel,
+        partners: projectData.partners,
+        cost_estimate: projectData.cost_estimate,
+        capital_source: projectData.capital_source,
+        revenue_goal: projectData.revenue_goal,
+        member_count: typeof projectData.member_count === 'number' ? projectData.member_count : parseInt(projectData.member_count) || undefined,
+        member_skills: projectData.member_skills,
+        resources: projectData.resources,
+        deployment_location: projectData.deployment_location
       };
+
+      // ✅ Loại bỏ key rỗng/undefined để tránh 500 từ backend
+      const payload = Object.fromEntries(
+        Object.entries(rawPayload)
+          .map(([k, v]) => [k, typeof v === 'string' ? v.trim() : v])
+          .filter(([_, v]) => v !== undefined && v !== null && !(typeof v === 'string' && v.length === 0))
+      );
 
       console.log('📤 Payload gửi lên API:', payload);
 
-      const method = projectId ? 'PATCH' : 'POST';
-      const url = projectId ? `${API_BASE}/projects/${projectId}` : `${API_BASE}/projects`;
+  const method = projectId ? 'PATCH' : 'POST';
+  // Một số backend strict với dấu '/': dùng dạng có trailing slash để tránh redirect lỗi
+  const url = projectId ? `${API_BASE}/projects/${projectId}/` : `${API_BASE}/projects/`;
 
       const res = await fetch(url, {
         method,
-        headers: { ...authHeaders(token), 'Content-Type': 'application/json' },
+        headers: { ...authHeaders(token), 'Content-Type': 'application/json', 'Accept': 'application/json' },
         body: JSON.stringify(payload)
       });
 

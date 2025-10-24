@@ -1042,13 +1042,17 @@ export default function ProjectProfileFullForm({
     };
 
     try {
-      const res = await fetch(`${API_BASE}/projects`, {
+      const res = await fetch(`${API_BASE}/projects/`, {
         method: "POST",
         headers: {
           ...authHeaders(token),
           "Content-Type": "application/json"
         },
-        body: JSON.stringify(payload)
+        body: JSON.stringify(Object.fromEntries(
+          Object.entries(payload)
+            .map(([k,v]) => [k, typeof v === 'string' ? v.trim() : v])
+            .filter(([_,v]) => v !== undefined && v !== null && !(typeof v === 'string' && v.length === 0))
+        ))
       });
 
       if (!res.ok) {
@@ -1108,13 +1112,17 @@ export default function ProjectProfileFullForm({
     };
 
     try {
-      const res = await fetch(`${API_BASE}/projects`, {
+      const res = await fetch(`${API_BASE}/projects/`, {
         method: "POST",
         headers: {
           ...authHeaders(token),
           "Content-Type": "application/json"
         },
-        body: JSON.stringify(payload)
+        body: JSON.stringify(Object.fromEntries(
+          Object.entries(payload)
+            .map(([k,v]) => [k, typeof v === 'string' ? v.trim() : v])
+            .filter(([_,v]) => v !== undefined && v !== null && !(typeof v === 'string' && v.length === 0))
+        ))
       });
 
       if (!res.ok) {
