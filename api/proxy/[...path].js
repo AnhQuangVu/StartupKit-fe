@@ -3,7 +3,7 @@
 // - Request from browser: fetch('/api/proxy/projects', { method: 'POST', body: JSON.stringify(payload), headers: {'Content-Type':'application/json'} })
 // - This file is a catch-all route. It strips the /api/proxy prefix and forwards the remainder to PROXY_TARGET.
 
-const DEFAULT_TARGET = process.env.PROXY_TARGET || process.env.VITE_API_BASE || 'https://160.191.243.253:8003';
+const DEFAULT_TARGET = process.env.PROXY_TARGET || process.env.VITE_API_BASE || 'http://160.191.243.253:8003';
 
 export default async function handler(req, res) {
   try {
