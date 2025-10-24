@@ -22,7 +22,7 @@ function ProjectSteps({ currentStep, onStepClick }) {
   const steps = [
     { label: "Chọn mẫu", value: 0 },
     { label: "Tạo hồ sơ", value: 1 },
-    { label: "Đăng hồ sơ", value: 2 },
+    // { label: "Đăng hồ sơ", value: 2 },
     // { label: "Xuất hồ sơ", value: 3 },
   ];
   return (
@@ -253,6 +253,62 @@ function CreateProject() {
   // If navigated here with a file from UploadProfile, pick it up and set form
   useEffect(() => {
     const state = location.state || {};
+    
+    // Xử lý step từ location.state (từ ProfileManagement)
+    if (state.step !== undefined) {
+      setCurrentStep(state.step);
+    }
+    
+    // Xử lý project data từ location.state
+    if (state.project) {
+      // Map dữ liệu từ API sang format của ProjectProfileFullForm
+      const mappedData = {
+        projectName: state.project.name || "",
+        field: state.project.industry || "",
+        organization: state.project.organization || "",
+        time: state.project.time || "",
+        teamInfo: state.project.team || "",
+        mainIdea: state.project.pain_point || state.project.solution || "",
+        productValue: state.project.product || state.project.description || "",
+        productImages: state.project.product_images || [],
+        mission: state.project.mission || "",
+        vision: state.project.vision || "",
+        productCoreValue: state.project.product_core_value || "",
+        targetCustomer: state.project.customer_segment || "",
+        advantage: state.project.competitive_advantage || "",
+        communityValue: state.project.community_value || "",
+        marketSize: state.project.market_size || "",
+        partners: state.project.partners || "",
+        finance: state.project.cost_estimate || "",
+        feasibility: state.project.feasibility || "",
+        products: state.project.products || "",
+        swot: state.project.swot || "",
+        prosCons: state.project.pros_cons || "",
+        creativity: state.project.creativity || "",
+        businessPlan: state.project.business_model || "",
+        distribution: state.project.distribution_channel || "",
+        marketDevelopment: state.project.market_development || "",
+        potentialResult: state.project.potential_result || "",
+        growthImpact: state.project.growth_impact || "",
+        team: state.project.team || "",
+        hrEvaluation: state.project.hr_evaluation || "",
+        cooperation: state.project.cooperation || "",
+        mediaGoal: state.project.media_goal || "",
+        mediaTarget: state.project.media_target || "",
+        mediaChannel: state.project.media_channel || "",
+        marketingCampaign: state.project.marketing_campaign || "",
+        mediaTool: state.project.media_tool || "",
+        mediaMeasure: state.project.media_measure || "",
+        logo: state.project.logo_url || "",
+      };
+      
+      setForm((prev) => ({
+        ...prev,
+        ...mappedData
+      }));
+      setCurrentStep(state.step || 1);
+    }
+    
     if (state.file) {
       setForm((prev) => ({ ...prev, profileFile: state.file }));
       if (state.extractedText) {

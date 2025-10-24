@@ -1,7 +1,9 @@
 import React, { useState, useRef } from "react";
+import { useNavigate } from "react-router-dom";
 import ReactQuill from "react-quill";
 import "react-quill/dist/quill.snow.css";
 import { uploadToCloudinary } from "../../utils/cloudinary";
+import { API_BASE, authHeaders } from "../../config/api";
 import {
   Document,
   Page,
@@ -105,6 +107,15 @@ const pdfStyles = StyleSheet.create({
     color: "#9CA3AF",
     fontFamily: "Roboto",
   },
+  boldText: {
+    fontWeight: "bold",
+  },
+  italicText: {
+    fontStyle: "italic",
+  },
+  underlineText: {
+    textDecoration: "underline",
+  },
 });
 // Component PDF Document với nhiều trang - Giữ nguyên cấu trúc nhưng áp dụng styles mới
 const MyDocument = ({ data }) => {
@@ -151,15 +162,11 @@ const MyDocument = ({ data }) => {
       </View>
       <View style={pdfStyles.section}>
         <Text style={pdfStyles.label}>Ý tưởng chính</Text>
-        <Text style={pdfStyles.value}>
-          {stripHtmlTags(data.mainIdea || "")}
-        </Text>
+        {renderRichTextToPDF(data.mainIdea || "")}
       </View>
       <View style={pdfStyles.section}>
         <Text style={pdfStyles.label}>Sản phẩm, dịch vụ & Giá trị</Text>
-        <Text style={pdfStyles.value}>
-          {stripHtmlTags(data.productValue || "")}
-        </Text>
+        {renderRichTextToPDF(data.productValue || "")}
       </View>
       <View style={pdfStyles.section}>
         <Text style={pdfStyles.label}>Hình ảnh sản phẩm (nhiều)</Text>
@@ -183,40 +190,32 @@ const MyDocument = ({ data }) => {
       </View>
       <View style={pdfStyles.section}>
         <Text style={pdfStyles.label}>Sứ mệnh</Text>
-        <Text style={pdfStyles.value}>{stripHtmlTags(data.mission || "")}</Text>
+        {renderRichTextToPDF(data.mission || "")}
       </View>
       <View style={pdfStyles.section}>
         <Text style={pdfStyles.label}>Tầm nhìn</Text>
-        <Text style={pdfStyles.value}>{stripHtmlTags(data.vision || "")}</Text>
+        {renderRichTextToPDF(data.vision || "")}
       </View>
       <View style={pdfStyles.section}>
         <Text style={pdfStyles.label}>Giá trị sản phẩm</Text>
-        <Text style={pdfStyles.value}>
-          {stripHtmlTags(data.productCoreValue || "")}
-        </Text>
+        {renderRichTextToPDF(data.productCoreValue || "")}
       </View>
       <View style={pdfStyles.subheader}>
         <Text>B. THÔNG TIN VỀ SẢN PHẨM, DỊCH VỤ</Text>
       </View>
       <View style={pdfStyles.section}>
         <Text style={pdfStyles.label}>Khách hàng mục tiêu</Text>
-        <Text style={pdfStyles.value}>
-          {stripHtmlTags(data.targetCustomer || "")}
-        </Text>
+        {renderRichTextToPDF(data.targetCustomer || "")}
       </View>
       <View style={pdfStyles.section}>
         <Text style={pdfStyles.label}>Lợi thế cạnh tranh</Text>
-        <Text style={pdfStyles.value}>
-          {stripHtmlTags(data.advantage || "")}
-        </Text>
+        {renderRichTextToPDF(data.advantage || "")}
       </View>
       <View style={pdfStyles.section}>
         <Text style={pdfStyles.label}>
           Giá trị mang lại cho cộng đồng và xã hội
         </Text>
-        <Text style={pdfStyles.value}>
-          {stripHtmlTags(data.communityValue || "")}
-        </Text>
+        {renderRichTextToPDF(data.communityValue || "")}
       </View>
       <Text style={pdfStyles.pageNumber}>Trang 2/5</Text>
     </Page>,
@@ -240,35 +239,27 @@ const MyDocument = ({ data }) => {
       </View>
       <View style={pdfStyles.section}>
         <Text style={pdfStyles.label}>Tài chính (Khởi đầu)</Text>
-        <Text style={pdfStyles.value}>{stripHtmlTags(data.finance || "")}</Text>
+        {renderRichTextToPDF(data.finance || "")}
       </View>
       <View style={pdfStyles.section}>
         <Text style={pdfStyles.label}>Tính khả thi</Text>
-        <Text style={pdfStyles.value}>
-          {stripHtmlTags(data.feasibility || "")}
-        </Text>
+        {renderRichTextToPDF(data.feasibility || "")}
       </View>
       <View style={pdfStyles.section}>
         <Text style={pdfStyles.label}>Sản phẩm & Dịch vụ</Text>
-        <Text style={pdfStyles.value}>
-          {stripHtmlTags(data.products || "")}
-        </Text>
+        {renderRichTextToPDF(data.products || "")}
       </View>
       <View style={pdfStyles.section}>
         <Text style={pdfStyles.label}>Phân tích SWOT</Text>
-        <Text style={pdfStyles.value}>{stripHtmlTags(data.swot || "")}</Text>
+        {renderRichTextToPDF(data.swot || "")}
       </View>
       <View style={pdfStyles.section}>
         <Text style={pdfStyles.label}>Thuận lợi/Khó khăn</Text>
-        <Text style={pdfStyles.value}>
-          {stripHtmlTags(data.prosCons || "")}
-        </Text>
+        {renderRichTextToPDF(data.prosCons || "")}
       </View>
       <View style={pdfStyles.section}>
         <Text style={pdfStyles.label}>Tính độc đáo, sáng tạo</Text>
-        <Text style={pdfStyles.value}>
-          {stripHtmlTags(data.creativity || "")}
-        </Text>
+        {renderRichTextToPDF(data.creativity || "")}
       </View>
       <Text style={pdfStyles.pageNumber}>Trang 3/5</Text>
     </Page>,
@@ -282,27 +273,19 @@ const MyDocument = ({ data }) => {
         <Text style={pdfStyles.label}>
           Kế hoạch kinh doanh (theo giai đoạn)
         </Text>
-        <Text style={pdfStyles.value}>
-          {stripHtmlTags(data.businessPlan || "")}
-        </Text>
+        {renderRichTextToPDF(data.businessPlan || "")}
       </View>
       <View style={pdfStyles.section}>
         <Text style={pdfStyles.label}>Kênh phân phối</Text>
-        <Text style={pdfStyles.value}>
-          {stripHtmlTags(data.distribution || "")}
-        </Text>
+        {renderRichTextToPDF(data.distribution || "")}
       </View>
       <View style={pdfStyles.section}>
         <Text style={pdfStyles.label}>Phát triển, mở rộng thị trường</Text>
-        <Text style={pdfStyles.value}>
-          {stripHtmlTags(data.marketDevelopment || "")}
-        </Text>
+        {renderRichTextToPDF(data.marketDevelopment || "")}
       </View>
       <View style={pdfStyles.section}>
         <Text style={pdfStyles.label}>Kết quả tiềm năng</Text>
-        <Text style={pdfStyles.value}>
-          {stripHtmlTags(data.potentialResult || "")}
-        </Text>
+        {renderRichTextToPDF(data.potentialResult || "")}
       </View>
       <View style={pdfStyles.section}>
         <Text style={pdfStyles.label}>
@@ -390,10 +373,256 @@ const MyDocument = ({ data }) => {
 // Helper để strip HTML tags từ rich text
 function stripHtmlTags(html) {
   if (!html) return "";
-  return html
-    .replace(/<[^>]*>/g, "")
-    .replace(/\n/g, " ")
-    .trim();
+  
+  let text = html;
+  
+  // Chuyển <li> thành dấu bullet
+  text = text.replace(/<li[^>]*>/gi, "• ").replace(/<\/li>/gi, "\n");
+  
+  // Chuyển <br> và </p> thành dòng mới
+  text = text.replace(/<br\s*\/?>/gi, "\n").replace(/<\/p>/gi, "\n");
+  
+  // Xóa các tags khác NHƯNG giữ nội dung
+  text = text.replace(/<[^>]*>/g, "");
+  
+  // Giải mã HTML entities
+  text = text
+    .replace(/&nbsp;/g, " ")
+    .replace(/&lt;/g, "<")
+    .replace(/&gt;/g, ">")
+    .replace(/&quot;/g, '"')
+    .replace(/&amp;/g, "&");
+  
+  // Loại bỏ nhiều dòng trống liên tiếp
+  text = text.replace(/\n\n+/g, "\n");
+  
+  return text.trim();
+}
+
+// Hàm chuyển đổi HTML rich text thành PDF elements với định dạng đầy đủ
+function renderRichTextToPDF(html) {
+  if (!html || typeof html !== "string") {
+    return null;
+  }
+  
+  const trimmedHtml = html.trim();
+  if (!trimmedHtml) {
+    return null;
+  }
+  
+  // Parse HTML thành cấu trúc có định dạng
+  const parseFormattedText = (text) => {
+    const result = [];
+    
+    // Regex để nhận diện: tags, links, hoặc text content
+    const regex = /(<b>|<strong>|<i>|<em>|<u>|<a[^>]*>|<\/b>|<\/strong>|<\/i>|<\/em>|<\/u>|<\/a>|[^<]+)/gi;
+    let match;
+    let isBold = false;
+    let isItalic = false;
+    let isUnderline = false;
+    let linkHref = null;
+    
+    while ((match = regex.exec(text)) !== null) {
+      const token = match[0];
+      
+      // Xử lý opening tags
+      if (token === "<b>" || token === "<strong>") {
+        isBold = true;
+      } else if (token === "<i>" || token === "<em>") {
+        isItalic = true;
+      } else if (token === "<u>") {
+        isUnderline = true;
+      } else if (token.match(/^<a\s+/i)) {
+        // Extract href từ <a href="...">
+        const hrefMatch = token.match(/href=["']([^"']*)["']/i);
+        linkHref = hrefMatch ? hrefMatch[1] : null;
+      }
+      // Xử lý closing tags
+      else if (token === "</b>" || token === "</strong>") {
+        isBold = false;
+      } else if (token === "</i>" || token === "</em>") {
+        isItalic = false;
+      } else if (token === "</u>") {
+        isUnderline = false;
+      } else if (token === "</a>") {
+        linkHref = null;
+      }
+      // Xử lý text content
+      else if (token && !token.match(/^</)) {
+        // Decode HTML entities
+        let decoded = token
+          .replace(/&nbsp;/g, " ")
+          .replace(/&lt;/g, "<")
+          .replace(/&gt;/g, ">")
+          .replace(/&quot;/g, '"')
+          .replace(/&apos;/g, "'")
+          .replace(/&amp;/g, "&");
+        
+        if (decoded.trim()) {
+          result.push({
+            text: decoded,
+            isBold,
+            isItalic,
+            isUnderline,
+            linkHref,
+          });
+        }
+      }
+    }
+    
+    return result;
+  };
+  
+  // Xử lý lists
+  const hasLists = /<(ul|ol)/i.test(trimmedHtml);
+  
+  if (hasLists) {
+    const parts = [];
+    const listRegex = /<(ul|ol)[^>]*>([\s\S]*?)<\/\1>/gi;
+    let match;
+    let lastIndex = 0;
+    
+    while ((match = listRegex.exec(trimmedHtml)) !== null) {
+      // Thêm nội dung trước list
+      if (match.index > lastIndex) {
+        const beforeText = trimmedHtml.substring(lastIndex, match.index)
+          .replace(/<p[^>]*>/gi, "")
+          .replace(/<\/p>/gi, "")
+          .replace(/<[^>]*>/g, "")
+          .trim();
+        if (beforeText) {
+          parts.push({ type: "text", content: beforeText });
+        }
+      }
+      
+      // Parse list items
+      const listContent = match[2];
+      const items = listContent.match(/<li[^>]*>([\s\S]*?)<\/li>/gi) || [];
+      const listType = match[1].toLowerCase();
+      
+      if (items.length > 0) {
+        parts.push({
+          type: "list",
+          listType,
+          items: items.map((item, idx) => {
+            let text = item.replace(/<\/?li[^>]*>/gi, "").trim();
+            const bullet = listType === "ol" ? `${idx + 1}. ` : "• ";
+            return { text: bullet + text };
+          }),
+        });
+      }
+      
+      lastIndex = match.index + match[0].length;
+    }
+    
+    // Thêm phần còn lại
+    if (lastIndex < trimmedHtml.length) {
+      const remaining = trimmedHtml.substring(lastIndex)
+        .replace(/<p[^>]*>/gi, "")
+        .replace(/<\/p>/gi, "")
+        .replace(/<[^>]*>/g, "")
+        .trim();
+      if (remaining) {
+        parts.push({ type: "text", content: remaining });
+      }
+    }
+    
+    // Render các phần
+    const views = [];
+    for (const part of parts) {
+      if (part.type === "text" && part.content) {
+        const lines = part.content.split("\n").filter(l => l);
+        for (const line of lines) {
+          if (line) {
+            const formattedParts = parseFormattedText(line);
+            views.push(
+              <View key={`text-${views.length}`} style={{ marginBottom: 8 }}>
+                <Text style={pdfStyles.value}>
+                  {formattedParts.map((part, idx) => {
+                    const textStyle = { ...pdfStyles.value };
+                    if (part.isBold) textStyle.fontWeight = "bold";
+                    if (part.isUnderline) textStyle.textDecoration = "underline";
+                    if (part.linkHref) textStyle.color = "#0066CC"; // Màu xanh cho link
+                    return (
+                      <Text key={idx} style={textStyle}>
+                        {part.text}
+                        {part.linkHref && ` [${part.linkHref}]`}
+                      </Text>
+                    );
+                  })}
+                </Text>
+              </View>
+            );
+          }
+        }
+      } else if (part.type === "list") {
+        for (const item of part.items) {
+          if (item.text) {
+            const formattedParts = parseFormattedText(item.text);
+            views.push(
+              <View key={`item-${views.length}`} style={{ marginBottom: 4 }}>
+                <Text style={pdfStyles.value}>
+                  {formattedParts.map((part, idx) => {
+                    const textStyle = { ...pdfStyles.value };
+                    if (part.isBold) textStyle.fontWeight = "bold";
+                    if (part.isUnderline) textStyle.textDecoration = "underline";
+                    if (part.linkHref) textStyle.color = "#0066CC"; // Màu xanh cho link
+                    return (
+                      <Text key={idx} style={textStyle}>
+                        {part.text}
+                        {part.linkHref && ` [${part.linkHref}]`}
+                      </Text>
+                    );
+                  })}
+                </Text>
+              </View>
+            );
+          }
+        }
+      }
+    }
+    
+    return views.length > 0 ? <View>{views}</View> : null;
+  }
+  
+  // Nếu không có list, xử lý paragraphs
+  const paragraphs = trimmedHtml
+    .split(/<\/p>/i)
+    .map(p => p.replace(/<p[^>]*>/i, "").trim())
+    .filter(p => p);
+  
+  if (paragraphs.length === 0) {
+    return null;
+  }
+  
+  const views = [];
+  for (const para of paragraphs) {
+    if (para) {
+      const formattedParts = parseFormattedText(para);
+      if (formattedParts.length > 0) {
+        views.push(
+          <View key={`para-${views.length}`} style={{ marginBottom: 8 }}>
+            <Text style={pdfStyles.value}>
+              {formattedParts.map((part, idx) => {
+                const textStyle = { ...pdfStyles.value };
+                if (part.isBold) textStyle.fontWeight = "bold";
+                if (part.isUnderline) textStyle.textDecoration = "underline";
+                if (part.linkHref) textStyle.color = "#0066CC"; // Màu xanh cho link
+                return (
+                  <Text key={idx} style={textStyle}>
+                    {part.text}
+                    {part.linkHref && ` [${part.linkHref}]`}
+                  </Text>
+                );
+              })}
+            </Text>
+          </View>
+        );
+      }
+    }
+  }
+  
+  return views.length > 0 ? <View>{views}</View> : null;
 }
 // Cấu trúc các section và trường theo khung hồ sơ dự án
 const FORM_SECTIONS = [
@@ -404,32 +633,32 @@ const FORM_SECTIONS = [
         label: "Tên Dự án",
         key: "projectName",
         type: "input",
-        placeholder: "VD: GFU – GERMAN FOR U",
+        placeholder: "VD: EcoMart - Ứng dụng mua sắm xanh",
       },
       { label: "Logo dự án", key: "logo", type: "image", placeholder: "" },
       {
         label: "Lĩnh vực",
         key: "field",
         type: "input",
-        placeholder: "Giáo dục, Dịch vụ, Tài chính, Du lịch",
+        placeholder: "VD: Công nghệ, E-commerce, Bền vững",
       },
       {
         label: "Đơn vị thực hiện",
         key: "organization",
         type: "input",
-        placeholder: "TRƯỜNG ĐẠI HỌC MỞ HÀ NỘI",
+        placeholder: "VD: TRƯỜNG ĐH KINH TẾ QUỐC DÂN",
       },
       {
         label: "Thời gian thực hiện",
         key: "time",
         type: "input",
-        placeholder: "Hà Nội, Tháng 12/2023",
+        placeholder: "VD: Hà Nội, Tháng 9/2024 - Tháng 3/2025",
       },
       {
         label: "Nhóm thực hiện & Giảng viên hướng dẫn",
         key: "teamInfo",
         type: "rich",
-        placeholder: "Nhập thông tin các thành viên",
+        placeholder: "VD: Phạm Thị A (Trưởng nhóm), Trần Văn B, Lê Thị C... GV hướng dẫn: ThS. Nguyễn Văn D",
       },
     ],
   },
@@ -440,13 +669,13 @@ const FORM_SECTIONS = [
         label: "Ý tưởng chính",
         key: "mainIdea",
         type: "rich",
-        placeholder: "Nhập ý tưởng chính...",
+        placeholder: "VD: Tạo nền tảng kết nối người tiêu dùng với cửa hàng bán hàng hóa sinh thái bền vững...",
       },
       {
         label: "Sản phẩm, dịch vụ & Giá trị",
         key: "productValue",
         type: "rich",
-        placeholder: "Nhập sản phẩm, dịch vụ, giá trị...",
+        placeholder: "VD: Ứng dụng mobile giúp người dùng tìm kiếm, mua sắm sản phẩm eco-friendly với giá tốt. Lợi ích: tiết kiệm thời gian, giá cạnh tranh 10-20% so với cửa hàng...",
       },
       {
         label: "Hình ảnh sản phẩm (nhiều)",
@@ -464,19 +693,19 @@ const FORM_SECTIONS = [
         label: "Sứ mệnh",
         key: "mission",
         type: "rich",
-        placeholder: "Nhập sứ mệnh...",
+        placeholder: "VD: Giảm thiểu lãng phí thực phẩm bằng cách kết nối nhà hàng với người tiêu dùng để bán đồ ăn thừa...",
       },
       {
         label: "Tầm nhìn",
         key: "vision",
         type: "rich",
-        placeholder: "Nhập tầm nhìn...",
+        placeholder: "VD: Trở thành nền tảng số 1 tại Việt Nam trong lĩnh vực kinh tế chia sẻ (sharing economy) cho thực phẩm...",
       },
       {
         label: "Giá trị sản phẩm",
         key: "productCoreValue",
         type: "rich",
-        placeholder: "Nhập giá trị sản phẩm...",
+        placeholder: "VD: Tiết kiệm chi phí cho quán ăn 30-40%, giá rẻ 50% cho khách hàng, bảo vệ môi trường...",
       },
     ],
   },
@@ -488,19 +717,19 @@ const FORM_SECTIONS = [
         label: "Khách hàng mục tiêu",
         key: "targetCustomer",
         type: "rich",
-        placeholder: "Nhập khách hàng mục tiêu...",
+        placeholder: "VD: Quán ăn, nhà hàng, cafeteria có 50-500 nhân viên. Khách hàng là người trẻ 18-35 tuổi, yêu thích ăn uống bền vững...",
       },
       {
         label: "Lợi thế cạnh tranh",
         key: "advantage",
         type: "rich",
-        placeholder: "Nhập lợi thế cạnh tranh...",
+        placeholder: "VD: Công nghệ AI dự đoán lượng hàng thừa, giao diện thân thiện, độ phủ sóng rộng, hỗ trợ 24/7...",
       },
       {
         label: "Giá trị mang lại cho cộng đồng và xã hội",
         key: "communityValue",
         type: "rich",
-        placeholder: "Nhập giá trị cộng đồng...",
+        placeholder: "VD: Giảm lãng phí thực phẩm 50%, tạo việc làm cho 100+ người, giảm phát thải CO2 100 tấn/năm...",
       },
     ],
   },
@@ -512,49 +741,49 @@ const FORM_SECTIONS = [
         label: "Quy mô thị trường",
         key: "marketSize",
         type: "rich",
-        placeholder: "Nhập quy mô thị trường...",
+        placeholder: "VD: Thị trường thực phẩm Việt Nam: 80 tỷ USD, tăng 5%/năm. Segment sharing economy: 2 tỷ USD, tăng 20%/năm...",
       },
       {
         label: "Đối tác & Nguồn nhân lực",
         key: "partners",
         type: "rich",
-        placeholder: "Nhập đối tác, nguồn lực...",
+        placeholder: "VD: Đối tác: Grab, 100+ quán ăn lớn. Nguồn lực: 5 dev, 2 designer, 1 PM, hỗ trợ từ Trường ĐH...",
       },
       {
         label: "Tài chính (Khởi đầu)",
         key: "finance",
         type: "rich",
-        placeholder: "Nhập tài chính...",
+        placeholder: "VD: Chi phí khởi động: 2 tỷ (server, hosting, marketing). ROI: 8 tháng. Cần vốn: 1 tỷ...",
       },
       {
         label: "Tính khả thi",
         key: "feasibility",
         type: "rich",
-        placeholder: "Nhập tính khả thi...",
+        placeholder: "VD: Công nghệ sẵn có (React, Node.js), đội ngũ có kinh nghiệm, pháp luật ủng hộ...",
       },
       {
         label: "Sản phẩm & Dịch vụ",
         key: "products",
         type: "rich",
-        placeholder: "Nhập sản phẩm & dịch vụ...",
+        placeholder: "VD: Ứng dụng mobile (iOS/Android), web dashboard quản lý, API tích hợp POS, AI dự đoán...",
       },
       {
         label: "Phân tích SWOT",
         key: "swot",
         type: "rich",
-        placeholder: "Nhập phân tích SWOT...",
+        placeholder: "VD: Mạnh: nhu cầu cao, tăng trưởng nhanh; Yếu: cạnh tranh lớn; Cơ hội: mở rộng sang Lào, Campuchia; Thách: quy định thực phẩm...",
       },
       {
         label: "Thuận lợi/Khó khăn",
         key: "prosCons",
         type: "rich",
-        placeholder: "Nhập thuận lợi/khó khăn...",
+        placeholder: "VD: Ưu: mô hình bền vững, thị trường lớn, tăng trưởng nhanh. Nhược: yêu cầu tuân thủ pháp luật phức tạp, chi phí vận hành cao...",
       },
       {
         label: "Tính độc đáo, sáng tạo",
         key: "creativity",
         type: "rich",
-        placeholder: "Nhập tính độc đáo, sáng tạo...",
+        placeholder: "VD: AI dự đoán lãng phí, gamification (tích điểm xanh), blockchain cho transparency, tích hợp carbon tracking...",
       },
     ],
   },
@@ -566,31 +795,31 @@ const FORM_SECTIONS = [
         label: "Kế hoạch kinh doanh (theo giai đoạn)",
         key: "businessPlan",
         type: "rich",
-        placeholder: "Nhập kế hoạch kinh doanh...",
+        placeholder: "VD: Q1: MVP, testing với 10 quán ăn. Q2: Launch chính thức, 50 quán ăn. Q3-Q4: Mở rộng 200+ quán. Năm 2: mở rộng sang 3 tỉnh...",
       },
       {
         label: "Kênh phân phối",
         key: "distribution",
         type: "rich",
-        placeholder: "Nhập kênh phân phối...",
+        placeholder: "VD: Ứng dụng mobile (App Store, Google Play), web, phối hợp với Grab, quảng cáo Facebook/TikTok, PR...",
       },
       {
         label: "Phát triển, mở rộng thị trường",
         key: "marketDevelopment",
         type: "rich",
-        placeholder: "Nhập phát triển, mở rộng thị trường...",
+        placeholder: "VD: Năm 1: chiếm lĩnh Hà Nội (200 quán ăn). Năm 2: mở rộng TP.HCM (300 quán ăn). Năm 3: Lào, Campuchia (500+ quán). Năm 4: Thái Lan...",
       },
       {
         label: "Kết quả tiềm năng",
         key: "potentialResult",
         type: "rich",
-        placeholder: "Nhập kết quả tiềm năng...",
+        placeholder: "VD: Năm 1: 10,000 đơn/tháng, doanh thu 10 tỷ. Năm 2: 50,000 đơn/tháng, doanh thu 60 tỷ. Lợi nhuận 20-30%...",
       },
       {
         label: "Khả năng tăng trưởng, tác động xã hội",
         key: "growthImpact",
         type: "rich",
-        placeholder: "Nhập khả năng tăng trưởng, tác động xã hội...",
+        placeholder: "VD: Tăng trưởng 300% hàng năm. Tác động: giảm lãng phí 50%, tạo 500 việc làm, tiết kiệm 5 tỷ cho người dùng/năm...",
       },
     ],
   },
@@ -602,19 +831,19 @@ const FORM_SECTIONS = [
         label: "Cơ cấu nhân sự (Team)",
         key: "team",
         type: "rich",
-        placeholder: "Nhập cơ cấu nhân sự...",
+        placeholder: "VD: PM (1): Phạm Thị A. Dev (2): Trần Văn B, Lê Thị C. Designer (1): Ngô Minh D. Tư vấn: ThS. Nguyễn Văn E...",
       },
       {
         label: "Đánh giá nguồn nhân lực",
         key: "hrEvaluation",
         type: "rich",
-        placeholder: "Nhập đánh giá nguồn nhân lực...",
+        placeholder: "VD: PM có 2 năm kinh nghiệm startup. Dev: 3+ năm React/Node.js. Designer: 1+ năm UX/UI. Tư vấn có 10 năm kinh doanh...",
       },
       {
         label: "Đối tác hợp tác",
         key: "cooperation",
         type: "rich",
-        placeholder: "Nhập đối tác hợp tác...",
+        placeholder: "VD: Công nghệ: AWS, Firebase. Logistics: Grab, Ahamove. Marketing: Facebook, TikTok. Tài chính: Techcombank...",
       },
     ],
   },
@@ -626,37 +855,37 @@ const FORM_SECTIONS = [
         label: "Mục tiêu truyền thông",
         key: "mediaGoal",
         type: "rich",
-        placeholder: "Nhập mục tiêu truyền thông...",
+        placeholder: "VD: Nâng cao nhận diện thương hiệu, tăng tải ứng dụng 10,000/tháng, xây dựng cộng đồng 100,000 followers...",
       },
       {
         label: "Đối tượng mục tiêu",
         key: "mediaTarget",
         type: "rich",
-        placeholder: "Nhập đối tượng mục tiêu...",
+        placeholder: "VD: Chính: quán ăn, nhà hàng (25-50 tuổi). Phụ: khách hàng cá nhân (18-35 tuổi), yêu thích ăn uống bền vững, thu nhập 10M+/tháng...",
       },
       {
         label: "Kênh truyền thông",
         key: "mediaChannel",
         type: "rich",
-        placeholder: "Nhập kênh truyền thông...",
+        placeholder: "VD: TikTok (target trẻ), Facebook (target chủ quán), Instagram, YouTube, PR lên báo, Podcast, LinkedIn...",
       },
       {
         label: "Chiến dịch Marketing (Quý)",
         key: "marketingCampaign",
         type: "rich",
-        placeholder: "Nhập chiến dịch Marketing...",
+        placeholder: "VD: Q1: Soft launch + PR. Q2: TikTok challenge #EcoMart. Q3: Influencer collaboration. Q4: Holiday campaign, big sale...",
       },
       {
         label: "Công cụ truyền thông",
         key: "mediaTool",
         type: "rich",
-        placeholder: "Nhập công cụ truyền thông...",
+        placeholder: "VD: Facebook Ads, TikTok Ads, Google SEO/SEM, Email marketing, SMS, Zalo, Chatbot, video content...",
       },
       {
         label: "Đo lường và đánh giá",
         key: "mediaMeasure",
         type: "rich",
-        placeholder: "Nhập đo lường và đánh giá...",
+        placeholder: "VD: KPI: 10,000 download, 50% retention sau 30 ngày, 100 quán ăn đăng ký. Tool: Google Analytics, Mixpanel, Facebook Pixel...",
       },
     ],
   },
@@ -669,6 +898,7 @@ export default function ProjectProfileFullForm({
 }) {
   // Toolbar background can be changed here
   const TOOLBAR_BG = "linear-gradient(180deg, rgba(255,255,255,0.99), #ececec)";
+  const navigate = useNavigate();
   const [form, setForm] = useState(() => {
     const obj = {};
     FORM_SECTIONS.forEach((sec) =>
@@ -758,7 +988,6 @@ export default function ProjectProfileFullForm({
       return next;
     });
   }
-  // Function để tải PDF và báo thành công bằng jQuery toast
   const handleDownload = () => {
     setTimeout(() => {
       if (window.$) {
@@ -778,25 +1007,141 @@ export default function ProjectProfileFullForm({
   const handleViewPdf = () => {
     setShowPdfModal(true);
   };
-  const handlePublishClick = () => {
-    if (onPublish) onPublish(); // Chuyển sang giao diện Đăng hồ sơ
+  const handlePublishClick = async () => {
+    // Trước tiên lưu project, sau đó navigate sang UploadProfile
+    const token = localStorage.getItem("token") || localStorage.getItem("access_token");
+    if (!token) {
+      alert("Bạn cần đăng nhập để đăng hồ sơ");
+      return;
+    }
+
+    // Chuẩn bị payload để gửi lên backend
+    const payload = {
+      name: form.projectName || "Dự án chưa có tên",
+      tagline: form.mainIdea ? form.mainIdea.substring(0, 150) : "",
+      description: form.productValue || "",
+      industry: form.field || "",
+      stage: "y-tuong", // Default stage
+      pain_point: form.mainIdea || "",
+      solution: form.productValue || "",
+      product: form.productValue || "",
+      customer_segment: form.targetCustomer || "",
+      customer_features: form.advantage || "",
+      market_size: form.marketSize || "",
+      market_area: "",
+      business_model: form.businessPlan || "",
+      revenue_method: form.businessPlan || "",
+      distribution_channel: form.distribution || "",
+      partners: form.partners || "",
+      cost_estimate: form.finance || "",
+      capital_source: "",
+      revenue_goal: form.potentialResult || "",
+      member_skills: form.team || "",
+      resources: form.cooperation || "",
+      deployment_location: form.deploymentLocation || ""
+    };
+
+    try {
+      const res = await fetch(`${API_BASE}/projects`, {
+        method: "POST",
+        headers: {
+          ...authHeaders(token),
+          "Content-Type": "application/json"
+        },
+        body: JSON.stringify(payload)
+      });
+
+      if (!res.ok) {
+        const errorData = await res.json();
+        console.error("API Error:", errorData);
+        alert("Lỗi: " + (errorData.detail || errorData.message || "Vui lòng thử lại"));
+        return;
+      }
+
+      const data = await res.json();
+      console.log("✓ Project created:", data);
+      
+      // Navigate sang UploadProfile với projectId
+      navigate("/profile/upload", { 
+        state: { 
+          projectId: data.id,
+          project: data 
+        } 
+      });
+    } catch (err) {
+      console.error("Error:", err);
+      alert("Lỗi khi đăng hồ sơ: " + err.message);
+    }
   };
-  const handleSaveClick = () => {
-    // Tạm thời: console.log dữ liệu, sau này lưu vào DB
-    console.log("Lưu dữ liệu:", form);
-    if (onSave) onSave(form); // Gọi prop onSave nếu có
-    // Có thể thêm toast thông báo lưu thành công tương tự
-    if (window.$) {
-      window
-        .$('<div class="my-toast">Lưu thành công!</div>')
-        .appendTo("body")
-        .fadeIn()
-        .delay(2000)
-        .fadeOut(function () {
-          $(this).remove();
-        });
-    } else {
-      alert("Lưu thành công!");
+  const handleSaveClick = async () => {
+    // Lưu dữ liệu qua API
+    const token = localStorage.getItem("token") || localStorage.getItem("access_token");
+    if (!token) {
+      alert("Bạn cần đăng nhập để lưu hồ sơ");
+      return;
+    }
+
+    // Chuẩn bị payload để gửi lên backend
+    const payload = {
+      name: form.projectName || "Dự án chưa có tên",
+      tagline: form.mainIdea ? form.mainIdea.substring(0, 150) : "",
+      description: form.productValue || "",
+      industry: form.field || "",
+      stage: "y-tuong", // Default stage
+      pain_point: form.mainIdea || "",
+      solution: form.productValue || "",
+      product: form.productValue || "",
+      customer_segment: form.targetCustomer || "",
+      customer_features: form.advantage || "",
+      market_size: form.marketSize || "",
+      market_area: "",
+      business_model: form.businessPlan || "",
+      revenue_method: form.businessPlan || "",
+      distribution_channel: form.distribution || "",
+      partners: form.partners || "",
+      cost_estimate: form.finance || "",
+      capital_source: "",
+      revenue_goal: form.potentialResult || "",
+      member_skills: form.team || "",
+      resources: form.cooperation || "",
+      deployment_location: form.deploymentLocation || ""
+    };
+
+    try {
+      const res = await fetch(`${API_BASE}/projects`, {
+        method: "POST",
+        headers: {
+          ...authHeaders(token),
+          "Content-Type": "application/json"
+        },
+        body: JSON.stringify(payload)
+      });
+
+      if (!res.ok) {
+        const errorData = await res.json();
+        console.error("API Error:", errorData);
+        alert("Lỗi lưu hồ sơ: " + (errorData.detail || errorData.message || "Vui lòng thử lại"));
+        return;
+      }
+
+      const data = await res.json();
+      console.log("✓ Project created:", data);
+      
+      if (window.$) {
+        window
+          .$('<div class="my-toast">Lưu hồ sơ thành công!</div>')
+          .appendTo("body")
+          .fadeIn()
+          .delay(2000)
+          .fadeOut(function () {
+            $(this).remove();
+          });
+      } else {
+        alert("Lưu hồ sơ thành công!");
+      }
+    } catch (err) {
+      console.error("Save error:", err);
+      alert("Lỗi khi lưu hồ sơ: " + err.message);
     }
   };
   return (
@@ -812,15 +1157,15 @@ export default function ProjectProfileFullForm({
                   </h2>
                 )}
                 {idx === 0 && (
-                  <div className="flex gap-3 order-2 sm:order-1">
-                    {/* Nút Xem trước - Cải thiện style */}
+                  <div className="flex gap-1.5 order-2 sm:order-1">
+                    {/* Nút Xem trước - Nhỏ gọn chuyên nghiệp */}
                     <button
                       type="button"
-                      className="px-6 py-3 bg-yellow-600 text-white font-medium rounded-lg shadow-md hover:bg-yellow-700 focus:outline-none focus:ring-2 focus:ring-yellow-500 focus:ring-offset-2 transition-all duration-200 transform hover:scale-105 z-20 flex items-center gap-2"
+                      className="px-2.5 py-1 bg-blue-600 text-white text-xs font-semibold rounded-md shadow hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-1 transition-all duration-150 z-20 flex items-center gap-1"
                       onClick={handleViewPdf}
                     >
                       <svg
-                        className="w-4 h-4"
+                        className="w-2.5 h-2.5"
                         fill="none"
                         stroke="currentColor"
                         viewBox="0 0 24 24"
@@ -840,17 +1185,17 @@ export default function ProjectProfileFullForm({
                       </svg>
                       Xem trước
                     </button>
-                    {/* Nút Tải xuống - Cải thiện style */}
+                    {/* Nút Tải xuống - Nhỏ gọn chuyên nghiệp */}
                     <PDFDownloadLink
                       document={<MyDocument data={form} />}
                       fileName="ho-so-du-an.pdf"
-                      className="px-6 py-3 bg-green-600 text-white font-medium rounded-lg shadow-md hover:bg-green-700 focus:outline-none focus:ring-2 focus:ring-green-500 focus:ring-offset-2 transition-all duration-200 transform hover:scale-105 no-underline z-20 flex items-center gap-2"
+                      className="px-2.5 py-1 bg-emerald-600 text-white text-xs font-semibold rounded-md shadow hover:bg-emerald-700 focus:outline-none focus:ring-2 focus:ring-emerald-500 focus:ring-offset-1 transition-all duration-150 no-underline z-20 flex items-center gap-1"
                       onClick={handleDownload}
                     >
                       {({ loading }) => (
                         <>
                           <svg
-                            className="w-4 h-4"
+                            className="w-2.5 h-2.5"
                             fill="none"
                             stroke="currentColor"
                             viewBox="0 0 24 24"
@@ -887,14 +1232,14 @@ export default function ProjectProfileFullForm({
                       </svg>
                       Đăng đa nền tảng
                     </button>
-                    {/* Nút Lưu - Cải thiện style */}
+                    {/* Nút Lưu - Nhỏ gọn chuyên nghiệp */}
                     <button
                       type="button"
-                      className="px-6 py-3 bg-gray-600 text-white font-medium rounded-lg shadow-md hover:bg-gray-700 focus:outline-none focus:ring-2 focus:ring-gray-500 focus:ring-offset-2 transition-all duration-200 transform hover:scale-105 z-20 flex items-center gap-2"
+                      className="px-2.5 py-1 bg-slate-600 text-white text-xs font-semibold rounded-md shadow hover:bg-slate-700 focus:outline-none focus:ring-2 focus:ring-slate-500 focus:ring-offset-1 transition-all duration-150 z-20 flex items-center gap-1"
                       onClick={handleSaveClick}
                     >
                       <svg
-                        className="w-4 h-4"
+                        className="w-2.5 h-2.5"
                         fill="none"
                         stroke="currentColor"
                         viewBox="0 0 24 24"

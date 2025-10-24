@@ -12,6 +12,7 @@
     setNewUserEmail(encodeHTML(e.target.value));
   };
 import React, { useState, useEffect } from "react";
+import { useNavigate } from "react-router-dom";
 import { ToastContainer, toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 import Navbar from "../components/layout/Navbar";
@@ -21,6 +22,7 @@ import DashboardMenu from "../components/dashboard/DashboardMenu";
 import DashboardHeader from "../components/dashboard/DashboardHeader";
 
 function ProfileManagement({ userType = 'startup', isLoggedIn = true }) {
+  const navigate = useNavigate();
   // Stage mapping
   const stageMap = {
     'y-tuong': '(ý tưởng)',
@@ -476,20 +478,14 @@ function ProfileManagement({ userType = 'startup', isLoggedIn = true }) {
                   </div>
                 </div>
                 <div className="flex justify-end gap-2 mt-auto">
-                  <button className="px-2 py-1 rounded bg-gray-100 hover:bg-gray-200 text-gray-700 flex items-center gap-1 text-xs" style={{minWidth: 'unset'}} onClick={async () => {
-                    const token = localStorage.getItem("token");
-                    const res = await fetch(`${API_BASE}/projects/${selectedProfile.id}/`, {
-                            headers: {
-                              ...authHeaders(token),
-                              "Content-Type": "application/json"
-                            }
-                          });
-                    let data = {};
-                    if (res.ok) {
-                      data = await res.json();
-                    }
-                    localStorage.setItem("projectPreviewForm", JSON.stringify(data));
-                    window.location.href = "/create-project?step=2";
+                  <button className="px-2 py-1 rounded bg-gray-100 hover:bg-gray-200 text-gray-700 flex items-center gap-1 text-xs" style={{minWidth: 'unset'}} onClick={() => {
+                    // Chuyển sang CreateProject bước 2 (Tạo hồ sơ) với dữ liệu project
+                    navigate("/create-project", {
+                      state: {
+                        step: 1, // Bước 2: Tạo hồ sơ (value=1)
+                        project: selectedProfile
+                      }
+                    });
                   }}>
                     <svg xmlns="http://www.w3.org/2000/svg" className="h-3 w-3" viewBox="0 0 20 20" fill="currentColor">
                       <path d="M17.414 2.586a2 2 0 00-2.828 0L7 10.172V13h2.828l7.586-7.586a2 2 0 000-2.828z" />
