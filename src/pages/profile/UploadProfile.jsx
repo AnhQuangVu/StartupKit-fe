@@ -353,7 +353,7 @@ export default function UploadProfile() {
         }
       }
 
-      // ✅ Payload match schema backend
+      // ✅ Payload: gửi đơn giản, tránh xung đột schema (không gửi object lồng logo/team_image)
       const payload = {
         name: projectData.name,
         tagline: projectData.tagline,
@@ -361,11 +361,9 @@ export default function UploadProfile() {
         website_url: normalizedWebsiteUrl,
         industry: projectData.industry,
         stage: projectData.stage,
-        // Logo: object với url + public_id
-        logo: logo_url ? { url: logo_url, public_id: logoPublicId } : undefined,
-        logo_url: logo_url,
-        // Team image: object với url + public_id
-        team_image: team_image_url ? { url: team_image_url, public_id: bannerPublicId } : undefined,
+        // Chỉ gửi URL đơn giản để backend xử lý ổn định
+        logo_url: logo_url || undefined,
+        team_image_url: team_image_url || undefined,
         // Các trường khác
         pain_point: projectData.pain_point || '',
         solution: projectData.solution || '',
