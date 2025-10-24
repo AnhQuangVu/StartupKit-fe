@@ -1,8 +1,65 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import StartupCard from "./StartupCard";
+import { API_BASE } from "../../config/api";
+import { useAuth } from "../../context/AuthContext";
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+import { faSpinner } from "@fortawesome/free-solid-svg-icons";
 
 export default function StartupList({ small = false, columns, rows }) {
-  const startups = [
+  const { isLoggedIn } = useAuth();
+  const [startups, setStartups] = useState([]);
+  const [loading, setLoading] = useState(true);
+  const [page, setPage] = useState(0);
+
+  useEffect(() => {
+    fetchPublishedProjects();
+  }, []);
+
+  const fetchPublishedProjects = async () => {
+    try {
+      setLoading(true);
+      
+      // Call correct public API endpoint - without query params
+      const response = await fetch(`${API_BASE}/public/projects/published`);
+      
+      if (!response.ok) throw new Error('Không thể lấy danh sách projects');
+      
+      const data = await response.json();
+      const allProjects = Array.isArray(data) ? data : [];
+      
+      // Lọc chỉ projects published
+      const published = allProjects.filter(p => p.status === 'published' || p.published_at);
+      
+      // Sort theo created_at mới nhất phía trước
+      const sorted = published.sort((a, b) => {
+        const dateA = new Date(a.created_at || a.published_at);
+        const dateB = new Date(b.created_at || b.published_at);
+        return dateB - dateA;
+      });
+      
+      // Transform to StartupCard format
+      const transformed = sorted.map(p => ({
+        img: p.logo_url || 'https://logo.clearbit.com/example.com',
+        title: p.name,
+        desc: p.tagline || p.description || 'Khởi nghiệp sáng tạo',
+        tag: p.industry || 'Startup',
+        members: p.member_count || 0,
+        raised: p.capital_source || 'N/A',
+        link: p.website_url || '#'
+      }));
+      
+      setStartups(transformed.length > 0 ? transformed : getMockData());
+    } catch (error) {
+      console.error('Fetch projects error:', error);
+      // Fallback to mock data
+      setStartups(getMockData());
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  // Mock data as fallback
+  const getMockData = () => [
     {
       img: "https://logo.clearbit.com/stripe.com",
       title: "TechFlow",
@@ -58,120 +115,156 @@ export default function StartupList({ small = false, columns, rows }) {
       title: "StayConnect",
       desc: "Nền tảng kết nối chỗ ở toàn cầu",
       tag: "Travel",
+      members: 20,
+      raised: "$1.5M",
+      link: "https://airbnb.com",
     },
     {
       img: "https://logo.clearbit.com/duolingo.com",
       title: "LinguaPro",
       desc: "Ứng dụng học ngôn ngữ thông minh",
       tag: "Edtech",
+      members: 18,
+      raised: "$400K",
+      link: "https://duolingo.com",
     },
     {
       img: "https://logo.clearbit.com/robinhood.com",
       title: "Investly",
       desc: "Đầu tư dễ dàng cho mọi người",
       tag: "Fintech",
+      members: 22,
+      raised: "$1.2M",
+      link: "https://robinhood.com",
     },
-    // Dữ liệu mẫu bổ sung
     {
       img: "https://logo.clearbit.com/shopify.com",
       title: "ShopMaster",
       desc: "Nền tảng thương mại điện tử cho SMEs",
       tag: "Ecommerce",
+      members: 16,
+      raised: "$600K",
+      link: "https://shopify.com",
     },
     {
       img: "https://logo.clearbit.com/booking.com",
       title: "TravelGo",
       desc: "Đặt vé du lịch toàn cầu",
       tag: "Travel",
+      members: 14,
+      raised: "$900K",
+      link: "https://booking.com",
     },
     {
       img: "https://logo.clearbit.com/uber.com",
       title: "RideNow",
       desc: "Ứng dụng gọi xe thông minh",
       tag: "Mobility",
+      members: 28,
+      raised: "$2.5M",
+      link: "https://uber.com",
     },
     {
       img: "https://logo.clearbit.com/foodpanda.com",
       title: "Foodie",
       desc: "Giao đồ ăn nhanh chóng",
       tag: "Foodtech",
+      members: 11,
+      raised: "$350K",
+      link: "https://foodpanda.com",
     },
     {
       img: "https://logo.clearbit.com/zoom.us",
       title: "MeetPro",
       desc: "Giải pháp họp trực tuyến cho doanh nghiệp",
       tag: "SaaS",
+      members: 24,
+      raised: "$1.8M",
+      link: "https://zoom.us",
     },
     {
       img: "https://logo.clearbit.com/slack.com",
       title: "TeamSync",
       desc: "Kết nối nhóm làm việc hiệu quả",
       tag: "Productivity",
+      members: 19,
+      raised: "$1.1M",
+      link: "https://slack.com",
     },
     {
       img: "https://logo.clearbit.com/coinbase.com",
       title: "CryptoBase",
       desc: "Nền tảng giao dịch tiền số",
       tag: "Fintech",
+      members: 26,
+      raised: "$2.2M",
+      link: "https://coinbase.com",
     },
     {
       img: "https://logo.clearbit.com/spotify.com",
       title: "MusicWave",
       desc: "Ứng dụng nghe nhạc thông minh",
       tag: "Entertainment",
+      members: 17,
+      raised: "$700K",
+      link: "https://spotify.com",
     },
     {
       img: "https://logo.clearbit.com/medium.com",
       title: "BlogMaster",
       desc: "Nền tảng chia sẻ kiến thức",
       tag: "Content",
+      members: 13,
+      raised: "$450K",
+      link: "https://medium.com",
     },
     {
       img: "https://logo.clearbit.com/figma.com",
       title: "DesignHub",
       desc: "Thiết kế cộng tác cho startup",
       tag: "Design",
+      members: 21,
+      raised: "$1.3M",
+      link: "https://figma.com",
     },
     {
       img: "https://logo.clearbit.com/github.com",
       title: "CodeBase",
       desc: "Quản lý mã nguồn cho nhóm dev",
       tag: "Devtools",
+      members: 29,
+      raised: "$2.7M",
+      link: "https://github.com",
     },
     {
       img: "https://logo.clearbit.com/trello.com",
       title: "TaskFlow",
       desc: "Quản lý dự án trực quan",
       tag: "Productivity",
-    },
-    {
-      img: "https://logo.clearbit.com/adobe.com",
-      title: "CreativePro",
-      desc: "Giải pháp sáng tạo cho doanh nghiệp",
-      tag: "Design",
-    },
-    {
-      img: "https://logo.clearbit.com/booking.com",
-      title: "StayMaster",
-      desc: "Đặt phòng khách sạn toàn cầu",
-      tag: "Travel",
+      members: 10,
+      raised: "$250K",
+      link: "https://trello.com",
     },
   ];
 
-
-  // Pagination logic (kept, but layout simplified)
-  // Pagination logic (kept, but when small=true we show a compact subset and no pagination)
-  // allow explicit override via props; otherwise fall back to small/default behavior
   const ITEMS_PER_ROW = columns ?? (small ? 2 : 3);
   const ROWS = rows ?? (small ? 2 : 3);
   const ITEMS_PER_PAGE = ITEMS_PER_ROW * ROWS;
-  const [page, setPage] = useState(0);
   const totalPages = Math.ceil(startups.length / ITEMS_PER_PAGE);
 
   const visibleStartups = startups.slice(
     page * ITEMS_PER_PAGE,
     page * ITEMS_PER_PAGE + ITEMS_PER_PAGE
   );
+
+  if (loading) {
+    return (
+      <div className="text-center py-12">
+        <FontAwesomeIcon icon={faSpinner} className="text-4xl text-[#FFCE23] animate-spin mb-4" />
+        <p className="text-gray-600">Đang tải...</p>
+      </div>
+    );
+  }
 
   return (
     <section className="max-w-6xl mx-auto mt-8 text-center px-4 sm:px-6">

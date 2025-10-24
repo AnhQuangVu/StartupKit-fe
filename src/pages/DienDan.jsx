@@ -7,8 +7,10 @@ import {
   faX, faCheck, faTimes, faArrowLeft
 } from '@fortawesome/free-solid-svg-icons';
 import { API_BASE, authHeaders } from '../config/api';
+import { useAuth } from '../context/AuthContext';
 
 export default function DienDan() {
+  const { user } = useAuth();
   const [projects, setProjects] = useState([]);
   const [selectedProject, setSelectedProject] = useState(null);
   const [posts, setPosts] = useState([]);
@@ -31,10 +33,12 @@ export default function DienDan() {
     setTimeout(() => setToast({ visible: false, message: '', type: 'info' }), duration);
   };
 
-  // Fetch danh sách published projects
+  // Fetch danh sách projects của user hiện tại
   useEffect(() => {
-    fetchPublishedProjects();
-  }, []);
+    if (user?.id) {
+      fetchUserProjects();
+    }
+  }, [user]);
 
   // Fetch posts khi thay đổi project
   useEffect(() => {
@@ -43,33 +47,34 @@ export default function DienDan() {
     }
   }, [selectedProject]);
 
-  const fetchPublishedProjects = async () => {
+  const fetchUserProjects = async () => {
     try {
       setLoading(true);
-      const token = localStorage.getItem('token') || localStorage.getItem('access_token');
-      if (!token) {
-        showToast('Bạn cần đăng nhập', 'warning');
-        return;
-      }
-
-      // Backend API endpoint - thử /projects thay vì /projects/published
-      const response = await fetch(`${API_BASE}/projects?limit=50&skip=0`, {
-        headers: authHeaders(token),
-      });
+      
+      // API công khai - không cần token
+      const response = await fetch(`${API_BASE}/projects/users/${user.id}/projects?skip=0&limit=50`);
 
       if (!response.ok) {
         console.error('Response status:', response.status);
         const errorData = await response.json();
         console.error('Error response:', errorData);
-        throw new Error('Không thể lấy danh sách dự án');
+        throw new Error('Không thể lấy danh sách hồ sơ');
       }
+      
       const data = await response.json();
-      // Lọc chỉ những projects published
-      const publishedProjects = Array.isArray(data) ? data.filter(p => p.status === 'published') : data;
-      setProjects(publishedProjects || []);
+      const projectList = Array.isArray(data) ? data : [];
+      
+      // Sort theo created_at mới nhất phía trước
+      const sortedProjects = projectList.sort((a, b) => {
+        const dateA = new Date(a.created_at);
+        const dateB = new Date(b.created_at);
+        return dateB - dateA;
+      });
+      
+      setProjects(sortedProjects || []);
     } catch (error) {
-      console.error('Fetch published projects error:', error);
-      showToast('Lỗi khi tải danh sách dự án', 'error');
+      console.error('Fetch user projects error:', error);
+      showToast('Lỗi khi tải danh sách hồ sơ', 'error');
     } finally {
       setLoading(false);
     }

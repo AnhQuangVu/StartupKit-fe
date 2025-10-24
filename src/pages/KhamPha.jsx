@@ -1,4 +1,4 @@
-import React, { useState, useMemo } from "react";
+import React, { useState, useMemo, useEffect } from "react";
 import StartupList from "../components/common/StartupList";
 import CompetitionList from "../components/home/CompetitionList";
 import InvestorList from "../components/common/InvestorList";
@@ -27,7 +27,6 @@ export default function KhamPha() {
     { key: "edu", label: "Edtech" },
   ];
 
-  // Debounced/filtering can be added later; for now keep simple
   const handleSearchChange = (e) => setQuery(e.target.value);
   const handleCategoryClick = (k) => setCategory(k);
 
