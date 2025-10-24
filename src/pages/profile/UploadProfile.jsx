@@ -103,7 +103,7 @@ export default function UploadProfile() {
         tagline: data.tagline || prev.tagline,
         description: data.description || prev.description,
         logo_url: data.logo_url || data.logo?.url || prev.logo_url,
-        team_image_url: data.team_image?.url || prev.team_image_url,
+        team_image_url: data.team_image_url || data.team_image?.url || prev.team_image_url,
         website_url: data.website_url || prev.website_url,
         industry: data.industry || prev.industry,
         stage: data.stage || prev.stage,
@@ -149,7 +149,7 @@ export default function UploadProfile() {
         return;
       }
       const data = await res.json();
-      const mapped = data.map(p => ({ id: p.id, content: p.body || p.title || '', author: p.author_id ? `User ${p.author_id}` : 'Người dùng', timestamp: p.created_at || new Date().toISOString(), avatar: (projectData.logo) ? projectData.logo : '/default-avatar.png', media: p.media || [] }));
+      const mapped = data.map(p => ({ id: p.id, content: p.body || p.title || '', author: p.author_id ? `User ${p.author_id}` : 'Người dùng', timestamp: p.created_at || new Date().toISOString(), avatar: (projectData.logo_url) ? projectData.logo_url : '/default-avatar.png', media: p.media || [] }));
       setPosts(mapped);
     } catch (err) {
       console.error('loadPosts error', err);
@@ -351,6 +351,14 @@ export default function UploadProfile() {
           console.error('Banner upload error:', err);
           showToast(`⚠️ Upload banner thất bại: ${err.message}. Vui lòng thử lại.`, 'warning', 5000);
         }
+      }
+
+      // Nếu upload thất bại và giá trị còn là base64 (data:...), đừng gửi lên backend
+      if (typeof logo_url === 'string' && logo_url.startsWith('data:')) {
+        logo_url = undefined;
+      }
+      if (typeof team_image_url === 'string' && team_image_url.startsWith('data:')) {
+        team_image_url = undefined;
       }
 
       // ✅ Payload: gửi đơn giản, tránh xung đột schema (không gửi object lồng logo/team_image)
