@@ -1,7 +1,5 @@
-// File CreateProject.jsx
-
 import React, { useState, useEffect } from "react";
-import { useNavigate } from "react-router-dom";
+import { useNavigate, useLocation } from "react-router-dom";
 // Cloudinary upload
 import {
   PDFDownloadLink,
@@ -13,6 +11,10 @@ import {
 } from "@react-pdf/renderer";
 import ProjectProfileFullForm from "../components/project/ProjectProfileFullForm";
 import { useAuth } from "../context/AuthContext";
+import ProjectPreview from "../components/project/ProjectPreview";
+import ProjectProfilePreview from "../components/project/ProjectProfilePreview";
+import ProjectProfileChatbot from "../components/project/ProjectProfileChatbot";
+import { normalizeProjectPayload } from "../utils/normalizeProjectPayload";
 
 // Sidebar các bước tạo hồ sơ
 function ProjectSteps({ currentStep, onStepClick }) {
@@ -175,17 +177,6 @@ function ProjectTemplateSelector({ onSelect }) {
   );
 }
 
-// Component nhập form hồ sơ
-// Note: The detailed form UI used to be here (ProjectBasicForm) but was removed
-// because `ProjectProfileFullForm` now provides the full project form UI and
-// handles image uploads and state. Keeping page-level logic and step flow above.
-
-import ProjectPreview from "../components/project/ProjectPreview";
-import ProjectProfilePreview from "../components/project/ProjectProfilePreview";
-import ProjectProfileChatbot from "../components/project/ProjectProfileChatbot";
-import { useLocation } from "react-router-dom";
-import { normalizeProjectPayload } from "../utils/normalizeProjectPayload";
-
 // Main page component
 function CreateProject() {
   const { user } = useAuth();
@@ -301,7 +292,7 @@ function CreateProject() {
 
   // Hàm gọi API tạo dự án
   async function createProjectAPI(form) {
-    const payload = normalizePayload(form);
+    const payload = normalizeProjectPayload(form); // Sửa lỗi normalizePayload thành normalizeProjectPayload
     try {
       const token = localStorage.getItem("token");
       const headers = {
@@ -329,13 +320,16 @@ function CreateProject() {
         } catch {
           errorMsg = res.statusText || errorMsg;
         }
+        // Sử dụng jQuery để hiển thị toast và đảm bảo remove element sau khi fadeOut
         if (window.$) {
           window
             .$('<div class="my-toast">' + errorMsg + "</div>")
             .appendTo("body")
             .fadeIn()
             .delay(2000)
-            .fadeOut();
+            .fadeOut(function () {
+              $(this).remove(); // Remove element khỏi DOM sau khi fadeOut hoàn tất
+            });
         } else {
           // Fallback: create a simple toast manually if jQuery is not available
           var toast = document.createElement("div");
@@ -359,13 +353,16 @@ function CreateProject() {
       }
       return await res.json();
     } catch (err) {
+      // Sử dụng jQuery để hiển thị toast và đảm bảo remove element sau khi fadeOut
       if (window.$) {
         window
           .$('<div class="my-toast">Có lỗi xảy ra. Vui lòng thử lại sau.</div>')
           .appendTo("body")
           .fadeIn()
           .delay(2000)
-          .fadeOut();
+          .fadeOut(function () {
+            $(this).remove(); // Remove element khỏi DOM sau khi fadeOut hoàn tất
+          });
       } else {
         var toast = document.createElement("div");
         toast.className = "my-toast";
@@ -387,8 +384,6 @@ function CreateProject() {
       return null;
     }
   }
-
-  // Payload normalization is handled by utils/normalizeProjectPayload.js
 
   if (role !== "founder") {
     return (
@@ -470,6 +465,12 @@ function CreateProject() {
     setIsChatOpen(!isChatOpen);
   };
 
+  // Handler cho Đăng đa nền tảng từ form
+  const handlePublish = () => {
+    console.log("Chuyển sang step 2"); // Debug log
+    setCurrentStep(2); // Chuyển sang giao diện Đăng hồ sơ (step 2)
+  };
+
   return (
     <div className="min-h-screen bg-gray-50 flex flex-col px-6 py-6">
       <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 items-start">
@@ -503,35 +504,16 @@ function CreateProject() {
             )}
 
             {currentStep === 1 && (
-              <div style={{ marginTop: "-97px" }}>
-                <ProjectProfileFullForm initialData={form} onChange={setForm} />
-                <div className="flex justify-end mt-8">
-                  <button
-                    type="button"
-                    className="px-6 py-2 bg-yellow-400 rounded font-semibold hover:bg-yellow-500"
-                    onClick={() => setCurrentStep(2)}
-                  >
-                    Xem trước hồ sơ
-                  </button>
-                </div>
+              <div style={{ marginTop: 0 }}>
+                {" "}
+                {/* Loại bỏ marginTop để tránh che nút */}
+                <ProjectProfileFullForm
+                  initialData={form}
+                  onChange={setForm}
+                  onPublish={handlePublish}
+                />
               </div>
             )}
-
-            {/* {currentStep === 2 && (
-              <div className="w-full">
-                <div className="grid grid-cols-1 md:grid-cols-9 gap-6">
-                  <div className="md:col-span-6 bg-white rounded-lg border border-gray-200 shadow-sm p-8">
-                    <h3 className="text-lg font-semibold mb-6">
-                      Xem trước hồ sơ khởi nghiệp
-                    </h3>
-                    <ProjectProfilePreview form={form} setForm={setForm} />
-                  </div>
-                  <div className="md:col-span-3 ">
-                    <ProjectProfileChatbot form={form} />
-                  </div>
-                </div>
-              </div>
-            )} */}
 
             {currentStep === 2 && (
               <div className="w-full">
