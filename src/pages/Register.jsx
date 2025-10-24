@@ -6,6 +6,7 @@ import { faRocket, faDollarSign, faChalkboardTeacher } from "@fortawesome/free-s
 import { ToastContainer, toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 import logo from "../assets/images/logo.png";
+import { API_BASE } from '../config/api';
 import { useAuth } from "../context/AuthContext";
 
 const Register = () => {
@@ -65,7 +66,7 @@ const Register = () => {
     };
 
     try {
-      const response = await fetch("http://localhost:8000/auth/register", {
+  const response = await fetch(`${API_BASE}/auth/register`, {
         method: "POST",
         headers: {
           "Content-Type": "application/json",

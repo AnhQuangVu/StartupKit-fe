@@ -6,6 +6,7 @@ import { useAuth } from "../context/AuthContext";
 import { useNavigate } from "react-router-dom";
 import Navbar from "../components/layout/Navbar";
 import Footer from "../components/layout/Footer";
+import { API_BASE, authHeaders } from '../config/api';
 
 export default function Profile() {
   const { user: authUser, isLoggedIn, logout, updateUser } = useAuth();
@@ -101,10 +102,10 @@ export default function Profile() {
 
       // Gọi API cập nhật hồ sơ
       const token = localStorage.getItem('token');
-      const response = await fetch('http://localhost:8000/users/me', {
+      const response = await fetch(`${API_BASE}/users/me`, {
         method: 'PATCH',
         headers: {
-          'Authorization': `Bearer ${token}`,
+          ...authHeaders(token),
           'Content-Type': 'application/json'
         },
         body: JSON.stringify(payload)
@@ -122,10 +123,10 @@ export default function Profile() {
         // Sau khi cập nhật, gọi lại API lấy user mới nhất
         try {
           const token = localStorage.getItem("token");
-          const userRes = await fetch("http://localhost:8000/users/me", {
+          const userRes = await fetch(`${API_BASE}/users/me`, {
             method: "GET",
             headers: {
-              "Authorization": `Bearer ${token}`,
+              ...authHeaders(token),
               "Content-Type": "application/json"
             }
           });

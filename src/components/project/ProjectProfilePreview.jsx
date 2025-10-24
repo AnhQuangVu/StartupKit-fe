@@ -1,5 +1,6 @@
 import React, { useEffect, useRef } from "react";
 import { uploadToCloudinary } from '../../utils/cloudinary';
+import { API_BASE, authHeaders } from '../../config/api';
 import { PDFDownloadLink } from '@react-pdf/renderer';
 import { exportProjectPDF } from '../../utils/pdfExport';
 
@@ -111,9 +112,12 @@ export default function ProjectProfilePreview({ form, setForm, onBack, sectionId
       }
       
       // Gọi API PUT để cập nhật dự án
-      const res = await fetch(`http://127.0.0.1:8000/projects/${form.id}`, {
+      const res = await fetch(`${API_BASE}/projects/${form.id}`, {
         method: "PUT",
-        headers,
+        headers: {
+          ...headers,
+          ...authHeaders(token)
+        },
         body: JSON.stringify(payload)
       });
       
@@ -285,8 +289,10 @@ export default function ProjectProfilePreview({ form, setForm, onBack, sectionId
   useEffect(() => {
     if (!sectionId) return;
     const token = localStorage.getItem("token");
-    const wsUrl = `ws://127.0.0.1:8000/projects/ws/${sectionId}?token=${token}`;
-    const ws = new window.WebSocket(wsUrl);
+  const wsProtocol = window.location.protocol === 'https:' ? 'wss' : 'ws';
+  const apiHost = API_BASE.replace(/^https?:\/\//, '');
+  const wsUrl = `${wsProtocol}://${apiHost}/projects/ws/${sectionId}?token=${token}`;
+  const ws = new window.WebSocket(wsUrl);
     wsRef.current = ws;
 
     ws.onopen = () => {

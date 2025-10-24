@@ -13,6 +13,7 @@ import {
 } from "@react-pdf/renderer";
 import ProjectProfileFullForm from "../components/project/ProjectProfileFullForm";
 import { useAuth } from "../context/AuthContext";
+import { API_BASE } from '../config/api';
 
 // Sidebar các bước tạo hồ sơ
 function ProjectSteps({ currentStep, onStepClick }) {
@@ -313,7 +314,7 @@ function CreateProject() {
       // Log the payload to make sure location is included
       console.log("Sending payload to API:", payload);
 
-      const res = await fetch("http://127.0.0.1:8000/projects/", {
+  const res = await fetch(`${API_BASE}/projects/`, {
         method: "POST",
         headers,
         body: JSON.stringify(payload),
