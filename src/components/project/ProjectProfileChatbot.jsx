@@ -79,7 +79,7 @@ export default function ProjectProfileChatbot({ form, onFillField }) {
     try {
       const token = localStorage.getItem("token") || localStorage.getItem("access_token");
       
-      const response = await fetch(`${API_BASE}/ai/rag/chat`, {
+      const response = await fetch(`/api/proxy/ai/rag/chat`, {
         method: "POST",
         headers: {
           "Authorization": `Bearer ${token}`,

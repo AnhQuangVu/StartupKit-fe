@@ -18,9 +18,11 @@ export default defineConfig({
           });
           proxy.on('proxyReq', (proxyReq, req, res) => {
             console.log('Sending Request to the Target:', req.method, req.url);
+            // Log headers being sent
+            console.log('Request Headers:', proxyReq.getHeaders());
           });
           proxy.on('proxyRes', (proxyRes, req, res) => {
-            console.log('Received Response from the Target:', proxyRes.statusCode);
+            console.log('Received Response from the Target:', proxyRes.statusCode, proxyRes.headers);
           });
         },
       },
