@@ -44,6 +44,9 @@ export default function DienDan() {
   const [visibilityModalPostId, setVisibilityModalPostId] = useState(null);
   // ✅ State cho project status edit
   const [statusModalProjectId, setStatusModalProjectId] = useState(null);
+  // ✅ State cho followers và members
+  const [followers, setFollowers] = useState([]);
+  const [members, setMembers] = useState([]);
 
   // Stage mapping
   const stageMap = {
@@ -74,8 +77,21 @@ export default function DienDan() {
   useEffect(() => {
     if (selectedProject) {
       fetchPosts();
+      fetchFollowers();
+      fetchMembers();
     }
   }, [selectedProject]);
+
+  // Cập nhật project list khi posts, followers, members thay đổi
+  useEffect(() => {
+    if (selectedProject) {
+      setProjects(prev => prev.map(p => 
+        p.id === selectedProject.id 
+          ? { ...p, posts_count: posts.length, followers_count: followers.length }
+          : p
+      ));
+    }
+  }, [posts, followers, members]);
 
   const fetchUserProjects = async () => {
     try {
@@ -153,13 +169,54 @@ export default function DienDan() {
       });
 
       if (!response.ok) throw new Error('Không thể lấy bài đăng');
-      const data = await response.json();
+      let data = await response.json();
+      
+      // Bổ sung author_name từ author.name nếu có nested object
+      data = data.map(post => ({
+        ...post,
+        author_name: post.author_name || post.author?.name || post.author_id
+      }));
+      
       setPosts(data || []);
     } catch (error) {
       console.error('Fetch posts error:', error);
       showToast('Lỗi khi tải bài đăng', 'error');
     } finally {
       setLoading(false);
+    }
+  };
+
+  // Fetch followers
+  const fetchFollowers = async () => {
+    if (!selectedProject?.id) return;
+    try {
+      const token = localStorage.getItem('token') || localStorage.getItem('access_token');
+      const response = await fetch(`${API_BASE}/projects/${selectedProject.id}/followers`, {
+        headers: authHeaders(token),
+      });
+      if (response.ok) {
+        const data = await response.json();
+        setFollowers(Array.isArray(data) ? data : []);
+      }
+    } catch (error) {
+      console.error('Fetch followers error:', error);
+    }
+  };
+
+  // Fetch members
+  const fetchMembers = async () => {
+    if (!selectedProject?.id) return;
+    try {
+      const token = localStorage.getItem('token') || localStorage.getItem('access_token');
+      const response = await fetch(`${API_BASE}/projects/${selectedProject.id}/members`, {
+        headers: authHeaders(token),
+      });
+      if (response.ok) {
+        const data = await response.json();
+        setMembers(Array.isArray(data) ? data : []);
+      }
+    } catch (error) {
+      console.error('Fetch members error:', error);
     }
   };
 
@@ -417,7 +474,14 @@ export default function DienDan() {
       if (!response.ok) throw new Error('Không thể tạo bài viết');
 
       const createdPost = await response.json();
-      setPosts(prev => [createdPost, ...prev]);
+      
+      // Bổ sung author_name với fallback chain giống fetchPosts
+      const postWithAuthor = {
+        ...createdPost,
+        author_name: createdPost.author_name || createdPost.author?.name || user?.name || createdPost.author_id
+      };
+      
+      setPosts(prev => [postWithAuthor, ...prev]);
       setNewPostData({ title: '', body: '', visibility: 'public' });
       showToast('✓ Tạo bài viết thành công!', 'success');
     } catch (error) {
@@ -798,14 +862,9 @@ export default function DienDan() {
                     </div>
                     <h3 className="text-xl font-bold text-gray-900 mb-2">{project.name}</h3>
                     <p className="text-gray-600 text-sm mb-4 line-clamp-2">{project.description || 'Chưa có mô tả'}</p>
-                    <div className="flex gap-4 text-sm text-gray-700 font-medium">
-                      <span className="flex items-center gap-1">
-                        <FontAwesomeIcon icon={faComment} className="text-black" /> {project.posts_count || 0} bài
-                      </span>
-                      <span className="flex items-center gap-1">
-                        <FontAwesomeIcon icon={faUser} className="text-black" /> {project.followers_count || 0} theo dõi</span>
-                    </div>
-                    <button className="mt-4 w-full px-4 py-2 bg-[#FFCE23] hover:bg-[#FFE066] text-black font-semibold rounded-lg transition-colors">
+                    <button 
+                      onClick={() => setSelectedProject(project)}
+                      className="mt-4 w-full px-4 py-2 bg-[#FFCE23] hover:bg-[#FFE066] text-black font-semibold rounded-lg transition-colors">
                       Quản Lý
                     </button>
                   </div>
@@ -926,6 +985,22 @@ export default function DienDan() {
                         <p className="text-xs text-gray-600 font-semibold mb-1">Trạng thái</p>
                         <p className="text-sm font-bold text-green-600">{selectedProject.status || 'Công bố'}</p>
                       </button>
+                    </div>
+
+                    {/* Stats Grid - Followers, Members, Posts */}
+                    <div className="grid grid-cols-3 gap-4 mb-4">
+                      <div className="bg-blue-50 p-3 rounded-lg">
+                        <p className="text-xs text-blue-600 font-semibold mb-1">Người theo dõi</p>
+                        <p className="text-lg font-bold text-blue-900">{followers.length}</p>
+                      </div>
+                      <div className="bg-purple-50 p-3 rounded-lg">
+                        <p className="text-xs text-purple-600 font-semibold mb-1">Thành viên</p>
+                        <p className="text-lg font-bold text-purple-900">{members.length}</p>
+                      </div>
+                      <div className="bg-green-50 p-3 rounded-lg">
+                        <p className="text-xs text-green-600 font-semibold mb-1">Bài đăng</p>
+                        <p className="text-lg font-bold text-green-900">{posts.length}</p>
+                      </div>
                     </div>
 
                     {/* Website Link */}
@@ -1654,7 +1729,7 @@ export default function DienDan() {
                       </div>
                       {/* Comment Content */}
                       <div className="flex-1 min-w-0">
-                        <p className="text-sm font-semibold text-gray-900">{comment.author_id || 'Người dùng'}</p>
+                        <p className="text-sm font-semibold text-gray-900">{comment.author_name || comment.author?.name || comment.author_id || 'Người dùng'}</p>
                         <p className="text-sm text-gray-700 mt-1 break-words">{comment.text}</p>
                         <p className="text-xs text-gray-500 mt-2">{formatDate(comment.created_at)}</p>
                       </div>
