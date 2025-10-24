@@ -5,6 +5,10 @@
   "installCommand": "npm install",
   "rewrites": [
     {
+      "source": "/favicon.ico",
+      "destination": "/images/logo.svg"
+    },
+    {
       "source": "/api/proxy/:path*",
       "destination": "/api/proxy/[...path].js"
     },
