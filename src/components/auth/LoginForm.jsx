@@ -105,8 +105,6 @@ export default function LoginForm() {
             style={{ maxWidth: "150px", height: "auto" }}
           />
         </div>
-              name="email"
-              autoComplete="email"
 
         <ToastContainer position="top-center" autoClose={2000} />
         {/* Error message đã chuyển sang toast, không hiện dưới input */}
