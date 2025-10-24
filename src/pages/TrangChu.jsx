@@ -19,6 +19,7 @@ import {
 export default function TrangChu() {
   const { isLoggedIn, user } = useAuth();
   const navigate = useNavigate();
+  const navigate1 = useNavigate();
 
   const statsTop = [
     {
@@ -155,7 +156,10 @@ export default function TrangChu() {
             </article>
           </div>
           <div className="mt-6 text-center">
-            <button className="inline-flex items-center gap-3 bg-[#FFCE23] text-black px-6 py-3 rounded-lg font-semibold hover:bg-yellow-400">
+            <button
+              className="inline-flex items-center gap-3 bg-[#FFCE23] text-black px-6 py-3 rounded-lg font-semibold hover:bg-yellow-400"
+              onClick={() => (window.location.href = "https://dean1665.vn/")}
+            >
               Tìm hiểu chương trình cho sinh viên
             </button>
           </div>
@@ -235,7 +239,10 @@ export default function TrangChu() {
               Tham gia cộng đồng, tìm mentor và gọi vốn nhanh hơn.
             </p>
             <div className="flex flex-col sm:flex-row justify-center gap-4">
-              <button className="px-6 py-3 bg-black text-[#FFCE23] rounded-md font-semibold">
+              <button
+                className="px-6 py-3 bg-black text-[#FFCE23] rounded-md font-semibold"
+                onClick={() => !isLoggedIn && navigate("/register")}
+              >
                 Đăng ký ngay
               </button>
               <button

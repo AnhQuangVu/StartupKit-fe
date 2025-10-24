@@ -15,7 +15,7 @@ import ProjectPreview from "../components/project/ProjectPreview";
 import ProjectProfilePreview from "../components/project/ProjectProfilePreview";
 import ProjectProfileChatbot from "../components/project/ProjectProfileChatbot";
 import { normalizeProjectPayload } from "../utils/normalizeProjectPayload";
-import { API_BASE } from '../config/api';
+import { API_BASE } from "../config/api";
 
 // Sidebar các bước tạo hồ sơ
 function ProjectSteps({ currentStep, onStepClick }) {
@@ -305,7 +305,7 @@ function CreateProject() {
       // Log the payload to make sure location is included
       console.log("Sending payload to API:", payload);
 
-  const res = await fetch(`${API_BASE}/projects/`, {
+      const res = await fetch(`${API_BASE}/projects/`, {
         method: "POST",
         headers,
         body: JSON.stringify(payload),
@@ -517,7 +517,7 @@ function CreateProject() {
             )}
 
             {currentStep === 2 && (
-              <div className="w-full">
+              <div className="w-full -mt-24">
                 <div className="bg-white rounded-lg shadow">
                   {/* Slide giới thiệu / Banner */}
                   <div className="relative h-64 bg-gray-200 rounded-t-lg overflow-hidden">
