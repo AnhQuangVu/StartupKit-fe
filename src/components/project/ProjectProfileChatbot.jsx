@@ -82,7 +82,7 @@ export default function ProjectProfileChatbot({ form, onFillField }) {
       const response = await fetch(`${API_BASE}/ai/rag/chat`, {
         method: "POST",
         headers: {
-          ...authHeaders(token),
+          "Authorization": `Bearer ${token}`,
           "Content-Type": "application/json",
         },
         body: JSON.stringify({

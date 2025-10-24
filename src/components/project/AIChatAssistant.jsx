@@ -32,7 +32,7 @@ export default function AIChatAssistant({ projectData, onSuggest }) {
       const response = await fetch(`${API_BASE}/ai/rag/chat`, {
         method: "POST",
         headers: {
-          ...authHeaders(token),
+          "Authorization": `Bearer ${token}`,
           "Content-Type": "application/json",
         },
         body: JSON.stringify({
