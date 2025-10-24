@@ -1186,31 +1186,33 @@ export default function ProjectProfileFullForm({
                       Xem trước
                     </button>
                     {/* Nút Tải xuống - Nhỏ gọn chuyên nghiệp */}
-                    <PDFDownloadLink
-                      document={<MyDocument data={form} />}
-                      fileName="ho-so-du-an.pdf"
-                      className="px-2.5 py-1 bg-emerald-600 text-white text-xs font-semibold rounded-md shadow hover:bg-emerald-700 focus:outline-none focus:ring-2 focus:ring-emerald-500 focus:ring-offset-1 transition-all duration-150 no-underline z-20 flex items-center gap-1"
-                      onClick={handleDownload}
-                    >
-                      {({ loading }) => (
-                        <>
-                          <svg
-                            className="w-2.5 h-2.5"
-                            fill="none"
-                            stroke="currentColor"
-                            viewBox="0 0 24 24"
-                          >
-                            <path
-                              strokeLinecap="round"
-                              strokeLinejoin="round"
-                              strokeWidth={2}
-                              d="M12 10v6m0 0l-3-3m3 3l3-3m2 8H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"
-                            />
-                          </svg>
-                          {loading ? "Đang tạo..." : "Tải xuống"}
-                        </>
-                      )}
-                    </PDFDownloadLink>
+                    {typeof window !== 'undefined' && (
+                      <PDFDownloadLink
+                        document={<MyDocument data={form} />}
+                        fileName="ho-so-du-an.pdf"
+                        className="px-2.5 py-1 bg-emerald-600 text-white text-xs font-semibold rounded-md shadow hover:bg-emerald-700 focus:outline-none focus:ring-2 focus:ring-emerald-500 focus:ring-offset-1 transition-all duration-150 no-underline z-20 flex items-center gap-1"
+                        onClick={handleDownload}
+                      >
+                        {({ loading }) => (
+                          <>
+                            <svg
+                              className="w-2.5 h-2.5"
+                              fill="none"
+                              stroke="currentColor"
+                              viewBox="0 0 24 24"
+                            >
+                              <path
+                                strokeLinecap="round"
+                                strokeLinejoin="round"
+                                strokeWidth={2}
+                                d="M12 10v6m0 0l-3-3m3 3l3-3m2 8H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"
+                              />
+                            </svg>
+                            {loading ? "Đang tạo..." : "Tải xuống"}
+                          </>
+                        )}
+                      </PDFDownloadLink>
+                    )}
                     {/* Nút Đăng đa nền tảng - Cải thiện style */}
                     <button
                       type="button"

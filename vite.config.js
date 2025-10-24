@@ -10,7 +10,19 @@ export default defineConfig({
       '/api/proxy': {
         target: 'http://160.191.243.253:8003',
         changeOrigin: true,
+        secure: false,
         rewrite: (path) => path.replace(/^\/api\/proxy/, ''),
+        configure: (proxy, options) => {
+          proxy.on('error', (err, req, res) => {
+            console.log('proxy error', err);
+          });
+          proxy.on('proxyReq', (proxyReq, req, res) => {
+            console.log('Sending Request to the Target:', req.method, req.url);
+          });
+          proxy.on('proxyRes', (proxyRes, req, res) => {
+            console.log('Received Response from the Target:', proxyRes.statusCode);
+          });
+        },
       },
     },
   },
