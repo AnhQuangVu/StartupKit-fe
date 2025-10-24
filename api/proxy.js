@@ -1,8 +1,10 @@
 export default async function handler(req, res) {
-  const target = "http://160.191.243.253:8003" + req.url.replace(/^\/api\/proxy/, '');
+  const BACKEND_URL = process.env.PROXY_TARGET || 'http://160.191.243.253:8003';
+  const target = BACKEND_URL + req.url.replace(/^\/api\/proxy/, '');
 
   try {
     console.log(`[PROXY] ${req.method} ${req.url} → ${target}`);
+    console.log(`[PROXY] PROXY_TARGET=${process.env.PROXY_TARGET}`);
     
     const response = await fetch(target, {
       method: req.method,
