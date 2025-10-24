@@ -6,7 +6,7 @@
   "rewrites": [
     {
       "source": "/api/proxy/:path*",
-      "destination": "/api/proxy/[...path].js"
+      "destination": "http://160.191.243.253:8003/:path*"
     },
     {
       "source": "/(.*)",

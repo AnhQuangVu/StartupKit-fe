@@ -56,7 +56,7 @@ export default function LoginForm() {
     setFormError("");
     try {
       console.log("Login payload:", { username: email, password });
-  const response = await fetch(`${API_BASE}/auth/token`, {
+  const response = await fetch(`/api/proxy/auth/token`, {
         method: "POST",
         headers: { "Content-Type": "application/x-www-form-urlencoded" },
         body: new URLSearchParams({
@@ -69,7 +69,7 @@ export default function LoginForm() {
 
       if (response.ok && data.access_token) {
         // Gọi API lấy thông tin user
-        const userRes = await fetch(`${API_BASE}/users/me`, {
+        const userRes = await fetch(`/api/proxy/users/me`, {
           headers: { Authorization: `Bearer ${data.access_token}` },
         });
         const user = await userRes.json();
