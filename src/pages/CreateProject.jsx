@@ -944,7 +944,28 @@ function CreateProject() {
                 {/* Nội dung chat với overflow để fit khung */}
                 <div className="flex-1 overflow-y-auto p-4 max-h-full">
                   <div className="h-full flex flex-col">
-                    <ProjectProfileChatbot form={form} />
+                    <ProjectProfileChatbot 
+                      form={form} 
+                      onFillField={(fieldName, value) => {
+                        // Map từ ProjectProfileChatbot field names sang form field names
+                        const fieldMap = {
+                          pain_point: "painPoint",
+                          solution: "solution",
+                          product: "product",
+                          targetCustomer: "customerSegment",
+                          advantage: "customerFeatures",
+                          marketSize: "marketSize",
+                          businessModel: "businessModel",
+                          finance: "costEstimate",
+                          team: "memberSkills",
+                        };
+                        const formField = fieldMap[fieldName] || fieldName;
+                        setForm(prev => ({
+                          ...prev,
+                          [formField]: value
+                        }));
+                      }}
+                    />
                   </div>
                 </div>
               </div>
