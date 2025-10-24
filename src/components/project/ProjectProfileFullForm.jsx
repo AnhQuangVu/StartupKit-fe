@@ -14,79 +14,88 @@ import {
   Font,
 } from "@react-pdf/renderer";
 import styles from "./styles/ProjectProfileForm.module.css";
-
 // Register font hỗ trợ tiếng Việt (giả sử bạn đã tải Roboto-Regular.ttf và đặt trong src/fonts/)
 import RobotoRegular from "../../config/Roboto-VariableFont_wdth,wght.ttf";
-import Logo from "../../assets/images/logo-2.svg";
-
+import Logo from "../../assets/images/logo.png";
 // Đăng ký font một lần
 Font.register({
   family: "Roboto",
   src: RobotoRegular,
   fontWeight: 400,
 });
-
-// Styles cho PDF với font Roboto
+// Styles cho PDF với font Roboto - Cải thiện để chuyên nghiệp hơn
 const pdfStyles = StyleSheet.create({
   page: {
     flexDirection: "column",
     backgroundColor: "#FFFFFF",
-    padding: 50, // Tăng padding để chuyên nghiệp hơn
-    fontSize: 12,
-    lineHeight: 1.6, // Tăng lineHeight cho dễ đọc
-    fontFamily: "Roboto", // Sử dụng font đã đăng ký
+    padding: 50, // Tăng padding cho không gian thoáng hơn
+    fontSize: 11, // Giảm nhẹ font size để vừa trang hơn
+    lineHeight: 1.6, // Tăng line height cho dễ đọc
+    fontFamily: "Roboto",
   },
   header: {
-    fontSize: 28, // Tăng kích thước header
+    fontSize: 28, // Tăng size cho header chính
     marginBottom: 30,
     textAlign: "center",
     fontWeight: "bold",
     fontFamily: "Roboto",
-    color: "#1F2937", // Màu xám đậm chuyên nghiệp
+    color: "#1E40AF", // Màu xanh đậm chuyên nghiệp
+    letterSpacing: 0.5,
   },
   subheader: {
-    fontSize: 20, // Tăng kích thước subheader
+    fontSize: 16, // Giảm size subheader
     marginTop: 25,
     marginBottom: 15,
     fontWeight: "bold",
     fontFamily: "Roboto",
-    color: "#374151",
+    color: "#374151", // Màu xám đậm
+    borderBottom: "2pt solid #E5E7EB", // Thêm đường viền dưới cho subheader
+    paddingBottom: 5,
   },
   section: {
-    marginBottom: 25, // Tăng margin giữa sections
+    marginBottom: 15, // Giảm margin để tiết kiệm không gian
+    borderLeft: "3pt solid #3B82F6", // Thêm border trái màu xanh để highlight
+    paddingLeft: 15,
+    paddingTop: 5,
+    paddingBottom: 5,
+    backgroundColor: "#F9FAFB", // Nền xám nhạt cho section
+    borderRadius: 4,
   },
   label: {
-    fontSize: 14,
+    fontSize: 12,
     fontWeight: "bold",
-    marginBottom: 8,
+    marginBottom: 3,
     color: "#1F2937",
     fontFamily: "Roboto",
+    textTransform: "uppercase", // Chữ hoa cho label
+    letterSpacing: 0.5,
   },
   value: {
-    fontSize: 12,
-    marginBottom: 12,
+    fontSize: 11,
+    marginBottom: 5,
     color: "#4B5563",
-    paddingLeft: 12,
+    paddingLeft: 5,
     fontFamily: "Roboto",
-    backgroundColor: "#F9FAFB", // Thêm background nhẹ cho value
-    padding: 8,
-    borderRadius: 4,
-    borderLeft: "3px solid #FFCE23", // Border trái màu vàng để nổi bật
+    lineHeight: 1.4,
   },
   image: {
-    width: 120, // Tăng kích thước image
-    height: 120,
-    margin: 8,
-    borderRadius: 8, // Bo góc image
-    shadow: "0 2px 4px rgba(0,0,0,0.1)", // Thêm shadow cho image
+    width: 80, // Giảm size ảnh để vừa trang hơn
+    height: 80,
+    margin: 5,
+    borderRadius: 4, // Bo góc ảnh
+    border: "1pt solid #D1D5DB",
   },
   logoSite: {
     position: "absolute",
-    top: 30,
+    top: 20,
     left: 50,
-    width: 70, // Tăng kích thước logo
-    height: 70,
+    width: 80, // Giảm size logo site
+    height: 80,
     borderRadius: 8,
+    shadowColor: "#000",
+    shadowOffset: { width: 0, height: 2 },
+    shadowOpacity: 0.1,
+    shadowRadius: 4,
   },
   pageNumber: {
     position: "absolute",
@@ -97,15 +106,14 @@ const pdfStyles = StyleSheet.create({
     fontFamily: "Roboto",
   },
 });
-
-// Component PDF Document với nhiều trang
+// Component PDF Document với nhiều trang - Giữ nguyên cấu trúc nhưng áp dụng styles mới
 const MyDocument = ({ data }) => {
   const sections = [
     // Trang 1: Thông tin chung và Tóm tắt
     <Page key="page1" size="A4" style={pdfStyles.page}>
       <Image style={pdfStyles.logoSite} source={Logo} />
       <View style={pdfStyles.header}>
-        <Text>HỒ SƠ DỰ ÁN KHỞI NGHIỆP</Text>
+        <Text>{data.projectName || "Tên dự án"}</Text>
       </View>
       <View style={pdfStyles.subheader}>
         <Text>THÔNG TIN CHUNG DỰ ÁN</Text>
@@ -377,10 +385,8 @@ const MyDocument = ({ data }) => {
       <Text style={pdfStyles.pageNumber}>Trang 5/5</Text>
     </Page>,
   ];
-
   return <Document>{sections}</Document>;
 };
-
 // Helper để strip HTML tags từ rich text
 function stripHtmlTags(html) {
   if (!html) return "";
@@ -389,20 +395,43 @@ function stripHtmlTags(html) {
     .replace(/\n/g, " ")
     .trim();
 }
-
 // Cấu trúc các section và trường theo khung hồ sơ dự án
 const FORM_SECTIONS = [
   {
     title: "THÔNG TIN CHUNG DỰ ÁN",
     fields: [
-      { label: 'Tên Dự án', key: 'projectName', type: 'input', placeholder: 'VD: GFU – GERMAN FOR U' },
-          { label: 'Logo dự án', key: 'logo', type: 'image', placeholder: '' },
-      { label: 'Lĩnh vực', key: 'field', type: 'input', placeholder: 'Giáo dục, Dịch vụ, Tài chính, Du lịch' },
-      { label: 'Đơn vị thực hiện', key: 'organization', type: 'input', placeholder: 'TRƯỜNG ĐẠI HỌC MỞ HÀ NỘI' },
-      { label: 'Thời gian thực hiện', key: 'time', type: 'input', placeholder: 'Hà Nội, Tháng 12/2023' },
-      { label: 'Giai đoạn hiện tại', key: 'currentStage', type: 'select', placeholder: '' },
-  { label: 'Nhóm thực hiện & Giảng viên hướng dẫn', key: 'teamInfo', type: 'rich', placeholder: 'Nhập thông tin các thành viên' },
-    ]
+      {
+        label: "Tên Dự án",
+        key: "projectName",
+        type: "input",
+        placeholder: "VD: GFU – GERMAN FOR U",
+      },
+      { label: "Logo dự án", key: "logo", type: "image", placeholder: "" },
+      {
+        label: "Lĩnh vực",
+        key: "field",
+        type: "input",
+        placeholder: "Giáo dục, Dịch vụ, Tài chính, Du lịch",
+      },
+      {
+        label: "Đơn vị thực hiện",
+        key: "organization",
+        type: "input",
+        placeholder: "TRƯỜNG ĐẠI HỌC MỞ HÀ NỘI",
+      },
+      {
+        label: "Thời gian thực hiện",
+        key: "time",
+        type: "input",
+        placeholder: "Hà Nội, Tháng 12/2023",
+      },
+      {
+        label: "Nhóm thực hiện & Giảng viên hướng dẫn",
+        key: "teamInfo",
+        type: "rich",
+        placeholder: "Nhập thông tin các thành viên",
+      },
+    ],
   },
   {
     title: "PHẦN 1: TÓM TẮT DỰ ÁN",
@@ -533,13 +562,37 @@ const FORM_SECTIONS = [
     title: "",
     subtitle: "D. KẾ HOẠCH SẢN XUẤT, KINH DOANH & PHÁT TRIỂN",
     fields: [
-      { label: 'Kế hoạch kinh doanh (theo giai đoạn)', key: 'businessPlan', type: 'rich', placeholder: 'Nhập kế hoạch kinh doanh...' },
-      { label: 'Kênh phân phối', key: 'distribution', type: 'rich', placeholder: 'Nhập kênh phân phối...' },
-  { label: 'Lộ trình phát triển', key: 'stages', type: 'stages', placeholder: '' },
-      { label: 'Phát triển, mở rộng thị trường', key: 'marketDevelopment', type: 'rich', placeholder: 'Nhập phát triển, mở rộng thị trường...' },
-      { label: 'Kết quả tiềm năng', key: 'potentialResult', type: 'rich', placeholder: 'Nhập kết quả tiềm năng...' },
-      { label: 'Khả năng tăng trưởng, tác động xã hội', key: 'growthImpact', type: 'rich', placeholder: 'Nhập khả năng tăng trưởng, tác động xã hội...' },
-    ]
+      {
+        label: "Kế hoạch kinh doanh (theo giai đoạn)",
+        key: "businessPlan",
+        type: "rich",
+        placeholder: "Nhập kế hoạch kinh doanh...",
+      },
+      {
+        label: "Kênh phân phối",
+        key: "distribution",
+        type: "rich",
+        placeholder: "Nhập kênh phân phối...",
+      },
+      {
+        label: "Phát triển, mở rộng thị trường",
+        key: "marketDevelopment",
+        type: "rich",
+        placeholder: "Nhập phát triển, mở rộng thị trường...",
+      },
+      {
+        label: "Kết quả tiềm năng",
+        key: "potentialResult",
+        type: "rich",
+        placeholder: "Nhập kết quả tiềm năng...",
+      },
+      {
+        label: "Khả năng tăng trưởng, tác động xã hội",
+        key: "growthImpact",
+        type: "rich",
+        placeholder: "Nhập khả năng tăng trưởng, tác động xã hội...",
+      },
+    ],
   },
   {
     title: "",
@@ -608,34 +661,27 @@ const FORM_SECTIONS = [
     ],
   },
 ];
-
 export default function ProjectProfileFullForm({
   initialData = {},
   onChange,
   onPublish,
+  onSave, // Thêm prop cho lưu dữ liệu
 }) {
   // Toolbar background can be changed here
   const TOOLBAR_BG = "linear-gradient(180deg, rgba(255,255,255,0.99), #ececec)";
   const [form, setForm] = useState(() => {
     const obj = {};
-    FORM_SECTIONS.forEach(sec => sec.fields.forEach(f => {
-      if (initialData[f.key] !== undefined) obj[f.key] = initialData[f.key];
-      else if (f.type === 'images' || f.type === 'stages') obj[f.key] = [];
-      else obj[f.key] = '';
-    }));
+    FORM_SECTIONS.forEach((sec) =>
+      sec.fields.forEach((f) => {
+        obj[f.key] = initialData[f.key] || "";
+      })
+    );
     return obj;
   });
   const [focusKey, setFocusKey] = useState(null);
   const [showPdfModal, setShowPdfModal] = useState(false);
   const editorRefs = useRef({});
   const [uploading, setUploading] = useState({}); // { fieldKey: boolean }
-  const PHASE_OPTIONS = [
-    { value: 'idea', label: 'Ý tưởng' },
-    { value: 'research', label: 'Nghiên cứu thị trường' },
-    { value: 'product', label: 'Hoàn thiện sản phẩm' },
-    { value: 'survey', label: 'Khảo sát' },
-    { value: 'launch', label: 'Launch' }
-  ];
   // helpers for image uploads/previews
   function readFileAsDataURL(file) {
     return new Promise((resolve, reject) => {
@@ -645,7 +691,6 @@ export default function ProjectProfileFullForm({
       reader.readAsDataURL(file);
     });
   }
-
   async function handleSingleImageChange(key, file) {
     if (!file) return;
     // show immediate preview using object URL
@@ -664,7 +709,6 @@ export default function ProjectProfileFullForm({
       setUploading((u) => ({ ...u, [key]: false }));
     }
   }
-
   async function handleMultipleImagesChange(key, filesList) {
     const files = Array.from(filesList || []);
     if (files.length === 0) return;
@@ -702,59 +746,11 @@ export default function ProjectProfileFullForm({
       setUploading((u) => ({ ...u, [key]: false }));
     }
   }
-
-  // stages helpers
-  function addStage() {
-    const nextStage = {
-      id: `stage-${Date.now()}`,
-      title: '',
-      description_html: '',
-      start_date: '',
-      end_date: '',
-      status: 'planned',
-      deliverables: [],
-      budget: 0,
-      progress_percent: 0,
-      dependencies: []
-    };
-    const arr = Array.isArray(form.stages) ? form.stages.slice() : [];
-    arr.push(nextStage);
-    handleChange('stages', arr);
-  }
-
-  const ROADMAP_TEMPLATES = {
-    basic: [
-      { id: 't-idea', title: 'Ý tưởng', description_html: '', start_date: '', end_date: '', status: 'planned', deliverables: [], budget: 0, progress_percent: 0, dependencies: [] },
-      { id: 't-research', title: 'Nghiên cứu thị trường', description_html: '', start_date: '', end_date: '', status: 'planned', deliverables: [], budget: 0, progress_percent: 0, dependencies: [] },
-      { id: 't-product', title: 'Hoàn thiện sản phẩm', description_html: '', start_date: '', end_date: '', status: 'planned', deliverables: [], budget: 0, progress_percent: 0, dependencies: [] },
-      { id: 't-survey', title: 'Khảo sát', description_html: '', start_date: '', end_date: '', status: 'planned', deliverables: [], budget: 0, progress_percent: 0, dependencies: [] },
-      { id: 't-launch', title: 'Launch', description_html: '', start_date: '', end_date: '', status: 'planned', deliverables: [], budget: 0, progress_percent: 0, dependencies: [] }
-    ]
-  };
-
-  function applyTemplate(key) {
-    if (!ROADMAP_TEMPLATES[key]) return;
-    handleChange('stages', ROADMAP_TEMPLATES[key].map(s => ({ ...s, id: `${s.id}-${Date.now()}` })) );
-  }
-
-  function updateStage(idx, patch) {
-    const arr = Array.isArray(form.stages) ? form.stages.slice() : [];
-    arr[idx] = { ...arr[idx], ...patch };
-    handleChange('stages', arr);
-  }
-
-  function removeStage(idx) {
-    const arr = Array.isArray(form.stages) ? form.stages.slice() : [];
-    arr.splice(idx, 1);
-    handleChange('stages', arr);
-  }
-
   function removeImageAt(key, idx) {
     const arr = (form[key] || []).slice();
     arr.splice(idx, 1);
     handleChange(key, arr);
   }
-
   function handleChange(key, value) {
     setForm((f) => {
       const next = { ...f, [key]: value };
@@ -762,13 +758,9 @@ export default function ProjectProfileFullForm({
       return next;
     });
   }
-
-  // Function để tải PDF và báo thành công
+  // Function để tải PDF và báo thành công bằng jQuery toast
   const handleDownload = () => {
-    // Sử dụng PDFDownloadLink để tải, và alert sau
-    // Vì PDFDownloadLink tự động tải, chúng ta có thể dùng setTimeout để alert
     setTimeout(() => {
-      // Sử dụng jQuery để hiển thị toast và đảm bảo remove element sau khi fadeOut
       if (window.$) {
         window
           .$('<div class="my-toast">Tải thành công!</div>')
@@ -776,28 +768,40 @@ export default function ProjectProfileFullForm({
           .fadeIn()
           .delay(2000)
           .fadeOut(function () {
-            $(this).remove(); // Remove element khỏi DOM sau khi fadeOut hoàn tất
+            $(this).remove();
           });
       } else {
-        // Fallback: alert nếu jQuery không có
         alert("Tải thành công!");
       }
-    }, 1000); // Delay để đảm bảo tải bắt đầu
+    }, 1000);
   };
-
   const handleViewPdf = () => {
-    console.log("Xem trước clicked"); // Debug log
     setShowPdfModal(true);
   };
-
   const handlePublishClick = () => {
-    console.log("Đăng đa nền tảng clicked"); // Debug log
-    if (onPublish) onPublish();
+    if (onPublish) onPublish(); // Chuyển sang giao diện Đăng hồ sơ
   };
-
+  const handleSaveClick = () => {
+    // Tạm thời: console.log dữ liệu, sau này lưu vào DB
+    console.log("Lưu dữ liệu:", form);
+    if (onSave) onSave(form); // Gọi prop onSave nếu có
+    // Có thể thêm toast thông báo lưu thành công tương tự
+    if (window.$) {
+      window
+        .$('<div class="my-toast">Lưu thành công!</div>')
+        .appendTo("body")
+        .fadeIn()
+        .delay(2000)
+        .fadeOut(function () {
+          $(this).remove();
+        });
+    } else {
+      alert("Lưu thành công!");
+    }
+  };
   return (
     <>
-      <form className="space-y-10">
+      <form className="space-y-10 -mt-24">
         {FORM_SECTIONS.map((section, idx) => (
           <div key={idx} className="bg-white rounded-lg shadow p-6">
             {(section.title || idx === 0) && (
@@ -806,6 +810,105 @@ export default function ProjectProfileFullForm({
                   <h2 className="text-lg font-bold text-blue-900 uppercase">
                     {section.title}
                   </h2>
+                )}
+                {idx === 0 && (
+                  <div className="flex gap-3 order-2 sm:order-1">
+                    {/* Nút Xem trước - Cải thiện style */}
+                    <button
+                      type="button"
+                      className="px-6 py-3 bg-yellow-600 text-white font-medium rounded-lg shadow-md hover:bg-yellow-700 focus:outline-none focus:ring-2 focus:ring-yellow-500 focus:ring-offset-2 transition-all duration-200 transform hover:scale-105 z-20 flex items-center gap-2"
+                      onClick={handleViewPdf}
+                    >
+                      <svg
+                        className="w-4 h-4"
+                        fill="none"
+                        stroke="currentColor"
+                        viewBox="0 0 24 24"
+                      >
+                        <path
+                          strokeLinecap="round"
+                          strokeLinejoin="round"
+                          strokeWidth={2}
+                          d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"
+                        />
+                        <path
+                          strokeLinecap="round"
+                          strokeLinejoin="round"
+                          strokeWidth={2}
+                          d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z"
+                        />
+                      </svg>
+                      Xem trước
+                    </button>
+                    {/* Nút Tải xuống - Cải thiện style */}
+                    <PDFDownloadLink
+                      document={<MyDocument data={form} />}
+                      fileName="ho-so-du-an.pdf"
+                      className="px-6 py-3 bg-green-600 text-white font-medium rounded-lg shadow-md hover:bg-green-700 focus:outline-none focus:ring-2 focus:ring-green-500 focus:ring-offset-2 transition-all duration-200 transform hover:scale-105 no-underline z-20 flex items-center gap-2"
+                      onClick={handleDownload}
+                    >
+                      {({ loading }) => (
+                        <>
+                          <svg
+                            className="w-4 h-4"
+                            fill="none"
+                            stroke="currentColor"
+                            viewBox="0 0 24 24"
+                          >
+                            <path
+                              strokeLinecap="round"
+                              strokeLinejoin="round"
+                              strokeWidth={2}
+                              d="M12 10v6m0 0l-3-3m3 3l3-3m2 8H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"
+                            />
+                          </svg>
+                          {loading ? "Đang tạo..." : "Tải xuống"}
+                        </>
+                      )}
+                    </PDFDownloadLink>
+                    {/* Nút Đăng đa nền tảng - Cải thiện style */}
+                    <button
+                      type="button"
+                      className="px-6 py-3 bg-blue-600 text-white font-medium rounded-lg shadow-md hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 transition-all duration-200 transform hover:scale-105 z-20 flex items-center gap-2"
+                      onClick={handlePublishClick}
+                    >
+                      <svg
+                        className="w-4 h-4"
+                        fill="none"
+                        stroke="currentColor"
+                        viewBox="0 0 24 24"
+                      >
+                        <path
+                          strokeLinecap="round"
+                          strokeLinejoin="round"
+                          strokeWidth={2}
+                          d="M13 10V3L4 14h7v7l9-11h-7z"
+                        />
+                      </svg>
+                      Đăng đa nền tảng
+                    </button>
+                    {/* Nút Lưu - Cải thiện style */}
+                    <button
+                      type="button"
+                      className="px-6 py-3 bg-gray-600 text-white font-medium rounded-lg shadow-md hover:bg-gray-700 focus:outline-none focus:ring-2 focus:ring-gray-500 focus:ring-offset-2 transition-all duration-200 transform hover:scale-105 z-20 flex items-center gap-2"
+                      onClick={handleSaveClick}
+                    >
+                      <svg
+                        className="w-4 h-4"
+                        fill="none"
+                        stroke="currentColor"
+                        viewBox="0 0 24 24"
+                      >
+                        <path
+                          strokeLinecap="round"
+                          strokeLinejoin="round"
+                          strokeWidth={2}
+                          d="M5 13l4 4L19 7"
+                        />
+                      </svg>
+                      Lưu
+                    </button>
+                  </div>
                 )}
               </div>
             )}
@@ -1164,78 +1267,49 @@ export default function ProjectProfileFullForm({
           </div>
         ))}
       </form>
-
-      {/* Modal cho Xem trước PDF */}
+      {/* Modal cho Xem trước PDF - Cải thiện modal để chuyên nghiệp hơn */}
       {showPdfModal && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black bg-opacity-50">
-          <div className="bg-white rounded-xl shadow-2xl w-full max-w-7xl max-h-[95vh] flex flex-col border border-gray-200">
-            <div className="p-6 bg-gray-50 border-b flex justify-between items-center rounded-t-xl">
-              <div className="flex items-center gap-3">
-                <div className="w-8 h-8 bg-blue-500 rounded-lg flex items-center justify-center">
-                  <svg
-                    xmlns="http://www.w3.org/2000/svg"
-                    fill="none"
-                    viewBox="0 0 24 24"
-                    stroke="currentColor"
-                    className="w-5 h-5 text-white"
-                  >
-                    <path
-                      strokeLinecap="round"
-                      strokeLinejoin="round"
-                      strokeWidth={2}
-                      d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"
-                    />
-                  </svg>
-                </div>
-                <h3 className="text-xl font-bold text-gray-800">
-                  Xem trước hồ sơ dự án
-                </h3>
-              </div>
-              <div className="flex items-center gap-2">
-                <PDFDownloadLink
-                  document={<MyDocument data={form} />}
-                  fileName="ho-so-du-an.pdf"
-                  className="px-4 py-2 bg-green-600 text-white rounded-lg hover:bg-green-700 text-sm font-medium flex items-center gap-2 shadow-sm"
+        <div className="fixed inset-0 z-50 flex justify-center items-stretch bg-black bg-opacity-60 backdrop-blur-sm">
+          <div className="bg-white rounded-xl shadow-2xl w-full max-w-7xl h-full flex flex-col border border-gray-200">
+            <div className="p-6 border-b border-gray-200 flex justify-between items-center bg-gradient-to-r from-blue-50 to-indigo-50 rounded-t-xl">
+              <h3 className="text-xl font-bold text-gray-800 flex items-center gap-2">
+                <svg
+                  className="w-5 h-5 text-blue-600"
+                  fill="none"
+                  stroke="currentColor"
+                  viewBox="0 0 24 24"
                 >
-                  <svg
-                    xmlns="http://www.w3.org/2000/svg"
-                    fill="none"
-                    viewBox="0 0 24 24"
-                    stroke="currentColor"
-                    className="w-4 h-4"
-                  >
-                    <path
-                      strokeLinecap="round"
-                      strokeLinejoin="round"
-                      strokeWidth={2}
-                      d="M12 10v6m0 0l-3-3m3 3l3-3m2 8H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"
-                    />
-                  </svg>
-                  Tải xuống PDF
-                </PDFDownloadLink>
-                <button
-                  onClick={() => setShowPdfModal(false)}
-                  className="p-2 text-gray-500 hover:text-gray-700 hover:bg-gray-100 rounded-lg transition-colors"
+                  <path
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                    strokeWidth={2}
+                    d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"
+                  />
+                </svg>
+                Xem trước hồ sơ dự án (PDF)
+              </h3>
+              <button
+                onClick={() => setShowPdfModal(false)}
+                className="p-2 text-gray-500 hover:text-gray-700 hover:bg-gray-100 rounded-lg transition-colors duration-200"
+              >
+                <svg
+                  xmlns="http://www.w3.org/2000/svg"
+                  fill="none"
+                  viewBox="0 0 24 24"
+                  stroke="currentColor"
+                  className="w-5 h-5"
                 >
-                  <svg
-                    xmlns="http://www.w3.org/2000/svg"
-                    fill="none"
-                    viewBox="0 0 24 24"
-                    stroke="currentColor"
-                    className="w-6 h-6"
-                  >
-                    <path
-                      strokeLinecap="round"
-                      strokeLinejoin="round"
-                      strokeWidth={2}
-                      d="M6 18L18 6M6 6l12 12"
-                    />
-                  </svg>
-                </button>
-              </div>
+                  <path
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                    strokeWidth={2}
+                    d="M6 18L18 6M6 6l12 12"
+                  />
+                </svg>
+              </button>
             </div>
             <div className="flex-1 overflow-hidden relative">
-              <PDFViewer width="100%" height="100%" className="border-0">
+              <PDFViewer width="100%" height="100%" className="rounded-b-xl">
                 <MyDocument data={form} />
               </PDFViewer>
             </div>
