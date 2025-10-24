@@ -105,6 +105,8 @@ export default function LoginForm() {
             style={{ maxWidth: "150px", height: "auto" }}
           />
         </div>
+              name="email"
+              autoComplete="email"
 
         <ToastContainer position="top-center" autoClose={2000} />
         {/* Error message đã chuyển sang toast, không hiện dưới input */}
@@ -113,11 +115,11 @@ export default function LoginForm() {
         <form className="space-y-5" onSubmit={handleSubmit} noValidate>
           {/* Email */}
           <div>
-            <label className="block text-sm font-semibold text-gray-700 mb-2">
-              Email
-            </label>
+        
             <input
               type="email"
+              name="email"
+              autoComplete="email"
               value={email}
               onChange={(e) => setEmail(e.target.value)}
               placeholder="Nhập email của bạn"
@@ -135,6 +137,8 @@ export default function LoginForm() {
             </label>
             <input
               type="password"
+              name="current-password"
+              autoComplete="current-password"
               value={password}
               onChange={(e) => setPassword(e.target.value)}
               placeholder="Nhập mật khẩu"
