@@ -16,6 +16,7 @@ import KhamPha from "./pages/KhamPha";
 import Platform from "./pages/Platform";
 import UploadProfile from "./pages/profile/UploadProfile";
 import DienDan from "./pages/DienDan";
+import ProjectDetailPage from "./pages/ProjectDetailPage";
 
 export default function App() {
   return (
@@ -42,6 +43,7 @@ export default function App() {
       <Route path="/dien-dan" element={<DienDan />} />
       <Route path="/kham-pha" element={<KhamPha />} />
       <Route path="/platform" element={<Platform />} />
+      <Route path="/projects/:projectId" element={<ProjectDetailPage />} />
   <Route path="/profile/upload" element={<UploadProfile />} />
     </Routes>
   );
