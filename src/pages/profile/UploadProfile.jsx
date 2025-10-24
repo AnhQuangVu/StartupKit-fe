@@ -395,8 +395,8 @@ export default function UploadProfile() {
       console.log('📤 Payload gửi lên API:', payload);
 
   const method = projectId ? 'PATCH' : 'POST';
-  // Một số backend strict với dấu '/': dùng dạng có trailing slash để tránh redirect lỗi
-  const url = projectId ? `${API_BASE}/projects/${projectId}/` : `${API_BASE}/projects/`;
+  // Backend của bạn chấp nhận đường dẫn không có trailing slash
+  const url = projectId ? `${API_BASE}/projects/${projectId}` : `${API_BASE}/projects`;
 
       const res = await fetch(url, {
         method,
@@ -406,23 +406,29 @@ export default function UploadProfile() {
 
       if (!res.ok) {
         let errorMessage = 'Lưu project thất bại';
+        // Đọc body một lần dưới dạng text, sau đó thử parse JSON
+        const raw = await res.text();
         try {
-          const errorData = await res.json();
-          // ✅ Extract detailed error messages từ backend response
-          if (errorData.detail) {
-            errorMessage = typeof errorData.detail === 'string' 
-              ? errorData.detail 
-              : JSON.stringify(errorData.detail);
-          } else if (errorData.message) {
-            errorMessage = errorData.message;
-          } else if (errorData.errors) {
-            errorMessage = Object.entries(errorData.errors)
-              .map(([field, msg]) => `${field}: ${msg}`)
-              .join('; ');
+          const errorData = raw ? JSON.parse(raw) : null;
+          if (errorData) {
+            if (errorData.detail) {
+              errorMessage = typeof errorData.detail === 'string' 
+                ? errorData.detail 
+                : JSON.stringify(errorData.detail);
+            } else if (errorData.message) {
+              errorMessage = errorData.message;
+            } else if (errorData.errors) {
+              errorMessage = Object.entries(errorData.errors)
+                .map(([field, msg]) => `${field}: ${msg}`)
+                .join('; ');
+            } else {
+              errorMessage = JSON.stringify(errorData).slice(0, 200);
+            }
+          } else {
+            errorMessage = raw.slice(0, 200) || errorMessage;
           }
-        } catch (parseErr) {
-          const txt = await res.text();
-          errorMessage = txt.substring(0, 200);
+        } catch {
+          errorMessage = raw.slice(0, 200) || errorMessage;
         }
         console.error('saveProject failed', errorMessage);
         showToast('❌ ' + errorMessage, 'error');

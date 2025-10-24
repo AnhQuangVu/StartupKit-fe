@@ -1042,7 +1042,7 @@ export default function ProjectProfileFullForm({
     };
 
     try {
-      const res = await fetch(`${API_BASE}/projects/`, {
+      const res = await fetch(`${API_BASE}/projects`, {
         method: "POST",
         headers: {
           ...authHeaders(token),
@@ -1112,7 +1112,7 @@ export default function ProjectProfileFullForm({
     };
 
     try {
-      const res = await fetch(`${API_BASE}/projects/`, {
+      const res = await fetch(`${API_BASE}/projects`, {
         method: "POST",
         headers: {
           ...authHeaders(token),
