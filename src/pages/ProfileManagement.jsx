@@ -16,6 +16,7 @@ import { ToastContainer, toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 import Navbar from "../components/layout/Navbar";
 import Footer from "../components/layout/Footer";
+import { API_BASE, authHeaders } from '../config/api';
 import DashboardMenu from "../components/dashboard/DashboardMenu";
 import DashboardHeader from "../components/dashboard/DashboardHeader";
 
@@ -46,9 +47,9 @@ function ProfileManagement({ userType = 'startup', isLoggedIn = true }) {
       setError("");
       try {
         const token = localStorage.getItem("token");
-        const res = await fetch("http://127.0.0.1:8000/projects/", {
+        const res = await fetch(`${API_BASE}/projects/`, {
           headers: {
-            "Authorization": `Bearer ${token}`,
+            ...authHeaders(token),
             "Content-Type": "application/json"
           }
         });
@@ -250,12 +251,12 @@ function ProfileManagement({ userType = 'startup', isLoggedIn = true }) {
           <button className="flex-1 bg-red-500 hover:bg-red-600 text-white font-medium rounded py-2" onClick={async () => {
             setShowDeleteModal(false);
             if (!selectedProfile) return;
-            try {
+              try {
               const token = localStorage.getItem("token");
-              const res = await fetch(`http://127.0.0.1:8000/projects/${selectedProfile.id}`, {
+              const res = await fetch(`${API_BASE}/projects/${selectedProfile.id}`, {
                 method: "DELETE",
                 headers: {
-                  "Authorization": `Bearer ${token}`,
+                  ...authHeaders(token),
                   "Content-Type": "application/json"
                 }
               });
@@ -464,12 +465,12 @@ function ProfileManagement({ userType = 'startup', isLoggedIn = true }) {
                 <div className="flex justify-end gap-2 mt-auto">
                   <button className="px-2 py-1 rounded bg-gray-100 hover:bg-gray-200 text-gray-700 flex items-center gap-1 text-xs" style={{minWidth: 'unset'}} onClick={async () => {
                     const token = localStorage.getItem("token");
-                    const res = await fetch(`http://127.0.0.1:8000/projects/${selectedProfile.id}/`, {
-                      headers: {
-                        "Authorization": `Bearer ${token}`,
-                        "Content-Type": "application/json"
-                      }
-                    });
+                    const res = await fetch(`${API_BASE}/projects/${selectedProfile.id}/`, {
+                            headers: {
+                              ...authHeaders(token),
+                              "Content-Type": "application/json"
+                            }
+                          });
                     let data = {};
                     if (res.ok) {
                       data = await res.json();

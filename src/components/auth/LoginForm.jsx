@@ -5,6 +5,7 @@ import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faGoogle, faLinkedin } from "@fortawesome/free-brands-svg-icons";
 import { Link, useNavigate } from "react-router-dom";
 import logo from "../../assets/images/logo.png";
+import { API_BASE } from '../../config/api';
 import { useAuth } from "../../context/AuthContext";
 
 export default function LoginForm() {
@@ -55,7 +56,7 @@ export default function LoginForm() {
     setFormError("");
     try {
       console.log("Login payload:", { username: email, password });
-      const response = await fetch("http://localhost:8000/auth/token", {
+  const response = await fetch(`${API_BASE}/auth/token`, {
         method: "POST",
         headers: { "Content-Type": "application/x-www-form-urlencoded" },
         body: new URLSearchParams({
@@ -68,7 +69,7 @@ export default function LoginForm() {
 
       if (response.ok && data.access_token) {
         // Gọi API lấy thông tin user
-        const userRes = await fetch("http://localhost:8000/users/me", {
+        const userRes = await fetch(`${API_BASE}/users/me`, {
           headers: { Authorization: `Bearer ${data.access_token}` },
         });
         const user = await userRes.json();

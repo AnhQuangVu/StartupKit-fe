@@ -3,6 +3,7 @@ import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faCaretDown, faCaretRight } from '@fortawesome/free-solid-svg-icons';
 
 import React, { useState, useEffect } from "react";
+import { API_BASE, authHeaders } from '../../config/api';
 
 const initialProjects = [
 
@@ -24,10 +25,10 @@ export default function ProjectList() {
     async function fetchProjects() {
       try {
         const token = localStorage.getItem("token");
-        const res = await fetch("http://127.0.0.1:8000/projects/", {
+        const res = await fetch(`${API_BASE}/projects/`, {
           method: "GET",
           headers: {
-            "Authorization": `Bearer ${token}`,
+            ...authHeaders(token),
             "Content-Type": "application/json"
           }
         });
