@@ -537,7 +537,7 @@ export default function UploadProfile() {
 
     setSaving(true);
     try {
-      const res = await fetch(`http://160.191.243.253:8003/projects/${projectId}/publish`, {
+      const res = await fetch(`/api/proxy/projects/${projectId}/publish`, {
         method: 'POST',
         headers: authHeaders(token)
       });

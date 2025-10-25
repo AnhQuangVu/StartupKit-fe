@@ -164,7 +164,7 @@ export default function DienDan() {
       setLoading(true);
       const token = localStorage.getItem('token') || localStorage.getItem('access_token');
 
-      const response = await fetch(`http://160.191.243.253:8003/projects/${selectedProject.id}/posts?limit=50`, {
+      const response = await fetch(`/api/proxy/projects/${selectedProject.id}/posts?limit=50`, {
         headers: authHeaders(token),
       });
 

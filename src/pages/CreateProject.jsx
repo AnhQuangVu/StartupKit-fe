@@ -361,7 +361,7 @@ function CreateProject() {
       // Log the payload to make sure location is included
       console.log("Sending payload to API:", payload);
 
-      const res = await fetch(`http://160.191.243.253:8003/projects`, {
+      const res = await fetch(`/api/proxy/projects`, {
         method: "POST",
         headers,
         body: JSON.stringify(payload),
