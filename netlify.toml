@@ -1,0 +1,17 @@
+[build]
+  command = "npm run build"
+  publish = "dist"
+  functions = "netlify/functions"
+
+[[redirects]]
+  from = "/api/proxy/*"
+  to = "/.netlify/functions/proxy/:splat"
+  status = 200
+  force = true
+  headers = {Access-Control-Allow-Origin = "*", Access-Control-Allow-Headers = "Content-Type, Authorization, Accept", Access-Control-Allow-Methods = "GET, POST, PUT, DELETE, PATCH, OPTIONS"}
+
+[[redirects]]
+  from = "/*"
+  to = "/index.html"
+  status = 200
+  force = true
