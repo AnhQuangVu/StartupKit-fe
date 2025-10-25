@@ -8,8 +8,7 @@
     "build": "vite build",
     "lint": "eslint .",
     "preview": "vite preview",
-    "netlify:dev": "netlify dev",
-    "start": "netlify dev"
+    "start": "vite preview --host"
   },
   "dependencies": {
     "@dnd-kit/core": "^6.3.1",
