@@ -32,6 +32,9 @@ services:
         value: text/css
     routes:
       - type: rewrite
+        source: /api/proxy/*
+        destination: http://160.191.243.253:8003/:splat
+      - type: rewrite
         source: /*
         destination: /index.html
     envVars:

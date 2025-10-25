@@ -66,10 +66,11 @@ const Register = () => {
     };
 
     try {
-  const response = await fetch(`${API_BASE}/auth/register`, {
+  const response = await fetch(`/api/proxy/auth/register`, {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
+          "Accept": "application/json"
         },
         body: JSON.stringify(payload),
       });

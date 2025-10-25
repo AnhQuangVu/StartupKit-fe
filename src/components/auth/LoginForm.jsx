@@ -56,7 +56,7 @@ export default function LoginForm() {
     setFormError("");
     try {
       console.log("Login payload:", { email, password });
-  const response = await fetch(`${API_BASE}/auth/login`, {
+  const response = await fetch(`/api/proxy/auth/login`, {
         method: "POST",
         headers: { 
           "Content-Type": "application/json",
