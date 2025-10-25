@@ -41,4 +41,4 @@ services:
       - key: VITE_API_BASE_URL
         value: "http://160.191.243.253:8003"
       - key: NODE_VERSION
-        value: 18.17.0
+        value: 20.9.0
