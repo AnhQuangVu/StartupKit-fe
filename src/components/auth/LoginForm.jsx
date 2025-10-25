@@ -56,12 +56,17 @@ export default function LoginForm() {
     setFormError("");
     try {
       console.log("Login payload:", { username: email, password });
+  console.log('Attempting login with:', { email });
   const response = await fetch(`${API_BASE}/auth/token`, {
         method: "POST",
-        headers: { "Content-Type": "application/x-www-form-urlencoded" },
+        headers: { 
+          "Content-Type": "application/x-www-form-urlencoded",
+          "Accept": "application/json"
+        },
         body: new URLSearchParams({
           username: email,
           password: password,
+          grant_type: 'password'
         }),
       });
       const data = await response.json();
@@ -118,6 +123,8 @@ export default function LoginForm() {
             </label>
             <input
               type="email"
+              name="email"
+              autoComplete="email"
               value={email}
               onChange={(e) => setEmail(e.target.value)}
               placeholder="Nhập email của bạn"
@@ -135,6 +142,8 @@ export default function LoginForm() {
             </label>
             <input
               type="password"
+              name="current-password"
+              autoComplete="current-password"
               value={password}
               onChange={(e) => setPassword(e.target.value)}
               placeholder="Nhập mật khẩu"

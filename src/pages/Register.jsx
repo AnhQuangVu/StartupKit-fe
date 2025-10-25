@@ -66,10 +66,12 @@ const Register = () => {
     };
 
     try {
+  console.log('Attempting registration with:', { email: payload.email });
   const response = await fetch(`${API_BASE}/auth/register`, {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
+          "Accept": "application/json"
         },
         body: JSON.stringify(payload),
       });
@@ -173,6 +175,7 @@ const Register = () => {
                     type="password"
                     id="password"
                     name="password"
+                    autoComplete="new-password"
                     value={formData.password}
                     onChange={handleInputChange}
                     required
@@ -190,6 +193,7 @@ const Register = () => {
                     type="password"
                     id="confirmPassword"
                     name="confirmPassword"
+                    autoComplete="new-password"
                     value={formData.confirmPassword}
                     onChange={handleInputChange}
                     required
