@@ -55,13 +55,16 @@ export default function LoginForm() {
 
     setFormError("");
     try {
-      console.log("Login payload:", { username: email, password });
-  const response = await fetch(`/api/proxy/auth/token`, {
+      console.log("Login payload:", { email, password });
+  const response = await fetch(`${API_BASE}/auth/login`, {
         method: "POST",
-        headers: { "Content-Type": "application/x-www-form-urlencoded" },
-        body: new URLSearchParams({
-          username: email,
-          password: password,
+        headers: { 
+          "Content-Type": "application/json",
+          "Accept": "application/json"
+        },
+        body: JSON.stringify({
+          email: email,
+          password: password
         }),
       });
       const data = await response.json();
