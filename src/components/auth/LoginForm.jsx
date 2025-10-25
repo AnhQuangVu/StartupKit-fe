@@ -56,7 +56,7 @@ export default function LoginForm() {
     setFormError("");
     try {
       console.log("Login payload:", { username: email, password });
-  const response = await fetch(`/api/proxy/auth/token`, {
+  const response = await fetch(`http://160.191.243.253:8003/auth/token`, {
         method: "POST",
         headers: { 
           "Content-Type": "application/x-www-form-urlencoded"

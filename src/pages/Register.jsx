@@ -66,7 +66,7 @@ const Register = () => {
     };
 
     try {
-  const response = await fetch(`/api/proxy/auth/register`, {
+  const response = await fetch(`http://160.191.243.253:8003/auth/register`, {
         method: "POST",
         headers: {
           "Content-Type": "application/json",

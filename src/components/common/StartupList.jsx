@@ -20,7 +20,7 @@ export default function StartupList({ small = false, columns, rows }) {
       setLoading(true);
       
       // Call correct public API endpoint - without query params
-      const response = await fetch(`/api/proxy/public/projects/published`);
+      const response = await fetch(`http://160.191.243.253:8003/public/projects/published`);
       
       if (!response.ok) throw new Error('Không thể lấy danh sách projects');
       

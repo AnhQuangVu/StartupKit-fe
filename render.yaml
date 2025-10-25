@@ -23,7 +23,7 @@ services:
         value: strict-origin-when-cross-origin
       - path: /*
         name: Content-Security-Policy
-        value: "default-src 'self' 'unsafe-inline' 'unsafe-eval' data: *.cloudinary.com api.cloudinary.com; img-src 'self' data: blob: *.cloudinary.com; connect-src 'self' http://160.191.243.253:8003;"
+        value: "default-src 'self' 'unsafe-inline' 'unsafe-eval' data: *.cloudinary.com api.cloudinary.com http://160.191.243.253:8003; img-src 'self' data: blob: *.cloudinary.com; connect-src 'self' http://160.191.243.253:8003 *.cloudinary.com;"
       - path: /*.js
         name: Content-Type
         value: application/javascript
@@ -31,9 +31,6 @@ services:
         name: Content-Type
         value: text/css
     routes:
-      - type: rewrite
-        source: /api/proxy/*
-        destination: http://160.191.243.253:8003/:splat
       - type: rewrite
         source: /*
         destination: /index.html
