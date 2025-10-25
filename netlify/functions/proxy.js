@@ -43,6 +43,9 @@ exports.handler = async function(event, context) {
   delete headers['x-datadog-trace-id'];
   delete headers['x-datadog-parent-id'];
   delete headers['x-datadog-sampling-priority'];
+
+  // Log headers for debugging
+  console.log('Request headers:', headers);
   
   try {
     // Create request options
@@ -90,11 +93,27 @@ exports.handler = async function(event, context) {
 
       // Send body if present
       if (event.body) {
-        // Parse body if it's a string (it usually is from Netlify)
-        const bodyData = typeof event.body === 'string' ? JSON.parse(event.body) : event.body;
-        const bodyString = JSON.stringify(bodyData);
-        console.log('Sending request body:', bodyString);
-        req.write(bodyString);
+        let bodyToSend = event.body;
+        
+        // Check content type to handle the body appropriately
+        const contentType = (event.headers['content-type'] || '').toLowerCase();
+        
+        if (contentType === 'application/json') {
+          // For JSON, parse and re-stringify to ensure valid JSON
+          try {
+            const bodyData = typeof event.body === 'string' ? JSON.parse(event.body) : event.body;
+            bodyToSend = JSON.stringify(bodyData);
+          } catch (e) {
+            console.error('Failed to parse JSON body:', e);
+            bodyToSend = event.body; // Keep original if parse fails
+          }
+        } else if (contentType === 'application/x-www-form-urlencoded') {
+          // For form data, pass through as-is
+          bodyToSend = event.body;
+        }
+        
+        console.log('Sending request body:', bodyToSend);
+        req.write(bodyToSend);
       }
 
       req.end();
