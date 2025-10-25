@@ -3,22 +3,9 @@ const https = require('https');
 const http = require('http');
 
 exports.handler = async function(event, context) {
-  // Validate PROXY_TARGET
-  const API_TARGET = process.env.PROXY_TARGET;
-  if (!API_TARGET) {
-    console.error('PROXY_TARGET environment variable is not set');
-    return {
-      statusCode: 500,
-      headers: {
-        'Content-Type': 'application/json',
-        'Access-Control-Allow-Origin': '*'
-      },
-      body: JSON.stringify({
-        error: 'configuration_error',
-        message: 'PROXY_TARGET environment variable is not set'
-      })
-    };
-  }
+  // Use PROXY_TARGET from env or fallback to default
+  const API_TARGET = process.env.PROXY_TARGET || 'http://160.191.243.253:8003';
+  console.log('Using API_TARGET:', API_TARGET);
 
   // Log incoming request
   console.log('Incoming request:', {
