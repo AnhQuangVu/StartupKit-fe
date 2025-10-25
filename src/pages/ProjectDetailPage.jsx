@@ -89,7 +89,7 @@ export default function ProjectDetailPage() {
       setLoading(true);
       const token = localStorage.getItem('token');
       const headers = token ? { Authorization: `Bearer ${token}` } : {};
-      const response = await fetch(`/api/proxy/projects/${projectId}`, { headers });
+      const response = await fetch(`https://cors-anywhere.herokuapp.com/http://160.191.243.253:8003/projects/${projectId}`, { headers });
       if (!response.ok) throw new Error('Không thể lấy thông tin project');
       const data = await response.json();
       console.log('Project data:', data); // DEBUG
