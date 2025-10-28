@@ -56,7 +56,7 @@ export default function LoginForm() {
     setFormError("");
     try {
       console.log("Login payload:", { username: email, password });
-  const response = await fetch(`https://160.191.243.253:8003/auth/token`, {
+  const response = await fetch(`${API_BASE}/auth/token`, {
         method: "POST",
         headers: { 
           "Content-Type": "application/x-www-form-urlencoded"
@@ -71,7 +71,7 @@ export default function LoginForm() {
 
       if (response.ok && data.access_token) {
         // Gọi API lấy thông tin user
-        const userRes = await fetch(`https://160.191.243.253:8003/users/me`, {
+        const userRes = await fetch(`${API_BASE}/users/me`, {
           headers: { Authorization: `Bearer ${data.access_token}` },
         });
         const user = await userRes.json();
