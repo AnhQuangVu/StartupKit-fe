@@ -71,7 +71,7 @@ export default function LoginForm() {
 
       if (response.ok && data.access_token) {
         // Gọi API lấy thông tin user
-        const userRes = await fetch(`/api/proxy/users/me`, {
+        const userRes = await fetch(`https://160.191.243.253:8003/users/me`, {
           headers: { Authorization: `Bearer ${data.access_token}` },
         });
         const user = await userRes.json();
