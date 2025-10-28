@@ -537,7 +537,7 @@ export default function UploadProfile() {
 
     setSaving(true);
     try {
-      const res = await fetch(`https://cors-anywhere.herokuapp.com/http://160.191.243.253:8003/projects/${projectId}/publish`, {
+      const res = await fetch(`https://160.191.243.253:8003/projects/${projectId}/publish`, {
         method: 'POST',
         headers: authHeaders(token)
       });

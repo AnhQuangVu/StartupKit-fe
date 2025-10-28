@@ -66,7 +66,7 @@ const Register = () => {
     };
 
     try {
-  const response = await fetch(`https://cors-anywhere.herokuapp.com/http://160.191.243.253:8003/auth/register`, {
+  const response = await fetch(`https://160.191.243.253:8003/auth/register`, {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
