@@ -35,6 +35,19 @@ const Register = () => {
     }));
   };
 
+  const getPasswordStrength = (pwd) => {
+    if (!pwd) return { score: 0, label: "" };
+    let score = 0;
+    if (pwd.length >= 8) score++;
+    if (/[A-Z]/.test(pwd)) score++;
+    if (/[a-z]/.test(pwd)) score++;
+    if (/\d/.test(pwd)) score++;
+    if (/[^A-Za-z0-9]/.test(pwd)) score++;
+    if (score <= 2) return { score, label: "Yếu" };
+    if (score === 3) return { score, label: "Trung bình" };
+    return { score, label: "Mạnh" };
+  };
+
   const validate = () => {
     const newErrors = {};
     const nameTrim = formData.userName.trim();
@@ -210,7 +223,7 @@ const Register = () => {
                 </label>
                 <div className="relative">
                   <input
-                    type="password"
+                    type={showPassword ? "text" : "password"}
                     id="password"
                     name="password"
                     value={formData.password}
@@ -221,7 +234,22 @@ const Register = () => {
                     className="w-full px-3 py-2 text-sm pr-10 border border-gray-300 rounded-md focus:ring-2 focus:ring-[#FFCE23] focus:border-[#FFCE23] transition-colors"
                     placeholder="Nhập mật khẩu"
                   />
+                  <button type="button" onClick={() => setShowPassword(v => !v)} className="absolute right-2 top-1/2 -translate-y-1/2 text-xs text-gray-600 hover:text-gray-800">
+                    {showPassword ? 'Ẩn' : 'Hiện'}
+                  </button>
                   {errors.password && <div className="text-xs text-red-500 mt-1">{errors.password}</div>}
+                  {!errors.password && formData.password && (
+                    <div className="mt-2">
+                      {(() => { const { score, label } = getPasswordStrength(formData.password); const percent = Math.min(100, score*20); const color = score<=2? 'bg-red-500' : (score===3? 'bg-yellow-500' : 'bg-green-600'); return (
+                        <>
+                          <div className="h-1.5 bg-gray-200 rounded">
+                            <div className={`h-1.5 ${color} rounded`} style={{ width: `${percent}%` }} />
+                          </div>
+                          <div className="text-[11px] text-gray-600 mt-1">Độ mạnh mật khẩu: {label}</div>
+                        </>
+                      ) })()}
+                    </div>
+                  )}
                 </div>
               </div>
 
@@ -232,7 +260,7 @@ const Register = () => {
                 </label>
                 <div className="relative">
                   <input
-                    type="password"
+                    type={showConfirmPassword ? "text" : "password"}
                     id="confirmPassword"
                     name="confirmPassword"
                     value={formData.confirmPassword}
@@ -243,6 +271,9 @@ const Register = () => {
                     className="w-full px-3 py-2 text-sm pr-10 border border-gray-300 rounded-md focus:ring-2 focus:ring-[#FFCE23] focus:border-[#FFCE23] transition-colors"
                     placeholder="Nhập lại mật khẩu"
                   />
+                  <button type="button" onClick={() => setShowConfirmPassword(v => !v)} className="absolute right-2 top-1/2 -translate-y-1/2 text-xs text-gray-600 hover:text-gray-800">
+                    {showConfirmPassword ? 'Ẩn' : 'Hiện'}
+                  </button>
                   {errors.confirmPassword && <div className="text-xs text-red-500 mt-1">{errors.confirmPassword}</div>}
                 </div>
               </div>

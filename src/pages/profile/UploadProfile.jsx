@@ -6,9 +6,79 @@ import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faArrowLeft } from '@fortawesome/free-solid-svg-icons';
 import { API_BASE, authHeaders, fetchWithTimeout } from '../../config/api';
 import { uploadToCloudinary } from '../../utils/cloudinary';
+import { usePosts } from '../../hooks/usePosts';
 
 // Note: This component optionally uses `pdfjs-dist` to render a PDF preview and extract text.
 // If you don't have pdfjs installed, run: npm install pdfjs-dist
+
+// Auto-resize textarea component: grows with content up to maxRows
+function AutoResizeTextarea({ value, onChange, className = '', minRows = 1, maxRows = 12, ...rest }) {
+  const ref = useRef(null);
+
+  const resize = () => {
+    const el = ref.current;
+    if (!el) return;
+    el.style.height = 'auto';
+    const computed = window.getComputedStyle(el);
+    const lineHeight = parseFloat(computed.lineHeight) || 20;
+    const maxHeight = maxRows ? lineHeight * maxRows : undefined;
+    const newHeight = el.scrollHeight;
+    el.style.height = (maxHeight ? Math.min(newHeight, maxHeight) : newHeight) + 'px';
+    // Toggle vertical scrollbar only if exceeding max
+    if (maxHeight && newHeight > maxHeight) {
+      el.style.overflowY = 'auto';
+    } else {
+      el.style.overflowY = 'hidden';
+    }
+  };
+
+  useEffect(() => {
+    resize();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [value]);
+
+  const handleChange = (e) => {
+    onChange && onChange(e);
+    // Defer resize until value is applied in React state
+    setTimeout(resize, 0);
+  };
+
+  return (
+    <textarea
+      ref={ref}
+      rows={minRows}
+      value={value}
+      onChange={handleChange}
+      className={`resize-none overflow-hidden ${className}`}
+      {...rest}
+    />
+  );
+}
+
+function SectionNav() {
+  const sections = [
+    { id: 'overview', label: 'Tổng quan' },
+    { id: 'market', label: 'Thị trường' },
+    { id: 'business', label: 'Kinh doanh' },
+    { id: 'partners', label: 'Đối tác' },
+    { id: 'posts', label: 'Bài viết' },
+    { id: 'team', label: 'Đội ngũ' },
+  ];
+  return (
+    <aside className="hidden lg:block lg:col-span-3">
+      <div className="sticky top-24 bg-white rounded-lg border border-gray-200 shadow-sm p-3">
+        <div className="text-xs font-semibold text-gray-600 mb-2">Mục lục</div>
+        <nav className="space-y-1">
+          {sections.map(s => (
+            <a key={s.id} href={`#${s.id}`} className="block px-2 py-1.5 rounded text-sm text-gray-700 hover:bg-gray-50">
+              {s.label}
+            </a>
+          ))}
+        </nav>
+      </div>
+    </aside>
+  );
+}
 
 export default function UploadProfile() {
   const location = useLocation();
@@ -46,12 +116,20 @@ export default function UploadProfile() {
   });
 
   const [members, setMembers] = useState([]);
-  const [posts, setPosts] = useState([]);
   // keep file objects for later upload
   const [projectFiles, setProjectFiles] = useState({ bannerFile: null, logoFile: null });
   const [saving, setSaving] = useState(false);
+  const [loadingProject, setLoadingProject] = useState(false);
+  const [logoProgress, setLogoProgress] = useState(0);
+  const [bannerProgress, setBannerProgress] = useState(0);
   const [toast, setToast] = useState({ visible: false, message: '', type: 'info' });
   const toastTimerRef = useRef(null);
+
+  // Lấy projectId: ưu tiên location.state, fallback query param ?projectId=...
+  const projectId = location.state?.projectId || location.state?.project?.id || new URLSearchParams(window.location.search).get('projectId');
+
+  // Posts hook (sau khi đã có projectId)
+  const { posts, loading: postsLoading, loadingMore: postsLoadingMore, hasMore: postsHasMore, loadMore: postsLoadMore, error: postsError } = usePosts(projectId, { pageSize: 20 });
 
   const showToast = (message, type = 'info', ms = 3500) => {
     if (toastTimerRef.current) clearTimeout(toastTimerRef.current);
@@ -68,8 +146,7 @@ export default function UploadProfile() {
     setToast({ visible: false, message: '', type: 'info' });
   };
 
-  // Lấy projectId: ưu tiên location.state, fallback query param ?projectId=...
-  const projectId = location.state?.projectId || location.state?.project?.id || new URLSearchParams(window.location.search).get('projectId');
+  
 
   // Utility: lấy token từ localStorage (tùy project có thể khác key)
   const getToken = () => {
@@ -80,7 +157,6 @@ export default function UploadProfile() {
   useEffect(() => {
     if (!projectId) return;
     loadProject();
-    loadPosts();
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [projectId]);
 
@@ -88,6 +164,7 @@ export default function UploadProfile() {
     const token = getToken();
     if (!token) return;
     try {
+      setLoadingProject(true);
       const t0 = performance.now();
       const res = await fetchWithTimeout(`${API_BASE}/projects/${projectId}`, {
         headers: authHeaders(token)
@@ -140,34 +217,12 @@ export default function UploadProfile() {
       }
     } catch (err) {
       console.error('loadProject error', err);
+    } finally {
+      setLoadingProject(false);
     }
   }
 
-  async function loadPosts() {
-    const token = getToken();
-    if (!token) return;
-    try {
-      const t0 = performance.now();
-      const res = await fetchWithTimeout(`${API_BASE}/projects/${projectId}/posts?limit=50`, {
-        headers: authHeaders(token),
-        timeout: 8000
-      });
-      if (!res.ok) {
-        console.warn('Không load được posts', await res.text());
-        return;
-      }
-      const data = await res.json();
-      const t1 = performance.now();
-      const mapped = data.map(p => ({ id: p.id, content: p.body || p.title || '', author: p.author_id ? `User ${p.author_id}` : 'Người dùng', timestamp: p.created_at || new Date().toISOString(), avatar: (projectData.logo_url) ? projectData.logo_url : '/default-avatar.png', media: p.media || [] }));
-      setPosts(mapped);
-      const ms = Math.round(t1 - t0);
-      if (ms > 2000) {
-        showToast('Máy chủ phản hồi chậm khi tải bài viết (' + ms + 'ms)', 'warning', 2500);
-      }
-    } catch (err) {
-      console.error('loadPosts error', err);
-    }
-  }
+  // loadPosts removed: replaced by usePosts hook
 
   // previously handled incoming file via location.state; feature removed
 
@@ -329,7 +384,8 @@ export default function UploadProfile() {
       // Upload logo nếu có file mới
       if (projectFiles.logoFile) {
         try {
-          const uploadResponse = await uploadToCloudinary(projectFiles.logoFile);
+          setLogoProgress(1);
+          const uploadResponse = await uploadToCloudinary(projectFiles.logoFile, { onProgress: (p) => setLogoProgress(p) });
           // uploadResponse có thể là string URL hoặc object {url, public_id}
           if (typeof uploadResponse === 'string') {
             logo_url = uploadResponse;
@@ -344,13 +400,16 @@ export default function UploadProfile() {
         } catch (err) {
           console.error('Logo upload error:', err);
           showToast(`⚠️ Upload logo thất bại: ${err.message}. Vui lòng thử lại.`, 'warning', 5000);
+        } finally {
+          setTimeout(() => setLogoProgress(0), 600);
         }
       }
 
       // Upload banner nếu có file mới
       if (projectFiles.bannerFile) {
         try {
-          const uploadResponse = await uploadToCloudinary(projectFiles.bannerFile);
+          setBannerProgress(1);
+          const uploadResponse = await uploadToCloudinary(projectFiles.bannerFile, { onProgress: (p) => setBannerProgress(p) });
           if (typeof uploadResponse === 'string') {
             team_image_url = uploadResponse;
             bannerPublicId = uploadResponse.split('/').pop().split('.')[0];
@@ -363,6 +422,8 @@ export default function UploadProfile() {
         } catch (err) {
           console.error('Banner upload error:', err);
           showToast(`⚠️ Upload banner thất bại: ${err.message}. Vui lòng thử lại.`, 'warning', 5000);
+        } finally {
+          setTimeout(() => setBannerProgress(0), 600);
         }
       }
 
@@ -594,17 +655,17 @@ export default function UploadProfile() {
   return (
     <div className="min-h-screen bg-gray-50 flex flex-col">
       <Navbar />
-      <main className="flex-1 max-w-6xl mx-auto w-full px-4 py-12">
+  <main className="flex-1 max-w-5xl mx-auto w-full px-4 pt-8 pb-24">
         {/* Header với nút quay lại */}
-        <div className="mb-6 flex items-center gap-3">
+        <div className="mb-4 flex items-center gap-2">
           <button 
             onClick={() => navigate(-1)}
-            className="bg-gray-100 hover:bg-gray-200 text-gray-700 p-2 rounded-lg transition-colors"
+            className="bg-gray-100 hover:bg-gray-200 text-gray-700 p-1.5 rounded-lg transition-colors"
             title="Quay lại"
           >
-            <FontAwesomeIcon icon={faArrowLeft} size="lg" />
+            <FontAwesomeIcon icon={faArrowLeft} size="sm" />
           </button>
-          <h1 className="text-3xl font-bold text-gray-900">Hồ sơ dự án</h1>
+          <h1 className="text-2xl font-bold text-gray-900">Hồ sơ dự án</h1>
         </div>
 
         {/* Legend for required fields */}
@@ -612,10 +673,15 @@ export default function UploadProfile() {
           Các trường có dấu <span className="text-red-500">*</span> là bắt buộc.
         </p>
 
-        <div className="bg-white rounded-lg shadow p-8">
+        <div className="grid grid-cols-1 lg:grid-cols-12 gap-6">
+          <SectionNav />
+          <div className="lg:col-span-9">
+        <div id="overview" className="bg-white rounded-lg shadow p-6">
           {/* Banner / basic info */}
-          <div className="relative h-64 bg-gray-200 rounded-lg overflow-hidden mb-6 group">
-            {projectData.team_image_url && projectData.team_image_url.length > 0 ? (
+          <div className="relative h-48 bg-gray-200 rounded-lg overflow-hidden mb-5 group">
+            {loadingProject ? (
+              <div className="w-full h-full animate-pulse bg-gray-200" />
+            ) : projectData.team_image_url && projectData.team_image_url.length > 0 ? (
               <>
                 <img 
                   src={projectData.team_image_url} 
@@ -627,12 +693,21 @@ export default function UploadProfile() {
                   }}
                   onLoad={() => console.log('Banner loaded successfully')}
                 />
+                {bannerProgress > 0 && bannerProgress < 100 && (
+                  <div className="absolute bottom-0 left-0 right-0 bg-black/40 p-2">
+                    <div className="h-2 bg-gray-300 rounded">
+                      <div className="h-2 bg-blue-500 rounded" style={{ width: `${bannerProgress}%` }} />
+                    </div>
+                    <div className="text-xs text-white mt-1">Đang tải banner: {bannerProgress}%</div>
+                  </div>
+                )}
               </>
             ) : (
               <div className="w-full h-full flex items-center justify-center text-gray-500">
                 <div className="text-center">
                   <p>Banner chưa được thêm</p>
                   {projectData.team_image_url && <p className="text-xs mt-2 text-gray-400">(Kích thước: {projectData.team_image_url.length} bytes)</p>}
+                  <p className="text-xs mt-1 text-gray-400">Khuyến nghị: 1600×600px, &lt; 1.5MB.</p>
                 </div>
               </div>
             )}
@@ -640,17 +715,18 @@ export default function UploadProfile() {
             <label className="absolute inset-0 bg-black/0 group-hover:bg-black/40 flex items-center justify-center cursor-pointer opacity-0 group-hover:opacity-100 transition-all">
               <div className="text-white text-center">
                 <div className="text-sm font-semibold">Tải lên ảnh banner</div>
+                <div className="text-[11px] opacity-90">Khuyến nghị: 1600×600px (JPEG)</div>
               </div>
               <input type="file" accept="image/*" onChange={(e) => handleImageUpload(e, 'banner')} className="hidden" />
             </label>
             {/* Logo overlay */}
-            <div className="absolute bottom-4 left-4 bg-white p-2 rounded-lg shadow group">
+            <div className="absolute bottom-3 left-3 bg-white p-1.5 rounded-lg shadow group">
               {projectData.logo_url && projectData.logo_url.length > 0 ? (
                 <div className="relative">
                   <img 
                     src={projectData.logo_url} 
                     alt="Project Logo" 
-                    className="w-16 h-16 object-contain"
+                    className="w-12 h-12 object-contain"
                     onError={(e) => {
                       console.error('Logo image load failed');
                       e.target.style.display = 'none';
@@ -661,9 +737,16 @@ export default function UploadProfile() {
                     <span className="text-white text-xs font-semibold">Đổi</span>
                     <input type="file" accept="image/*" onChange={(e) => handleImageUpload(e, 'logo')} className="hidden" />
                   </label>
+                  {logoProgress > 0 && logoProgress < 100 && (
+                    <div className="absolute -bottom-2 left-0 right-0">
+                      <div className="h-0.5 bg-gray-300 rounded">
+                        <div className="h-0.5 bg-blue-500 rounded" style={{ width: `${logoProgress}%` }} />
+                      </div>
+                    </div>
+                  )}
                 </div>
               ) : (
-                <label className="w-16 h-16 bg-gray-100 rounded flex items-center justify-center text-sm text-gray-500 cursor-pointer hover:bg-gray-200 transition-colors">
+                <label className="w-12 h-12 bg-gray-100 rounded flex items-center justify-center text-xs text-gray-500 cursor-pointer hover:bg-gray-200 transition-colors">
                   <span>Logo</span>
                   <input type="file" accept="image/*" onChange={(e) => handleImageUpload(e, 'logo')} className="hidden" />
                 </label>
@@ -671,7 +754,7 @@ export default function UploadProfile() {
             </div>
           </div>
 
-          <div className="grid grid-cols-1 lg:grid-cols-3 gap-8 mb-8">
+          <div className="grid grid-cols-1 lg:grid-cols-3 gap-6 mb-6">
             <div className="lg:col-span-2">
               <div className="mb-4">
                 <label className="block text-sm font-semibold text-gray-700 mb-1">
@@ -686,7 +769,7 @@ export default function UploadProfile() {
                     required
                     aria-required="true"
                     minLength={3}
-                    className={`text-3xl font-bold w-full border-b border-transparent hover:border-gray-300 focus:border-gray-500 focus:outline-none ${
+                    className={`text-2xl font-bold w-full border-b border-transparent hover:border-gray-300 focus:border-gray-500 focus:outline-none ${
                       projectData.name && projectData.name.trim().length > 0
                         ? projectData.name.trim().length < 3
                           ? 'text-red-600'
@@ -695,7 +778,7 @@ export default function UploadProfile() {
                     }`}
                   />
                   {projectData.name && projectData.name.trim().length > 0 && (
-                    <span className={`text-sm font-semibold whitespace-nowrap ${projectData.name.trim().length >= 3 ? 'text-green-600' : 'text-red-600'}`}>
+                    <span className={`text-xs font-semibold whitespace-nowrap ${projectData.name.trim().length >= 3 ? 'text-green-600' : 'text-red-600'}`}>
                       {projectData.name.trim().length >= 3 ? '✓' : `${projectData.name.trim().length}/3`}
                     </span>
                   )}
@@ -704,30 +787,31 @@ export default function UploadProfile() {
               <div className="mb-4">
                 <h3 className="font-semibold mb-2">Tóm tắt ngắn</h3>
                 <input type="text" value={projectData.tagline} onChange={(e) => handleProjectChange('tagline', e.target.value)} placeholder="VD: Công cụ quản lý dự án hỗ trợ AI" className="w-full p-2 border rounded-lg" maxLength="150" />
-                <p className="text-xs text-gray-500 mt-1">{projectData.tagline.length}/150</p>
+                <p className="text-[11px] text-gray-500 mt-1">{projectData.tagline.length}/150</p>
               </div>
               <div className="mb-4">
                 <h3 className="font-semibold mb-2">Giới thiệu dự án <span className="text-red-500">*</span></h3>
-                <textarea
+                <AutoResizeTextarea
                   value={projectData.description}
                   onChange={(e) => handleProjectChange('description', e.target.value)}
                   className="w-full p-2 border rounded-lg"
-                  rows={4}
+                  minRows={3}
                   placeholder="Mô tả chi tiết về dự án..."
                   required
                   aria-required="true"
                 />
               </div>
               <div>
-                <h3 className="font-semibold mb-2">Ngành công nghiệp</h3>
-                <input type="text" value={projectData.industry} onChange={(e) => handleProjectChange('industry', e.target.value)} placeholder="VD: SaaS, Fintech, Edtech, Healthtech" className="w-full p-2 border rounded-lg" />
+                <label className="font-semibold mb-2 block" htmlFor="industry">Ngành công nghiệp</label>
+                <input id="industry" type="text" value={projectData.industry} onChange={(e) => handleProjectChange('industry', e.target.value)} placeholder="VD: SaaS, Fintech, Edtech, Healthtech" className="w-full p-2 border rounded-lg" />
               </div>
             </div>
             <div className="lg:col-span-1">
-              <div className="bg-gray-50 p-6 rounded-lg space-y-4">
+              <div className="bg-gray-50 p-5 rounded-lg space-y-3.5">
                 <div>
-                  <h3 className="font-semibold mb-2">Website</h3>
-                  <input type="url" value={projectData.website_url} onChange={(e) => handleProjectChange('website_url', e.target.value)} placeholder="https://example.vn" className="w-full p-2 border rounded" />
+                  <label className="font-semibold mb-2 block" htmlFor="website_url">Website</label>
+                  <input id="website_url" type="url" value={projectData.website_url} onChange={(e) => handleProjectChange('website_url', e.target.value)} placeholder="https://example.vn" className="w-full p-2 border rounded" />
+                  <p className="text-[11px] text-gray-500 mt-1">VD: https://example.vn (tự động thêm https:// nếu thiếu)</p>
                 </div>
                 <div>
                   <h3 className="font-semibold mb-2">Giai đoạn <span className="text-red-500">*</span></h3>
@@ -749,49 +833,49 @@ export default function UploadProfile() {
               </div>
             </div>
           </div>
-
+          </div>
 
           {/* Business & Market */}
-          <div className="border-t pt-8 mt-8">
-            <h2 className="text-2xl font-bold mb-6">Kinh doanh & Thị trường</h2>
-            <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 mb-8">
+          <div id="market" className="border-t pt-6 mt-6">
+            <h2 className="text-xl font-bold mb-5">Kinh doanh & Thị trường</h2>
+            <div className="grid grid-cols-1 lg:grid-cols-2 gap-5 mb-6">
               <div>
                 <h3 className="font-semibold mb-2">Vấn đề cần giải quyết</h3>
-                <textarea 
+                <AutoResizeTextarea 
                   value={projectData.pain_point} 
                   onChange={(e) => handleProjectChange('pain_point', e.target.value)} 
                   className="w-full p-2 border rounded-lg" 
-                  rows={3} 
+                  minRows={3} 
                   placeholder="Mô tả vấn đề mà startup giải quyết..."
                 />
               </div>
               <div>
                 <h3 className="font-semibold mb-2">Giải pháp của bạn</h3>
-                <textarea 
+                <AutoResizeTextarea 
                   value={projectData.solution} 
                   onChange={(e) => handleProjectChange('solution', e.target.value)} 
                   className="w-full p-2 border rounded-lg" 
-                  rows={3} 
+                  minRows={3} 
                   placeholder="Giải pháp độc đáo của bạn là gì?"
                 />
               </div>
               <div>
                 <h3 className="font-semibold mb-2">Sản phẩm/Dịch vụ</h3>
-                <textarea 
+                <AutoResizeTextarea 
                   value={projectData.product} 
                   onChange={(e) => handleProjectChange('product', e.target.value)} 
                   className="w-full p-2 border rounded-lg" 
-                  rows={3} 
+                  minRows={3} 
                   placeholder="Mô tả chi tiết sản phẩm/dịch vụ chính..."
                 />
               </div>
               <div>
                 <h3 className="font-semibold mb-2">Đối tượng khách hàng mục tiêu</h3>
-                <textarea 
+                <AutoResizeTextarea 
                   value={projectData.customer_segment} 
                   onChange={(e) => handleProjectChange('customer_segment', e.target.value)} 
                   className="w-full p-2 border rounded-lg" 
-                  rows={3} 
+                  minRows={3} 
                   placeholder="VD: Startup, SME, Doanh nghiệp, Cá nhân"
                 />
               </div>
@@ -817,24 +901,24 @@ export default function UploadProfile() {
               </div>
             </div>
 
-            <div className="grid grid-cols-1 lg:grid-cols-3 gap-6 mb-8">
+            <div className="grid grid-cols-1 lg:grid-cols-3 gap-5 mb-6">
               <div>
                 <h3 className="font-semibold mb-2">Mô hình kinh doanh</h3>
-                <textarea 
+                <AutoResizeTextarea 
                   value={projectData.business_model} 
                   onChange={(e) => handleProjectChange('business_model', e.target.value)} 
                   className="w-full p-2 border rounded-lg" 
-                  rows={3} 
+                  minRows={3} 
                   placeholder="VD: B2B SaaS, B2C E-commerce, Subscription"
                 />
               </div>
               <div>
                 <h3 className="font-semibold mb-2">Phương thức tạo doanh thu</h3>
-                <textarea 
+                <AutoResizeTextarea 
                   value={projectData.revenue_method} 
                   onChange={(e) => handleProjectChange('revenue_method', e.target.value)} 
                   className="w-full p-2 border rounded-lg" 
-                  rows={3} 
+                  minRows={3} 
                   placeholder="VD: Huy động vốn, Freemium, Bán hàng, Advertising"
                 />
               </div>
@@ -850,7 +934,7 @@ export default function UploadProfile() {
               </div>
             </div>
 
-            <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
+            <div className="grid grid-cols-1 lg:grid-cols-3 gap-5">
               <div>
                 <h3 className="font-semibold mb-2">Chi phí dự kiến</h3>
                 <input 
@@ -873,11 +957,11 @@ export default function UploadProfile() {
               </div>
               <div>
                 <h3 className="font-semibold mb-2">Kênh phân phối</h3>
-                <textarea 
+                <AutoResizeTextarea 
                   value={projectData.distribution_channel} 
                   onChange={(e) => handleProjectChange('distribution_channel', e.target.value)} 
                   className="w-full p-2 border rounded-lg" 
-                  rows={2} 
+                  minRows={2} 
                   placeholder="VD: Bán trực tiếp, Sàn thương mại, Hợp tác với partner"
                 />
               </div>
@@ -885,16 +969,16 @@ export default function UploadProfile() {
           </div>
 
           {/* Partners & Deployment */}
-          <div className="border-t pt-8 mt-8">
-            <h2 className="text-2xl font-bold mb-6">Đối tác & Triển khai</h2>
+          <div id="partners" className="border-t pt-6 mt-6">
+            <h2 className="text-xl font-bold mb-5">Đối tác & Triển khai</h2>
             <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
               <div>
                 <h3 className="font-semibold mb-2">Đối tác/Investor hiện tại</h3>
-                <textarea 
+                <AutoResizeTextarea 
                   value={projectData.partners} 
                   onChange={(e) => handleProjectChange('partners', e.target.value)} 
                   className="w-full p-2 border rounded-lg" 
-                  rows={3} 
+                  minRows={3} 
                   placeholder="Danh sách các đối tác, investor hoặc mentor..."
                 />
               </div>
@@ -911,10 +995,45 @@ export default function UploadProfile() {
             </div>
           </div>
 
+          {/* Posts */}
+          <div id="posts" className="border-t pt-6 mt-6">
+            <h2 className="text-xl font-bold mb-5">Bài viết</h2>
+            {postsError && (
+              <div className="text-sm text-red-600 mb-3">Lỗi tải bài viết: {postsError.message}</div>
+            )}
+            {postsLoading ? (
+              <div className="space-y-3">
+                <div className="h-4 bg-gray-200 animate-pulse rounded w-5/6"></div>
+                <div className="h-4 bg-gray-200 animate-pulse rounded w-2/3"></div>
+                <div className="h-4 bg-gray-200 animate-pulse rounded w-4/5"></div>
+              </div>
+            ) : (
+              <div className="space-y-4">
+                {posts && posts.length > 0 ? posts.map((p) => (
+                  <div key={p.id} className="p-4 border rounded-lg">
+                    <div className="text-sm text-gray-500 mb-1">{new Date(p.created_at).toLocaleString()}</div>
+                    <div className="text-gray-900">{p.title || p.body || '(không có nội dung)'}</div>
+                  </div>
+                )) : (
+                  <div className="text-sm text-gray-500">Chưa có bài viết.</div>
+                )}
+                {postsHasMore && (
+                  <button
+                    onClick={postsLoadMore}
+                    disabled={postsLoadingMore}
+                    className={`bg-gray-100 hover:bg-gray-200 text-gray-700 px-4 py-2 rounded ${postsLoadingMore ? 'opacity-60 cursor-wait' : ''}`}
+                  >
+                    {postsLoadingMore ? 'Đang tải...' : 'Tải thêm'}
+                  </button>
+                )}
+              </div>
+            )}
+          </div>
+
           {/* Members / Skills */}
-          <div className="border-t pt-8 mt-8">
-            <h2 className="text-2xl font-bold mb-6">Đội ngũ & Tài nguyên</h2>
-            <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
+          <div id="team" className="border-t pt-6 mt-6">
+            <h2 className="text-xl font-bold mb-5">Đội ngũ & Tài nguyên</h2>
+            <div className="grid grid-cols-1 lg:grid-cols-3 gap-5">
               <div>
                 <h3 className="font-semibold mb-2">Số lượng thành viên</h3>
                 <input 
@@ -928,53 +1047,52 @@ export default function UploadProfile() {
               </div>
               <div>
                 <h3 className="font-semibold mb-2">Kỹ năng đội ngũ</h3>
-                <textarea 
+                <AutoResizeTextarea 
                   value={projectData.member_skills} 
                   onChange={(e) => handleProjectChange('member_skills', e.target.value)} 
                   className="w-full p-2 border rounded-lg" 
-                  rows={4} 
+                  minRows={4} 
                   placeholder="VD: Lập trình web, AI/ML, Thiết kế, Marketing"
                 />
               </div>
               <div>
                 <h3 className="font-semibold mb-2">Tài nguyên</h3>
-                <textarea 
+                <AutoResizeTextarea 
                   value={projectData.resources} 
                   onChange={(e) => handleProjectChange('resources', e.target.value)} 
                   className="w-full p-2 border rounded-lg" 
-                  rows={4} 
+                  minRows={4} 
                   placeholder="VD: Vốn tài chính, Không gian văn phòng, Cố vấn, Hợp tác"
                 />
               </div>
             </div>
           </div>
 
-          <div className="mt-6 flex items-center justify-end gap-4 flex-wrap">
-            <button 
-              onClick={saveProject} 
-              disabled={saving} 
-              className={`bg-gray-600 hover:bg-gray-700 text-white inline-flex items-center justify-center text-sm font-semibold px-6 py-2.5 rounded-md h-10 transition-colors ${saving ? 'opacity-60 cursor-wait' : ''}`}
-              title={projectFiles.logoFile || projectFiles.bannerFile ? '✓ Có ảnh chờ upload' : ''}
-            >
-              {saving ? (
-                <span className="flex items-center gap-2"><svg className="animate-spin h-4 w-4" viewBox="0 0 24 24"><circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4" fill="none"></circle><path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8v4a4 4 0 00-4 4H4z"></path></svg>Đang lưu...</span>
-              ) : (
-                projectId ? 'Cập nhật hồ sơ' : 'Lưu hồ sơ'
-              )}
-            </button>
-            
-            <button 
-              onClick={publishProject} 
-              disabled={saving || !projectId} 
-              className={`bg-blue-600 hover:bg-blue-700 text-white inline-flex items-center justify-center text-sm font-semibold px-6 py-2.5 rounded-md h-10 transition-colors ${(saving || !projectId) ? 'opacity-60 cursor-not-allowed' : ''}`}
-            >
-              {saving ? (
-                <span className="flex items-center gap-2"><svg className="animate-spin h-4 w-4" viewBox="0 0 24 24"><circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4" fill="none"></circle><path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8v4a4 4 0 00-4 4H4z"></path></svg>Đang đăng...</span>
-              ) : 'Đăng tải dự án'}
-            </button>
+          {/* Removed in-content action buttons to avoid duplication with sticky bar */}
           </div>
         </div>
       </main>
+      {/* Sticky action bar at bottom */}
+      <div className="fixed bottom-0 left-0 right-0 bg-white/90 backdrop-blur border-t border-gray-200 px-3 py-2 z-40">
+        <div className="max-w-5xl mx-auto flex items-center justify-end gap-2.5">
+          <button 
+            onClick={() => saveProject()} 
+            disabled={saving}
+            className={`bg-gray-700 hover:bg-gray-800 text-white text-sm font-semibold px-4 py-1.5 rounded-md ${saving ? 'opacity-60 cursor-wait' : ''}`}
+          >
+            {saving ? 'Đang lưu...' : (projectId ? 'Cập nhật hồ sơ' : 'Lưu hồ sơ')}
+          </button>
+          {(() => { const ALLOWED_STAGES = ['y-tuong','nghien-cuu-thi-truong','hoan-thien-san-pham','khao-sat','launch']; const isValidRequired = (projectData.name?.trim()?.length >= 3) && (projectData.description?.trim()?.length > 0) && ALLOWED_STAGES.includes(projectData.stage); return (
+          <button
+            onClick={() => publishProject()}
+            disabled={saving || !projectId || !isValidRequired}
+            className={`bg-blue-600 hover:bg-blue-700 text-white text-sm font-semibold px-4 py-1.5 rounded-md ${(saving || !projectId || !isValidRequired) ? 'opacity-60 cursor-not-allowed' : ''}`}
+          >
+            {saving ? 'Đang đăng...' : 'Đăng tải dự án'}
+          </button>
+          );})()}
+        </div>
+      </div>
       {/* Toast */}
       {toast.visible && (
         <div className="fixed right-4 bottom-6 z-50">

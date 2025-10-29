@@ -4,6 +4,7 @@ import Navbar from '../components/layout/Navbar';
 import Footer from '../components/layout/Footer';
 import { useAuth } from '../context/AuthContext';
 import { API_BASE } from '../config/api';
+import { listPostComments, createPostComment } from '../api/posts';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import {
   faHeart, faComment, faUsers, faLink, faMapPin, faCalendar,
@@ -142,7 +143,19 @@ export default function ProjectDetailPage() {
       const response = await fetch(`${API_BASE}/projects/${projectId}/posts?limit=50`, { headers });
       if (response.ok) {
         const data = await response.json();
-        setPosts(Array.isArray(data) ? data : []);
+        const currentDisplayName = (u) => u?.full_name || u?.fullName || u?.name || u?.username || u?.email || null;
+        const mapped = (Array.isArray(data) ? data : []).map(p => ({
+          ...p,
+          author_name:
+            p.author?.full_name ||
+            p.author?.fullName ||
+            p.author?.name ||
+            p.author?.username ||
+            p.author?.email ||
+            (p.author_id === user?.id ? currentDisplayName(user) : null) ||
+            'Người dùng'
+        }));
+        setPosts(mapped);
       }
     } catch (error) {
       console.error('Fetch posts error:', error);
@@ -244,27 +257,10 @@ export default function ProjectDetailPage() {
     }
 
     try {
-      const token = localStorage.getItem('token');
-      const headers = { Authorization: `Bearer ${token}`, 'Content-Type': 'application/json' };
-
-      const response = await fetch(`${API_BASE}/projects/posts/${postId}/comments`, {
-        method: 'POST',
-        headers,
-        body: JSON.stringify({ text: newComment })
-      });
-
-      if (response.ok) {
-        setNewComment('');
-        // Refresh comments
-        const commentsRes = await fetch(`${API_BASE}/projects/posts/${postId}/comments`);
-        if (commentsRes.ok) {
-          const commentsData = await commentsRes.json();
-          setComments(prev => ({
-            ...prev,
-            [postId]: commentsData
-          }));
-        }
-      }
+      await createPostComment(postId, { body: newComment });
+      setNewComment('');
+      const commentsData = await listPostComments(postId);
+      setComments(prev => ({ ...prev, [postId]: commentsData }));
     } catch (error) {
       console.error('Add comment error:', error);
     }
@@ -482,15 +478,15 @@ export default function ProjectDetailPage() {
                     {posts.map(post => (
                       <div key={post.id} className="border-b pb-4 last:border-b-0">
                         <div className="flex gap-3 mb-3">
-                          {post.author?.avatar && (
+                          {post.author?.avatar_url && (
                             <img
-                              src={post.author.avatar}
-                              alt={post.author.name}
+                              src={post.author.avatar_url}
+                              alt={post.author.full_name || post.author.name || post.author.username || post.author.email}
                               className="w-10 h-10 rounded-full object-cover"
                             />
                           )}
                           <div className="flex-1">
-                            <div className="font-semibold text-sm text-gray-900">{post.author?.name || 'Unknown'}</div>
+                            <div className="font-semibold text-sm text-gray-900">{post.author_name || post.author?.full_name || post.author?.fullName || post.author?.name || post.author?.username || post.author?.email || 'Người dùng'}</div>
                             <div className="text-xs text-gray-500">
                               {new Date(post.created_at).toLocaleDateString('vi-VN')}
                             </div>
@@ -524,16 +520,16 @@ export default function ProjectDetailPage() {
                             {Array.isArray(comments[post.id]) && comments[post.id].map(comment => (
                               <div key={comment.id} className="mb-2 pb-2 border-b last:border-b-0">
                                 <div className="flex gap-2 mb-1">
-                                  {comment.author?.avatar && (
+                                  {comment.author?.avatar_url && (
                                     <img
-                                      src={comment.author.avatar}
-                                      alt={comment.author.name}
+                                      src={comment.author.avatar_url}
+                                      alt={comment.author.full_name || comment.author.name || comment.author.username || comment.author.email}
                                       className="w-7 h-7 rounded-full object-cover flex-shrink-0"
                                     />
                                   )}
                                   <div className="flex-1 min-w-0">
-                                    <div className="font-semibold text-xs text-gray-900">{comment.author?.name}</div>
-                                    <p className="text-xs text-gray-700">{comment.text}</p>
+                                    <div className="font-semibold text-xs text-gray-900">{comment.author?.full_name || comment.author?.fullName || comment.author?.name || comment.author?.username || comment.author?.email}</div>
+                                    <p className="text-xs text-gray-700">{comment.body}</p>
                                   </div>
                                 </div>
                               </div>

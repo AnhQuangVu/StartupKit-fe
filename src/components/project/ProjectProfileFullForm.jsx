@@ -625,7 +625,7 @@ function renderRichTextToPDF(html) {
   return views.length > 0 ? <View>{views}</View> : null;
 }
 // Cấu trúc các section và trường theo khung hồ sơ dự án
-const FORM_SECTIONS = [
+export const FORM_SECTIONS = [
   {
     title: "THÔNG TIN CHUNG DỰ ÁN",
     fields: [
@@ -895,6 +895,8 @@ export default function ProjectProfileFullForm({
   onChange,
   onPublish,
   onSave, // Thêm prop cho lưu dữ liệu
+  compact = false, // Chế độ giao diện gọn (nhỏ lại)
+  sectionIdPrefix = "ppf", // Prefix id cho từng section để tạo anchor
 }) {
   // Toolbar background can be changed here
   const TOOLBAR_BG = "linear-gradient(180deg, rgba(255,255,255,0.99), #ececec)";
@@ -1152,15 +1154,21 @@ export default function ProjectProfileFullForm({
       alert("Lỗi khi lưu hồ sơ: " + err.message);
     }
   };
+  // Kích thước chữ cho editor khi chế độ compact
+  const editorFontSize = compact ? 14 : 15;
   return (
     <>
-      <form className="space-y-10 -mt-24">
+      <form className={`${compact ? "space-y-6" : "space-y-10"} -mt-24`}>
         {FORM_SECTIONS.map((section, idx) => (
-          <div key={idx} className="bg-white rounded-lg shadow p-6">
+          <div
+            key={idx}
+            className={`bg-white rounded-lg shadow ${compact ? "p-3 md:p-4" : "p-6"}`}
+            id={`${sectionIdPrefix}-sec-${idx}`}
+          >
             {(section.title || idx === 0) && (
               <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between mb-4 gap-4 relative z-10">
                 {section.title && (
-                  <h2 className="text-lg font-bold text-blue-900 uppercase">
+                  <h2 className={`${compact ? "text-base" : "text-lg"} font-bold text-blue-900 uppercase`}>
                     {section.title}
                   </h2>
                 )}
@@ -1224,7 +1232,7 @@ export default function ProjectProfileFullForm({
                     {/* Nút Đăng đa nền tảng - Cải thiện style */}
                     <button
                       type="button"
-                      className="px-6 py-3 bg-blue-600 text-white font-medium rounded-lg shadow-md hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 transition-all duration-200 transform hover:scale-105 z-20 flex items-center gap-2"
+                      className={`${compact ? "px-4 py-2 text-sm" : "px-6 py-3"} bg-blue-600 text-white font-medium rounded-lg shadow-md hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 transition-all duration-200 ${compact ? "hover:scale-100" : "transform hover:scale-105"} z-20 flex items-center gap-2`}
                       onClick={handlePublishClick}
                     >
                       <svg
@@ -1268,11 +1276,11 @@ export default function ProjectProfileFullForm({
               </div>
             )}
             {section.subtitle && (
-              <h3 className="text-base font-semibold mb-2 text-blue-700">
+              <h3 className={`${compact ? "text-sm" : "text-base"} font-semibold mb-2 text-blue-700`}>
                 {section.subtitle}
               </h3>
             )}
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+            <div className={`grid grid-cols-1 md:grid-cols-2 ${compact ? "gap-4" : "gap-6"}`}>
               {section.fields.map((field) => (
                 <div key={field.key} className="flex flex-col gap-1">
                   <label className="font-medium text-gray-700 mb-1">
@@ -1281,7 +1289,7 @@ export default function ProjectProfileFullForm({
                   {field.type === "input" && (
                     <input
                       type="text"
-                      className="border rounded p-2 bg-gray-50"
+                      className={`border rounded ${compact ? "p-1.5 text-sm" : "p-2"} bg-gray-50`}
                       value={form[field.key]}
                       placeholder={field.placeholder}
                       onChange={(e) => handleChange(field.key, e.target.value)}
@@ -1291,8 +1299,8 @@ export default function ProjectProfileFullForm({
                     <textarea
                       className={
                         field.key === "teamInfo"
-                          ? "border rounded p-2 bg-gray-50 min-h-[120px] w-full md:w-[600px]"
-                          : "border rounded p-2 bg-gray-50 min-h-[48px]"
+                          ? `border rounded ${compact ? "p-1.5 text-sm" : "p-2"} bg-gray-50 min-h-[110px] w-full md:w-[560px]`
+                          : `border rounded ${compact ? "p-1.5 text-sm" : "p-2"} bg-gray-50 min-h-[40px]`
                       }
                       value={form[field.key]}
                       placeholder={field.placeholder}
@@ -1549,8 +1557,8 @@ export default function ProjectProfileFullForm({
                             ? {
                                 position: "relative",
                                 width: "100%",
-                                maxWidth: 600,
-                                minHeight: 120,
+                                maxWidth: compact ? 560 : 600,
+                                minHeight: compact ? 110 : 120,
                                 background: "#f9fafb",
                                 borderRadius: 8,
                                 border: "1px solid #e5e7eb",
@@ -1575,12 +1583,12 @@ export default function ProjectProfileFullForm({
                           style={
                             field.key === "teamInfo"
                               ? {
-                                  minHeight: 100,
+                                  minHeight: compact ? 90 : 100,
                                   width: "100%",
                                   background: "transparent",
                                   border: "none",
-                                  fontSize: 15,
-                                  padding: 12,
+                                  fontSize: editorFontSize,
+                                  padding: compact ? 10 : 12,
                                   boxSizing: "border-box",
                                 }
                               : undefined
@@ -1592,16 +1600,16 @@ export default function ProjectProfileFullForm({
                               border: none !important;
                               background: transparent !important;
                               border-radius: 8px !important;
-                              font-size: 15px !important;
+                              font-size: ${editorFontSize}px !important;
                               font-family: inherit !important;
-                              min-height: 100px;
+                              min-height: ${compact ? 90 : 100}px;
                               padding: 0 !important;
                             }
                             .ql-editor {
-                              min-height: 100px;
-                              padding: 12px !important;
+                              min-height: ${compact ? 90 : 100}px;
+                              padding: ${compact ? 10 : 12}px !important;
                               background: transparent !important;
-                              font-size: 15px !important;
+                              font-size: ${editorFontSize}px !important;
                               font-family: inherit !important;
                               color: #222;
                             }
@@ -1609,7 +1617,7 @@ export default function ProjectProfileFullForm({
                               color: #888 !important;
                               font-style: italic;
                               opacity: 1;
-                              font-size: 15px;
+                              font-size: ${editorFontSize}px;
                             }
                           `}</style>
                         )}

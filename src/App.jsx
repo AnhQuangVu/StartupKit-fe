@@ -1,4 +1,5 @@
 import { Routes, Route } from "react-router-dom";
+import ErrorBoundary from "./components/common/ErrorBoundary";
 import TrangChu from "./pages/TrangChu";
 import ProjectProfilePreview from "./components/project/ProjectProfilePreview";
 import Profile from "./pages/Profile";
@@ -20,6 +21,7 @@ import ProjectDetailPage from "./pages/ProjectDetailPage";
 
 export default function App() {
   return (
+    <ErrorBoundary>
     <Routes>
       <Route path="/" element={<TrangChu />} />
       <Route path="/register" element={<Register />} />
@@ -46,5 +48,6 @@ export default function App() {
       <Route path="/projects/:projectId" element={<ProjectDetailPage />} />
   <Route path="/profile/upload" element={<UploadProfile />} />
     </Routes>
+    </ErrorBoundary>
   );
 }

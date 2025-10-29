@@ -1,4 +1,4 @@
-import React, { useState, useMemo, useEffect } from "react";
+import React, { useState, useMemo, useEffect, useRef } from "react";
 import StartupList from "../components/common/StartupList";
 import CompetitionList from "../components/home/CompetitionList";
 import InvestorList from "../components/common/InvestorList";
@@ -6,17 +6,28 @@ import MentorList from "../components/common/MentorList";
 import Navbar from "../components/layout/Navbar";
 import Footer from "../components/layout/Footer";
 import { useAuth } from "../context/AuthContext";
+import StartupCard from "../components/common/StartupCard";
+import { searchPublishedProjects } from "../api/publicProjects";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faSearch, faFilter, faEnvelope, faBolt } from "@fortawesome/free-solid-svg-icons";
-import { useNavigate } from "react-router-dom";
+import { useSearchParams } from "react-router-dom";
 
 export default function KhamPha() {
   const { isLoggedIn, user } = useAuth();
+  const [searchParams, setSearchParams] = useSearchParams();
   const [query, setQuery] = useState("");
   const [category, setCategory] = useState("all");
   const [stage, setStage] = useState("all");
   const [newsletterEmail, setNewsletterEmail] = useState("");
   const [subscribed, setSubscribed] = useState(false);
+
+  // search results state
+  const [results, setResults] = useState([]);
+  const [loading, setLoading] = useState(false);
+  const [error, setError] = useState("");
+  const [nextCursor, setNextCursor] = useState(null);
+  const [total, setTotal] = useState(null);
+  const abortRef = useRef(null);
 
   // lightweight categories for filters
   const categories = [
@@ -27,6 +38,14 @@ export default function KhamPha() {
     { key: "edu", label: "Edtech" },
   ];
 
+  const stages = [
+    { key: "all", label: "Tất cả giai đoạn" },
+    { key: "y-tuong", label: "Ý tưởng" },
+    { key: "prototype", label: "Prototype" },
+    { key: "beta", label: "Beta" },
+    { key: "launch", label: "Ra mắt" },
+  ];
+
   const handleSearchChange = (e) => setQuery(e.target.value);
   const handleCategoryClick = (k) => setCategory(k);
 
@@ -35,6 +54,99 @@ export default function KhamPha() {
     if (!newsletterEmail) return;
     // stub subscribe action - in future call API
     setSubscribed(true);
+  };
+
+  // derive whether filters/search are active
+  const filtersActive = query.trim().length > 0 || category !== "all" || stage !== "all";
+
+  // On mount: read URL params to hydrate state
+  useEffect(() => {
+    const qParam = searchParams.get("q") || "";
+    const catParam = searchParams.getAll("industry[]")[0] || searchParams.get("industry") || "all";
+    const stageParam = searchParams.getAll("stage[]")[0] || searchParams.get("stage") || "all";
+    if (qParam) setQuery(qParam);
+    if (catParam) setCategory(catParam);
+    if (stageParam) setStage(stageParam);
+    // If any active, trigger initial load immediately
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
+
+  // Sync filters to URL
+  useEffect(() => {
+    const params = {};
+    if (query.trim()) params.q = query.trim();
+    if (category !== "all") params["industry[]"] = category;
+    if (stage !== "all") params["stage[]"] = stage;
+    setSearchParams(params, { replace: true });
+  }, [query, category, stage, setSearchParams]);
+
+  // Debounced search when filters change
+  useEffect(() => {
+    if (!filtersActive) {
+      // reset results when filters cleared
+      setResults([]);
+      setNextCursor(null);
+      setTotal(null);
+      setError("");
+      if (abortRef.current) abortRef.current.abort();
+      return;
+    }
+
+    const controller = new AbortController();
+    abortRef.current = controller;
+    setLoading(true);
+    setError("");
+    const t = setTimeout(async () => {
+      try {
+        const { items, nextCursor: nc, total: tt } = await searchPublishedProjects({
+          q: query.trim() || undefined,
+          industry: category !== "all" ? category : undefined,
+          stage: stage !== "all" ? stage : undefined,
+          limit: 24,
+          sort: "-created_at",
+        }, { signal: controller.signal });
+        setResults(items || []);
+        setNextCursor(nc || null);
+        setTotal(tt ?? (items ? items.length : 0));
+      } catch (err) {
+        if (err.name !== 'AbortError') {
+          console.error('Search error', err);
+          setError("Không thể tải kết quả. Vui lòng thử lại.");
+        }
+      } finally {
+        setLoading(false);
+      }
+    }, 300);
+    return () => {
+      clearTimeout(t);
+      controller.abort();
+    };
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [query, category, stage]);
+
+  const handleLoadMore = async () => {
+    if (!nextCursor) return;
+    const controller = new AbortController();
+    try {
+      setLoading(true);
+      const { items, nextCursor: nc } = await searchPublishedProjects({
+        q: query.trim() || undefined,
+        industry: category !== "all" ? category : undefined,
+        stage: stage !== "all" ? stage : undefined,
+        limit: 24,
+        cursor: nextCursor,
+        sort: "-created_at",
+      }, { signal: controller.signal });
+      setResults(prev => [...prev, ...(items || [])]);
+      setNextCursor(nc || null);
+    } catch (err) {
+      if (err.name !== 'AbortError') {
+        console.error('Load more error', err);
+        setError("Không thể tải thêm kết quả.");
+      }
+    } finally {
+      setLoading(false);
+    }
   };
 
   // show a quick stats summary (static for now)
@@ -60,7 +172,7 @@ export default function KhamPha() {
           </div>
         </header>
 
-        {/* search + filters compact */}
+  {/* search + filters compact */}
         <div className="mb-6">
           <div className="bg-white rounded-xl p-4 border border-gray-200 shadow-md">
             <div className="flex flex-col md:flex-row gap-4 items-center">
@@ -68,7 +180,7 @@ export default function KhamPha() {
                 <span className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400"><FontAwesomeIcon icon={faSearch} /></span>
                 <input value={query} onChange={handleSearchChange} placeholder="Tìm kiếm startup, sự kiện, nhà đầu tư..." className="w-full pl-10 pr-4 py-3 rounded-lg border border-gray-200" />
               </div>
-              <div className="flex items-center gap-2">
+              <div className="flex items-center gap-2 w-full md:w-auto">
                 <div className="hidden sm:flex gap-2">
                   {categories.map(c => (
                     <button key={c.key} onClick={() => handleCategoryClick(c.key)} className={`px-3 py-2 rounded-full text-sm font-medium ${category===c.key ? 'bg-[#FFCE23] text-black' : 'bg-white text-gray-700 border border-gray-200'}`}>
@@ -76,11 +188,53 @@ export default function KhamPha() {
                     </button>
                   ))}
                 </div>
+                {/* Stage selector */}
+                <select value={stage} onChange={(e)=>setStage(e.target.value)} className="px-3 py-2 rounded-lg border border-gray-200 text-sm bg-white">
+                  {stages.map(s => <option key={s.key} value={s.key}>{s.label}</option>)}
+                </select>
                 <button onClick={() => { setQuery(''); setCategory('all'); setStage('all'); }} className="px-4 py-2 rounded-lg bg-white border border-gray-200">Reset</button>
               </div>
             </div>
           </div>
         </div>
+
+        {/* Search results */}
+        {filtersActive && (
+          <section className="mb-8">
+            <div className="bg-white rounded-xl p-4 border border-gray-200 shadow-md">
+              <div className="flex items-center justify-between mb-4">
+                <h3 className="text-lg font-semibold">Kết quả tìm kiếm {total != null && (<span className="text-gray-500 font-normal">({total})</span>)}</h3>
+                {loading && <span className="text-sm text-gray-500">Đang tải…</span>}
+              </div>
+              {error && <div className="text-red-600 text-sm mb-3">{error}</div>}
+              <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
+                {(results || []).map((p) => {
+                  const card = {
+                    id: p.id,
+                    img: p.logo_url || `https://picsum.photos/300/300?random=${p.id}`,
+                    title: p.name,
+                    desc: p.tagline || p.description || 'Khởi nghiệp sáng tạo',
+                    tag: p.industry || 'Startup',
+                    stage: p.stage,
+                    members: p.member_count || 0,
+                    raised: p.capital_source || 'N/A',
+                    link: `/projects/${p.id}`
+                  };
+                  return (
+                    <div key={p.id} className="w-full"><StartupCard {...card} /></div>
+                  );
+                })}
+              </div>
+              {nextCursor && (
+                <div className="flex justify-center mt-4">
+                  <button onClick={handleLoadMore} className="px-4 py-2 rounded-lg bg-[#FFCE23] text-black font-semibold disabled:opacity-60" disabled={loading}>
+                    {loading ? 'Đang tải…' : 'Tải thêm'}
+                  </button>
+                </div>
+              )}
+            </div>
+          </section>
+        )}
 
         {/* stats */}
         <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-4 mb-8">
@@ -105,29 +259,37 @@ export default function KhamPha() {
         </section>
 
         {/* Lists */}
-        <section className="mb-8">
-          <div className="bg-white rounded-xl p-4 border border-gray-200 shadow-md">
-            <StartupList columns={3} rows={4} />
-          </div>
-        </section>
+        {!filtersActive && (
+          <section className="mb-8">
+            <div className="bg-white rounded-xl p-4 border border-gray-200 shadow-md">
+              <StartupList columns={3} rows={4} />
+            </div>
+          </section>
+        )}
 
-        <section className="mb-8">
-          <div className="bg-white rounded-xl p-4 border border-gray-200 shadow-md">
-            <CompetitionList />
-          </div>
-        </section>
+        {!filtersActive && (
+          <section className="mb-8">
+            <div className="bg-white rounded-xl p-4 border border-gray-200 shadow-md">
+              <CompetitionList />
+            </div>
+          </section>
+        )}
 
-        <section className="mb-8">
-          <div className="bg-white rounded-xl p-4 border border-gray-200 shadow-md">
-            <InvestorList />
-          </div>
-        </section>
+        {!filtersActive && (
+          <section className="mb-8">
+            <div className="bg-white rounded-xl p-4 border border-gray-200 shadow-md">
+              <InvestorList />
+            </div>
+          </section>
+        )}
 
-        <section className="mb-8">
-          <div className="bg-white rounded-xl p-4 border border-gray-200 shadow-md">
-            <MentorList />
-          </div>
-        </section>
+        {!filtersActive && (
+          <section className="mb-8">
+            <div className="bg-white rounded-xl p-4 border border-gray-200 shadow-md">
+              <MentorList />
+            </div>
+          </section>
+        )}
 
 
 

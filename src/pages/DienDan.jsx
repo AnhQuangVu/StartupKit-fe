@@ -7,6 +7,7 @@ import {
   faX, faCheck, faTimes, faArrowLeft, faUser
 } from '@fortawesome/free-solid-svg-icons';
 import { API_BASE, authHeaders } from '../config/api';
+import { listPostComments, createPostComment } from '../api/posts';
 import { useAuth } from '../context/AuthContext';
 import { uploadToCloudinary } from '../utils/cloudinary';
 
@@ -169,12 +170,21 @@ export default function DienDan() {
       });
 
       if (!response.ok) throw new Error('Không thể lấy bài đăng');
-      let data = await response.json();
+  let data = await response.json();
       
-      // Bổ sung author_name từ author.name nếu có nested object
+      // Bổ sung author_name từ các trường phổ biến của author (BE có thể khác tên field)
+      const currentDisplayName = (u) => u?.full_name || u?.fullName || u?.name || u?.username || u?.email || null;
       data = data.map(post => ({
         ...post,
-        author_name: post.author_name || post.author?.name || post.author_id
+        author_name:
+          post.author_name ||
+          post.author?.full_name ||
+          post.author?.fullName ||
+          post.author?.name ||
+          post.author?.username ||
+          post.author?.email ||
+          (post.author_id === user?.id ? currentDisplayName(user) : null) ||
+          'Người dùng'
       }));
       
       setPosts(data || []);
@@ -391,15 +401,7 @@ export default function DienDan() {
   // Fetch comments
   const fetchComments = async (postId) => {
     try {
-      const token = localStorage.getItem('token') || localStorage.getItem('access_token');
-
-      const response = await fetch(`${API_BASE}/projects/posts/${postId}/comments`, {
-        headers: authHeaders(token),
-      });
-
-      if (!response.ok) throw new Error('Không thể lấy bình luận');
-      
-      const data = await response.json();
+      const data = await listPostComments(postId);
       setComments(prev => ({ ...prev, [postId]: data || [] }));
     } catch (error) {
       console.error('Fetch comments error:', error);
@@ -415,19 +417,8 @@ export default function DienDan() {
     }
 
     try {
-      const token = localStorage.getItem('token') || localStorage.getItem('access_token');
-      
       setPostLoadingStates(prev => ({ ...prev, [postId]: true }));
-
-      const response = await fetch(`${API_BASE}/projects/posts/${postId}/comments`, {
-        method: 'POST',
-        headers: { ...authHeaders(token), 'Content-Type': 'application/json' },
-        body: JSON.stringify({ text: commentText }),
-      });
-
-      if (!response.ok) throw new Error('Không thể thêm bình luận');
-      
-      const newComment = await response.json();
+      const newComment = await createPostComment(postId, { body: commentText });
       setComments(prev => ({ 
         ...prev, 
         [postId]: [...(prev[postId] || []), newComment] 
@@ -478,7 +469,19 @@ export default function DienDan() {
       // Bổ sung author_name với fallback chain giống fetchPosts
       const postWithAuthor = {
         ...createdPost,
-        author_name: createdPost.author_name || createdPost.author?.name || user?.name || createdPost.author_id
+        author_name:
+          createdPost.author_name ||
+          createdPost.author?.full_name ||
+          createdPost.author?.fullName ||
+          createdPost.author?.name ||
+          createdPost.author?.username ||
+          createdPost.author?.email ||
+          user?.full_name ||
+          user?.fullName ||
+          user?.name ||
+          user?.username ||
+          user?.email ||
+          createdPost.author_id
       };
       
       setPosts(prev => [postWithAuthor, ...prev]);
@@ -1432,7 +1435,7 @@ export default function DienDan() {
                             <FontAwesomeIcon icon={faUser} className="text-gray-700 text-sm" />
                           </div>
                           <div>
-                            <p className="text-sm font-semibold text-gray-900">{post.author_name || post.author_id || 'Tác giả'}</p>
+                            <p className="text-sm font-semibold text-gray-900">{post.author_name || post.author?.full_name || post.author?.fullName || post.author?.name || post.author?.username || post.author?.email || 'Người dùng'}</p>
                             <p className="text-xs text-gray-500">{formatDate(post.created_at)}</p>
                           </div>
                         </div>
@@ -1729,8 +1732,8 @@ export default function DienDan() {
                       </div>
                       {/* Comment Content */}
                       <div className="flex-1 min-w-0">
-                        <p className="text-sm font-semibold text-gray-900">{comment.author_name || comment.author?.name || comment.author_id || 'Người dùng'}</p>
-                        <p className="text-sm text-gray-700 mt-1 break-words">{comment.text}</p>
+                        <p className="text-sm font-semibold text-gray-900">{comment.author_name || comment.author?.full_name || comment.author?.fullName || comment.author?.name || comment.author?.username || comment.author?.email || comment.author_id || 'Người dùng'}</p>
+                        <p className="text-sm text-gray-700 mt-1 break-words">{comment.body}</p>
                         <p className="text-xs text-gray-500 mt-2">{formatDate(comment.created_at)}</p>
                       </div>
                     </div>

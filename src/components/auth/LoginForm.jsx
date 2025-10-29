@@ -172,8 +172,9 @@ export default function LoginForm() {
             <label className="block text-sm font-semibold text-gray-700 mb-2">
               Mật khẩu <span className="text-red-500">*</span>
             </label>
+            <div className="relative">
             <input
-              type="password"
+                type="password"
               name="current-password"
               autoComplete="current-password"
               value={password}
@@ -184,6 +185,7 @@ export default function LoginForm() {
               aria-invalid={!!errorPassword}
               className="w-full border border-gray-300 rounded-lg px-3 py-2 text-sm bg-yellow-50 focus:outline-none focus:ring-2 focus:ring-yellow-400 focus:border-yellow-400 transition-all"
             />
+            </div>
             {errorPassword && (
               <div className="mt-1 text-xs text-red-500">{errorPassword}</div>
             )}

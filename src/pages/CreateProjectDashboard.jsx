@@ -14,7 +14,7 @@ function CreateProjectDashboard({ userType = "startup", isLoggedIn = true }) {
         <DashboardHeader userType={userType} isLoggedIn={isLoggedIn} />
         {/* Hiển thị nội dung chỉ khi đã đăng nhập */}
         {isLoggedIn && (
-          <div className="px-4 md:px-8 max-w-[2000px] mx-auto -mt-8">
+          <div className="px-4 md:px-8 max-w-[2000px] mx-auto">
             <CreateProject />
 
           </div>
