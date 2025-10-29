@@ -35,49 +35,9 @@ const pdfStyles = StyleSheet.create({
     lineHeight: 1.6, // Tăng line height cho dễ đọc
     fontFamily: "Roboto",
   },
-  // header: {
-  //   fontSize: 28, // Tăng size cho header chính
-  //   marginBottom: 30,
-  //   textAlign: "center",
-  //   fontWeight: "bold",
-  //   fontFamily: "Roboto",
-  //   color: "#1E40AF", // Màu xanh đậm chuyên nghiệp
-  //   letterSpacing: 0.5,
-  // },
-  // subheader: {
-  //   fontSize: 16, // Giảm size subheader
-  //   marginTop: 25,
-  //   marginBottom: 15,
-  //   fontWeight: "bold",
-  //   fontFamily: "Roboto",
-  //   color: "#374151", // Màu xám đậm
-  //   borderBottom: "2pt solid #E5E7EB", // Thêm đường viền dưới cho subheader
-  //   paddingBottom: 5,
-  // },
-
-  // header: {
-  //   fontSize: 28, // Tăng size cho header chính
-  //   marginBottom: 30,
-  //   textAlign: "center",
-  //   fontWeight: "bold",
-  //   fontFamily: "Roboto",
-  //   color: "#1E40AF", // Màu xanh đậm chuyên nghiệp
-  //   letterSpacing: 0.5,
-  // },
-  // subheader: {
-  //   fontSize: 14, // Giảm size subheader để thu bé hơn
-  //   marginTop: 20, // Giảm margin top
-  //   marginBottom: 10, // Giảm margin bottom
-  //   fontWeight: "bold",
-  //   fontFamily: "Roboto",
-  //   color: "#374151", // Màu xám đậm
-  //   borderBottom: "2pt solid #E5E7EB", // Thêm đường viền dưới cho subheader
-  //   paddingBottom: 3, // Giảm padding bottom
-  // },
-
   header: {
-    fontSize: 22, // Thu nhỏ size cho header chính
-    marginBottom: 20,
+    fontSize: 28, // Tăng size cho header chính
+    marginBottom: 30,
     textAlign: "center",
     fontWeight: "bold",
     fontFamily: "Roboto",
@@ -85,14 +45,14 @@ const pdfStyles = StyleSheet.create({
     letterSpacing: 0.5,
   },
   subheader: {
-    fontSize: 13, // Thu nhỏ size subheader
-    marginTop: 20,
-    marginBottom: 12,
+    fontSize: 16, // Giảm size subheader
+    marginTop: 25,
+    marginBottom: 15,
     fontWeight: "bold",
     fontFamily: "Roboto",
     color: "#374151", // Màu xám đậm
     borderBottom: "2pt solid #E5E7EB", // Thêm đường viền dưới cho subheader
-    paddingBottom: 4,
+    paddingBottom: 5,
   },
 
   section: {
