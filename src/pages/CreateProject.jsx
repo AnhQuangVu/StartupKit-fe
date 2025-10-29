@@ -3,7 +3,6 @@ import { useNavigate, useLocation } from "react-router-dom";
 import ProjectProfileFullForm, { FORM_SECTIONS } from "../components/project/ProjectProfileFullForm";
 import { useAuth } from "../context/AuthContext";
 import ProjectProfileChatbot from "../components/project/ProjectProfileChatbot";
-
 // Sidebar các bước tạo hồ sơ
 function ProjectSteps({ currentStep, onStepClick }) {
   const steps = [
@@ -34,7 +33,6 @@ function ProjectSteps({ currentStep, onStepClick }) {
     </div>
   );
 }
-
 // Component: Chọn mẫu hồ sơ
 function ProjectTemplateSelector({ onSelect }) {
   const [showModal, setShowModal] = useState(false);
@@ -47,9 +45,11 @@ function ProjectTemplateSelector({ onSelect }) {
     { type: "Tải hồ sơ", items: ["Tải hồ sơ đã có "] },
   ];
   return (
-    <div className="bg-white rounded-lg border border-gray-200 shadow-sm p-8 w-full">
+    // mt-24: điện thoại
+    // -mt-24: máy tính
+    <div className="bg-white rounded-lg border border-gray-200 shadow-sm p-8 w-full mt-24 lg:-mt-24">
       <h3 className="text-lg font-semibold mb-6">Chọn mẫu hồ sơ khởi nghiệp</h3>
-      <div className="flex gap-6 mb-6 flex-wrap">
+      <div className="flex flex-col lg:flex-row gap-6 mb-6">
         {templates.map((group, idx) => (
           <div
             key={group.type + "-" + idx}
@@ -112,7 +112,6 @@ function ProjectTemplateSelector({ onSelect }) {
           </div>
         ))}
       </div>
-
       {/* Inline upload section (acts like UploadProfile section but embedded) */}
       {showUploadSection && (
         <div className="bg-white rounded-lg border border-gray-200 p-6 mt-4">
@@ -164,7 +163,6 @@ function ProjectTemplateSelector({ onSelect }) {
     </div>
   );
 }
-
 // Main page component
 function CreateProject() {
   const { user } = useAuth();
@@ -173,18 +171,14 @@ function CreateProject() {
   const [selectedTemplate, setSelectedTemplate] = useState(null);
   // Dữ liệu dùng cho ProjectProfileFullForm (new unified form)
   const [form, setForm] = useState({});
-
   const location = useLocation();
-
   // If navigated here with a file from UploadProfile, pick it up and set form
   useEffect(() => {
     const state = location.state || {};
-    
     // Xử lý step từ location.state (từ ProfileManagement)
     if (state.step !== undefined) {
       setCurrentStep(state.step);
     }
-    
     // Xử lý project data từ location.state
     if (state.project) {
       // Map dữ liệu từ API sang format của ProjectProfileFullForm
@@ -227,14 +221,12 @@ function CreateProject() {
         mediaMeasure: state.project.media_measure || "",
         logo: state.project.logo_url || "",
       };
-      
       setForm((prev) => ({
         ...prev,
         ...mappedData,
       }));
       setCurrentStep(state.step || 1);
     }
-    
     if (state.file) {
       setForm((prev) => ({ ...prev, profileFile: state.file }));
       if (state.extractedText) {
@@ -252,9 +244,6 @@ function CreateProject() {
       }
     }
   }, [location.state]);
-
-  // Gỡ bỏ logic preview/old form (step 2, 3) và API create cũ để chỉ còn lại mẫu + new unified form
-
   if (role !== "founder") {
     return (
       <div className="max-w-xl mx-auto mt-10 p-6 bg-white rounded shadow text-center">
@@ -267,9 +256,6 @@ function CreateProject() {
       </div>
     );
   }
-
-  // AI luôn hiện: không dùng toggle, panel sẽ luôn hiển thị bên phải
-
   return (
     <div className="min-h-screen bg-gray-50 flex flex-col px-6 py-6">
       <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 items-start">
@@ -283,30 +269,27 @@ function CreateProject() {
           </div>
         )}
         {/* Nội dung chính */}
-  <div className={`${currentStep === 0 ? "lg:col-span-9" : "lg:col-span-12"} flex items-start justify-center`}>
+        <div className={`${currentStep === 0 ? "lg:col-span-9" : "lg:col-span-12"} flex items-start justify-center`}>
           <div className="w-full min-h-[500px] max-w-[1800px] mx-auto">
             {currentStep === 0 && (
               <div style={{ marginTop: "-97px" }}>
                 <ProjectTemplateSelector
                   onSelect={(val) => {
-                    // If user uploaded a file, val will be {type: 'uploaded', file}
                     if (val && val.type === "uploaded" && val.file) {
-                      // Save file into form state for future upload when creating project
                       setForm((prev) => ({ ...prev, profileFile: val.file }));
                       setSelectedTemplate("Uploaded CV");
                       setCurrentStep(1);
                       return;
                     }
-                    // Otherwise proceed to template selection (default behavior)
                     setCurrentStep(1);
                   }}
                 />
               </div>
             )}
-
             {currentStep === 1 && (
               <div className="w-full" style={{ marginTop: 0 }}>
-                <div className="mb-3">
+                <div className="flex items-center justify-between mb-3">
+                  <div />
                   <button
                     type="button"
                     onClick={() => setCurrentStep(0)}
@@ -381,13 +364,10 @@ function CreateProject() {
                 </div>
               </div>
             )}
-            
           </div>
         </div>
       </div>
-      
     </div>
   );
 }
-
 export default CreateProject;
