@@ -31,10 +31,7 @@ const DashboardHeader = ({ userType = "founder", isLoggedIn = false }) => {
   const isWorkspaceTab = location.pathname === "/dashboard";
 
   return (
-    <div
-      className="flex flex-col md:flex-row justify-between items-center mb-8 px-8 gap-4"
-      style={{ transform: "translateX(20px)" }}
-    >
+    <div className="flex flex-col md:flex-row justify-between items-center mb-8 px-8 gap-4">
       {/* Box chào mừng */}
       <div className="border border-yellow-400 bg-gradient-to-r from-yellow-50 via-white to-yellow-50 rounded-lg px-5 py-3 shadow-sm">
         <span className="block text-base font-bold text-gray-900 mb-1">
