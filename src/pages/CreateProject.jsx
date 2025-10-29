@@ -16,7 +16,6 @@ import ProjectProfilePreview from "../components/project/ProjectProfilePreview";
 import ProjectProfileChatbot from "../components/project/ProjectProfileChatbot";
 import { normalizeProjectPayload } from "../utils/normalizeProjectPayload";
 import { API_BASE } from "../config/api";
-
 // Sidebar các bước tạo hồ sơ
 function ProjectSteps({ currentStep, onStepClick }) {
   const steps = [
@@ -47,7 +46,6 @@ function ProjectSteps({ currentStep, onStepClick }) {
     </div>
   );
 }
-
 // Component: Chọn mẫu hồ sơ
 function ProjectTemplateSelector({ onSelect }) {
   const [showModal, setShowModal] = useState(false);
@@ -60,9 +58,11 @@ function ProjectTemplateSelector({ onSelect }) {
     { type: "Tải hồ sơ", items: ["Tải hồ sơ đã có "] },
   ];
   return (
-    <div className="bg-white rounded-lg border border-gray-200 shadow-sm p-8 w-full">
+    // mt-24: điện thoại
+    // -mt-24: máy tính
+    <div className="bg-white rounded-lg border border-gray-200 shadow-sm p-8 w-full mt-24 lg:-mt-24">
       <h3 className="text-lg font-semibold mb-6">Chọn mẫu hồ sơ khởi nghiệp</h3>
-      <div className="flex gap-6 mb-6 flex-wrap">
+      <div className="flex flex-col lg:flex-row gap-6 mb-6">
         {templates.map((group, idx) => (
           <div
             key={group.type + "-" + idx}
@@ -125,7 +125,6 @@ function ProjectTemplateSelector({ onSelect }) {
           </div>
         ))}
       </div>
-
       {/* Inline upload section (acts like UploadProfile section but embedded) */}
       {showUploadSection && (
         <div className="bg-white rounded-lg border border-gray-200 p-6 mt-4">
@@ -177,7 +176,6 @@ function ProjectTemplateSelector({ onSelect }) {
     </div>
   );
 }
-
 // Main page component
 function CreateProject() {
   const { user } = useAuth();
@@ -223,7 +221,6 @@ function CreateProject() {
       : [],
     website: "",
   });
-
   const [projectData, setProjectData] = useState({
     name: "",
     banner: null,
@@ -233,32 +230,26 @@ function CreateProject() {
     website: "",
     contact: "",
   });
-
   const [members, setMembers] = useState([]);
   const [newMember, setNewMember] = useState({
     name: "",
     position: "",
     avatar: null,
   });
-
   const [posts, setPosts] = useState([]);
   const [newPost, setNewPost] = useState("");
   const [file, setFile] = useState(null);
   const [processing, setProcessing] = useState(false);
   const [error, setError] = useState(null);
   const [extractedText, setExtractedText] = useState("");
-
   const location = useLocation();
-
   // If navigated here with a file from UploadProfile, pick it up and set form
   useEffect(() => {
     const state = location.state || {};
-    
     // Xử lý step từ location.state (từ ProfileManagement)
     if (state.step !== undefined) {
       setCurrentStep(state.step);
     }
-    
     // Xử lý project data từ location.state
     if (state.project) {
       // Map dữ liệu từ API sang format của ProjectProfileFullForm
@@ -301,14 +292,12 @@ function CreateProject() {
         mediaMeasure: state.project.media_measure || "",
         logo: state.project.logo_url || "",
       };
-      
       setForm((prev) => ({
         ...prev,
-        ...mappedData
+        ...mappedData,
       }));
       setCurrentStep(state.step || 1);
     }
-    
     if (state.file) {
       setForm((prev) => ({ ...prev, profileFile: state.file }));
       if (state.extractedText) {
@@ -326,7 +315,6 @@ function CreateProject() {
       }
     }
   }, [location.state]);
-
   // Nếu vào từ tab quản lý dự án (step=2), lấy dữ liệu từ localStorage
   useEffect(() => {
     const params = new URLSearchParams(window.location.search);
@@ -339,14 +327,12 @@ function CreateProject() {
       }
     }
   }, []);
-
   // Lắng nghe sự kiện chuyển tab xuất hồ sơ
   React.useEffect(() => {
     const handler = () => setCurrentStep(3);
     window.addEventListener("goToExportTab", handler);
     return () => window.removeEventListener("goToExportTab", handler);
   }, []);
-
   // Hàm gọi API tạo dự án
   async function createProjectAPI(form) {
     const payload = normalizeProjectPayload(form); // Sửa lỗi normalizePayload thành normalizeProjectPayload
@@ -360,7 +346,6 @@ function CreateProject() {
       }
       // Log the payload to make sure location is included
       console.log("Sending payload to API:", payload);
-
       const res = await fetch(`${API_BASE}/projects/`, {
         method: "POST",
         headers,
@@ -441,7 +426,6 @@ function CreateProject() {
       return null;
     }
   }
-
   if (role !== "founder") {
     return (
       <div className="max-w-xl mx-auto mt-10 p-6 bg-white rounded shadow text-center">
@@ -454,7 +438,6 @@ function CreateProject() {
       </div>
     );
   }
-
   // Handlers
   const handleProjectChange = (field, value) => {
     setProjectData((prev) => ({
@@ -462,7 +445,6 @@ function CreateProject() {
       [field]: value,
     }));
   };
-
   const handleImageUpload = (event, type) => {
     const file = event.target.files[0];
     if (file) {
@@ -473,14 +455,12 @@ function CreateProject() {
       reader.readAsDataURL(file);
     }
   };
-
   const handleAddMember = () => {
     if (newMember.name && newMember.position) {
       setMembers((prev) => [...prev, { ...newMember, id: Date.now() }]);
       setNewMember({ name: "", position: "", avatar: null });
     }
   };
-
   const handleMemberAvatarUpload = (event) => {
     const file = event.target.files[0];
     if (file) {
@@ -491,10 +471,8 @@ function CreateProject() {
       reader.readAsDataURL(file);
     }
   };
-
   const handlePost = () => {
     if (!newPost.trim()) return;
-
     setPosts((prev) => [
       {
         id: Date.now(),
@@ -505,10 +483,8 @@ function CreateProject() {
       },
       ...prev,
     ]);
-
     setNewPost("");
   };
-
   const onFileChange = (e) => {
     const f = e.target.files && e.target.files[0];
     if (f) {
@@ -516,18 +492,15 @@ function CreateProject() {
       // Thêm logic xử lý file PDF nếu cần
     }
   };
-
   // Toggle dialog chatbot
   const toggleChat = () => {
     setIsChatOpen(!isChatOpen);
   };
-
   // Handler cho Đăng đa nền tảng từ form
   const handlePublish = () => {
     console.log("Chuyển sang step 2"); // Debug log
     setCurrentStep(2); // Chuyển sang giao diện Đăng hồ sơ (step 2)
   };
-
   return (
     <div className="min-h-screen bg-gray-50 flex flex-col px-6 py-6">
       <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 items-start">
@@ -559,7 +532,6 @@ function CreateProject() {
                 />
               </div>
             )}
-
             {currentStep === 1 && (
               <div style={{ marginTop: 0 }}>
                 {" "}
@@ -571,7 +543,6 @@ function CreateProject() {
                 />
               </div>
             )}
-
             {currentStep === 2 && (
               <div className="w-full -mt-24">
                 <div className="bg-white rounded-lg shadow">
@@ -596,7 +567,6 @@ function CreateProject() {
                         </label>
                       </div>
                     )}
-
                     {/* Logo overlay */}
                     <div className="absolute bottom-4 left-4 bg-white p-2 rounded-lg shadow">
                       {projectData.logo ? (
@@ -619,7 +589,6 @@ function CreateProject() {
                         </label>
                       )}
                     </div>
-
                     {/* Nút thay đổi ảnh */}
                     {projectData.banner && (
                       <div className="absolute top-4 right-4 space-x-2">
@@ -635,7 +604,6 @@ function CreateProject() {
                       </div>
                     )}
                   </div>
-
                   <div className="p-8">
                     {/* Bio và Thông tin cơ bản */}
                     <div className="grid grid-cols-1 lg:grid-cols-3 gap-8 mb-8">
@@ -649,7 +617,6 @@ function CreateProject() {
                           placeholder="Tên dự án"
                           className="text-3xl font-bold mb-4 w-full border-b border-transparent hover:border-gray-300 focus:border-gray-500 focus:outline-none"
                         />
-
                         <div className="prose max-w-none mb-6">
                           <h2 className="text-xl font-semibold mb-2">
                             Giới thiệu dự án
@@ -664,7 +631,6 @@ function CreateProject() {
                             rows="4"
                           />
                         </div>
-
                         <div className="prose max-w-none mb-6">
                           <h2 className="text-xl font-semibold mb-2">
                             Tóm tắt dự án
@@ -680,7 +646,6 @@ function CreateProject() {
                           />
                         </div>
                       </div>
-
                       <div className="lg:col-span-1">
                         <div className="bg-gray-50 p-6 rounded-lg">
                           <h2 className="text-xl font-semibold mb-4">
@@ -712,7 +677,6 @@ function CreateProject() {
                         </div>
                       </div>
                     </div>
-
                     {/* Hồ sơ dự án */}
                     <div className="border-t pt-8">
                       <h2 className="text-2xl font-bold mb-6">Hồ sơ dự án</h2>
@@ -728,13 +692,11 @@ function CreateProject() {
                         />
                       </div>
                     </div>
-
                     {/* Thành viên dự án */}
                     <div className="border-t pt-8 mt-8">
                       <h2 className="text-2xl font-bold mb-6">
                         Thành viên dự án
                       </h2>
-
                       {/* Form thêm thành viên */}
                       <div className="mb-8 p-4 border rounded-lg">
                         <h3 className="font-semibold mb-4">
@@ -790,7 +752,6 @@ function CreateProject() {
                           </button>
                         </div>
                       </div>
-
                       {/* Danh sách thành viên */}
                       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
                         {members.map((member) => (
@@ -823,7 +784,6 @@ function CreateProject() {
                         ))}
                       </div>
                     </div>
-
                     {/* Bài đăng và hoạt động */}
                     <div className="border-t pt-8 mt-8">
                       <h2 className="text-2xl font-bold mb-6">
@@ -847,7 +807,6 @@ function CreateProject() {
                           </button>
                         </div>
                       </div>
-
                       {/* Danh sách bài đăng */}
                       <div className="space-y-6">
                         {posts.map((post) => (
@@ -876,18 +835,16 @@ function CreateProject() {
                 </div>
               </div>
             )}
-
             {currentStep === 3 && <div className="w-full"></div>}
           </div>
         </div>
       </div>
-
       {currentStep === 1 && (
         <>
           {/* Icon chatbot hình tròn ở góc phải trên (thấp hơn) */}
           <button
             onClick={toggleChat}
-            className="fixed top-20 right-4 z-40 w-12 h-12 bg-[#FFCE23] rounded-full shadow-lg flex items-center justify-center hover:bg-yellow-500 transition-colors"
+            className="fixed bottom-4 right-4 lg:top-20 lg:bottom-auto z-40 w-12 h-12 bg-[#FFCE23] rounded-full shadow-lg flex items-center justify-center hover:bg-yellow-500 transition-colors"
             aria-label="Chatbot"
           >
             <svg
@@ -905,7 +862,6 @@ function CreateProject() {
               />
             </svg>
           </button>
-
           {/* Dialog chatbot */}
           {isChatOpen && (
             <div className="fixed inset-0 z-50 flex items-start justify-end p-4 pt-24">
@@ -955,5 +911,4 @@ function CreateProject() {
     </div>
   );
 }
-
 export default CreateProject;
