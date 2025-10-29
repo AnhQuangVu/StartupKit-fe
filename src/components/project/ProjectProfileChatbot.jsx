@@ -67,6 +67,8 @@ export default function ProjectProfileChatbot({ form, onFillField }) {
           message: userInput,
           project_id: form?.id || null,
           use_google: true,
+          max_length: 300,
+          concise: true,
           conversation_history: messages.map(msg => ({
             role: msg.sender === "user" ? "user" : "assistant",
             content: msg.text
@@ -130,53 +132,54 @@ export default function ProjectProfileChatbot({ form, onFillField }) {
   };
 
   return (
-    <div className="w-full flex flex-col h-full bg-gradient-to-b from-slate-50 to-slate-100">
-      {/* Header */}
-      <div className="bg-gradient-to-r from-blue-600 to-blue-700 text-white px-6 py-4 shadow-md">
-        <div className="flex items-center gap-2">
-          <div className="w-8 h-8 bg-white bg-opacity-30 rounded-full flex items-center justify-center text-lg">
-            🤖
+    <div className="w-full flex flex-col h-full bg-white">
+      {/* Header - Premium Design */}
+      <div className="relative bg-gradient-to-r from-indigo-600 via-purple-600 to-pink-600 text-white px-6 py-5 shadow-2xl overflow-hidden">
+        <div className="absolute top-0 right-0 w-40 h-40 bg-white opacity-5 rounded-full -mr-20 -mt-20"></div>
+        <div className="relative z-10 flex items-center gap-3">
+          <div className="w-12 h-12 bg-white bg-opacity-20 rounded-xl flex items-center justify-center text-2xl backdrop-blur-sm border border-white border-opacity-30">
+            ✨
           </div>
           <div>
-            <h3 className="font-bold text-lg">AI Assistant</h3>
-            <p className="text-xs text-blue-100">Trợ lý thông minh cho dự án của bạn</p>
+            <h3 className="font-bold text-lg tracking-wide">Trợ Lý AI</h3>
+            <p className="text-xs text-purple-100 font-light">Gợi ý thông minh cho dự án</p>
           </div>
         </div>
       </div>
 
-      {/* Messages Area */}
-      <div className="flex-1 overflow-y-auto p-5 space-y-4">
+      {/* Messages Area - Enhanced */}
+      <div className="flex-1 overflow-y-auto p-6 space-y-5 bg-gradient-to-b from-slate-50 to-white">
         {messages.map((msg, idx) => (
           <div
             key={idx}
-            className={`flex gap-3 animate-fadeIn ${msg.sender === "user" ? "justify-end" : "justify-start"}`}
+            className={`flex gap-4 animate-fadeIn ${msg.sender === "user" ? "justify-end" : "justify-start"}`}
           >
             {/* Bot Avatar */}
             {msg.sender === "bot" && (
-              <div className="w-8 h-8 rounded-full bg-gradient-to-br from-blue-400 to-blue-600 flex items-center justify-center text-white flex-shrink-0 shadow-sm">
-                🤖
+              <div className="w-9 h-9 rounded-xl bg-gradient-to-br from-indigo-500 via-purple-500 to-pink-500 flex items-center justify-center text-lg flex-shrink-0 shadow-lg">
+                ✨
               </div>
             )}
 
             {/* Message Bubble */}
             <div
-              className={`max-w-xs px-4 py-3 rounded-2xl text-sm leading-relaxed shadow-sm transition-all duration-200 ${
+              className={`max-w-sm px-5 py-3 rounded-2xl text-sm leading-relaxed transition-all duration-200 ${
                 msg.sender === "user"
-                  ? "bg-gradient-to-r from-yellow-400 to-yellow-500 text-gray-900 font-medium rounded-br-none"
-                  : "bg-white text-gray-800 rounded-bl-none border border-gray-200"
+                  ? "bg-gradient-to-r from-indigo-600 to-purple-600 text-white rounded-tr-none shadow-lg"
+                  : "bg-white text-gray-800 rounded-tl-none shadow-md border border-gray-100"
               }`}
             >
-              {msg.text}
+              <p className="text-base">{msg.text}</p>
               {msg.sources && (
-                <div className="text-xs mt-2 opacity-70 italic text-gray-600 pt-2 border-t border-gray-200 border-opacity-50">
-                  📚 Từ {msg.sources.documents?.length || 0} tài liệu
+                <div className="text-xs mt-3 opacity-70 italic text-gray-500 pt-2 border-t border-gray-200 border-opacity-30">
+                  📚 {msg.sources.documents?.length || 0} tài liệu tham khảo
                 </div>
               )}
             </div>
 
             {/* User Avatar */}
             {msg.sender === "user" && (
-              <div className="w-8 h-8 rounded-full bg-gradient-to-br from-yellow-400 to-yellow-600 flex items-center justify-center text-white flex-shrink-0 shadow-sm font-bold">
+              <div className="w-9 h-9 rounded-xl bg-gradient-to-br from-indigo-600 to-purple-600 flex items-center justify-center text-lg flex-shrink-0 shadow-lg font-bold text-white">
                 👤
               </div>
             )}
@@ -184,15 +187,15 @@ export default function ProjectProfileChatbot({ form, onFillField }) {
         ))}
 
         {loading && (
-          <div className="flex gap-3 animate-fadeIn">
-            <div className="w-8 h-8 rounded-full bg-gradient-to-br from-blue-400 to-blue-600 flex items-center justify-center text-white flex-shrink-0 shadow-sm">
-              🤖
+          <div className="flex gap-4 animate-fadeIn">
+            <div className="w-9 h-9 rounded-xl bg-gradient-to-br from-indigo-500 via-purple-500 to-pink-500 flex items-center justify-center text-lg flex-shrink-0 shadow-lg">
+              ✨
             </div>
-            <div className="bg-white border border-gray-200 text-gray-800 px-4 py-3 rounded-2xl rounded-bl-none text-sm shadow-sm">
-              <div className="flex gap-1 items-center">
-                <span className="inline-block w-2 h-2 rounded-full bg-blue-500 animate-bounce"></span>
-                <span className="inline-block w-2 h-2 rounded-full bg-blue-500 animate-bounce" style={{ animationDelay: "0.1s" }}></span>
-                <span className="inline-block w-2 h-2 rounded-full bg-blue-500 animate-bounce" style={{ animationDelay: "0.2s" }}></span>
+            <div className="bg-white border border-gray-100 text-gray-800 px-5 py-3 rounded-2xl rounded-tl-none text-sm shadow-md">
+              <div className="flex gap-2 items-center">
+                <span className="inline-block w-2.5 h-2.5 rounded-full bg-indigo-500 animate-bounce"></span>
+                <span className="inline-block w-2.5 h-2.5 rounded-full bg-purple-500 animate-bounce" style={{ animationDelay: "0.15s" }}></span>
+                <span className="inline-block w-2.5 h-2.5 rounded-full bg-pink-500 animate-bounce" style={{ animationDelay: "0.3s" }}></span>
               </div>
             </div>
           </div>
@@ -200,63 +203,63 @@ export default function ProjectProfileChatbot({ form, onFillField }) {
         <div ref={messagesEndRef} />
       </div>
 
-      {/* Suggestion Box */}
+      {/* Suggestion Box - Premium */}
       {suggestion && (
-        <div className="mx-4 mb-4 bg-gradient-to-r from-emerald-50 to-teal-50 border-2 border-emerald-200 rounded-xl p-4 shadow-md animate-slideUp">
-          <div className="flex gap-2 items-start mb-3">
-            <span className="text-xl">💡</span>
+        <div className="mx-5 mb-5 bg-gradient-to-br from-indigo-50 via-purple-50 to-pink-50 border-2 border-indigo-200 rounded-2xl p-5 shadow-xl animate-slideUp">
+          <div className="flex gap-3 items-start mb-4">
+            <span className="text-2xl mt-0.5">💡</span>
             <div className="flex-1">
-              <p className="font-semibold text-emerald-900 text-sm">Gợi ý cho bạn</p>
-              <p className="text-xs text-emerald-700 mt-1">
-                Điền vào field: <span className="font-bold bg-white px-2 py-1 rounded text-emerald-800">{suggestion.field}</span>
+              <p className="font-bold text-indigo-900 text-base">Gợi ý thông minh</p>
+              <p className="text-xs text-indigo-600 mt-1 font-medium">
+                Trường: <span className="inline-block bg-white px-3 py-1 rounded-lg text-indigo-700 font-bold mt-1">{suggestion.field}</span>
               </p>
             </div>
           </div>
 
-          <div className="bg-white border border-emerald-200 rounded-lg p-3 mb-3 max-h-24 overflow-y-auto">
-            <p className="text-sm text-gray-700 italic text-justify">{suggestion.value}</p>
+          <div className="bg-white border border-indigo-100 rounded-xl p-4 mb-4 max-h-28 overflow-y-auto">
+            <p className="text-sm text-gray-700 leading-relaxed">{suggestion.value}</p>
           </div>
 
-          <div className="flex gap-2">
+          <div className="flex gap-3">
             <button
               onClick={handleAcceptSuggestion}
-              className="flex-1 bg-gradient-to-r from-emerald-500 to-teal-600 hover:from-emerald-600 hover:to-teal-700 text-white text-sm font-bold py-2 px-3 rounded-lg transition-all duration-200 shadow-md hover:shadow-lg transform hover:scale-105"
+              className="flex-1 bg-gradient-to-r from-indigo-600 to-purple-600 hover:from-indigo-700 hover:to-purple-700 text-white text-sm font-bold py-3 px-4 rounded-xl transition-all duration-200 shadow-lg hover:shadow-xl transform hover:scale-105 active:scale-95"
             >
-              ✅ Đồng ý
+              ✅ Chấp nhận
             </button>
             <button
               onClick={handleRejectSuggestion}
-              className="flex-1 bg-gray-200 hover:bg-gray-300 text-gray-800 text-sm font-bold py-2 px-3 rounded-lg transition-all duration-200 shadow-sm hover:shadow-md"
+              className="flex-1 bg-gray-100 hover:bg-gray-200 text-gray-700 text-sm font-bold py-3 px-4 rounded-xl transition-all duration-200 shadow-sm hover:shadow-md"
             >
-              ❌ Bỏ qua
+              ✕ Bỏ qua
             </button>
           </div>
         </div>
       )}
 
-      {/* Input Area */}
-      <div className="p-4 border-t border-gray-200 bg-white shadow-lg">
-        <div className="flex gap-2 items-center">
+      {/* Input Area - Premium */}
+      <div className="p-6 border-t border-gray-100 bg-white shadow-2xl">
+        <div className="flex gap-3 items-center">
           <div className="flex-1 relative">
             <input
               type="text"
               value={input}
               onChange={(e) => setInput(e.target.value)}
-              className="w-full border-2 border-gray-300 rounded-full px-5 py-3 text-sm focus:outline-none focus:border-blue-500 focus:ring-2 focus:ring-blue-200 transition-all duration-200 placeholder-gray-400"
-              placeholder="Hỏi AI gợi ý... (vd: gợi ý vấn đề khách hàng)"
+              className="w-full border-2 border-gray-200 rounded-full px-6 py-4 text-sm focus:outline-none focus:border-indigo-500 focus:ring-4 focus:ring-indigo-100 transition-all duration-300 placeholder-gray-400 bg-gray-50 focus:bg-white"
+              placeholder="Hỏi AI... (vd: gợi ý vấn đề, thị trường, đội ngũ)"
               onKeyDown={(e) => e.key === "Enter" && handleSend()}
               disabled={loading}
             />
           </div>
           <button
-            className="bg-gradient-to-r from-yellow-400 to-yellow-500 hover:from-yellow-500 hover:to-yellow-600 disabled:from-gray-300 disabled:to-gray-400 text-gray-900 disabled:text-gray-600 font-bold px-6 py-3 rounded-full transition-all duration-200 shadow-md hover:shadow-lg transform hover:scale-105 disabled:scale-100 flex-shrink-0"
+            className="bg-gradient-to-r from-indigo-600 to-purple-600 hover:from-indigo-700 hover:to-purple-700 disabled:from-gray-300 disabled:to-gray-400 text-white disabled:text-gray-600 font-bold px-7 py-4 rounded-full transition-all duration-200 shadow-lg hover:shadow-xl transform hover:scale-105 disabled:scale-100 active:scale-95 flex-shrink-0"
             onClick={handleSend}
             disabled={loading || !input.trim()}
           >
             {loading ? (
               <span className="flex gap-1 items-center">⏳</span>
             ) : (
-              <span className="flex gap-1 items-center">Gửi →</span>
+              <span className="flex gap-1 items-center">↑</span>
             )}
           </button>
         </div>
@@ -266,7 +269,7 @@ export default function ProjectProfileChatbot({ form, onFillField }) {
         @keyframes fadeIn {
           from {
             opacity: 0;
-            transform: translateY(10px);
+            transform: translateY(12px);
           }
           to {
             opacity: 1;
@@ -278,19 +281,21 @@ export default function ProjectProfileChatbot({ form, onFillField }) {
           from {
             opacity: 0;
             transform: translateY(20px);
+            scale: 0.95;
           }
           to {
             opacity: 1;
             transform: translateY(0);
+            scale: 1;
           }
         }
 
         .animate-fadeIn {
-          animation: fadeIn 0.3s ease-in-out;
+          animation: fadeIn 0.4s cubic-bezier(0.34, 1.56, 0.64, 1);
         }
 
         .animate-slideUp {
-          animation: slideUp 0.3s ease-out;
+          animation: slideUp 0.4s cubic-bezier(0.34, 1.56, 0.64, 1);
         }
       `}</style>
     </div>

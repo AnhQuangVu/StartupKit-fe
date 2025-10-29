@@ -6,7 +6,7 @@ import { useAuth } from "../context/AuthContext";
 import { useNavigate } from "react-router-dom";
 import Navbar from "../components/layout/Navbar";
 import Footer from "../components/layout/Footer";
-import { API_BASE, authHeaders } from '../config/api';
+import { API_BASE, authHeaders, fetchWithTimeout } from '../config/api';
 
 export default function Profile() {
   const { user: authUser, isLoggedIn, logout, updateUser } = useAuth();
@@ -102,13 +102,15 @@ export default function Profile() {
 
       // Gọi API cập nhật hồ sơ
       const token = localStorage.getItem('token');
-      const response = await fetch(`${API_BASE}/users/me`, {
+      const t0 = performance.now();
+      const response = await fetchWithTimeout(`${API_BASE}/users/me`, {
         method: 'PATCH',
         headers: {
           ...authHeaders(token),
           'Content-Type': 'application/json'
         },
-        body: JSON.stringify(payload)
+        body: JSON.stringify(payload),
+        timeout: 12000
       });
       
       const responseData = await response.json();
@@ -117,18 +119,24 @@ export default function Profile() {
       if (!response.ok) {
         throw new Error(responseData.detail || 'Không thể cập nhật hồ sơ');
       }
+      const t1 = performance.now();
+      const ms = Math.round(t1 - t0);
+      if (ms > 2000) {
+        showToast('Máy chủ xử lý cập nhật chậm (' + ms + 'ms)', 'success');
+      }
       
       // Cập nhật thông tin user trong context
       if (updateUser) {
         // Sau khi cập nhật, gọi lại API lấy user mới nhất
         try {
           const token = localStorage.getItem("token");
-          const userRes = await fetch(`${API_BASE}/users/me`, {
+          const userRes = await fetchWithTimeout(`${API_BASE}/users/me`, {
             method: "GET",
             headers: {
               ...authHeaders(token),
               "Content-Type": "application/json"
-            }
+            },
+            timeout: 8000
           });
           const userData = await userRes.json();
           updateUser(userData);
@@ -165,10 +173,10 @@ export default function Profile() {
       console.error('Lỗi khi cập nhật hồ sơ:', error);
       setUpdateMessage({
         type: 'error',
-        text: error.message || 'Có lỗi xảy ra khi cập nhật hồ sơ.'
+        text: (error?.name === 'AbortError') ? 'Máy chủ phản hồi quá lâu (timeout). Vui lòng thử lại.' : (error.message || 'Có lỗi xảy ra khi cập nhật hồ sơ.')
       });
       
-      showToast('Có lỗi xảy ra: ' + error.message, 'error');
+      showToast((error?.name === 'AbortError') ? 'Máy chủ phản hồi quá lâu (timeout). Vui lòng thử lại.' : ('Có lỗi xảy ra: ' + error.message), 'error');
     } finally {
       setIsSubmitting(false);
     }

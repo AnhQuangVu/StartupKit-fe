@@ -5,7 +5,7 @@ import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faGoogle, faLinkedin } from "@fortawesome/free-brands-svg-icons";
 import { Link, useNavigate } from "react-router-dom";
 import logo from "../../assets/images/logo.png";
-import { API_BASE } from '../../config/api';
+import { API_BASE, fetchWithTimeout } from '../../config/api';
 import { useAuth } from "../../context/AuthContext";
 
 export default function LoginForm() {
@@ -15,11 +15,13 @@ export default function LoginForm() {
   const [errorPassword, setErrorPassword] = useState("");
   const [formError, setFormError] = useState("");
   const [successMsg, setSuccessMsg] = useState("");
+  const [loading, setLoading] = useState(false);
   const { login } = useAuth();
   const navigate = useNavigate();
 
   const handleSubmit = async (e) => {
     e.preventDefault();
+    if (loading) return; // Prevent double-submit
     let valid = true;
 
     // Email validation
@@ -55,31 +57,43 @@ export default function LoginForm() {
 
     setFormError("");
     try {
-      console.log("Login payload:", { username: email, password });
-  const response = await fetch(`${API_BASE}/auth/token`, {
+      setLoading(true);
+      const t0 = performance.now();
+      const tokenRes = await fetchWithTimeout(`${API_BASE}/auth/token`, {
         method: "POST",
-        headers: { 
-          "Content-Type": "application/x-www-form-urlencoded"
+        headers: {
+          "Content-Type": "application/x-www-form-urlencoded",
+          "Cache-Control": "no-cache",
         },
-        body: new URLSearchParams({
-          username: email,
-          password: password
-        }),
+        body: new URLSearchParams({ username: email, password: password }),
+        timeout: 10000, // 10s timeout for slow servers
       });
-      const data = await response.json();
+      const t1 = performance.now();
+      const data = await tokenRes.json();
       console.log("Login response:", data); // DEBUG
 
-      if (response.ok && data.access_token) {
+      if (tokenRes.ok && data.access_token) {
         // Gọi API lấy thông tin user
-        const userRes = await fetch(`${API_BASE}/users/me`, {
+        const tUser0 = performance.now();
+        const userRes = await fetchWithTimeout(`${API_BASE}/users/me`, {
           headers: { Authorization: `Bearer ${data.access_token}` },
+          timeout: 8000,
         });
         const user = await userRes.json();
+        const tUser1 = performance.now();
         console.log("User info:", user); // DEBUG
 
         // Lưu vào context
         login(data.access_token, user);
         toast.success("Đăng nhập thành công! Chào mừng bạn.");
+        // Thông báo nếu server phản hồi chậm
+        const tokenMs = Math.round(t1 - t0);
+        const userMs = Math.round(tUser1 - tUser0);
+        const totalMs = Math.round(tUser1 - t0);
+        if (tokenMs > 2000 || userMs > 2000) {
+          console.warn(`Login slow: token ${tokenMs}ms, user ${userMs}ms, total ${totalMs}ms`);
+          toast.info("Máy chủ đang phản hồi chậm. Vui lòng kiên nhẫn hoặc thử lại sau.", { autoClose: 3000 });
+        }
         setTimeout(() => {
           navigate("/");
         }, 2000);
@@ -91,8 +105,21 @@ export default function LoginForm() {
         setFormError("");
       }
     } catch (error) {
-  toast.error("Có lỗi xảy ra. Vui lòng thử lại sau.");
-  setFormError("");
+      if (error?.message && (
+        error.message.includes('Failed to fetch') ||
+        error.message.includes('NetworkError') ||
+        error.message.includes('ERR_CONNECTION_REFUSED')
+      )) {
+        toast.error("Không thể kết nối đến máy chủ. Vui lòng kiểm tra API_BASE hoặc trạng thái máy chủ.");
+      } else if (error?.name === 'AbortError') {
+        toast.error("Máy chủ phản hồi quá lâu (timeout). Vui lòng thử lại sau.");
+      } else {
+        toast.error("Có lỗi xảy ra. Vui lòng thử lại sau.");
+      }
+      setFormError("");
+    }
+    finally {
+      setLoading(false);
     }
   };
 
@@ -162,9 +189,12 @@ export default function LoginForm() {
           {/* Login button */}
           <button
             type="submit"
-            className="w-full bg-gradient-to-r from-yellow-400 to-yellow-500 text-white font-bold py-2 rounded-lg shadow-md hover:from-yellow-500 hover:to-yellow-400 transition-all text-sm"
+            disabled={loading}
+            className={`w-full bg-gradient-to-r from-yellow-400 to-yellow-500 text-white font-bold py-2 rounded-lg shadow-md transition-all text-sm ${
+              loading ? 'opacity-70 cursor-not-allowed' : 'hover:from-yellow-500 hover:to-yellow-400'
+            }`}
           >
-            Đăng Nhập
+            {loading ? 'Đang đăng nhập…' : 'Đăng Nhập'}
           </button>
         </form>
 

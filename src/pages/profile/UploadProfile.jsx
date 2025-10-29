@@ -4,7 +4,7 @@ import Navbar from '../../components/layout/Navbar';
 import Footer from '../../components/layout/Footer';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faArrowLeft } from '@fortawesome/free-solid-svg-icons';
-import { API_BASE, authHeaders } from '../../config/api';
+import { API_BASE, authHeaders, fetchWithTimeout } from '../../config/api';
 import { uploadToCloudinary } from '../../utils/cloudinary';
 
 // Note: This component optionally uses `pdfjs-dist` to render a PDF preview and extract text.
@@ -88,14 +88,16 @@ export default function UploadProfile() {
     const token = getToken();
     if (!token) return;
     try {
-      const res = await fetch(`${API_BASE}/projects/${projectId}`, {
+      const t0 = performance.now();
+      const res = await fetchWithTimeout(`${API_BASE}/projects/${projectId}`, {
         headers: authHeaders(token)
-      });
+      , timeout: 10000 });
       if (!res.ok) {
         console.warn('Không load được project', await res.text());
         return;
       }
       const data = await res.json();
+      const t1 = performance.now();
       // Map các trường từ API response
       setProjectData(prev => ({
         ...prev,
@@ -127,10 +129,14 @@ export default function UploadProfile() {
       }));
 
       // Try to fetch members if backend exposes endpoint
-      const memRes = await fetch(`${API_BASE}/projects/${projectId}/members`, { headers: authHeaders(token) });
+      const memRes = await fetchWithTimeout(`${API_BASE}/projects/${projectId}/members`, { headers: authHeaders(token), timeout: 8000 });
       if (memRes.ok) {
         const mems = await memRes.json();
         setMembers(mems.map(m => ({ id: m.id, name: m.name || (m.user_id ? `User ${m.user_id}` : ''), position: m.role_in_project || '', avatar: m.avatar_url || '' })));
+      }
+      const ms = Math.round(t1 - t0);
+      if (ms > 2000) {
+        showToast('Máy chủ phản hồi chậm khi tải project (' + ms + 'ms)', 'warning', 2500);
       }
     } catch (err) {
       console.error('loadProject error', err);
@@ -141,16 +147,23 @@ export default function UploadProfile() {
     const token = getToken();
     if (!token) return;
     try {
-      const res = await fetch(`${API_BASE}/projects/${projectId}/posts?limit=50`, {
-        headers: authHeaders(token)
+      const t0 = performance.now();
+      const res = await fetchWithTimeout(`${API_BASE}/projects/${projectId}/posts?limit=50`, {
+        headers: authHeaders(token),
+        timeout: 8000
       });
       if (!res.ok) {
         console.warn('Không load được posts', await res.text());
         return;
       }
       const data = await res.json();
+      const t1 = performance.now();
       const mapped = data.map(p => ({ id: p.id, content: p.body || p.title || '', author: p.author_id ? `User ${p.author_id}` : 'Người dùng', timestamp: p.created_at || new Date().toISOString(), avatar: (projectData.logo_url) ? projectData.logo_url : '/default-avatar.png', media: p.media || [] }));
       setPosts(mapped);
+      const ms = Math.round(t1 - t0);
+      if (ms > 2000) {
+        showToast('Máy chủ phản hồi chậm khi tải bài viết (' + ms + 'ms)', 'warning', 2500);
+      }
     } catch (err) {
       console.error('loadPosts error', err);
     }
@@ -423,7 +436,8 @@ export default function UploadProfile() {
       // Log payload để debug
       console.log('Final payload:', JSON.stringify(payload, null, 2));
 
-      const res = await fetch(url, {
+      const t0 = performance.now();
+      const res = await fetchWithTimeout(url, {
         method,
         headers: {
           ...authHeaders(token),
@@ -432,7 +446,8 @@ export default function UploadProfile() {
           // Thêm header để backend biết request từ đâu
           'X-Request-Source': 'startup-kit-fe'
         },
-        body: JSON.stringify(payload)
+        body: JSON.stringify(payload),
+        timeout: 12000
       });
 
       if (!res.ok) {
@@ -473,7 +488,7 @@ export default function UploadProfile() {
         return;
       }
 
-      const data = await res.json();
+  const data = await res.json();
       console.log('✅ Response từ API:', data);
       const newProjectId = data.id || projectId;
 
@@ -510,6 +525,11 @@ export default function UploadProfile() {
       setProjectFiles({ bannerFile: null, logoFile: null });
 
       showToast('Lưu project thành công!', 'success');
+      const t1 = performance.now();
+      const ms = Math.round(t1 - t0);
+      if (ms > 2500) {
+        showToast('Máy chủ xử lý lưu chậm (' + ms + 'ms). Ảnh lớn có thể làm chậm.', 'warning', 3000);
+      }
 
       // Nếu tạo project mới, lưu projectId vào localStorage và URL
       if (!projectId && newProjectId) {
@@ -518,7 +538,8 @@ export default function UploadProfile() {
       }
     } catch (err) {
       console.error('saveProject error', err);
-      showToast('Lỗi khi lưu project: ' + err.message, 'error');
+      const msg = err?.name === 'AbortError' ? 'Máy chủ phản hồi quá lâu (timeout). Vui lòng thử lại.' : ('Lỗi khi lưu project: ' + err.message);
+      showToast(msg, 'error');
     }
     finally {
       setSaving(false);
@@ -537,9 +558,11 @@ export default function UploadProfile() {
 
     setSaving(true);
     try {
-      const res = await fetch(`${API_BASE}/projects/${projectId}/publish`, {
+      const t0 = performance.now();
+      const res = await fetchWithTimeout(`${API_BASE}/projects/${projectId}/publish`, {
         method: 'POST',
-        headers: authHeaders(token)
+        headers: authHeaders(token),
+        timeout: 10000
       });
 
       if (!res.ok) {
@@ -551,12 +574,17 @@ export default function UploadProfile() {
 
       const data = await res.json();
       showToast('Đăng tải project thành công!', 'success');
-      
+      const t1 = performance.now();
+      const ms = Math.round(t1 - t0);
+      if (ms > 2000) {
+        showToast('Máy chủ xử lý publish chậm (' + ms + 'ms)', 'warning', 2500);
+      }
       // Có thể redirect hoặc update UI tùy ý
       console.log('Published project:', data);
     } catch (err) {
       console.error('publishProject error', err);
-      showToast('Lỗi khi đăng tải project', 'error');
+      const msg = err?.name === 'AbortError' ? 'Máy chủ phản hồi quá lâu (timeout) khi publish.' : 'Lỗi khi đăng tải project';
+      showToast(msg, 'error');
     }
     finally {
       setSaving(false);
