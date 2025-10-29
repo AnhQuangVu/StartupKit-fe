@@ -6,7 +6,7 @@ import { faRocket, faDollarSign, faChalkboardTeacher } from "@fortawesome/free-s
 import { ToastContainer, toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 import logo from "../assets/images/logo.png";
-import { API_BASE } from '../config/api';
+import { API_BASE, fetchWithTimeout } from '../config/api';
 import { useAuth } from "../context/AuthContext";
 
 const Register = () => {
@@ -37,12 +37,18 @@ const Register = () => {
 
   const validate = () => {
     const newErrors = {};
-    if (!formData.userName.trim()) newErrors.userName = "Vui lòng nhập họ tên.";
-    if (!formData.email.trim()) newErrors.email = "Vui lòng nhập email.";
-    else if (!/\S+@\S+\.\S+/.test(formData.email)) newErrors.email = "Email không hợp lệ.";
-    if (!formData.password) newErrors.password = "Vui lòng nhập mật khẩu.";
-    else if (formData.password.length < 6) newErrors.password = "Mật khẩu phải ít nhất 6 ký tự.";
-    if (formData.password !== formData.confirmPassword) newErrors.confirmPassword = "Mật khẩu nhập lại không khớp.";
+    const nameTrim = formData.userName.trim();
+    const emailTrim = formData.email.trim();
+    const pwd = formData.password;
+    const pwd2 = formData.confirmPassword;
+    if (!nameTrim) newErrors.userName = "Vui lòng nhập họ tên.";
+    else if (nameTrim.length < 3) newErrors.userName = "Họ tên phải ít nhất 3 ký tự.";
+    if (!emailTrim) newErrors.email = "Vui lòng nhập email.";
+    else if (!/\S+@\S+\.\S+/.test(emailTrim)) newErrors.email = "Email không hợp lệ.";
+    if (!pwd) newErrors.password = "Vui lòng nhập mật khẩu.";
+    else if (!/^(?=.*[A-Za-z])(?=.*\d).{8,}$/.test(pwd)) newErrors.password = "Mật khẩu tối thiểu 8 ký tự, gồm chữ và số.";
+    if (!pwd2) newErrors.confirmPassword = "Vui lòng nhập lại mật khẩu.";
+    else if (pwd !== pwd2) newErrors.confirmPassword = "Mật khẩu nhập lại không khớp.";
     if (!formData.agreeTerms) newErrors.agreeTerms = "Bạn phải đồng ý với điều khoản.";
     return newErrors;
   };
@@ -58,21 +64,24 @@ const Register = () => {
     }
 
     const payload = {
-      full_name: formData.userName,
-      email: formData.email,
+      full_name: formData.userName.trim(),
+      email: formData.email.trim(),
       password: formData.password,
       password_confirm: formData.confirmPassword,
       role: formData.userType, // sẽ là founder nếu chọn founder
+      company: formData.company?.trim() || undefined,
     };
 
     try {
-  const response = await fetch(`${API_BASE}/auth/register`, {
+  const t0 = performance.now();
+  const response = await fetchWithTimeout(`${API_BASE}/auth/register`, {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
           "Accept": "application/json"
         },
         body: JSON.stringify(payload),
+        timeout: 12000,
       });
 
       const data = await response.json();
@@ -80,17 +89,34 @@ const Register = () => {
 
       if (response.ok) {
         toast.success("Đăng ký thành công! Vui lòng đăng nhập.");
+        const t1 = performance.now();
+        const ms = Math.round(t1 - t0);
+        if (ms > 2000) {
+          toast.info("Máy chủ phản hồi chậm khi đăng ký (" + ms + "ms)", { autoClose: 2500 });
+        }
         setTimeout(() => {
           setIsSubmitting(false);
           navigate("/dang-nhap");
         }, 1500);
       } else {
         setIsSubmitting(false); // Cho phép bấm lại nếu lỗi
-        toast.error(data.message || "Đăng ký thất bại. Vui lòng thử lại.");
+        const msg = data?.message || (Array.isArray(data?.detail) ? data.detail.map(d=>d.msg).join(", ") : data?.detail) || "Đăng ký thất bại. Vui lòng thử lại.";
+        toast.error(msg);
         console.error("Lỗi đăng ký:", data);
       }
     } catch (error) {
-      toast.error("Có lỗi xảy ra. Vui lòng thử lại sau.");
+      if (error?.message && (
+        error.message.includes('Failed to fetch') ||
+        error.message.includes('NetworkError') ||
+        error.message.includes('ERR_CONNECTION_REFUSED')
+      )) {
+        toast.error("Không thể kết nối đến máy chủ. Vui lòng kiểm tra API_BASE hoặc trạng thái máy chủ.");
+      } else if (error?.name === 'AbortError') {
+        toast.error("Máy chủ phản hồi quá lâu (timeout). Vui lòng thử lại sau.");
+      } else {
+        toast.error("Có lỗi xảy ra. Vui lòng thử lại sau.");
+      }
+      setIsSubmitting(false);
     }
   };
 
@@ -119,6 +145,9 @@ const Register = () => {
             <form onSubmit={handleSubmit} className="space-y-4">
               {/* Full Name */}
               <div>
+                <label htmlFor="userName" className="block text-sm font-semibold text-gray-700 mb-2">
+                  Họ tên <span className="text-red-500">*</span>
+                </label>
                   <input
                     type="text"
                     id="userName"
@@ -126,6 +155,8 @@ const Register = () => {
                     value={formData.userName}
                     onChange={handleInputChange}
                     required
+                    aria-required="true"
+                    aria-invalid={!!errors.userName}
                     className="w-full px-3 py-2 text-sm border  border-gray-300 rounded-md focus:ring-2 focus:ring-[#FFCE23] focus:border-[#FFCE23] transition-colors"
                     placeholder="Nhập họ tên"
                   />
@@ -134,6 +165,9 @@ const Register = () => {
 
               {/* Email */}
               <div>
+                <label htmlFor="email" className="block text-sm font-semibold text-gray-700 mb-2">
+                  Email <span className="text-red-500">*</span>
+                </label>
                 <input
                   type="email"
                   id="email"
@@ -141,6 +175,8 @@ const Register = () => {
                   value={formData.email}
                   onChange={handleInputChange}
                   required
+                  aria-required="true"
+                  aria-invalid={!!errors.email}
                   className="w-full px-3 py-2 text-sm border border-gray-300 rounded-md focus:ring-2 focus:ring-[#FFCE23] focus:border-[#FFCE23] transition-colors"
                   placeholder="Nhập địa chỉ email"
                 />
@@ -169,6 +205,9 @@ const Register = () => {
 
               {/* Password */}
               <div>
+                <label htmlFor="password" className="block text-sm font-semibold text-gray-700 mb-2">
+                  Mật khẩu <span className="text-red-500">*</span>
+                </label>
                 <div className="relative">
                   <input
                     type="password"
@@ -177,6 +216,8 @@ const Register = () => {
                     value={formData.password}
                     onChange={handleInputChange}
                     required
+                    aria-required="true"
+                    aria-invalid={!!errors.password}
                     className="w-full px-3 py-2 text-sm pr-10 border border-gray-300 rounded-md focus:ring-2 focus:ring-[#FFCE23] focus:border-[#FFCE23] transition-colors"
                     placeholder="Nhập mật khẩu"
                   />
@@ -186,6 +227,9 @@ const Register = () => {
 
               {/* Confirm Password */}
               <div>
+                <label htmlFor="confirmPassword" className="block text-sm font-semibold text-gray-700 mb-2">
+                  Nhập lại mật khẩu <span className="text-red-500">*</span>
+                </label>
                 <div className="relative">
                   <input
                     type="password"
@@ -194,6 +238,8 @@ const Register = () => {
                     value={formData.confirmPassword}
                     onChange={handleInputChange}
                     required
+                    aria-required="true"
+                    aria-invalid={!!errors.confirmPassword}
                     className="w-full px-3 py-2 text-sm pr-10 border border-gray-300 rounded-md focus:ring-2 focus:ring-[#FFCE23] focus:border-[#FFCE23] transition-colors"
                     placeholder="Nhập lại mật khẩu"
                   />
@@ -300,6 +346,7 @@ const Register = () => {
                   checked={formData.agreeTerms}
                   onChange={handleInputChange}
                   required
+                  aria-required="true"
                   className="mt-1 w-4 h-4 text-[#FFCE23] border-gray-300 rounded focus:ring-[#FFCE23]"
                 />
                 <label htmlFor="agreeTerms" className="text-xs text-gray-600">
