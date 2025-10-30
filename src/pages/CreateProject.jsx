@@ -1,6 +1,8 @@
 import React, { useState, useEffect } from "react";
 import { useNavigate, useLocation } from "react-router-dom";
-import ProjectProfileFullForm, { FORM_SECTIONS } from "../components/project/ProjectProfileFullForm";
+import ProjectProfileFullForm, {
+  FORM_SECTIONS,
+} from "../components/project/ProjectProfileFullForm";
 import { useAuth } from "../context/AuthContext";
 import ProjectProfileChatbot from "../components/project/ProjectProfileChatbot";
 // Sidebar các bước tạo hồ sơ
@@ -47,7 +49,7 @@ function ProjectTemplateSelector({ onSelect }) {
   return (
     // mt-24: điện thoại
     // -mt-24: máy tính
-    <div className="bg-white rounded-lg border border-gray-200 shadow-sm p-8 w-full mt-24 lg:-mt-24">
+    <div className="bg-white rounded-lg border border-gray-200 shadow-sm p-8 w-full mt-24 ">
       <h3 className="text-lg font-semibold mb-6">Chọn mẫu hồ sơ khởi nghiệp</h3>
       <div className="flex flex-col lg:flex-row gap-6 mb-6">
         {templates.map((group, idx) => (
@@ -269,7 +271,11 @@ function CreateProject() {
           </div>
         )}
         {/* Nội dung chính */}
-        <div className={`${currentStep === 0 ? "lg:col-span-9" : "lg:col-span-12"} flex items-start justify-center`}>
+        <div
+          className={`${
+            currentStep === 0 ? "lg:col-span-9" : "lg:col-span-12"
+          } flex items-start justify-center`}
+        >
           <div className="w-full min-h-[500px] max-w-[1800px] mx-auto">
             {currentStep === 0 && (
               <div style={{ marginTop: "-97px" }}>
@@ -302,7 +308,12 @@ function CreateProject() {
                       viewBox="0 0 24 24"
                       stroke="currentColor"
                     >
-                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 19l-7-7 7-7" />
+                      <path
+                        strokeLinecap="round"
+                        strokeLinejoin="round"
+                        strokeWidth={2}
+                        d="M15 19l-7-7 7-7"
+                      />
                     </svg>
                     Quay lại
                   </button>
@@ -311,7 +322,9 @@ function CreateProject() {
                   <aside>
                     <div className="sticky top-24">
                       <div className="bg-white rounded-lg border border-gray-200 shadow-sm p-3">
-                        <h4 className="text-sm font-bold text-gray-700 mb-2">Mục lục</h4>
+                        <h4 className="text-sm font-bold text-gray-700 mb-2">
+                          Mục lục
+                        </h4>
                         <nav className="space-y-1 max-h-[calc(100vh-160px)] overflow-auto pr-1">
                           {FORM_SECTIONS.map((sec, idx) => (
                             <a
@@ -337,7 +350,9 @@ function CreateProject() {
                   <aside>
                     <div className="sticky top-24">
                       <div className="bg-white rounded-lg border border-gray-200 shadow-sm p-3">
-                        <h4 className="text-sm font-bold text-gray-700 mb-2">Trợ lý AI</h4>
+                        <h4 className="text-sm font-bold text-gray-700 mb-2">
+                          Trợ lý AI
+                        </h4>
                         <div className="max-h-[calc(100vh-160px)] overflow-auto">
                           <ProjectProfileChatbot
                             form={form}
@@ -353,8 +368,12 @@ function CreateProject() {
                                 finance: "finance",
                                 team: "team",
                               };
-                              const formField = fieldMap[fieldName] || fieldName;
-                              setForm((prev) => ({ ...prev, [formField]: value }));
+                              const formField =
+                                fieldMap[fieldName] || fieldName;
+                              setForm((prev) => ({
+                                ...prev,
+                                [formField]: value,
+                              }));
                             }}
                           />
                         </div>
