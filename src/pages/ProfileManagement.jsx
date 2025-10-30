@@ -405,7 +405,7 @@ function ProfileManagement({ userType = "startup", isLoggedIn = true }) {
         </div>
         <DashboardHeader userType={userType} isLoggedIn={isLoggedIn} />
 
-        <div className="grid grid-cols-1 lg:grid-cols-3 gap-6 px-4 md:px-8 -mt-4">
+        <div className="grid grid-cols-1 lg:grid-cols-3 gap-6 px-4 md:px-8 -mt-4 py-12">
           {/* Danh sách hồ sơ - 1/3 chiều rộng */}
           <div className="bg-white rounded-lg border border-gray-200 shadow-sm p-4 h-fit">
             <h2 className="text-lg font-semibold mb-4">Danh sách dự án</h2>
