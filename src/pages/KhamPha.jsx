@@ -56,10 +56,41 @@ export default function KhamPha() {
     setSubscribed(true);
   };
 
-  // derive whether filters/search are active
-  const filtersActive = query.trim().length > 0 || category !== "all" || stage !== "all";
+  // Reset all filters and reload initial projects
+  const handleReset = async () => {
+    setQuery('');
+    setCategory('all');
+    setStage('all');
+    setError('');
+    
+    // Abort any ongoing request
+    if (abortRef.current) abortRef.current.abort();
+    
+    // Reload all projects
+    const controller = new AbortController();
+    abortRef.current = controller;
+    setLoading(true);
+    try {
+      const { items, nextCursor: nc, total: tt } = await searchPublishedProjects(
+        { limit: 24, sort: "-created_at" }, 
+        { signal: controller.signal }
+      );
+      setResults(items || []);
+      setNextCursor(nc || null);
+      setTotal(tt ?? (items ? items.length : 0));
+    } catch (err) {
+      if (err.name !== 'AbortError') {
+        console.error('Reset load error', err);
+      }
+    } finally {
+      setLoading(false);
+    }
+  };
 
-  // On mount: read URL params to hydrate state
+  // derive whether filters/search are active OR if we have any results to show
+  const filtersActive = query.trim().length > 0 || category !== "all" || stage !== "all" || results.length > 0;
+
+  // On mount: read URL params to hydrate state and load all projects initially
   useEffect(() => {
     const qParam = searchParams.get("q") || "";
     const catParam = searchParams.getAll("industry[]")[0] || searchParams.get("industry") || "all";
@@ -67,7 +98,25 @@ export default function KhamPha() {
     if (qParam) setQuery(qParam);
     if (catParam) setCategory(catParam);
     if (stageParam) setStage(stageParam);
-    // If any active, trigger initial load immediately
+    
+    // Load all projects on initial mount if no filters
+    if (!qParam && catParam === "all" && stageParam === "all") {
+      const controller = new AbortController();
+      abortRef.current = controller;
+      setLoading(true);
+      searchPublishedProjects({ limit: 24, sort: "-created_at" }, { signal: controller.signal })
+        .then(({ items, nextCursor: nc, total: tt }) => {
+          setResults(items || []);
+          setNextCursor(nc || null);
+          setTotal(tt ?? (items ? items.length : 0));
+        })
+        .catch(err => {
+          if (err.name !== 'AbortError') {
+            console.error('Initial load error', err);
+          }
+        })
+        .finally(() => setLoading(false));
+    }
   // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
@@ -192,7 +241,13 @@ export default function KhamPha() {
                 <select value={stage} onChange={(e)=>setStage(e.target.value)} className="px-3 py-2 rounded-lg border border-gray-200 text-sm bg-white">
                   {stages.map(s => <option key={s.key} value={s.key}>{s.label}</option>)}
                 </select>
-                <button onClick={() => { setQuery(''); setCategory('all'); setStage('all'); }} className="px-4 py-2 rounded-lg bg-white border border-gray-200">Reset</button>
+                <button 
+                  onClick={handleReset} 
+                  className="px-4 py-2 rounded-lg bg-white border border-gray-200 hover:bg-gray-50 transition-colors"
+                  disabled={loading}
+                >
+                  Reset
+                </button>
               </div>
             </div>
           </div>
@@ -200,8 +255,8 @@ export default function KhamPha() {
 
         {/* Search results */}
         {filtersActive && (
-          <section className="mb-8">
-            <div className="bg-white rounded-xl p-4 border border-gray-200 shadow-md">
+          <section className="mb-8 animate-fade-in">
+            <div className="bg-white rounded-xl p-4 border border-gray-200 shadow-md animate-slide-in animate-duration-700">
               <div className="flex items-center justify-between mb-4">
                 <h3 className="text-lg font-semibold">Kết quả tìm kiếm {total != null && (<span className="text-gray-500 font-normal">({total})</span>)}</h3>
                 {loading && <span className="text-sm text-gray-500">Đang tải…</span>}
@@ -221,13 +276,15 @@ export default function KhamPha() {
                     link: `/projects/${p.id}`
                   };
                   return (
-                    <div key={p.id} className="w-full"><StartupCard {...card} /></div>
+                    <div key={p.id} className="w-full animate-fade-in animate-duration-700 animate-ease-out">
+                      <StartupCard {...card} />
+                    </div>
                   );
                 })}
               </div>
               {nextCursor && (
                 <div className="flex justify-center mt-4">
-                  <button onClick={handleLoadMore} className="px-4 py-2 rounded-lg bg-[#FFCE23] text-black font-semibold disabled:opacity-60" disabled={loading}>
+                  <button onClick={handleLoadMore} className="px-4 py-2 rounded-lg bg-[#FFCE23] text-black font-semibold disabled:opacity-60 animate-fade-in animate-duration-500" disabled={loading}>
                     {loading ? 'Đang tải…' : 'Tải thêm'}
                   </button>
                 </div>
@@ -237,9 +294,9 @@ export default function KhamPha() {
         )}
 
         {/* stats */}
-        <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-4 mb-8">
+        <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-4 mb-8 animate-fade-in animate-duration-700">
           {stats.map((s,i) => (
-            <div key={i} className="bg-white rounded-xl p-5 shadow-md border border-gray-200 text-center">
+            <div key={i} className="bg-white rounded-xl p-5 shadow-md border border-gray-200 text-center animate-slide-in animate-duration-700">
               <div className="text-2xl font-bold text-gray-900">{s.number}</div>
               <div className="text-sm text-gray-600">{s.label}</div>
             </div>
@@ -247,51 +304,41 @@ export default function KhamPha() {
         </div>
 
         {/* Trends */}
-        <section className="mb-8">
-          <div className="bg-white rounded-xl p-4 border border-gray-200 shadow-md">
+        <section className="mb-8 animate-fade-in animate-duration-700">
+          <div className="bg-white rounded-xl p-4 border border-gray-200 shadow-md animate-slide-in animate-duration-700">
             <h3 className="text-xl font-semibold mb-4">Xu hướng Khởi nghiệp 2025</h3>
             <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-              <div className="bg-white rounded-lg p-4 shadow-md border border-gray-100"> <h4 className="font-semibold">AI & Automation</h4><p className="text-sm text-gray-600">AI trong SaaS và tự động hoá quy trình.</p></div>
-              <div className="bg-white rounded-lg p-4 shadow-md border border-gray-100"> <h4 className="font-semibold">Sustainability</h4><p className="text-sm text-gray-600">Năng lượng sạch & kinh doanh tuần hoàn.</p></div>
-              <div className="bg-white rounded-lg p-4 shadow-md border border-gray-100"> <h4 className="font-semibold">Healthtech & EduTech</h4><p className="text-sm text-gray-600">Chăm sóc sức khoẻ số & công nghệ giáo dục.</p></div>
+              <div className="bg-white rounded-lg p-4 shadow-md border border-gray-100 animate-fade-in animate-duration-700"> <h4 className="font-semibold">AI & Automation</h4><p className="text-sm text-gray-600">AI trong SaaS và tự động hoá quy trình.</p></div>
+              <div className="bg-white rounded-lg p-4 shadow-md border border-gray-100 animate-fade-in animate-duration-700"> <h4 className="font-semibold">Sustainability</h4><p className="text-sm text-gray-600">Năng lượng sạch & kinh doanh tuần hoàn.</p></div>
+              <div className="bg-white rounded-lg p-4 shadow-md border border-gray-100 animate-fade-in animate-duration-700"> <h4 className="font-semibold">Healthtech & EduTech</h4><p className="text-sm text-gray-600">Chăm sóc sức khoẻ số & công nghệ giáo dục.</p></div>
             </div>
           </div>
         </section>
 
-        {/* Lists */}
-        {!filtersActive && (
-          <section className="mb-8">
-            <div className="bg-white rounded-xl p-4 border border-gray-200 shadow-md">
-              <StartupList columns={3} rows={4} />
-            </div>
-          </section>
-        )}
+        {/* Lists - luôn hiện, không phụ thuộc filtersActive */}
+        <section className="mb-8 animate-fade-in animate-duration-700">
+          <div className="bg-white rounded-xl p-4 border border-gray-200 shadow-md animate-slide-in animate-duration-700">
+            <StartupList columns={3} rows={4} />
+          </div>
+        </section>
 
-        {!filtersActive && (
-          <section className="mb-8">
-            <div className="bg-white rounded-xl p-4 border border-gray-200 shadow-md">
-              <CompetitionList />
-            </div>
-          </section>
-        )}
+        <section className="mb-8 animate-fade-in animate-duration-700">
+          <div className="bg-white rounded-xl p-4 border border-gray-200 shadow-md animate-slide-in animate-duration-700">
+            <CompetitionList />
+          </div>
+        </section>
 
-        {!filtersActive && (
-          <section className="mb-8">
-            <div className="bg-white rounded-xl p-4 border border-gray-200 shadow-md">
-              <InvestorList />
-            </div>
-          </section>
-        )}
+        <section className="mb-8 animate-fade-in animate-duration-700">
+          <div className="bg-white rounded-xl p-4 border border-gray-200 shadow-md animate-slide-in animate-duration-700">
+            <InvestorList />
+          </div>
+        </section>
 
-        {!filtersActive && (
-          <section className="mb-8">
-            <div className="bg-white rounded-xl p-4 border border-gray-200 shadow-md">
-              <MentorList />
-            </div>
-          </section>
-        )}
-
-
+        <section className="mb-8 animate-fade-in animate-duration-700">
+          <div className="bg-white rounded-xl p-4 border border-gray-200 shadow-md animate-slide-in animate-duration-700">
+            <MentorList />
+          </div>
+        </section>
 
         {/* resources */}
         <section className="mb-8">

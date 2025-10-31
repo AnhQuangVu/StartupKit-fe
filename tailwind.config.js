@@ -8,5 +8,5 @@ content: [
   theme: {
     extend: {},
   },
-  plugins: [],
+  plugins: [require("tailwindcss-animate")],
 }

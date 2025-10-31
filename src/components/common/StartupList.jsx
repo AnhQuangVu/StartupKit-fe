@@ -19,35 +19,22 @@ export default function StartupList({ small = false, columns, rows }) {
     try {
       setLoading(true);
       
-      // Call correct public API endpoint - without query params
+      // Call correct public API endpoint
       const response = await fetch(`${API_BASE}/public/projects/published`);
       
       if (!response.ok) throw new Error('Không thể lấy danh sách projects');
       
       const data = await response.json();
-      const allProjects = Array.isArray(data) ? data : [];
       
-      console.log('📊 Raw data from API:', allProjects);
+      // Handle both array format and {items, next_cursor} format
+      let allProjects = [];
+      if (Array.isArray(data)) {
+        allProjects = data;
+      } else if (data && data.items && Array.isArray(data.items)) {
+        allProjects = data.items;
+      }
       
-      // Debug: log chi tiết từng project
-      allProjects.forEach(p => {
-        console.log(`🔍 Full Project Data:`, p);
-        console.table({
-          name: p.name,
-          industry: p.industry,
-          stage: p.stage,
-          member_count: p.member_count,
-          capital_source: p.capital_source,
-          logo_url: p.logo_url,
-          description: p.description,
-          tagline: p.tagline,
-          website_url: p.website_url,
-          created_at: p.created_at
-        });
-      });
-      
-      // Nếu endpoint `/public/projects/published` trả về, thì chính là published rồi!
-      // Không cần filter, chỉ cần transform
+      // Sort by created_at descending
       const sorted = allProjects.sort((a, b) => {
         const dateA = new Date(a.created_at);
         const dateB = new Date(b.created_at);
@@ -57,7 +44,7 @@ export default function StartupList({ small = false, columns, rows }) {
       // Transform to StartupCard format
       const transformed = sorted.map(p => ({
         id: p.id,
-        img: p.logo_url || 'https://picsum.photos/300/300?random=' + p.id,
+        img: p.logo_url || `https://picsum.photos/300/300?random=${p.id}`,
         title: p.name,
         desc: p.tagline || p.description || 'Khởi nghiệp sáng tạo',
         tag: p.industry || 'Startup',
@@ -67,8 +54,12 @@ export default function StartupList({ small = false, columns, rows }) {
         link: `/projects/${p.id}`
       }));
       
-      console.log('✅ Transformed data:', transformed);
-      setStartups(transformed.length > 0 ? transformed : getMockData());
+      // Use real data if available, otherwise fallback to mock
+      if (transformed.length > 0) {
+        setStartups(transformed);
+      } else {
+        setStartups(getMockData());
+      }
     } catch (error) {
       console.error('Fetch projects error:', error);
       // Fallback to mock data
