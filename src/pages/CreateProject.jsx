@@ -171,6 +171,7 @@ function CreateProject() {
   const role = user?.role || "founder";
   const [currentStep, setCurrentStep] = useState(0); // 0: chọn mẫu, 1: tạo hồ sơ
   const [selectedTemplate, setSelectedTemplate] = useState(null);
+  const [mobileChatbotOpen, setMobileChatbotOpen] = useState(false);
   // Dữ liệu dùng cho ProjectProfileFullForm (new unified form)
   const [form, setForm] = useState({});
   const location = useLocation();
@@ -259,7 +260,7 @@ function CreateProject() {
     );
   }
   return (
-    <div className="min-h-screen bg-gray-50 flex flex-col px-6 py-6">
+    <div className="min-h-screen bg-gray-50 flex flex-col px-6 py-4">
       <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 items-start">
         {/* Sidebar trái: các bước tạo hồ sơ (ẩn khi ở bước Tạo hồ sơ) */}
         {currentStep === 0 && (
@@ -318,7 +319,7 @@ function CreateProject() {
                     Quay lại
                   </button>
                 </div>
-                <div className="grid grid-cols-1 lg:grid-cols-[220px_minmax(0,1fr)_280px] gap-4 w-full">
+                <div className="grid grid-cols-1 lg:grid-cols-[220px_minmax(0,1fr)_500px] gap-4 w-full">
                   <aside>
                     <div className="sticky top-24">
                       <div className="bg-white rounded-lg border border-gray-200 shadow-sm p-3">
@@ -339,7 +340,7 @@ function CreateProject() {
                       </div>
                     </div>
                   </aside>
-                  <main>
+                  <main className="lg:max-w-[100%] ">
                     <ProjectProfileFullForm
                       initialData={form}
                       onChange={setForm}
@@ -347,7 +348,8 @@ function CreateProject() {
                       sectionIdPrefix="ppf"
                     />
                   </main>
-                  <aside>
+                  {/* Chatbot sidebar - chỉ hiện trên desktop */}
+                  <aside className="hidden lg:block">
                     <div className="sticky top-24">
                       <div className="bg-white rounded-lg border border-gray-200 shadow-sm p-3">
                         <h4 className="text-sm font-bold text-gray-700 mb-2">
@@ -386,6 +388,69 @@ function CreateProject() {
           </div>
         </div>
       </div>
+
+      {/* Floating chatbot icon và dialog cho mobile - chỉ hiện ở step 1 */}
+      {currentStep === 1 && (
+        <>
+          {/* Floating chatbot icon - ẩn khi mở dialog */}
+          <button
+            className={`fixed bottom-4 right-4 w-12 h-12 bg-[#FFCE23] rounded-full shadow-lg flex items-center justify-center text-black font-semibold text-lg z-50 lg:hidden hover:bg-yellow-500 transition ${
+              mobileChatbotOpen ? "hidden" : ""
+            }`}
+            onClick={() => setMobileChatbotOpen(true)}
+          >
+            💬
+          </button>
+
+          {/* Mobile chatbot dialog - bottom right */}
+          {mobileChatbotOpen && (
+            <>
+              {/* Overlay */}
+              <div
+                className="fixed inset-0 bg-black bg-opacity-50 z-40 lg:hidden"
+                onClick={() => setMobileChatbotOpen(false)}
+              />
+              {/* Chatbot panel */}
+              <div className="fixed bottom-4 right-4 w-80 h-[500px] bg-white border border-gray-200 rounded-lg shadow-xl z-50 lg:hidden overflow-hidden flex flex-col">
+                {/* Header */}
+                <div className="sticky top-0 bg-white border-b border-gray-200 p-3 flex items-center justify-between z-10">
+                  <h4 className="text-sm font-bold text-gray-700">Trợ lý AI</h4>
+                  <button
+                    onClick={() => setMobileChatbotOpen(false)}
+                    className="text-gray-500 hover:text-gray-700 text-xl font-bold"
+                  >
+                    ×
+                  </button>
+                </div>
+                {/* Content */}
+                <div className="flex-1 overflow-y-auto p-3">
+                  <ProjectProfileChatbot
+                    form={form}
+                    onFillField={(fieldName, value) => {
+                      const fieldMap = {
+                        pain_point: "mainIdea",
+                        solution: "productValue",
+                        product: "products",
+                        targetCustomer: "targetCustomer",
+                        advantage: "advantage",
+                        marketSize: "marketSize",
+                        businessModel: "businessPlan",
+                        finance: "finance",
+                        team: "team",
+                      };
+                      const formField = fieldMap[fieldName] || fieldName;
+                      setForm((prev) => ({
+                        ...prev,
+                        [formField]: value,
+                      }));
+                    }}
+                  />
+                </div>
+              </div>
+            </>
+          )}
+        </>
+      )}
     </div>
   );
 }

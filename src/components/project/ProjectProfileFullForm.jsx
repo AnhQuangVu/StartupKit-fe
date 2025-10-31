@@ -1088,11 +1088,18 @@ export default function ProjectProfileFullForm({
           ...authHeaders(token),
           "Content-Type": "application/json",
         },
-        body: JSON.stringify(Object.fromEntries(
-          Object.entries(payload)
-            .map(([k,v]) => [k, typeof v === 'string' ? v.trim() : v])
-            .filter(([_,v]) => v !== undefined && v !== null && !(typeof v === 'string' && v.length === 0))
-        ))
+        body: JSON.stringify(
+          Object.fromEntries(
+            Object.entries(payload)
+              .map(([k, v]) => [k, typeof v === "string" ? v.trim() : v])
+              .filter(
+                ([_, v]) =>
+                  v !== undefined &&
+                  v !== null &&
+                  !(typeof v === "string" && v.length === 0)
+              )
+          )
+        ),
       });
 
       if (!res.ok) {
@@ -1162,11 +1169,18 @@ export default function ProjectProfileFullForm({
           ...authHeaders(token),
           "Content-Type": "application/json",
         },
-        body: JSON.stringify(Object.fromEntries(
-          Object.entries(payload)
-            .map(([k,v]) => [k, typeof v === 'string' ? v.trim() : v])
-            .filter(([_,v]) => v !== undefined && v !== null && !(typeof v === 'string' && v.length === 0))
-        ))
+        body: JSON.stringify(
+          Object.fromEntries(
+            Object.entries(payload)
+              .map(([k, v]) => [k, typeof v === "string" ? v.trim() : v])
+              .filter(
+                ([_, v]) =>
+                  v !== undefined &&
+                  v !== null &&
+                  !(typeof v === "string" && v.length === 0)
+              )
+          )
+        ),
       });
 
       if (!res.ok) {
@@ -1205,17 +1219,23 @@ export default function ProjectProfileFullForm({
     // -mt-24: điện thoại(không thêm)
     // -mt-24: máy tính(thêm)
     <>
-  <form className={`${compact ? "space-y-6" : "space-y-10"}`}>
+      <form className={`${compact ? "space-y-6" : "space-y-10"}`}>
         {FORM_SECTIONS.map((section, idx) => (
           <div
             key={idx}
-            className={`bg-white rounded-lg shadow ${compact ? "p-3 md:p-4" : "p-6"}`}
+            className={`bg-white rounded-lg shadow ${
+              compact ? "p-3 md:p-4" : "p-6"
+            }`}
             id={`${sectionIdPrefix}-sec-${idx}`}
           >
             {(section.title || idx === 0) && (
               <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between mb-4 gap-4 relative z-10">
                 {section.title && (
-                  <h2 className={`${compact ? "text-base" : "text-lg"} font-bold text-blue-900 uppercase`}>
+                  <h2
+                    className={`${
+                      compact ? "text-base" : "text-lg"
+                    } font-bold text-blue-900 uppercase`}
+                  >
                     {section.title}
                   </h2>
                 )}
@@ -1325,11 +1345,19 @@ export default function ProjectProfileFullForm({
               </div>
             )}
             {section.subtitle && (
-              <h3 className={`${compact ? "text-sm" : "text-base"} font-semibold mb-2 text-blue-700`}>
+              <h3
+                className={`${
+                  compact ? "text-sm" : "text-base"
+                } font-semibold mb-2 text-blue-700`}
+              >
                 {section.subtitle}
               </h3>
             )}
-            <div className={`grid grid-cols-1 md:grid-cols-2 ${compact ? "gap-4" : "gap-6"}`}>
+            <div
+              className={`grid grid-cols-1 md:grid-cols-2 ${
+                compact ? "gap-4" : "gap-6"
+              }`}
+            >
               {section.fields.map((field) => (
                 <div key={field.key} className="flex flex-col gap-1">
                   <label className="font-medium text-gray-700 mb-1">
@@ -1338,7 +1366,9 @@ export default function ProjectProfileFullForm({
                   {field.type === "input" && (
                     <input
                       type="text"
-                      className={`border rounded ${compact ? "p-1.5 text-sm" : "p-2"} bg-gray-50`}
+                      className={`border rounded ${
+                        compact ? "p-1.5 text-sm" : "p-2"
+                      } bg-gray-50`}
                       value={form[field.key]}
                       placeholder={field.placeholder}
                       onChange={(e) => handleChange(field.key, e.target.value)}
@@ -1348,8 +1378,12 @@ export default function ProjectProfileFullForm({
                     <textarea
                       className={
                         field.key === "teamInfo"
-                          ? `border rounded ${compact ? "p-1.5 text-sm" : "p-2"} bg-gray-50 min-h-[110px] w-full md:w-[560px]`
-                          : `border rounded ${compact ? "p-1.5 text-sm" : "p-2"} bg-gray-50 min-h-[40px]`
+                          ? `border rounded ${
+                              compact ? "p-1.5 text-sm" : "p-2"
+                            } bg-gray-50 min-h-[110px] w-full md:w-[560px]`
+                          : `border rounded ${
+                              compact ? "p-1.5 text-sm" : "p-2"
+                            } bg-gray-50 min-h-[40px]`
                       }
                       value={form[field.key]}
                       placeholder={field.placeholder}

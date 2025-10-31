@@ -46,7 +46,7 @@ const DashboardHeader = ({ userType = "founder", isLoggedIn = false }) => {
   const isWorkspaceTab = location.pathname === "/dashboard";
 
   return (
-    <div className="flex flex-col md:flex-row justify-between items-center mb-8 px-8 gap-4 mt-10">
+    <div className="flex flex-col md:flex-row justify-between items-center mb-2 px-8 gap-4">
       {/* Box chào mừng - Chỉ hiển thị tạm thời khi trigger */}
       {showWelcome && (
         <div className="border border-yellow-400 bg-gradient-to-r from-yellow-50 via-white to-yellow-50 rounded-lg px-5 py-3 shadow-sm animate-fade-in">
