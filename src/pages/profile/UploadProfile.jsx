@@ -341,7 +341,6 @@ export default function UploadProfile() {
   const saveProject = async () => {
     const token = getToken();
     if (!token) { showToast('Bạn cần đăng nhập', 'warning'); return; }
-
     // Validation
     if (!projectData.name || projectData.name.trim().length === 0) {
       showToast('Vui lòng nhập tên dự án', 'warning');
@@ -349,6 +348,10 @@ export default function UploadProfile() {
     }
     if (projectData.name.trim().length < 3) {
       showToast('Tên dự án phải có ít nhất 3 ký tự', 'warning');
+      return;
+    }
+    if (!projectData.tagline || projectData.tagline.trim().length === 0) {
+      showToast('Vui lòng nhập tóm tắt ngắn cho dự án', 'warning');
       return;
     }
     if (!projectData.description || projectData.description.trim().length === 0) {
@@ -469,26 +472,45 @@ export default function UploadProfile() {
           : (typeof projectData.member_count === 'number' ? projectData.member_count : undefined),
         member_skills: projectData.member_skills?.trim(),
         resources: projectData.resources?.trim(),
-        deployment_location: projectData.deployment_location?.trim()
+        deployment_location: projectData.deployment_location?.trim(),
+        // Thêm object logo và team_image đúng chuẩn backend
+        logo: logo_url ? { url: logo_url, public_id: logoPublicId || '' } : undefined,
+        team_image: team_image_url ? { url: team_image_url, public_id: bannerPublicId || '' } : undefined
       };
 
-      // Kết hợp và lọc bỏ các giá trị undefined/null/empty string
+      // Đảm bảo tagline luôn có mặt trong payload (có thể là chuỗi rỗng)
+      const filteredOptionalFields = { ...optionalFields };
+      if (!('tagline' in filteredOptionalFields) || filteredOptionalFields.tagline === undefined || filteredOptionalFields.tagline === null) {
+        filteredOptionalFields.tagline = '';
+      }
+
       const rawPayload = {
         ...requiredFields,
         ...Object.fromEntries(
-          Object.entries(optionalFields)
-            .filter(([_, v]) => v !== undefined && v !== null && v !== '')
+          Object.entries(filteredOptionalFields)
+            .filter(([k, v]) => k === 'tagline' || (v !== undefined && v !== null && v !== ''))
         )
       };
 
-      // ✅ Loại bỏ key rỗng/undefined để tránh 500 từ backend
+      // ✅ Loại bỏ key rỗng/undefined để tránh 500 từ backend, nhưng giữ tagline
       const payload = Object.fromEntries(
         Object.entries(rawPayload)
           .map(([k, v]) => [k, typeof v === 'string' ? v.trim() : v])
-          .filter(([_, v]) => v !== undefined && v !== null && !(typeof v === 'string' && v.length === 0))
+          .filter(([k, v]) => k === 'tagline' || (v !== undefined && v !== null && !(typeof v === 'string' && v.length === 0)))
       );
 
       console.log('📤 Payload gửi lên API:', payload);
+      // Tự động test logic: kiểm tra trường logo/team_image
+      if (payload.logo && payload.logo.url && payload.logo.url.startsWith('https://')) {
+        console.log('✅ Logo object gửi đúng chuẩn:', payload.logo);
+      } else {
+        console.warn('⚠️ Logo object thiếu hoặc sai:', payload.logo);
+      }
+      if (payload.team_image && payload.team_image.url && payload.team_image.url.startsWith('https://')) {
+        console.log('✅ Banner object gửi đúng chuẩn:', payload.team_image);
+      } else {
+        console.warn('⚠️ Banner object thiếu hoặc sai:', payload.team_image);
+      }
 
   const method = projectId ? 'PATCH' : 'POST';
   // Backend của bạn chấp nhận đường dẫn không có trailing slash
@@ -785,8 +807,8 @@ export default function UploadProfile() {
                 </div>
               </div>
               <div className="mb-4">
-                <h3 className="font-semibold mb-2">Tóm tắt ngắn</h3>
-                <input type="text" value={projectData.tagline} onChange={(e) => handleProjectChange('tagline', e.target.value)} placeholder="VD: Công cụ quản lý dự án hỗ trợ AI" className="w-full p-2 border rounded-lg" maxLength="150" />
+                <h3 className="font-semibold mb-2">Tóm tắt ngắn <span className="text-red-500">*</span></h3>
+                <input type="text" value={projectData.tagline} onChange={(e) => handleProjectChange('tagline', e.target.value)} placeholder="VD: Công cụ quản lý dự án hỗ trợ AI" className="w-full p-2 border rounded-lg" maxLength="150" required aria-required="true" />
                 <p className="text-[11px] text-gray-500 mt-1">{projectData.tagline.length}/150</p>
               </div>
               <div className="mb-4">
@@ -836,7 +858,7 @@ export default function UploadProfile() {
           </div>
 
           {/* Business & Market */}
-          <div id="market" className="border-t pt-6 mt-6">
+          <div id="business" className="border-t pt-6 mt-6">
             <h2 className="text-xl font-bold mb-5">Kinh doanh & Thị trường</h2>
             <div className="grid grid-cols-1 lg:grid-cols-2 gap-5 mb-6">
               <div>

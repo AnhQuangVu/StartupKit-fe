@@ -1,4 +1,18 @@
 import React, { useState, useEffect } from "react";
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+import {
+  faUser,
+  faRocket,
+  faMapMarkerAlt,
+  faGlobe,
+  faBuilding,
+  faIndustry,
+  faCalendarAlt,
+  faUsers,
+  faTrophy,
+  faFileAlt,
+  faBullseye,
+} from "@fortawesome/free-solid-svg-icons";
 import { uploadToCloudinary } from "../utils/cloudinary";
 import { useAuth } from "../context/AuthContext";
 import { useNavigate } from "react-router-dom";
@@ -7,52 +21,158 @@ import Footer from "../components/layout/Footer";
 import { API_BASE, authHeaders, fetchWithTimeout } from "../config/api";
 
 export default function Profile() {
+  // Debug: log connect_goal every render
+
   const { user: authUser, logout, updateUser } = useAuth();
   const navigate = useNavigate();
   const [activeTab, setActiveTab] = useState("hoso");
   const [avatar, setAvatar] = useState(null);
   const [cover, setCover] = useState(null);
   const [formData, setFormData] = useState({});
+  const [achievements, setAchievements] = useState([{ content: "", link: "" }]);
+  const [startups, setStartups] = useState([
+    {
+      startup_name: "",
+      industry: "",
+      founded_year: "",
+      team_size: "",
+      mission: "",
+    },
+  ]);
   const [avatarPreview, setAvatarPreview] = useState("");
   const [coverPreview, setCoverPreview] = useState("");
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [updateMessage, setUpdateMessage] = useState({ type: "", text: "" });
-
+  console.log('RENDER formData.connect_goal:', formData?.connect_goal);
   useEffect(() => {
-    if (authUser) {
-      setFormData({
-        full_name: authUser.full_name || "",
-        avatar_url: authUser.profile?.avatar_url || "",
-        cover_url: authUser.profile?.cover_url || "",
-        bio: authUser.profile?.bio || "",
-        website_url: authUser.profile?.website_url || "",
-        location: authUser.profile?.location || "",
-        phone: authUser.profile?.phone || "",
-        address: authUser.profile?.address || "",
-        company: authUser.profile?.company || "",
-        facebook: authUser.profile?.facebook || "",
-        linkedin: authUser.profile?.linkedin || "",
-        role: authUser.profile?.role || "Founder",
-        startup_name: authUser.profile?.startup_name || "",
-        industry: authUser.profile?.industry || "",
-        founded_year: authUser.profile?.founded_year || "",
-        mission: authUser.profile?.mission || "",
-        achievements: authUser.profile?.achievements || "",
-        team_size: authUser.profile?.team_size || "",
-        startup_website: authUser.profile?.startup_website || "",
-        startup_facebook: authUser.profile?.startup_facebook || "",
-        startup_linkedin: authUser.profile?.startup_linkedin || "",
-        pitch_deck_url: authUser.profile?.pitch_deck_url || "",
-        connect_goal: authUser.profile?.connect_goal || "",
-      });
-      setCoverPreview(authUser.profile?.cover_url || "");
-      setAvatarPreview(authUser.profile?.avatar_url || "");
+    if (!authUser) return;
+
+    const nextFormData = {
+      full_name: authUser.full_name || "",
+      avatar_url: authUser.profile?.avatar_url || "",
+      cover_url: authUser.profile?.cover_url || "",
+      bio: authUser.profile?.bio || "",
+      website_url: authUser.profile?.website_url || "",
+      location: authUser.profile?.location || "",
+      phone: authUser.profile?.phone || "",
+      address: authUser.profile?.address || "",
+      company: authUser.profile?.company || "",
+      facebook: authUser.profile?.facebook || "",
+      linkedin: authUser.profile?.linkedin || "",
+      role: authUser.profile?.role || "Founder",
+      pitch_deck_url: authUser.profile?.pitch_deck_url || "",
+      connect_goal:
+        authUser.connect_goal ?? authUser.profile?.connect_goal ?? "",
+    };
+
+    setFormData(nextFormData);
+
+    // achievements
+    if (
+      Array.isArray(authUser.profile?.achievements) &&
+      authUser.profile.achievements.length > 0
+    ) {
+      setAchievements(
+        authUser.profile.achievements.map((a) =>
+          typeof a === "object" ? a : { content: a, link: "" }
+        )
+      );
+    } else if (
+      typeof authUser.profile?.achievements === "string" &&
+      authUser.profile.achievements
+    ) {
+      setAchievements(
+        authUser.profile.achievements
+          .split("; ")
+          .filter(Boolean)
+          .map((a) => ({ content: a, link: "" }))
+      );
+    } else {
+      setAchievements([{ content: "", link: "" }]);
     }
+
+    // startup info
+    if (
+      Array.isArray(authUser.profile?.startups) &&
+      authUser.profile.startups.length > 0
+    ) {
+      setStartups(authUser.profile.startups);
+    } else {
+      setStartups([
+        {
+          startup_name: "",
+          industry: "",
+          founded_year: "",
+          team_size: "",
+          mission: "",
+        },
+      ]);
+    }
+
+    // preview images
+    setCoverPreview(authUser.profile?.cover_url || "");
+    setAvatarPreview(authUser.profile?.avatar_url || "");
   }, [authUser]);
 
   const handleInputChange = (e) => {
     const { name, value } = e.target;
     setFormData((prev) => ({ ...prev, [name]: value }));
+  };
+
+  // Auto-resize textarea: removes the corner resize handle and grows height with content
+  const autoResizeEl = (el) => {
+    if (!el) return;
+    el.style.height = "auto";
+    // add small extra so there's no accidental scrollbar
+    el.style.height = `${el.scrollHeight}px`;
+  };
+
+  // Ensure existing textareas resize correctly when data loads or updates
+  React.useEffect(() => {
+    const els = document.querySelectorAll("textarea.auto-resize");
+    els.forEach((t) => autoResizeEl(t));
+  }, [formData.bio, startups, achievements, formData.connect_goal]);
+
+  // Achievements handlers
+  const handleAchievementChange = (idx, field, value) => {
+    setAchievements((prev) => {
+      const updated = [...prev];
+      updated[idx][field] = value;
+      return updated;
+    });
+  };
+  const addAchievement = () => {
+    setAchievements((prev) => [...prev, { content: "", link: "" }]);
+  };
+  const removeAchievement = (idx) => {
+    setAchievements((prev) => prev.filter((_, i) => i !== idx));
+  };
+
+  // Handle dynamic startup fields
+  const handleStartupChange = (idx, e) => {
+    const { name, value } = e.target;
+    setStartups((prev) => {
+      const updated = [...prev];
+      updated[idx][name] = value;
+      return updated;
+    });
+  };
+
+  const addStartup = () => {
+    setStartups((prev) => [
+      ...prev,
+      {
+        startup_name: "",
+        industry: "",
+        founded_year: "",
+        team_size: "",
+        mission: "",
+      },
+    ]);
+  };
+
+  const removeStartup = (idx) => {
+    setStartups((prev) => prev.filter((_, i) => i !== idx));
   };
 
   const handleLogout = () => {
@@ -84,15 +204,39 @@ export default function Profile() {
 
     try {
       let payload = { ...formData };
+      payload.startups = startups;
+      payload.achievements = achievements.filter(
+        (a) => a.content.trim() !== "" || a.link.trim() !== ""
+      );
 
+      // Always send avatar_url and bio, even if only those fields are changed
       if (avatar) {
         const avatar_url = await uploadToCloudinary(avatar);
-        payload.avatar_url = avatar_url || authUser.profile?.avatar_url || "";
+        payload.avatar_url =
+          avatar_url ||
+          authUser.avatar_url ||
+          authUser.profile?.avatar_url ||
+          "";
+      } else {
+        payload.avatar_url =
+          formData.avatar_url ||
+          authUser.avatar_url ||
+          authUser.profile?.avatar_url ||
+          "";
       }
       if (cover) {
         const cover_url = await uploadToCloudinary(cover);
-        payload.cover_url = cover_url || authUser.profile?.cover_url || "";
+        payload.cover_url =
+          cover_url || authUser.cover_url || authUser.profile?.cover_url || "";
+      } else {
+        payload.cover_url =
+          formData.cover_url ||
+          authUser.cover_url ||
+          authUser.profile?.cover_url ||
+          "";
       }
+      // Always send bio
+      payload.bio = formData.bio || authUser.profile?.bio || "";
 
       Object.keys(payload).forEach((k) => {
         if (payload[k] === "") payload[k] = null;
@@ -112,7 +256,10 @@ export default function Profile() {
         try {
           const userRes = await fetchWithTimeout(`${API_BASE}/users/me`, {
             method: "GET",
-            headers: { ...authHeaders(token), "Content-Type": "application/json" },
+            headers: {
+              ...authHeaders(token),
+              "Content-Type": "application/json",
+            },
             timeout: 8000,
           });
           const userData = await userRes.json();
@@ -161,13 +308,13 @@ export default function Profile() {
             </button>
             <button
               className={`py-2 px-3 font-semibold text-xs text-left rounded mt-2 ${
-                activeTab === "baidang"
+                activeTab === "thongbao"
                   ? "bg-[#FFF9E0] text-[#FFCE23]"
                   : "bg-gray-50 text-gray-700 hover:bg-[#FFF9E0] hover:text-[#FFCE23]"
               }`}
-              onClick={() => setActiveTab("baidang")}
+              onClick={() => setActiveTab("thongbao")}
             >
-              Quản lý bài đăng
+              Quản lý thông báo
             </button>
             <button
               className="py-2 px-3 font-semibold text-xs text-left rounded mt-2 text-red-500 hover:bg-red-50 hover:text-red-600"
@@ -182,16 +329,24 @@ export default function Profile() {
             {activeTab === "hoso" && (
               <section>
                 <form
-                  className="space-y-8 max-w-xl mx-auto"
+                  className="space-y-8 max-w-3xl mx-auto"
                   autoComplete="off"
                   onSubmit={handleUpdateProfile}
                 >
                   {/* Cover + Avatar */}
                   <div className="bg-white rounded-2xl shadow-xl overflow-hidden">
                     <div className="relative h-40 w-full bg-gray-200">
-                      <label htmlFor="cover-upload" className="absolute inset-0 cursor-pointer">
+                      <label
+                        htmlFor="cover-upload"
+                        className="absolute inset-0 cursor-pointer"
+                      >
                         <img
-                          src={coverPreview || ""}
+                          src={
+                            authUser.cover_url ||
+                            coverPreview ||
+                            authUser.profile?.cover_url ||
+                            ""
+                          }
                           alt="cover"
                           className="w-full h-full object-cover"
                         />
@@ -205,16 +360,25 @@ export default function Profile() {
                             if (file) {
                               setCover(file);
                               const reader = new FileReader();
-                              reader.onloadend = () => setCoverPreview(reader.result);
+                              reader.onloadend = () =>
+                                setCoverPreview(reader.result);
                               reader.readAsDataURL(file);
                             }
                           }}
                         />
                       </label>
                       <div className="absolute left-6 -bottom-16">
-                        <label htmlFor="avatar-upload" className="cursor-pointer">
+                        <label
+                          htmlFor="avatar-upload"
+                          className="cursor-pointer"
+                        >
                           <img
-                            src={avatarPreview || ""}
+                            src={
+                              authUser.avatar_url ||
+                              avatarPreview ||
+                              authUser.profile?.avatar_url ||
+                              ""
+                            }
                             alt="avatar"
                             className="w-32 h-32 rounded-full border-4 border-white shadow-xl object-cover bg-white"
                           />
@@ -228,7 +392,8 @@ export default function Profile() {
                               if (file) {
                                 setAvatar(file);
                                 const reader = new FileReader();
-                                reader.onloadend = () => setAvatarPreview(reader.result);
+                                reader.onloadend = () =>
+                                  setAvatarPreview(reader.result);
                                 reader.readAsDataURL(file);
                               }
                             }}
@@ -243,43 +408,274 @@ export default function Profile() {
                           👤 Thông tin cá nhân
                         </h3>
                         <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-                          <input name="full_name" placeholder="Họ và tên Founder" value={formData.full_name || ""} onChange={handleInputChange} className="border p-2 rounded" />
-                          <input name="role" placeholder="Vai trò (Founder, CEO...)" value={formData.role || ""} onChange={handleInputChange} className="border p-2 rounded" />
-                          <input name="location" placeholder="Địa điểm" value={formData.location || ""} onChange={handleInputChange} className="border p-2 rounded" />
-                          <input name="website_url" placeholder="Website cá nhân" value={formData.website_url || ""} onChange={handleInputChange} className="border p-2 rounded" />
-                          <textarea name="bio" placeholder="Giới thiệu ngắn..." value={formData.bio || ""} onChange={handleInputChange} className="border p-2 rounded sm:col-span-2" />
+                          <div className="relative">
+                            <span className="absolute left-3 top-1/2 transform -translate-y-1/2">
+                              <FontAwesomeIcon icon={faUser} color="#222" />
+                            </span>
+                            <input
+                              name="full_name"
+                              placeholder="Họ và tên Founder"
+                              value={formData.full_name || ""}
+                              onChange={handleInputChange}
+                              className="border p-2 rounded pl-10 w-full"
+                            />
+                          </div>
+                          <div className="relative">
+                            <span className="absolute left-3 top-1/2 transform -translate-y-1/2">
+                              <FontAwesomeIcon
+                                icon={faRocket}
+                                color="#FFD600"
+                              />
+                            </span>
+                            <input
+                              name="role"
+                              placeholder="Vai trò (Founder, CEO...)"
+                              value={formData.role || ""}
+                              onChange={handleInputChange}
+                              className="border p-2 rounded pl-10 w-full"
+                            />
+                          </div>
+                          <div className="relative">
+                            <span className="absolute left-3 top-1/2 transform -translate-y-1/2">
+                              <FontAwesomeIcon
+                                icon={faMapMarkerAlt}
+                                color="#888"
+                              />
+                            </span>
+                            <input
+                              name="location"
+                              placeholder="Địa điểm"
+                              value={formData.location || ""}
+                              onChange={handleInputChange}
+                              className="border p-2 rounded pl-10 w-full"
+                            />
+                          </div>
+                          <div className="relative">
+                            <span className="absolute left-3 top-1/2 transform -translate-y-1/2">
+                              <FontAwesomeIcon icon={faGlobe} color="#FFD600" />
+                            </span>
+                            <input
+                              name="website_url"
+                              placeholder="Website cá nhân"
+                              value={formData.website_url || ""}
+                              onChange={handleInputChange}
+                              className="border p-2 rounded pl-10 w-full"
+                            />
+                          </div>
+                          <textarea
+                            name="bio"
+                            placeholder="Giới thiệu ngắn..."
+                            value={formData.bio || ""}
+                            onChange={handleInputChange}
+                            onInput={(e) => autoResizeEl(e.target)}
+                            className="border p-2 rounded sm:col-span-2 resize-none overflow-hidden auto-resize"
+                          />
                         </div>
                       </div>
 
                       {/* Thông tin startup */}
                       <div className="mb-8 border-b pb-6">
-                        <h3 className="text-lg font-bold text-purple-700 mb-4">
-                          🚀 Thông tin Startup
+                        <h3 className="text-lg font-bold text-gray-800 mb-4">
+                          <span className="inline-block mr-2 align-middle">
+                            <FontAwesomeIcon icon={faBuilding} color="#222" />
+                          </span>{" "}
+                          Thông tin Startup
                         </h3>
-                        <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-                          <input name="startup_name" placeholder="Tên startup" value={formData.startup_name || ""} onChange={handleInputChange} className="border p-2 rounded" />
-                          <input name="industry" placeholder="Lĩnh vực hoạt động" value={formData.industry || ""} onChange={handleInputChange} className="border p-2 rounded" />
-                          <input name="founded_year" placeholder="Năm thành lập" value={formData.founded_year || ""} onChange={handleInputChange} className="border p-2 rounded" />
-                          <input name="team_size" placeholder="Quy mô đội ngũ" value={formData.team_size || ""} onChange={handleInputChange} className="border p-2 rounded" />
-                          <textarea name="mission" placeholder="Sứ mệnh / Giá trị cốt lõi" value={formData.mission || ""} onChange={handleInputChange} className="border p-2 rounded sm:col-span-2" />
-                        </div>
+                        {startups.map((startup, idx) => (
+                          <div
+                            key={idx}
+                            className="grid grid-cols-1 sm:grid-cols-2 gap-4 mb-6 relative border rounded-lg p-4"
+                          >
+                            <button
+                              type="button"
+                              className="absolute right-2 top-2 text-xs text-red-500"
+                              onClick={() => removeStartup(idx)}
+                              disabled={startups.length === 1}
+                            >
+                              X
+                            </button>
+                            <div className="relative">
+                              <span className="absolute left-3 top-1/2 transform -translate-y-1/2">
+                                <FontAwesomeIcon
+                                  icon={faBuilding}
+                                  color="#222"
+                                />
+                              </span>
+                              <input
+                                name="startup_name"
+                                placeholder="Tên startup"
+                                value={startup.startup_name}
+                                onChange={(e) => handleStartupChange(idx, e)}
+                                className="border p-2 rounded pl-10 w-full"
+                              />
+                            </div>
+                            <div className="relative">
+                              <span className="absolute left-3 top-1/2 transform -translate-y-1/2">
+                                <FontAwesomeIcon
+                                  icon={faIndustry}
+                                  color="#FFD600"
+                                />
+                              </span>
+                              <input
+                                name="industry"
+                                placeholder="Lĩnh vực hoạt động"
+                                value={startup.industry}
+                                onChange={(e) => handleStartupChange(idx, e)}
+                                className="border p-2 rounded pl-10 w-full"
+                              />
+                            </div>
+                            <div className="relative">
+                              <span className="absolute left-3 top-1/2 transform -translate-y-1/2">
+                                <FontAwesomeIcon
+                                  icon={faCalendarAlt}
+                                  color="#888"
+                                />
+                              </span>
+                              <input
+                                type="number"
+                                name="founded_year"
+                                placeholder="Năm thành lập"
+                                value={startup.founded_year}
+                                onChange={(e) => handleStartupChange(idx, e)}
+                                className="border p-2 rounded pl-10 w-full"
+                              />
+                            </div>
+                            <div className="relative">
+                              <span className="absolute left-3 top-1/2 transform -translate-y-1/2">
+                                <FontAwesomeIcon
+                                  icon={faUsers}
+                                  color="#FFD600"
+                                />
+                              </span>
+                              <input
+                                type="number"
+                                name="team_size"
+                                placeholder="Quy mô đội ngũ"
+                                value={startup.team_size}
+                                onChange={(e) => handleStartupChange(idx, e)}
+                                className="border p-2 rounded pl-10 w-full"
+                              />
+                            </div>
+                            <textarea
+                              name="mission"
+                              placeholder="Sứ mệnh / Giá trị cốt lõi"
+                              value={startup.mission}
+                              onChange={(e) => handleStartupChange(idx, e)}
+                              onInput={(e) => autoResizeEl(e.target)}
+                              className="border p-2 rounded sm:col-span-2 resize-none overflow-hidden auto-resize"
+                            />
+                          </div>
+                        ))}
+                        <button
+                          type="button"
+                          className="mt-2 px-4 py-2 bg-yellow-100 text-yellow-700 rounded shadow"
+                          onClick={addStartup}
+                        >
+                          + Thêm Startup
+                        </button>
                       </div>
 
                       {/* Thành tựu */}
                       <div className="mb-8 border-b pb-6">
-                        <h3 className="text-lg font-bold text-green-700 mb-4">
-                          🏆 Thành tựu & Pitch Deck
+                        <h3 className="text-lg font-bold text-gray-800 mb-4">
+                          <span className="inline-block mr-2 align-middle">
+                            <FontAwesomeIcon icon={faTrophy} color="#222" />
+                          </span>{" "}
+                          Thành tựu & Pitch Deck
                         </h3>
                         <div className="grid grid-cols-1 gap-4">
-                          <textarea name="achievements" placeholder="Các thành tựu nổi bật..." value={formData.achievements || ""} onChange={handleInputChange} className="border p-2 rounded" />
-                          <input name="pitch_deck_url" placeholder="Link video / pitch deck" value={formData.pitch_deck_url || ""} onChange={handleInputChange} className="border p-2 rounded" />
+                          {/* Achievements list */}
+                          {achievements.map((ach, idx) => (
+                            <div
+                              key={idx}
+                              className="relative bg-gray-50 rounded-lg border p-4 mb-4 flex flex-col gap-3 shadow-sm"
+                            >
+                              <div className="flex flex-row items-center gap-3">
+                                <span className="text-yellow-500">
+                                  <FontAwesomeIcon icon={faTrophy} />
+                                </span>
+                                <label className="font-medium text-gray-700 w-32">
+                                  Thành tựu:
+                                </label>
+                                <input
+                                  type="text"
+                                  value={ach.content}
+                                  onChange={(e) =>
+                                    handleAchievementChange(
+                                      idx,
+                                      "content",
+                                      e.target.value
+                                    )
+                                  }
+                                  placeholder={`Nội dung thành tựu #${idx + 1}`}
+                                  className="border p-2 rounded w-full"
+                                />
+                                <button
+                                  type="button"
+                                  className="text-xs text-red-500 px-2"
+                                  onClick={() => removeAchievement(idx)}
+                                  disabled={achievements.length === 1}
+                                >
+                                  X
+                                </button>
+                              </div>
+                              <div className="flex flex-row items-center gap-3">
+                                <span className="text-gray-700">
+                                  <FontAwesomeIcon icon={faFileAlt} />
+                                </span>
+                                <label className="font-medium text-gray-700 w-32">
+                                  Link/Pitch deck:
+                                </label>
+                                <input
+                                  type="text"
+                                  value={ach.link}
+                                  onChange={(e) =>
+                                    handleAchievementChange(
+                                      idx,
+                                      "link",
+                                      e.target.value
+                                    )
+                                  }
+                                  placeholder="Link video / pitch deck (tuỳ chọn)"
+                                  className="border p-2 rounded w-full"
+                                />
+                              </div>
+                            </div>
+                          ))}
+                          <button
+                            type="button"
+                            className="mt-2 px-4 py-2 bg-yellow-100 text-yellow-700 rounded shadow w-fit"
+                            onClick={addAchievement}
+                          >
+                            + Thêm thành tựu
+                          </button>
                         </div>
                       </div>
 
                       {/* Mục tiêu kết nối */}
                       <div>
-                        <h3 className="text-lg font-bold text-yellow-700 mb-4">🤝 Mục tiêu kết nối</h3>
-                        <textarea name="connect_goal" placeholder="Nhà đầu tư, mentor, đối tác..." value={formData.connect_goal || ""} onChange={handleInputChange} className="border p-2 rounded w-full" />
+                        <h3 className="text-lg font-bold text-gray-800 mb-4">
+                          <span className="inline-block mr-2 align-middle">
+                            <FontAwesomeIcon icon={faBullseye} color="#222" />
+                          </span>{" "}
+                          Mục tiêu kết nối
+                        </h3>
+                        <div className="relative">
+                          <span className="absolute left-3 top-3">
+                            <FontAwesomeIcon
+                              icon={faBullseye}
+                              color="#FFD600"
+                            />
+                          </span>
+                          <textarea
+                            name="connect_goal"
+                            placeholder="Nhà đầu tư, mentor, đối tác..."
+                            value={formData?.connect_goal || ""}
+                            onChange={handleInputChange}
+                            onInput={(e) => autoResizeEl(e.target)}
+                            className="border p-2 rounded pl-10 w-full resize-none overflow-hidden auto-resize"
+                          />
+                        </div>
                       </div>
 
                       <div className="flex gap-3 mt-8">
