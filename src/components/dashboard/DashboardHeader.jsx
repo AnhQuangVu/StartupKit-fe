@@ -9,6 +9,7 @@ const DashboardHeader = ({ userType = "founder", isLoggedIn = false }) => {
     title: "Chào mừng !",
     role: "Nhà Khởi Nghiệp",
   });
+  const [showWelcome, setShowWelcome] = useState(false); // State mới để kiểm soát hiển thị welcome
 
   useEffect(() => {
     switch (userType) {
@@ -25,31 +26,47 @@ const DashboardHeader = ({ userType = "founder", isLoggedIn = false }) => {
     }
   }, [userType]);
 
+  // useEffect mới: Hiển thị welcome tạm thời khi navigate đến /dashboard
+  useEffect(() => {
+    if (location.pathname === "/dashboard") {
+      setShowWelcome(true);
+      const timer = setTimeout(() => {
+        setShowWelcome(false);
+      }, 5000); // Ẩn sau 5 giây
+
+      return () => clearTimeout(timer); // Cleanup timer khi component unmount hoặc pathname thay đổi
+    } else {
+      setShowWelcome(false); // Ẩn nếu không ở /dashboard
+    }
+  }, [location.pathname]);
+
   if (!isLoggedIn) {
     return null;
   }
   const isWorkspaceTab = location.pathname === "/dashboard";
 
   return (
-    <div className="flex flex-col md:flex-row justify-between items-center mb-8 px-8 gap-4">
-      {/* Box chào mừng */}
-      <div className="border border-yellow-400 bg-gradient-to-r from-yellow-50 via-white to-yellow-50 rounded-lg px-5 py-3 shadow-sm">
-        <span className="block text-base font-bold text-gray-900 mb-1">
-          {welcomeMessage.title}
-        </span>
-        <span className="block text-sm text-gray-600">
-          Bạn đang làm việc với tư cách{" "}
-          <span className="font-semibold text-yellow-500">
-            {welcomeMessage.role}
-          </span>{" "}
-          !
-        </span>
-      </div>
+    <div className="flex flex-col md:flex-row justify-between items-center mb-2 px-4 md:px-8 gap-4 md:ml-8">
+      {/* Box chào mừng - Chỉ hiển thị tạm thời khi trigger */}
+      {showWelcome && (
+        <div className="border border-yellow-400 bg-gradient-to-r from-yellow-50 via-white to-yellow-50 rounded-lg px-5 py-3 shadow-sm animate-fade-in w-full md:w-auto">
+          <span className="block text-base font-bold text-gray-900 mb-1">
+            {welcomeMessage.title}
+          </span>
+          <span className="block text-sm text-gray-600">
+            Bạn đang làm việc với tư cách{" "}
+            <span className="font-semibold text-yellow-500">
+              {welcomeMessage.role}
+            </span>{" "}
+            !
+          </span>
+        </div>
+      )}
 
       {/* Nút thêm dự án chỉ hiển thị nếu là founder và ở tab Không Gian Làm Việc */}
       {isWorkspaceTab && userType === "founder" && (
         <button
-          className="mt-4 md:mt-0 bg-yellow-400 hover:bg-yellow-500 text-gray-800 font-semibold px-4 py-1 rounded-md shadow transition text-sm flex items-center gap-2 mr-6"
+          className="mt-4 md:mt-0 bg-yellow-400 hover:bg-yellow-500 text-gray-800 font-semibold px-4 py-1 rounded-md shadow transition text-sm flex items-center gap-2"
           onClick={() => navigate("/create-project")}
         >
           <span className="text-lg font-bold">+</span>

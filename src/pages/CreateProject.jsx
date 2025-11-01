@@ -1,6 +1,8 @@
 import React, { useState, useEffect } from "react";
 import { useNavigate, useLocation } from "react-router-dom";
-import ProjectProfileFullForm, { FORM_SECTIONS } from "../components/project/ProjectProfileFullForm";
+import ProjectProfileFullForm, {
+  FORM_SECTIONS,
+} from "../components/project/ProjectProfileFullForm";
 import { useAuth } from "../context/AuthContext";
 import ProjectProfileChatbot from "../components/project/ProjectProfileChatbot";
 // Sidebar các bước tạo hồ sơ
@@ -47,7 +49,7 @@ function ProjectTemplateSelector({ onSelect }) {
   return (
     // mt-24: điện thoại
     // -mt-24: máy tính
-    <div className="bg-white rounded-lg border border-gray-200 shadow-sm p-8 w-full mt-24 lg:-mt-24">
+    <div className="bg-white rounded-lg border border-gray-200 shadow-sm p-8 w-full mt-24 ">
       <h3 className="text-lg font-semibold mb-6">Chọn mẫu hồ sơ khởi nghiệp</h3>
       <div className="flex flex-col lg:flex-row gap-6 mb-6">
         {templates.map((group, idx) => (
@@ -169,6 +171,7 @@ function CreateProject() {
   const role = user?.role || "founder";
   const [currentStep, setCurrentStep] = useState(0); // 0: chọn mẫu, 1: tạo hồ sơ
   const [selectedTemplate, setSelectedTemplate] = useState(null);
+  const [mobileChatbotOpen, setMobileChatbotOpen] = useState(false);
   // Dữ liệu dùng cho ProjectProfileFullForm (new unified form)
   const [form, setForm] = useState({});
   const location = useLocation();
@@ -257,7 +260,7 @@ function CreateProject() {
     );
   }
   return (
-    <div className="min-h-screen bg-gray-50 flex flex-col px-6 py-6">
+    <div className="min-h-screen bg-gray-50 flex flex-col px-6 py-4">
       <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 items-start">
         {/* Sidebar trái: các bước tạo hồ sơ (ẩn khi ở bước Tạo hồ sơ) */}
         {currentStep === 0 && (
@@ -269,7 +272,11 @@ function CreateProject() {
           </div>
         )}
         {/* Nội dung chính */}
-        <div className={`${currentStep === 0 ? "lg:col-span-9" : "lg:col-span-12"} flex items-start justify-center`}>
+        <div
+          className={`${
+            currentStep === 0 ? "lg:col-span-9" : "lg:col-span-12"
+          } flex items-start justify-center`}
+        >
           <div className="w-full min-h-[500px] max-w-[1800px] mx-auto">
             {currentStep === 0 && (
               <div style={{ marginTop: "-97px" }}>
@@ -302,17 +309,24 @@ function CreateProject() {
                       viewBox="0 0 24 24"
                       stroke="currentColor"
                     >
-                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 19l-7-7 7-7" />
+                      <path
+                        strokeLinecap="round"
+                        strokeLinejoin="round"
+                        strokeWidth={2}
+                        d="M15 19l-7-7 7-7"
+                      />
                     </svg>
                     Quay lại
                   </button>
                 </div>
-                <div className="grid grid-cols-1 lg:grid-cols-[220px_minmax(0,1fr)_280px] gap-4 w-full">
+                <div className="grid grid-cols-1 lg:grid-cols-[220px_minmax(0,1fr)_500px] gap-4 w-full">
                   <aside>
                     <div className="sticky top-24">
                       <div className="bg-white rounded-lg border border-gray-200 shadow-sm p-3">
-                        <h4 className="text-sm font-bold text-gray-700 mb-2">Mục lục</h4>
-                        <nav className="space-y-1 max-h-[calc(100vh-160px)] overflow-auto pr-1">
+                        <h4 className="text-sm font-bold text-gray-700 mb-2">
+                          Mục lục
+                        </h4>
+                        <nav className="space-y-1 max-h-[calc(100vh-180px)] overflow-auto pr-1">
                           {FORM_SECTIONS.map((sec, idx) => (
                             <a
                               key={idx}
@@ -326,7 +340,7 @@ function CreateProject() {
                       </div>
                     </div>
                   </aside>
-                  <main>
+                  <main className="lg:max-w-[100%] ">
                     <ProjectProfileFullForm
                       initialData={form}
                       onChange={setForm}
@@ -334,30 +348,34 @@ function CreateProject() {
                       sectionIdPrefix="ppf"
                     />
                   </main>
-                  <aside>
+                  {/* Chatbot sidebar - chỉ hiện trên desktop */}
+                  <aside className="hidden lg:block">
                     <div className="sticky top-24">
-                      <div className="bg-white rounded-lg border border-gray-200 shadow-sm p-3">
-                        <h4 className="text-sm font-bold text-gray-700 mb-2">Trợ lý AI</h4>
-                        <div className="max-h-[calc(100vh-160px)] overflow-auto">
-                          <ProjectProfileChatbot
-                            form={form}
-                            onFillField={(fieldName, value) => {
-                              const fieldMap = {
-                                pain_point: "mainIdea",
-                                solution: "productValue",
-                                product: "products",
-                                targetCustomer: "targetCustomer",
-                                advantage: "advantage",
-                                marketSize: "marketSize",
-                                businessModel: "businessPlan",
-                                finance: "finance",
-                                team: "team",
-                              };
-                              const formField = fieldMap[fieldName] || fieldName;
-                              setForm((prev) => ({ ...prev, [formField]: value }));
-                            }}
-                          />
-                        </div>
+                      <div
+                        className="bg-white rounded-lg border border-gray-200 shadow-sm overflow-hidden"
+                        style={{ height: "calc(100vh - 120px)" }}
+                      >
+                        <ProjectProfileChatbot
+                          form={form}
+                          onFillField={(fieldName, value) => {
+                            const fieldMap = {
+                              pain_point: "mainIdea",
+                              solution: "productValue",
+                              product: "products",
+                              targetCustomer: "targetCustomer",
+                              advantage: "advantage",
+                              marketSize: "marketSize",
+                              businessModel: "businessPlan",
+                              finance: "finance",
+                              team: "team",
+                            };
+                            const formField = fieldMap[fieldName] || fieldName;
+                            setForm((prev) => ({
+                              ...prev,
+                              [formField]: value,
+                            }));
+                          }}
+                        />
                       </div>
                     </div>
                   </aside>
@@ -367,6 +385,72 @@ function CreateProject() {
           </div>
         </div>
       </div>
+
+      {/* Floating chatbot icon và dialog cho mobile - chỉ hiện ở step 1 */}
+      {currentStep === 1 && (
+        <>
+          {/* Floating chatbot icon - ẩn khi mở dialog */}
+          <button
+            className={`fixed bottom-4 right-4 w-12 h-12 bg-[#FFCE23] rounded-full shadow-lg flex items-center justify-center text-black font-semibold text-lg z-50 lg:hidden hover:bg-yellow-500 transition ${
+              mobileChatbotOpen ? "hidden" : ""
+            }`}
+            onClick={() => setMobileChatbotOpen(true)}
+          >
+            💬
+          </button>
+
+          {/* Mobile chatbot dialog - bottom right */}
+          {mobileChatbotOpen && (
+            <>
+              {/* Overlay */}
+              <div
+                className="fixed inset-0 bg-black bg-opacity-50 z-40 lg:hidden"
+                onClick={() => setMobileChatbotOpen(false)}
+              />
+              {/* Chatbot panel */}
+              <div
+                className="fixed bottom-4 right-4 left-4 lg:left-auto lg:w-80 bg-white border border-gray-200 rounded-lg shadow-xl z-50 lg:hidden overflow-hidden flex flex-col"
+                style={{ height: "calc(100vh - 100px)", maxHeight: "700px" }}
+              >
+                {/* Header */}
+                <div className="bg-white border-b border-gray-200 p-3 flex items-center justify-between shrink-0">
+                  <h4 className="text-sm font-bold text-gray-700">Trợ lý AI</h4>
+                  <button
+                    onClick={() => setMobileChatbotOpen(false)}
+                    className="text-gray-500 hover:text-gray-700 text-xl font-bold"
+                  >
+                    ×
+                  </button>
+                </div>
+                {/* Content */}
+                <div className="flex-1 overflow-hidden">
+                  <ProjectProfileChatbot
+                    form={form}
+                    onFillField={(fieldName, value) => {
+                      const fieldMap = {
+                        pain_point: "mainIdea",
+                        solution: "productValue",
+                        product: "products",
+                        targetCustomer: "targetCustomer",
+                        advantage: "advantage",
+                        marketSize: "marketSize",
+                        businessModel: "businessPlan",
+                        finance: "finance",
+                        team: "team",
+                      };
+                      const formField = fieldMap[fieldName] || fieldName;
+                      setForm((prev) => ({
+                        ...prev,
+                        [formField]: value,
+                      }));
+                    }}
+                  />
+                </div>
+              </div>
+            </>
+          )}
+        </>
+      )}
     </div>
   );
 }
