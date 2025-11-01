@@ -170,7 +170,6 @@ export default function UploadProfile() {
         headers: authHeaders(token)
       , timeout: 10000 });
       if (!res.ok) {
-        console.warn('Không load được project', await res.text());
         return;
       }
       const data = await res.json();
@@ -710,10 +709,9 @@ export default function UploadProfile() {
                   alt="Project Banner" 
                   className="w-full h-full object-cover"
                   onError={(e) => {
-                    console.error('Banner image load failed');
                     e.target.style.display = 'none';
                   }}
-                  onLoad={() => console.log('Banner loaded successfully')}
+                  onLoad={() => {}}
                 />
                 {bannerProgress > 0 && bannerProgress < 100 && (
                   <div className="absolute bottom-0 left-0 right-0 bg-black/40 p-2">
@@ -750,10 +748,9 @@ export default function UploadProfile() {
                     alt="Project Logo" 
                     className="w-12 h-12 object-contain"
                     onError={(e) => {
-                      console.error('Logo image load failed');
                       e.target.style.display = 'none';
                     }}
-                    onLoad={() => console.log('Logo loaded successfully')}
+                    onLoad={() => {}}
                   />
                   <label className="absolute inset-0 bg-black/0 group-hover:bg-black/50 flex items-center justify-center cursor-pointer opacity-0 group-hover:opacity-100 rounded transition-all">
                     <span className="text-white text-xs font-semibold">Đổi</span>
