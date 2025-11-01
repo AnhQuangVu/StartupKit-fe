@@ -1,10 +1,11 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useRef } from "react";
 import { useNavigate, useLocation } from "react-router-dom";
 import ProjectProfileFullForm, {
   FORM_SECTIONS,
 } from "../components/project/ProjectProfileFullForm";
 import { useAuth } from "../context/AuthContext";
 import ProjectProfileChatbot from "../components/project/ProjectProfileChatbot";
+
 // Sidebar các bước tạo hồ sơ
 function ProjectSteps({ currentStep, onStepClick }) {
   const steps = [
@@ -169,18 +170,76 @@ function ProjectTemplateSelector({ onSelect }) {
 function CreateProject() {
   const { user } = useAuth();
   const role = user?.role || "founder";
-  const [currentStep, setCurrentStep] = useState(0); // 0: chọn mẫu, 1: tạo hồ sơ
+  const [currentStep, setCurrentStep] = useState(0);
   const [selectedTemplate, setSelectedTemplate] = useState(null);
   const [mobileChatbotOpen, setMobileChatbotOpen] = useState(false);
-  // Dữ liệu dùng cho ProjectProfileFullForm (new unified form)
   const [form, setForm] = useState({});
   const location = useLocation();
+  const mainContainerRef = useRef(null);
+
+  // Ngăn mọi scroll behavior
+  useEffect(() => {
+    // Tắt scroll restoration
+    if ("scrollRestoration" in window.history) {
+      window.history.scrollRestoration = "manual";
+    }
+
+    // Tắt smooth scroll
+    const style = document.createElement("style");
+    style.innerHTML = `
+      * {
+        scroll-behavior: auto !important;
+      }
+      html, body {
+        scroll-behavior: auto !important;
+      }
+    `;
+    document.head.appendChild(style);
+
+    // Ngăn auto-scroll khi focus vào input/textarea
+    const preventScroll = (e) => {
+      if (
+        e.target.tagName === "INPUT" ||
+        e.target.tagName === "TEXTAREA" ||
+        e.target.classList.contains("ql-editor")
+      ) {
+        const scrollX = window.scrollX;
+        const scrollY = window.scrollY;
+
+        setTimeout(() => {
+          window.scrollTo(scrollX, scrollY);
+        }, 0);
+      }
+    };
+
+    document.addEventListener("focus", preventScroll, true);
+
+    return () => {
+      document.head.removeChild(style);
+      document.removeEventListener("focus", preventScroll, true);
+      if ("scrollRestoration" in window.history) {
+        window.history.scrollRestoration = "auto";
+      }
+    };
+  }, []);
+
+  // Ngăn scroll khi form update
+  useEffect(() => {
+    const scrollX = window.scrollX;
+    const scrollY = window.scrollY;
+
+    requestAnimationFrame(() => {
+      window.scrollTo(scrollX, scrollY);
+    });
+  }, [form]);
+
   // If navigated here with a file from UploadProfile, pick it up and set form
   useEffect(() => {
     const state = location.state || {};
     // Xử lý step từ location.state (từ ProfileManagement)
     if (state.step !== undefined) {
       setCurrentStep(state.step);
+      setTimeout(() => window.scrollTo(0, 0), 0);
     }
     // Xử lý project data từ location.state
     if (state.project) {
@@ -229,6 +288,7 @@ function CreateProject() {
         ...mappedData,
       }));
       setCurrentStep(state.step || 1);
+      setTimeout(() => window.scrollTo(0, 0), 0);
     }
     if (state.file) {
       setForm((prev) => ({ ...prev, profileFile: state.file }));
@@ -239,7 +299,7 @@ function CreateProject() {
         }));
       }
       setCurrentStep(1);
-      // Clear history state so repeated reloads don't reapply
+      setTimeout(() => window.scrollTo(0, 0), 0);
       try {
         window.history.replaceState({}, document.title);
       } catch (e) {
@@ -247,6 +307,45 @@ function CreateProject() {
       }
     }
   }, [location.state]);
+
+  // Hàm xử lý update form từ chatbot không gây scroll
+  const handleChatbotFillField = (fieldName, value) => {
+    const scrollX = window.scrollX;
+    const scrollY = window.scrollY;
+
+    const fieldMap = {
+      pain_point: "mainIdea",
+      solution: "productValue",
+      product: "products",
+      targetCustomer: "targetCustomer",
+      advantage: "advantage",
+      marketSize: "marketSize",
+      businessModel: "businessPlan",
+      finance: "finance",
+      team: "team",
+    };
+    const formField = fieldMap[fieldName] || fieldName;
+
+    setForm((prev) => ({
+      ...prev,
+      [formField]: value,
+    }));
+
+    // Khôi phục scroll ngay lập tức
+    requestAnimationFrame(() => {
+      window.scrollTo(scrollX, scrollY);
+    });
+    setTimeout(() => {
+      window.scrollTo(scrollX, scrollY);
+    }, 0);
+    setTimeout(() => {
+      window.scrollTo(scrollX, scrollY);
+    }, 10);
+    setTimeout(() => {
+      window.scrollTo(scrollX, scrollY);
+    }, 50);
+  };
+
   if (role !== "founder") {
     return (
       <div className="max-w-xl mx-auto mt-10 p-6 bg-white rounded shadow text-center">
@@ -259,15 +358,22 @@ function CreateProject() {
       </div>
     );
   }
+
   return (
-    <div className="min-h-screen bg-gray-50 flex flex-col px-6 py-4">
+    <div
+      className="min-h-screen bg-gray-50 flex flex-col px-6 py-4"
+      ref={mainContainerRef}
+    >
       <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 items-start">
         {/* Sidebar trái: các bước tạo hồ sơ (ẩn khi ở bước Tạo hồ sơ) */}
         {currentStep === 0 && (
           <div className="lg:col-span-3 flex flex-col gap-6">
             <ProjectSteps
               currentStep={currentStep}
-              onStepClick={setCurrentStep}
+              onStepClick={(step) => {
+                setCurrentStep(step);
+                setTimeout(() => window.scrollTo(0, 0), 0);
+              }}
             />
           </div>
         )}
@@ -285,10 +391,9 @@ function CreateProject() {
                     if (val && val.type === "uploaded" && val.file) {
                       setForm((prev) => ({ ...prev, profileFile: val.file }));
                       setSelectedTemplate("Uploaded CV");
-                      setCurrentStep(1);
-                      return;
                     }
                     setCurrentStep(1);
+                    setTimeout(() => window.scrollTo(0, 0), 0);
                   }}
                 />
               </div>
@@ -296,10 +401,12 @@ function CreateProject() {
             {currentStep === 1 && (
               <div className="w-full" style={{ marginTop: 0 }}>
                 <div className="flex items-center justify-between mb-3">
-                  <div />
                   <button
                     type="button"
-                    onClick={() => setCurrentStep(0)}
+                    onClick={() => {
+                      setCurrentStep(0);
+                      setTimeout(() => window.scrollTo(0, 0), 0);
+                    }}
                     className="inline-flex items-center gap-2 px-3 py-1.5 rounded-md border border-gray-300 text-sm text-gray-700 bg-white hover:bg-gray-50"
                   >
                     <svg
@@ -318,6 +425,7 @@ function CreateProject() {
                     </svg>
                     Quay lại
                   </button>
+                  <div />
                 </div>
                 <div className="grid grid-cols-1 lg:grid-cols-[220px_minmax(0,1fr)_500px] gap-4 w-full">
                   <aside>
@@ -340,8 +448,9 @@ function CreateProject() {
                       </div>
                     </div>
                   </aside>
-                  <main className="lg:max-w-[100%] ">
+                  <main className="lg:max-w-[100%]">
                     <ProjectProfileFullForm
+                      key="project-profile-form"
                       initialData={form}
                       onChange={setForm}
                       compact
@@ -353,28 +462,14 @@ function CreateProject() {
                     <div className="sticky top-24">
                       <div
                         className="bg-white rounded-lg border border-gray-200 shadow-sm overflow-hidden"
-                        style={{ height: "calc(100vh - 120px)" }}
+                        style={{
+                          height: "calc(100vh - 120px)",
+                          maxHeight: "670px",
+                        }}
                       >
                         <ProjectProfileChatbot
                           form={form}
-                          onFillField={(fieldName, value) => {
-                            const fieldMap = {
-                              pain_point: "mainIdea",
-                              solution: "productValue",
-                              product: "products",
-                              targetCustomer: "targetCustomer",
-                              advantage: "advantage",
-                              marketSize: "marketSize",
-                              businessModel: "businessPlan",
-                              finance: "finance",
-                              team: "team",
-                            };
-                            const formField = fieldMap[fieldName] || fieldName;
-                            setForm((prev) => ({
-                              ...prev,
-                              [formField]: value,
-                            }));
-                          }}
+                          onFillField={handleChatbotFillField}
                         />
                       </div>
                     </div>
@@ -409,15 +504,14 @@ function CreateProject() {
               />
               {/* Chatbot panel */}
               <div
-                className="fixed bottom-4 right-4 left-4 lg:left-auto lg:w-80 bg-white border border-gray-200 rounded-lg shadow-xl z-50 lg:hidden overflow-hidden flex flex-col"
+                className="fixed bottom-4 right-4 left-4 lg:left-auto lg:w-80 bg-white rounded-lg shadow-xl z-50 lg:hidden overflow-hidden flex flex-col"
                 style={{ height: "calc(100vh - 100px)", maxHeight: "700px" }}
               >
-                {/* Header */}
-                <div className="bg-white border-b border-gray-200 p-3 flex items-center justify-between shrink-0">
-                  <h4 className="text-sm font-bold text-gray-700">Trợ lý AI</h4>
+                {/* Nút đóng trên banner */}
+                <div className="absolute top-3 right-3 z-50">
                   <button
                     onClick={() => setMobileChatbotOpen(false)}
-                    className="text-gray-500 hover:text-gray-700 text-xl font-bold"
+                    className="w-8 h-8 bg-white bg-opacity-20 hover:bg-opacity-30 backdrop-blur-sm rounded-full flex items-center justify-center text-white text-xl font-bold shadow-lg transition"
                   >
                     ×
                   </button>
@@ -426,24 +520,7 @@ function CreateProject() {
                 <div className="flex-1 overflow-hidden">
                   <ProjectProfileChatbot
                     form={form}
-                    onFillField={(fieldName, value) => {
-                      const fieldMap = {
-                        pain_point: "mainIdea",
-                        solution: "productValue",
-                        product: "products",
-                        targetCustomer: "targetCustomer",
-                        advantage: "advantage",
-                        marketSize: "marketSize",
-                        businessModel: "businessPlan",
-                        finance: "finance",
-                        team: "team",
-                      };
-                      const formField = fieldMap[fieldName] || fieldName;
-                      setForm((prev) => ({
-                        ...prev,
-                        [formField]: value,
-                      }));
-                    }}
+                    onFillField={handleChatbotFillField}
                   />
                 </div>
               </div>
@@ -454,4 +531,5 @@ function CreateProject() {
     </div>
   );
 }
+
 export default CreateProject;
