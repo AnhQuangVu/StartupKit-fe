@@ -326,7 +326,7 @@ function CreateProject() {
                         <h4 className="text-sm font-bold text-gray-700 mb-2">
                           Mục lục
                         </h4>
-                        <nav className="space-y-1 max-h-[calc(100vh-160px)] overflow-auto pr-1">
+                        <nav className="space-y-1 max-h-[calc(100vh-180px)] overflow-auto pr-1">
                           {FORM_SECTIONS.map((sec, idx) => (
                             <a
                               key={idx}
@@ -351,34 +351,31 @@ function CreateProject() {
                   {/* Chatbot sidebar - chỉ hiện trên desktop */}
                   <aside className="hidden lg:block">
                     <div className="sticky top-24">
-                      <div className="bg-white rounded-lg border border-gray-200 shadow-sm p-3">
-                        <h4 className="text-sm font-bold text-gray-700 mb-2">
-                          Trợ lý AI
-                        </h4>
-                        <div className="max-h-[calc(100vh-160px)] overflow-auto">
-                          <ProjectProfileChatbot
-                            form={form}
-                            onFillField={(fieldName, value) => {
-                              const fieldMap = {
-                                pain_point: "mainIdea",
-                                solution: "productValue",
-                                product: "products",
-                                targetCustomer: "targetCustomer",
-                                advantage: "advantage",
-                                marketSize: "marketSize",
-                                businessModel: "businessPlan",
-                                finance: "finance",
-                                team: "team",
-                              };
-                              const formField =
-                                fieldMap[fieldName] || fieldName;
-                              setForm((prev) => ({
-                                ...prev,
-                                [formField]: value,
-                              }));
-                            }}
-                          />
-                        </div>
+                      <div
+                        className="bg-white rounded-lg border border-gray-200 shadow-sm overflow-hidden"
+                        style={{ height: "calc(100vh - 120px)" }}
+                      >
+                        <ProjectProfileChatbot
+                          form={form}
+                          onFillField={(fieldName, value) => {
+                            const fieldMap = {
+                              pain_point: "mainIdea",
+                              solution: "productValue",
+                              product: "products",
+                              targetCustomer: "targetCustomer",
+                              advantage: "advantage",
+                              marketSize: "marketSize",
+                              businessModel: "businessPlan",
+                              finance: "finance",
+                              team: "team",
+                            };
+                            const formField = fieldMap[fieldName] || fieldName;
+                            setForm((prev) => ({
+                              ...prev,
+                              [formField]: value,
+                            }));
+                          }}
+                        />
                       </div>
                     </div>
                   </aside>
@@ -411,9 +408,12 @@ function CreateProject() {
                 onClick={() => setMobileChatbotOpen(false)}
               />
               {/* Chatbot panel */}
-              <div className="fixed bottom-4 right-4 w-80 h-[500px] bg-white border border-gray-200 rounded-lg shadow-xl z-50 lg:hidden overflow-hidden flex flex-col">
+              <div
+                className="fixed bottom-4 right-4 left-4 lg:left-auto lg:w-80 bg-white border border-gray-200 rounded-lg shadow-xl z-50 lg:hidden overflow-hidden flex flex-col"
+                style={{ height: "calc(100vh - 100px)", maxHeight: "700px" }}
+              >
                 {/* Header */}
-                <div className="sticky top-0 bg-white border-b border-gray-200 p-3 flex items-center justify-between z-10">
+                <div className="bg-white border-b border-gray-200 p-3 flex items-center justify-between shrink-0">
                   <h4 className="text-sm font-bold text-gray-700">Trợ lý AI</h4>
                   <button
                     onClick={() => setMobileChatbotOpen(false)}
@@ -423,7 +423,7 @@ function CreateProject() {
                   </button>
                 </div>
                 {/* Content */}
-                <div className="flex-1 overflow-y-auto p-3">
+                <div className="flex-1 overflow-hidden">
                   <ProjectProfileChatbot
                     form={form}
                     onFillField={(fieldName, value) => {

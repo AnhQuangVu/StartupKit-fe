@@ -32,7 +32,7 @@ const DashboardHeader = ({ userType = "founder", isLoggedIn = false }) => {
       setShowWelcome(true);
       const timer = setTimeout(() => {
         setShowWelcome(false);
-      }, 3000); // Ẩn sau 5 giây
+      }, 5000); // Ẩn sau 5 giây
 
       return () => clearTimeout(timer); // Cleanup timer khi component unmount hoặc pathname thay đổi
     } else {
@@ -46,10 +46,10 @@ const DashboardHeader = ({ userType = "founder", isLoggedIn = false }) => {
   const isWorkspaceTab = location.pathname === "/dashboard";
 
   return (
-    <div className="flex flex-col md:flex-row justify-between items-center mb-2 px-8 gap-4">
+    <div className="flex flex-col md:flex-row justify-between items-center mb-2 px-4 md:px-8 gap-4 md:ml-8">
       {/* Box chào mừng - Chỉ hiển thị tạm thời khi trigger */}
       {showWelcome && (
-        <div className="border border-yellow-400 bg-gradient-to-r from-yellow-50 via-white to-yellow-50 rounded-lg px-5 py-3 shadow-sm animate-fade-in">
+        <div className="border border-yellow-400 bg-gradient-to-r from-yellow-50 via-white to-yellow-50 rounded-lg px-5 py-3 shadow-sm animate-fade-in w-full md:w-auto">
           <span className="block text-base font-bold text-gray-900 mb-1">
             {welcomeMessage.title}
           </span>
@@ -66,7 +66,7 @@ const DashboardHeader = ({ userType = "founder", isLoggedIn = false }) => {
       {/* Nút thêm dự án chỉ hiển thị nếu là founder và ở tab Không Gian Làm Việc */}
       {isWorkspaceTab && userType === "founder" && (
         <button
-          className="mt-4 md:mt-0 bg-yellow-400 hover:bg-yellow-500 text-gray-800 font-semibold px-4 py-1 rounded-md shadow transition text-sm flex items-center gap-2 mr-6"
+          className="mt-4 md:mt-0 bg-yellow-400 hover:bg-yellow-500 text-gray-800 font-semibold px-4 py-1 rounded-md shadow transition text-sm flex items-center gap-2"
           onClick={() => navigate("/create-project")}
         >
           <span className="text-lg font-bold">+</span>
