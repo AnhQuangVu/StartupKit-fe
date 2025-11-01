@@ -18,6 +18,7 @@ import Platform from "./pages/Platform";
 import UploadProfile from "./pages/profile/UploadProfile";
 import DienDan from "./pages/DienDan";
 import ProjectDetailPage from "./pages/ProjectDetailPage";
+import PublicProfile from "./pages/PublicProfile";
 
 export default function App() {
   return (
@@ -47,6 +48,7 @@ export default function App() {
       <Route path="/platform" element={<Platform />} />
       <Route path="/projects/:projectId" element={<ProjectDetailPage />} />
   <Route path="/profile/upload" element={<UploadProfile />} />
+  <Route path="/public-profile" element={<PublicProfile />} />
     </Routes>
     </ErrorBoundary>
   );

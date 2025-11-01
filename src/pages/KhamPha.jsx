@@ -58,29 +58,28 @@ export default function KhamPha() {
 
   // Reset all filters and reload initial projects
   const handleReset = async () => {
-    setQuery('');
-    setCategory('all');
-    setStage('all');
-    setError('');
-    
+    setQuery("");
+    setCategory("all");
+    setStage("all");
+    setError("");
+    setSearchParams({}, { replace: true }); // Xóa toàn bộ params trên URL
     // Abort any ongoing request
     if (abortRef.current) abortRef.current.abort();
-    
     // Reload all projects
     const controller = new AbortController();
     abortRef.current = controller;
     setLoading(true);
     try {
       const { items, nextCursor: nc, total: tt } = await searchPublishedProjects(
-        { limit: 24, sort: "-created_at" }, 
+        { limit: 24, sort: "-created_at" },
         { signal: controller.signal }
       );
       setResults(items || []);
       setNextCursor(nc || null);
       setTotal(tt ?? (items ? items.length : 0));
     } catch (err) {
-      if (err.name !== 'AbortError') {
-        console.error('Reset load error', err);
+      if (err.name !== "AbortError") {
+        console.error("Reset load error", err);
       }
     } finally {
       setLoading(false);
