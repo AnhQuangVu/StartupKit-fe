@@ -1,4 +1,5 @@
 import React, { useState } from "react";
+import NotificationBell from "../common/NotificationBell";
 import { useAuth } from "../../context/AuthContext";
 import { Link, useLocation, useNavigate } from "react-router-dom";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
@@ -118,7 +119,8 @@ function Navbar() {
         </nav>
 
         {/* Desktop buttons hoặc icon người dùng */}
-        <div className="hidden md:flex gap-3 ml-8 items-center">
+  <div className="hidden md:flex gap-3 ml-8 items-center">
+          <NotificationBell />
           {!isLoggedIn ? (
             <>
               <button
@@ -223,7 +225,7 @@ function Navbar() {
             {!isLoggedIn ? (
               <>
                 <button
-                  className="py-2 w-full text-left bg-white border-b border-gray-200 border-[#FFCE23] text-black font-semibold rounded-md text-sm hover:bg-[#FFF9E0] transition-all duration-200 mt-2"
+                  className="py-2 w-full text-left bg-white border-b border-[#FFCE23] text-black font-semibold rounded-md text-sm hover:bg-[#FFF9E0] transition-all duration-200 mt-2"
                   onClick={() => {
                     handleRegister();
                     closeMenu();

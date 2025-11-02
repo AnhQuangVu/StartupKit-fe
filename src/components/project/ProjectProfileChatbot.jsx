@@ -6,7 +6,7 @@ export default function ProjectProfileChatbot({ form, onFillField }) {
   const [messages, setMessages] = useState([
     {
       sender: "bot",
-      text: "Xin chào! 🤖 Tôi là AI Assistant. Tôi có thể giúp bạn gợi ý điền các field, phân tích thị trường, tạo kế hoạch kinh doanh... Hỏi tôi gì đi!",
+      text: "Xin chào! 🤖 Tôi là Creata. Tôi có thể giúp bạn gợi ý điền các field, phân tích thị trường, tạo kế hoạch kinh doanh... Hỏi tôi gì đi!",
     },
   ]);
   const [input, setInput] = useState("");
@@ -245,10 +245,10 @@ export default function ProjectProfileChatbot({ form, onFillField }) {
             <img src={iconAI} alt="AI" className="w-full h-full object-cover" />
           </div>
           <div>
-            <h3 className="font-bold text-lg tracking-wide">Trợ Lý AI</h3>
+            <h3 className="font-bold text-lg tracking-wide">Trợ Lý Creata</h3>
             <p className="text-xs text-yellow-100 font-light">
               Gợi ý thông minh cho dự án
-            </p>
+            </p>     
           </div>
         </div>
       </div>

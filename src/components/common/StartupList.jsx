@@ -18,94 +18,64 @@ export default function StartupList({ small = false, columns, rows }) {
 
   // Mock data as fallback - KHÔNG THAY ĐỔI
   const getMockData = () => {
-    return [
-      {
-        id: 1,
-        logo_url: "https://picsum.photos/300/300?random=1",
-        name: "TechFlow",
-        description: "Nền tảng tự động hóa quy trình bằng AI, giúp doanh nghiệp tăng hiệu suất và giảm chi phí.",
-        industry: "SaaS",
-        members: 25,
-        capital_source: "$2M",
-        stage: 'production',
-        website_url: "/projects/1",
-        market_size: "2000000",
-        customer_segment: "B2B, SMEs",
-        deployment_location: "Hà Nội",
-        team_image: { url: "https://picsum.photos/600/200?random=1" }
-      },
-      {
-        id: 2,
-        logo_url: "https://picsum.photos/300/300?random=2",
-        name: "FinanceHub",
-        description: "Giải pháp tài chính thông minh, tối ưu hóa dòng tiền cho doanh nghiệp vừa và nhỏ.",
-        industry: "Fintech",
-        members: 12,
-        capital_source: "$500K",
-        stage: 'beta',
-        website_url: "https://financehub.com/project/2",
-        market_size: "500000",
-        customer_segment: "DNVVN",
-        deployment_location: "TP.HCM",
-        team_image: { url: "https://picsum.photos/600/200?random=2" }
-      },
-      // ... (Giữ nguyên các mục mock data khác và thêm các key mới cần thiết nếu thiếu)
-      // Để đảm bảo LightStartupCard hoạt động, tôi sẽ thêm các key tương ứng
-      {
-             market_area: "Hà Nội",
-      },
-      {
-        id: 4, logo_url: "https://picsum.photos/300/300?random=4", name: "HealthPlus", description: "Giải pháp y tế số, kết nối bệnh nhân với chuyên gia hàng đầu.", industry: "Healthtech", members: 30, capital_source: "$3M", website_url: "/projects/4", stage: 'launch', market_size: "3000000", customer_segment: "Bệnh nhân & Chuyên gia", deployment_location: "Singapore", team_image: { url: "https://picsum.photos/600/200?random=4" }
-      },
-      {
-        id: 5, logo_url: "https://picsum.photos/300/300?random=5", name: "GreenTech", description: "Khởi nghiệp năng lượng xanh, phát triển công nghệ sạch cho tương lai.", industry: "Energy", members: 15, capital_source: "$800K", website_url: "/projects/5", stage: 'prototype', market_size: "800000", customer_segment: "Doanh nghiệp sản xuất", deployment_location: "Đà Nẵng", team_image: { url: "https://picsum.photos/600/200?random=5" }
-      },
-      {
-        id: 6, logo_url: "https://picsum.photos/300/300?random=6", name: "StayConnect", description: "Nền tảng kết nối chỗ ở toàn cầu", industry: "Travel", members: 20, capital_source: "$1.5M", website_url: "/projects/6", stage: 'production', market_size: "1500000", customer_segment: "Du khách", deployment_location: "Quốc tế"
-      },
-      {
-        id: 7, logo_url: "https://picsum.photos/300/300?random=7", name: "LinguaPro", description: "Ứng dụng học ngôn ngữ thông minh", industry: "Edtech", members: 18, capital_source: "$400K", website_url: "/projects/7", stage: 'beta', market_size: "400000", customer_segment: "Người học ngoại ngữ", deployment_location: "Châu Á"
-      },
-      {
-             market_area: "TP.HCM",
-      },
-      {
-        id: 9, logo_url: "https://picsum.photos/300/300?random=9", name: "ShopMaster", description: "Nền tảng thương mại điện tử cho SMEs", industry: "Ecommerce", members: 16, capital_source: "$600K", website_url: "/projects/9", stage: 'production', market_size: "600000", customer_segment: "SMEs", deployment_location: "Hà Nội"
-      },
-      {
-        id: 10, logo_url: "https://picsum.photos/300/300?random=10", name: "TravelGo", description: "Đặt vé du lịch toàn cầu", industry: "Travel", members: 14, capital_source: "$900K", website_url: "/projects/10", stage: 'production', market_size: "900000", customer_segment: "Khách du lịch", deployment_location: "Toàn cầu"
-      },
-      {
-        id: 11, logo_url: "https://picsum.photos/300/300?random=11", name: "RideNow", description: "Ứng dụng gọi xe thông minh", industry: "Mobility", members: 28, capital_source: "$2.5M", website_url: "/projects/11", stage: 'launch', market_size: "2500000", customer_segment: "Người dùng phương tiện", deployment_location: "TP.HCM"
-      },
-      {
-        id: 12, logo_url: "https://picsum.photos/300/300?random=12", name: "Foodie", description: "Giao đồ ăn nhanh chóng", industry: "Foodtech", members: 11, capital_source: "$350K", website_url: "/projects/12", stage: 'alpha', market_size: "350000", customer_segment: "Khách hàng cá nhân", deployment_location: "Hà Nội"
-      },
-      {
-        id: 13, logo_url: "https://picsum.photos/300/300?random=13", name: "MeetPro", description: "Giải pháp họp trực tuyến cho doanh nghiệp", industry: "SaaS", members: 24, capital_source: "$1.8M", website_url: "/projects/13", stage: 'production', market_size: "1800000", customer_segment: "B2B", deployment_location: "Quốc tế"
-      },
-      {
-        id: 14, logo_url: "https://picsum.photos/300/300?random=14", name: "TeamSync", description: "Kết nối nhóm làm việc hiệu quả", industry: "Productivity", members: 19, capital_source: "$1.1M", website_url: "/projects/14", stage: 'beta', market_size: "1100000", customer_segment: "Đội nhóm", deployment_location: "Toàn cầu"
-      },
-      {
-        id: 15, logo_url: "https://picsum.photos/300/300?random=15", name: "CryptoBase", description: "Nền tảng giao dịch tiền số", industry: "Fintech", members: 26, capital_source: "$2.2M", website_url: "/projects/15", stage: 'production', market_size: "2200000", customer_segment: "Nhà đầu tư crypto", deployment_location: "Singapore"
-      },
-      {
-        id: 16, logo_url: "https://picsum.photos/300/300?random=16", name: "MusicWave", description: "Ứng dụng nghe nhạc thông minh", industry: "Entertainment", members: 17, capital_source: "$700K", website_url: "/projects/16", stage: 'alpha', market_size: "700000", customer_segment: "Người yêu nhạc", deployment_location: "Việt Nam"
-      },
-      {
-        id: 17, logo_url: "https://picsum.photos/300/300?random=17", name: "BlogMaster", description: "Nền tảng chia sẻ kiến thức", industry: "Content", members: 13, capital_source: "$450K", website_url: "/projects/17", stage: 'launch', market_size: "450000", customer_segment: "Blogger & Độc giả", deployment_location: "Toàn quốc"
-      },
-      {
-        id: 18, logo_url: "https://picsum.photos/300/300?random=18", name: "DesignHub", description: "Thiết kế cộng tác cho startup", industry: "Design", members: 21, capital_source: "$1.3M", website_url: "/projects/18", stage: 'production', market_size: "1300000", customer_segment: "Designer", deployment_location: "TP.HCM"
-      },
-      {
-        id: 19, logo_url: "https://picsum.photos/300/300?random=19", name: "CodeBase", description: "Quản lý mã nguồn cho nhóm dev", industry: "Devtools", members: 29, capital_source: "$2.7M", website_url: "/projects/19", stage: 'production', market_size: "2700000", customer_segment: "Developer", deployment_location: "Quốc tế"
-      },
-      {
-        id: 20, logo_url: "https://picsum.photos/300/300?random=20", name: "TaskFlow", description: "Quản lý dự án trực quan", industry: "Productivity", members: 10, capital_source: "$250K", website_url: "/projects/20", stage: 'y-tuong', market_size: "250000", customer_segment: "Quản lý dự án", deployment_location: "Hà Nội"
-      },
-    ];
+    return Array.from({ length: 20 }, (_, i) => {
+      const id = i + 1;
+      return {
+        id,
+        logo_url: `https://picsum.photos/300/300?random=${id}`,
+        name: [
+          "TechFlow", "FinanceHub", "HealthPlus", "GreenTech", "StayConnect", "LinguaPro", "ShopMaster", "TravelGo", "RideNow", "Foodie",
+          "MeetPro", "TeamSync", "CryptoBase", "MusicWave", "BlogMaster", "DesignHub", "CodeBase", "TaskFlow", "EduPro", "BizConnect"
+        ][i] || `Startup ${id}`,
+        description: `Mô tả dự án ${id} - demo startup sáng tạo lĩnh vực ${[
+          "AI", "Fintech", "Healthtech", "Energy", "Travel", "Edtech", "Ecommerce", "Mobility", "Foodtech", "SaaS",
+          "Productivity", "Crypto", "Entertainment", "Content", "Design", "Devtools", "Education", "Business", "Logistics", "HR"
+        ][i] || "Khởi nghiệp"}.`,
+        industry: [
+          "SaaS", "Fintech", "Healthtech", "Energy", "Travel", "Edtech", "Ecommerce", "Mobility", "Foodtech", "SaaS",
+          "Productivity", "Crypto", "Entertainment", "Content", "Design", "Devtools", "Education", "Business", "Logistics", "HR"
+        ][i] || "Startup",
+        members: 10 + i * 2,
+        capital_source: `$${(i + 1) * 100}K`,
+        stage: ["production", "beta", "launch", "prototype", "alpha", "y-tuong"][i % 6],
+        website_url: `/projects/${id}`,
+        market_size: `${(i + 1) * 100000}`,
+        customer_segment: [
+          "B2B, SMEs", "DNVVN", "Bệnh nhân & Chuyên gia", "Doanh nghiệp sản xuất", "Du khách", "Người học ngoại ngữ", "SMEs", "Khách du lịch", "Người dùng phương tiện", "Khách hàng cá nhân",
+          "B2B", "Đội nhóm", "Nhà đầu tư crypto", "Người yêu nhạc", "Blogger & Độc giả", "Designer", "Developer", "Quản lý dự án", "Học sinh", "Doanh nghiệp"
+        ][i] || "Khách hàng demo",
+        deployment_location: [
+          "Hà Nội", "TP.HCM", "Singapore", "Đà Nẵng", "Quốc tế", "Châu Á", "Hà Nội", "Toàn cầu", "TP.HCM", "Hà Nội",
+          "Quốc tế", "Toàn cầu", "Singapore", "Việt Nam", "Toàn quốc", "TP.HCM", "Quốc tế", "Hà Nội", "TP.HCM", "Hà Nội"
+        ][i] || "Việt Nam",
+        team_image: { url: `https://picsum.photos/600/200?random=${id}` },
+        founder: {
+          id: 100 + id,
+          name: `Founder ${id}`,
+          avatar: `https://picsum.photos/100/100?random=${100 + id}`,
+          role: "Founder & CEO",
+          bio: `Founder dự án ${id}, chuyên gia lĩnh vực ${[
+            "AI", "Fintech", "Healthtech", "Energy", "Travel", "Edtech", "Ecommerce", "Mobility", "Foodtech", "SaaS",
+            "Productivity", "Crypto", "Entertainment", "Content", "Design", "Devtools", "Education", "Business", "Logistics", "HR"
+          ][i] || "Khởi nghiệp"}.`,
+          email: `founder${id}@startup.com`,
+          phone: `+84 91234${1000 + id}`,
+          linkedin: `https://linkedin.com/in/founder${id}`,
+          facebook: `https://facebook.com/founder${id}`
+        },
+        followers: 1000 + id * 10,
+        created_at: `2025-10-${(id % 28) + 1}T09:00:00Z`,
+        updated_at: `2025-11-${(id % 28) + 1}T10:00:00Z`,
+        tags: ["Demo", "Startup", [
+          "AI", "Fintech", "Healthtech", "Energy", "Travel", "Edtech", "Ecommerce", "Mobility", "Foodtech", "SaaS",
+          "Productivity", "Crypto", "Entertainment", "Content", "Design", "Devtools", "Education", "Business", "Logistics", "HR"
+        ][i] || "Khởi nghiệp"],
+        achievements: [
+          { content: `Giải thưởng demo ${id}`, link: `https://award.com/startup${id}` },
+          { content: `Top ${id} Startup Việt Nam 2025`, link: `https://startupaward.vn/startup${id}` }
+        ]
+      };
+    });
   };
 
   const fetchPublishedProjects = async () => {
