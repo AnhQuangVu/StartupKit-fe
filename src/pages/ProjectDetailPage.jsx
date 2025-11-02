@@ -324,11 +324,20 @@ const ProjectDetailsContent = ({ project }) => {
 
 // ProjectAboutAndDetails (Phải định nghĩa trước ProjectContentTabs)
 const ProjectAboutAndDetails = ({ project }) => {
+    const navigate = useNavigate();
+    const handleFounderClick = () => {
+        console.log('Founder data:', project.founder);
+        if (project.founder && project.founder.id) {
+            navigate(`/public-profile/${project.founder.id}`);
+        } else {
+            alert('Không có thông tin id của founder!');
+        }
+    };
     return (
         <>
             {/* Tác giả (Founder) */}
             {project.founder && (
-                <div className="mb-6 p-4 bg-white rounded-xl border border-gray-200 shadow-sm flex items-center gap-4">
+                <div className="mb-6 p-4 bg-white rounded-xl border border-gray-200 shadow-sm flex items-center gap-4 cursor-pointer hover:bg-gray-50 transition" onClick={handleFounderClick}>
                     {project.founder.avatar && (
                         <img src={project.founder.avatar} alt={project.founder.name} className="w-14 h-14 rounded-full object-cover border-2 border-gray-200" />
                     )}

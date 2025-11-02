@@ -48,7 +48,7 @@ export default function App() {
       <Route path="/platform" element={<Platform />} />
       <Route path="/projects/:projectId" element={<ProjectDetailPage />} />
   <Route path="/profile/upload" element={<UploadProfile />} />
-  <Route path="/public-profile" element={<PublicProfile />} />
+  <Route path="/public-profile/:id" element={<PublicProfile />} />
     </Routes>
     </ErrorBoundary>
   );

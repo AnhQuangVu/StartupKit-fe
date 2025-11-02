@@ -1,5 +1,6 @@
-import React from "react";
-import { useLocation } from "react-router-dom";
+import React, { useEffect, useState } from "react";
+import { useParams, useLocation } from "react-router-dom";
+import { API_BASE } from "../config/api";
 import Navbar from "../components/layout/Navbar";
 import Footer from "../components/layout/Footer";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
@@ -7,54 +8,124 @@ import { faUser, faBuilding, faTrophy, faBullseye, faGlobe } from "@fortawesome/
 import { faFacebook, faLinkedin } from "@fortawesome/free-brands-svg-icons";
 
 const PublicProfile = () => {
+  const { id } = useParams();
   const location = useLocation();
   const state = location.state || {};
-  // DEBUG: Log navigation state and avatar/banner URLs
-  console.log('PublicProfile location.state:', state);
-  console.log('Avatar URL:', state.formData?.avatar_url);
-  console.log('Banner URL:', state.formData?.cover_url);
-  // fallback to mock data if not provided
-  const user = {
-    avatar: state.formData?.avatar_url || "",
-    cover: state.formData?.cover_url || "",
-    name: state.formData?.full_name || "",
-    role: state.formData?.role || "Founder",
-    bio: state.formData?.bio || "",
-    location: state.formData?.location || "",
-    website: state.formData?.website_url || "",
-    phone: state.formData?.phone || "",
-    address: state.formData?.address || "",
-    company: state.formData?.company || "",
-    facebook: state.formData?.facebook || "",
-    linkedin: state.formData?.linkedin || "",
-    achievements: Array.isArray(state.achievements)
-      ? state.achievements.map(a => a.content).filter(Boolean).join(", ")
-      : "",
-    achievementLinks: Array.isArray(state.achievements)
-      ? state.achievements.map(a => a.link).filter(Boolean)
-      : [],
-    pitch_deck_url: state.formData?.pitch_deck_url || "",
-    startups: Array.isArray(state.startups) && state.startups.length > 0
-      ? state.startups
-      : [],
-    goal: state.formData?.connect_goal || "",
-  };
+  const [user, setUser] = useState(null);
+  const [loading, setLoading] = useState(true);
+  useEffect(() => {
+    async function fetchFounder() {
+      if (id) {
+        setLoading(true);
+        try {
+          const token = localStorage.getItem('token');
+          const headers = token ? { Authorization: `Bearer ${token}` } : {};
+          const response = await fetch(`http://127.0.0.1:8000/public/users/${id}`, { headers });
+          if (response.ok) {
+            const data = await response.json();
+            setUser({
+              avatar: data.avatar_url || data.avatar || "",
+              cover: data.cover_url || data.cover || "",
+              name: data.full_name || data.name || "",
+              role: data.role || "Founder",
+              bio: data.bio || "",
+              location: data.location || "",
+              website: data.website_url || "",
+              phone: data.phone || "",
+              address: data.address || "",
+              company: data.company || "",
+              facebook: data.facebook || "",
+              linkedin: data.linkedin || "",
+              achievements: Array.isArray(data.achievements)
+                ? data.achievements.map(a => a.content).filter(Boolean).join(", ")
+                : "",
+              achievementLinks: Array.isArray(data.achievements)
+                ? data.achievements.map(a => a.link).filter(Boolean)
+                : [],
+              pitch_deck_url: data.pitch_deck_url || "",
+              startups: Array.isArray(data.startups) && data.startups.length > 0
+                ? data.startups
+                : [],
+              goal: data.connect_goal || "",
+            });
+          } else {
+            setUser(null);
+          }
+        } catch (err) {
+          setUser(null);
+        } finally {
+          setLoading(false);
+        }
+      } else if (state.formData) {
+        // fallback: lấy từ location.state nếu có
+        setUser({
+          avatar: state.formData?.avatar_url || "",
+          cover: state.formData?.cover_url || "",
+          name: state.formData?.full_name || "",
+          role: state.formData?.role || "Founder",
+          bio: state.formData?.bio || "",
+          location: state.formData?.location || "",
+          website: state.formData?.website_url || "",
+          phone: state.formData?.phone || "",
+          address: state.formData?.address || "",
+          company: state.formData?.company || "",
+          facebook: state.formData?.facebook || "",
+          linkedin: state.formData?.linkedin || "",
+          achievements: Array.isArray(state.achievements)
+            ? state.achievements.map(a => a.content).filter(Boolean).join(", ")
+            : "",
+          achievementLinks: Array.isArray(state.achievements)
+            ? state.achievements.map(a => a.link).filter(Boolean)
+            : [],
+          pitch_deck_url: state.formData?.pitch_deck_url || "",
+          startups: Array.isArray(state.startups) && state.startups.length > 0
+            ? state.startups
+            : [],
+          goal: state.formData?.connect_goal || "",
+        });
+        setLoading(false);
+      }
+    }
+    fetchFounder();
+  }, [id]);
 
+  if (loading) {
+    return (
+      <div className="min-h-screen bg-gray-50 flex flex-col">
+        <Navbar />
+        <div className="flex flex-col items-center justify-center flex-1 py-8 px-2">
+          <div className="text-xl text-gray-500">Đang tải thông tin...</div>
+        </div>
+        <Footer />
+      </div>
+    );
+  }
+  if (!user) {
+    return (
+      <div className="min-h-screen bg-gray-50 flex flex-col">
+        <Navbar />
+        <div className="flex flex-col items-center justify-center flex-1 py-8 px-2">
+          <div className="text-xl text-gray-500">Không tìm thấy thông tin người dùng.</div>
+        </div>
+        <Footer />
+      </div>
+    );
+  }
   return (
     <div className="min-h-screen bg-gray-50 flex flex-col">
       <Navbar />
       <div className="flex flex-col items-center justify-center flex-1 py-8 px-2">
         {/* Nút quay lại */}
-          <div className="w-full max-w-4xl mb-6 flex justify-start">
-            <button
-              onClick={() => window.history.back()}
-              className="flex items-center gap-2 px-5 py-2 rounded-full bg-[#FFCE23] text-black font-semibold shadow hover:bg-yellow-400 transition duration-150"
-            >
-              <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 19l-7-7 7-7" /></svg>
-              Quay lại
-            </button>
-          </div>
-  <div className="max-w-4xl w-full bg-white rounded-2xl shadow-2xl overflow-hidden">
+        <div className="w-full max-w-4xl mb-6 flex justify-start">
+          <button
+            onClick={() => window.history.back()}
+            className="flex items-center gap-2 px-5 py-2 rounded-full bg-[#FFCE23] text-black font-semibold shadow hover:bg-yellow-400 transition duration-150"
+          >
+            <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 19l-7-7 7-7" /></svg>
+            Quay lại
+          </button>
+        </div>
+        <div className="max-w-4xl w-full bg-white rounded-2xl shadow-2xl overflow-hidden">
           {/* Cover/banner */}
           <div className="relative h-40 w-full bg-gray-200">
             {user.cover && (
@@ -72,13 +143,16 @@ const PublicProfile = () => {
             )}
           </div>
           {/* Profile info */}
-            <div className="pt-20 pb-10 px-8 flex flex-col gap-10">
-              {/* 👤 Thông tin cá nhân */}
-              <div className="rounded-xl border bg-white shadow-sm p-7 mb-2">
-                <h3 className="text-lg font-semibold text-gray-800 mb-4 flex items-center">
+          <div className="pt-20 pb-10 px-8 flex flex-col gap-10">
+            {/* 👤 Thông tin cá nhân */}
+            <div className="rounded-xl border bg-white shadow-sm p-7 mb-2">
+              <div className="flex justify-between items-center mb-4">
+                <h3 className="text-lg font-semibold text-gray-800 flex items-center">
                   <FontAwesomeIcon icon={faUser} className="text-gray-700 mr-2" /> Thông tin cá nhân
                 </h3>
-                <div className="grid grid-cols-1 sm:grid-cols-2 gap-x-8 gap-y-3 text-[15px]">
+                <button className="px-4 py-2 bg-blue-500 text-white rounded-full font-semibold shadow hover:bg-blue-600 transition">Kết nối</button>
+              </div>
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-x-8 gap-y-3 text-[15px]">
                   <div className="flex items-center"><span className="font-medium text-gray-700 mr-2">Họ và tên Founder:</span><span className="font-semibold text-black">{user.name}</span></div>
                   <div className="flex items-center"><span className="font-medium text-gray-700 mr-2">Vai trò:</span><span className="text-black">Founder</span></div>
                   <div className="flex items-center"><span className="font-medium text-gray-700 mr-2">Địa điểm:</span><span className="text-black">{user.location}</span></div>
