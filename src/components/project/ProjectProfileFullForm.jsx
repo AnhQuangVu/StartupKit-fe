@@ -25,7 +25,7 @@ Font.register({
   src: RobotoRegular,
   fontWeight: 400,
 });
-// Styles cho PDF với thiết kế mới - Chuyên nghiệp, sử dụng chữ đen nền trắng
+// Styles cho PDF với thiết kế mới
 const pdfStyles = StyleSheet.create({
   page: {
     flexDirection: "column",
@@ -36,80 +36,111 @@ const pdfStyles = StyleSheet.create({
     fontFamily: "Roboto",
     color: "#000000",
   },
-  header: {
+  // Header với tên dự án bên trái và logo bên phải
+  pageHeader: {
+    flexDirection: "row",
+    justifyContent: "space-between",
+    alignItems: "center",
+    marginBottom: 12,
+  },
+  projectTitle: {
     fontSize: 24,
-    marginBottom: 8,
-    marginTop: 80,
-    textAlign: "center",
     fontWeight: "bold",
     fontFamily: "Roboto",
     color: "#000000",
-    letterSpacing: 1,
-    textTransform: "uppercase",
   },
-  divider: {
-    borderBottom: "2pt solid #000000",
-    marginVertical: 20,
-    width: "100%",
+  logoHeader: {
+    width: 103,
+    height: 35,
+    objectFit: "contain",
   },
-  dividerThin: {
-    borderBottom: "1pt solid #000000",
+  // Gạch ngang đậm
+  thickDivider: {
+    borderBottom: "3pt solid #000000",
     marginVertical: 12,
     width: "100%",
   },
-  subheader: {
-    fontSize: 14,
+  // Section với số to và tiêu đề
+  sectionNumberContainer: {
     marginTop: 20,
-    marginBottom: 12,
+    marginBottom: 16,
+  },
+  sectionNumber: {
+    fontSize: 55,
     fontWeight: "bold",
     fontFamily: "Roboto",
     color: "#000000",
-    letterSpacing: 0.5,
+    marginBottom: -8,
+  },
+  sectionTitle: {
+    fontSize: 20,
+    fontWeight: "bold",
+    fontFamily: "Roboto",
+    color: "#000000",
+    textAlign: "center",
+    letterSpacing: 1,
+  },
+  // Subsection title
+  subsectionTitle: {
+    fontSize: 16,
+    fontWeight: "bold",
+    fontFamily: "Roboto",
+    color: "#000000",
+    marginTop: 16,
+    marginBottom: 8,
     textTransform: "uppercase",
   },
-  section: {
-    marginBottom: 12,
-    paddingLeft: 0,
-    paddingTop: 4,
-    paddingBottom: 4,
-  },
-  label: {
-    fontSize: 11,
-    fontWeight: "bold",
-    marginBottom: 4,
-    color: "#000000",
-    fontFamily: "Roboto",
-    letterSpacing: 0.3,
-  },
-  value: {
-    fontSize: 10,
-    marginBottom: 4,
-    color: "#000000",
-    paddingLeft: 0,
-    fontFamily: "Roboto",
-    lineHeight: 1.4,
-  },
-  imagesContainer: {
+  // Info item với gạch dọc màu linear (dùng border)
+  infoItemWithBar: {
     flexDirection: "row",
-    flexWrap: "wrap",
-    gap: 8,
-    marginTop: 8,
-    marginBottom: 12,
+    marginBottom: 8,
+    paddingLeft: 12,
+    borderLeftWidth: 3,
+    borderLeftColor: "#3b82f6",
   },
-  image: {
-    width: 120,
-    height: 120,
-    borderRadius: 4,
-    border: "1pt solid #000000",
-    objectFit: "cover",
+  infoLabel: {
+    fontSize: 16,
+    fontWeight: "600",
+    fontFamily: "Roboto",
+    color: "#000000",
+    marginRight: 4,
   },
-  logoSite: {
-    position: "absolute",
-    top: 20,
-    left: 40,
-    width: 60,
-    height: 60,
-    borderRadius: 4,
+  infoValue: {
+    fontSize: 16,
+    fontFamily: "Roboto",
+    color: "#000000",
+    flex: 1,
+  },
+  // Item với icon tam giác
+  itemWithIcon: {
+    flexDirection: "row",
+    marginBottom: 8,
+    paddingLeft: 8,
+  },
+  triangleIcon: {
+    width: 0,
+    height: 0,
+    borderLeftWidth: 6,
+    borderRightWidth: 6,
+    borderBottomWidth: 10,
+    borderLeftColor: "transparent",
+    borderRightColor: "transparent",
+    borderBottomColor: "#3b82f6",
+    marginRight: 8,
+    marginTop: 4,
+  },
+  itemLabel: {
+    fontSize: 16,
+    fontWeight: "600",
+    fontFamily: "Roboto",
+    color: "#000000",
+    marginRight: 4,
+  },
+  itemValue: {
+    fontSize: 16,
+    fontFamily: "Roboto",
+    color: "#000000",
+    flex: 1,
   },
   pageNumber: {
     position: "absolute",
@@ -119,101 +150,101 @@ const pdfStyles = StyleSheet.create({
     color: "#000000",
     fontFamily: "Roboto",
   },
-  infoGrid: {
-    flexDirection: "row",
-    flexWrap: "wrap",
-    gap: 12,
-    marginBottom: 8,
-  },
-  infoItem: {
-    width: "48%",
-    marginBottom: 8,
-  },
 });
 
-// Component PDF Document với bố cục mới
+// Component PDF Document với layout mới
 const MyDocument = ({ data }) => {
-  // Lấy tất cả ảnh sản phẩm
   const allProductImages = Array.isArray(data.productImages)
     ? data.productImages
     : [];
-  const imagesPage1 = allProductImages.slice(0, 6); // 6 ảnh cho trang 1
-  const imagesPage5 = allProductImages.slice(6); // Còn lại cho trang 5
+
+  // Sử dụng logo từ data hoặc fallback sang Logo import
+  const logoSource = data.logo || Logo;
+
+  // Helper để render info item với gạch dọc
+  const InfoItemWithBar = ({ label, value }) => (
+    <View style={pdfStyles.infoItemWithBar}>
+      <Text style={pdfStyles.infoLabel}>{label}: </Text>
+      <Text style={pdfStyles.infoValue}>{stripHtmlTags(value || "")}</Text>
+    </View>
+  );
+
+  // Helper để render item với icon tam giác
+  const ItemWithIcon = ({ label, value, isRich = false }) => (
+    <View style={pdfStyles.itemWithIcon}>
+      <View style={pdfStyles.triangleIcon} />
+      <View style={{ flex: 1, flexDirection: "row" }}>
+        <Text style={pdfStyles.itemLabel}>{label}: </Text>
+        {isRich ? (
+          renderRichTextToPDF(value || "")
+        ) : (
+          <Text style={pdfStyles.itemValue}>{stripHtmlTags(value || "")}</Text>
+        )}
+      </View>
+    </View>
+  );
 
   const sections = [
     // Trang 1: Thông tin chung và Tóm tắt
     <Page key="page1" size="A4" style={pdfStyles.page}>
-      <Image style={pdfStyles.logoSite} source={Logo} />
-      <View style={pdfStyles.header}>
-        <Text>{data.projectName || "TÊN DỰ ÁN"}</Text>
-      </View>
-
-      <View style={pdfStyles.divider} />
-
-      <View style={pdfStyles.subheader}>
-        <Text>THÔNG TIN CHUNG DỰ ÁN</Text>
-      </View>
-
-      <View style={pdfStyles.infoGrid}>
-        <View style={pdfStyles.infoItem}>
-          <Text style={pdfStyles.label}>Tên Dự án</Text>
-          <Text style={pdfStyles.value}>{data.projectName || ""}</Text>
-        </View>
-
-        <View style={pdfStyles.infoItem}>
-          <Text style={pdfStyles.label}>Lĩnh vực</Text>
-          <Text style={pdfStyles.value}>{data.field || ""}</Text>
-        </View>
-
-        <View style={pdfStyles.infoItem}>
-          <Text style={pdfStyles.label}>Đơn vị thực hiện</Text>
-          <Text style={pdfStyles.value}>{data.organization || ""}</Text>
-        </View>
-
-        <View style={pdfStyles.infoItem}>
-          <Text style={pdfStyles.label}>Thời gian thực hiện</Text>
-          <Text style={pdfStyles.value}>{data.time || ""}</Text>
-        </View>
-      </View>
-
-      {data.logo && (
-        <View style={pdfStyles.section}>
-          <Text style={pdfStyles.label}>Logo dự án</Text>
-          <Image style={pdfStyles.image} source={data.logo} />
-        </View>
-      )}
-
-      <View style={pdfStyles.section}>
-        <Text style={pdfStyles.label}>
-          Nhóm thực hiện & Giảng viên hướng dẫn
+      {/* Header: Tên dự án và Logo */}
+      <View style={pdfStyles.pageHeader}>
+        <Text style={pdfStyles.projectTitle}>
+          {data.projectName || "TÊN DỰ ÁN"}
         </Text>
-        <Text style={pdfStyles.value}>
-          {stripHtmlTags(data.teamInfo || "")}
-        </Text>
+        <Image style={pdfStyles.logoHeader} source={logoSource} />
       </View>
 
-      <View style={pdfStyles.dividerThin} />
+      {/* Gạch ngang đậm */}
+      <View style={pdfStyles.thickDivider} />
 
-      <View style={pdfStyles.subheader}>
-        <Text>PHẦN 1: TÓM TẮT DỰ ÁN</Text>
+      {/* Thông tin chung với gạch dọc */}
+      <View style={{ marginTop: 12 }}>
+        <InfoItemWithBar label="Thông tin chung dự án" value="" />
+        <InfoItemWithBar label="Tên dự án" value={data.projectName} />
+        <InfoItemWithBar label="Đơn vị thực hiện" value={data.organization} />
+        <InfoItemWithBar label="Thời gian thực hiện" value={data.time} />
+        <InfoItemWithBar
+          label="Nhóm thực hiện & Giảng viên hướng dẫn"
+          value={data.teamInfo}
+        />
       </View>
 
-      <View style={pdfStyles.section}>
-        <Text style={pdfStyles.label}>Ý tưởng chính</Text>
-        {renderRichTextToPDF(data.mainIdea || "")}
+      {/* Section 01: Tóm tắt dự án */}
+      <View style={pdfStyles.sectionNumberContainer}>
+        <Text style={pdfStyles.sectionNumber}>01</Text>
+        <Text style={pdfStyles.sectionTitle}>TÓM TẮT</Text>
+        <Text style={pdfStyles.sectionTitle}>DỰ ÁN</Text>
       </View>
 
-      <View style={pdfStyles.section}>
-        <Text style={pdfStyles.label}>Sản phẩm, dịch vụ & Giá trị</Text>
-        {renderRichTextToPDF(data.productValue || "")}
-      </View>
+      <ItemWithIcon label="Ý tưởng chính" value={data.mainIdea} isRich />
+      <ItemWithIcon
+        label="Sản phẩm, dịch vụ & Giá trị"
+        value={data.productValue}
+        isRich
+      />
 
-      {imagesPage1.length > 0 && (
-        <View style={pdfStyles.section}>
-          <Text style={pdfStyles.label}>Hình ảnh sản phẩm</Text>
-          <View style={pdfStyles.imagesContainer}>
-            {imagesPage1.map((img, idx) => (
-              <Image key={idx} style={pdfStyles.image} source={img} />
+      {/* Hình ảnh sản phẩm */}
+      {allProductImages.length > 0 && (
+        <View style={{ marginTop: 12 }}>
+          <View
+            style={{
+              flexDirection: "row",
+              flexWrap: "wrap",
+              gap: 8,
+            }}
+          >
+            {allProductImages.slice(0, 4).map((img, idx) => (
+              <Image
+                key={idx}
+                style={{
+                  width: 120,
+                  height: 120,
+                  borderRadius: 4,
+                  border: "1pt solid #000000",
+                }}
+                source={img}
+              />
             ))}
           </View>
         </View>
@@ -222,250 +253,144 @@ const MyDocument = ({ data }) => {
       <Text style={pdfStyles.pageNumber}>Trang 1/5</Text>
     </Page>,
 
-    // Trang 2: Phần 2 A và B
+    // Trang 2: Phần 02 - Nội dung chính
     <Page key="page2" size="A4" style={pdfStyles.page}>
-      <Image style={pdfStyles.logoSite} source={Logo} />
-
-      <View style={pdfStyles.subheader}>
-        <Text>PHẦN 2: NỘI DUNG CHÍNH CỦA DỰ ÁN</Text>
-      </View>
-
-      <View style={pdfStyles.dividerThin} />
-
-      <View style={pdfStyles.subheader}>
-        <Text>A. TỔNG QUAN DỰ ÁN</Text>
-      </View>
-
-      <View style={pdfStyles.section}>
-        <Text style={pdfStyles.label}>Sứ mệnh</Text>
-        {renderRichTextToPDF(data.mission || "")}
-      </View>
-
-      <View style={pdfStyles.section}>
-        <Text style={pdfStyles.label}>Tầm nhìn</Text>
-        {renderRichTextToPDF(data.vision || "")}
-      </View>
-
-      <View style={pdfStyles.section}>
-        <Text style={pdfStyles.label}>Giá trị sản phẩm</Text>
-        {renderRichTextToPDF(data.productCoreValue || "")}
-      </View>
-
-      <View style={pdfStyles.dividerThin} />
-
-      <View style={pdfStyles.subheader}>
-        <Text>B. THÔNG TIN VỀ SẢN PHẨM, DỊCH VỤ</Text>
-      </View>
-
-      <View style={pdfStyles.section}>
-        <Text style={pdfStyles.label}>Khách hàng mục tiêu</Text>
-        {renderRichTextToPDF(data.targetCustomer || "")}
-      </View>
-
-      <View style={pdfStyles.section}>
-        <Text style={pdfStyles.label}>Lợi thế cạnh tranh</Text>
-        {renderRichTextToPDF(data.advantage || "")}
-      </View>
-
-      <View style={pdfStyles.section}>
-        <Text style={pdfStyles.label}>
-          Giá trị mang lại cho cộng đồng và xã hội
+      {/* Header */}
+      <View style={pdfStyles.pageHeader}>
+        <Text style={pdfStyles.projectTitle}>
+          {data.projectName || "TÊN DỰ ÁN"}
         </Text>
-        {renderRichTextToPDF(data.communityValue || "")}
+        <Image style={pdfStyles.logoHeader} source={logoSource} />
       </View>
+      <View style={pdfStyles.thickDivider} />
+
+      {/* Section 02 */}
+      <View style={pdfStyles.sectionNumberContainer}>
+        <Text style={pdfStyles.sectionNumber}>02</Text>
+        <Text style={pdfStyles.sectionTitle}>NỘI DUNG CHÍNH</Text>
+        <Text style={pdfStyles.sectionTitle}>CỦA DỰ ÁN</Text>
+      </View>
+
+      {/* A. Tổng quan dự án */}
+      <Text style={pdfStyles.subsectionTitle}>A. TỔNG QUAN DỰ ÁN</Text>
+      <ItemWithIcon label="Sứ mệnh" value={data.mission} isRich />
+      <ItemWithIcon label="Tầm nhìn" value={data.vision} isRich />
+      <ItemWithIcon
+        label="Giá trị sản phẩm"
+        value={data.productCoreValue}
+        isRich
+      />
+
+      {/* B. Thông tin về sản phẩm */}
+      <Text style={pdfStyles.subsectionTitle}>
+        B. THÔNG TIN VỀ SẢN PHẨM, DỊCH VỤ
+      </Text>
+      <ItemWithIcon
+        label="Khách hàng mục tiêu"
+        value={data.targetCustomer}
+        isRich
+      />
+      <ItemWithIcon label="Lợi thế cạnh tranh" value={data.advantage} isRich />
+      <ItemWithIcon
+        label="Giá trị mang lại cho cộng đồng và xã hội"
+        value={data.communityValue}
+        isRich
+      />
 
       <Text style={pdfStyles.pageNumber}>Trang 2/5</Text>
     </Page>,
 
-    // Trang 3: Phần 2 C
+    // Trang 3: Phần C - Phân tích tính khả thi
     <Page key="page3" size="A4" style={pdfStyles.page}>
-      <Image style={pdfStyles.logoSite} source={Logo} />
-
-      <View style={pdfStyles.subheader}>
-        <Text>C. PHÂN TÍCH TÍNH KHẢ THI</Text>
-      </View>
-
-      <View style={pdfStyles.section}>
-        <Text style={pdfStyles.label}>Quy mô thị trường</Text>
-        <Text style={pdfStyles.value}>
-          {stripHtmlTags(data.marketSize || "")}
+      <View style={pdfStyles.pageHeader}>
+        <Text style={pdfStyles.projectTitle}>
+          {data.projectName || "TÊN DỰ ÁN"}
         </Text>
+        <Image style={pdfStyles.logoHeader} source={logoSource} />
       </View>
+      <View style={pdfStyles.thickDivider} />
 
-      <View style={pdfStyles.section}>
-        <Text style={pdfStyles.label}>Đối tác & Nguồn nhân lực</Text>
-        <Text style={pdfStyles.value}>
-          {stripHtmlTags(data.partners || "")}
-        </Text>
-      </View>
-
-      <View style={pdfStyles.section}>
-        <Text style={pdfStyles.label}>Tài chính (Khởi đầu)</Text>
-        {renderRichTextToPDF(data.finance || "")}
-      </View>
-
-      <View style={pdfStyles.section}>
-        <Text style={pdfStyles.label}>Tính khả thi</Text>
-        {renderRichTextToPDF(data.feasibility || "")}
-      </View>
-
-      <View style={pdfStyles.section}>
-        <Text style={pdfStyles.label}>Sản phẩm & Dịch vụ</Text>
-        {renderRichTextToPDF(data.products || "")}
-      </View>
-
-      <View style={pdfStyles.section}>
-        <Text style={pdfStyles.label}>Phân tích SWOT</Text>
-        {renderRichTextToPDF(data.swot || "")}
-      </View>
-
-      <View style={pdfStyles.section}>
-        <Text style={pdfStyles.label}>Thuận lợi/Khó khăn</Text>
-        {renderRichTextToPDF(data.prosCons || "")}
-      </View>
-
-      <View style={pdfStyles.section}>
-        <Text style={pdfStyles.label}>Tính độc đáo, sáng tạo</Text>
-        {renderRichTextToPDF(data.creativity || "")}
-      </View>
+      <Text style={pdfStyles.subsectionTitle}>C. PHÂN TÍCH TÍNH KHẢ THI</Text>
+      <ItemWithIcon label="Quy mô thị trường" value={data.marketSize} />
+      <ItemWithIcon label="Đối tác và nguồn nhân lực" value={data.partners} />
+      <ItemWithIcon label="Tài chính (Khởi đầu)" value={data.finance} isRich />
+      <ItemWithIcon label="Tính khả thi" value={data.feasibility} isRich />
+      <ItemWithIcon label="Sản phẩm & Dịch vụ" value={data.products} isRich />
+      <ItemWithIcon label="Phân tích SWOT" value={data.swot} isRich />
+      <ItemWithIcon label="Thuận lợi/Khó khăn" value={data.prosCons} isRich />
+      <ItemWithIcon
+        label="Tính độc đáo, sáng tạo"
+        value={data.creativity}
+        isRich
+      />
 
       <Text style={pdfStyles.pageNumber}>Trang 3/5</Text>
     </Page>,
 
     // Trang 4: Phần D
     <Page key="page4" size="A4" style={pdfStyles.page}>
-      <Image style={pdfStyles.logoSite} source={Logo} />
-
-      <View style={pdfStyles.subheader}>
-        <Text>D. KẾ HOẠCH SẢN XUẤT, KINH DOANH & PHÁT TRIỂN</Text>
-      </View>
-
-      <View style={pdfStyles.section}>
-        <Text style={pdfStyles.label}>
-          Kế hoạch kinh doanh (theo giai đoạn)
+      <View style={pdfStyles.pageHeader}>
+        <Text style={pdfStyles.projectTitle}>
+          {data.projectName || "TÊN DỰ ÁN"}
         </Text>
-        {renderRichTextToPDF(data.businessPlan || "")}
+        <Image style={pdfStyles.logoHeader} source={logoSource} />
       </View>
+      <View style={pdfStyles.thickDivider} />
 
-      <View style={pdfStyles.section}>
-        <Text style={pdfStyles.label}>Kênh phân phối</Text>
-        {renderRichTextToPDF(data.distribution || "")}
-      </View>
-
-      <View style={pdfStyles.section}>
-        <Text style={pdfStyles.label}>Phát triển, mở rộng thị trường</Text>
-        {renderRichTextToPDF(data.marketDevelopment || "")}
-      </View>
-
-      <View style={pdfStyles.section}>
-        <Text style={pdfStyles.label}>Kết quả tiềm năng</Text>
-        {renderRichTextToPDF(data.potentialResult || "")}
-      </View>
-
-      <View style={pdfStyles.section}>
-        <Text style={pdfStyles.label}>
-          Khả năng tăng trưởng, tác động xã hội
-        </Text>
-        <Text style={pdfStyles.value}>
-          {stripHtmlTags(data.growthImpact || "")}
-        </Text>
-      </View>
+      <Text style={pdfStyles.subsectionTitle}>
+        D. KẾ HOẠCH SẢN XUẤT, KINH DOANH, PHÁT TRIỂN
+      </Text>
+      <ItemWithIcon
+        label="Kế hoạch kinh doanh (theo giai đoạn)"
+        value={data.businessPlan}
+        isRich
+      />
+      <ItemWithIcon label="Kênh phân phối" value={data.distribution} isRich />
+      <ItemWithIcon
+        label="Phát triển, mở rộng thị trường"
+        value={data.marketDevelopment}
+        isRich
+      />
+      <ItemWithIcon
+        label="Kết quả tiềm năng"
+        value={data.potentialResult}
+        isRich
+      />
+      <ItemWithIcon
+        label="Khả năng tăng trưởng, tác động xã hội"
+        value={data.growthImpact}
+      />
 
       <Text style={pdfStyles.pageNumber}>Trang 4/5</Text>
     </Page>,
 
-    // Trang 5: Phần E và F + Ảnh còn lại
+    // Trang 5: Phần E và F
     <Page key="page5" size="A4" style={pdfStyles.page}>
-      <Image style={pdfStyles.logoSite} source={Logo} />
-
-      <View style={pdfStyles.subheader}>
-        <Text>E. NGUỒN LỰC THỰC HIỆN</Text>
-      </View>
-
-      <View style={pdfStyles.section}>
-        <Text style={pdfStyles.label}>Cơ cấu nhân sự (Team)</Text>
-        <Text style={pdfStyles.value}>{stripHtmlTags(data.team || "")}</Text>
-      </View>
-
-      <View style={pdfStyles.section}>
-        <Text style={pdfStyles.label}>Đánh giá nguồn nhân lực</Text>
-        <Text style={pdfStyles.value}>
-          {stripHtmlTags(data.hrEvaluation || "")}
+      <View style={pdfStyles.pageHeader}>
+        <Text style={pdfStyles.projectTitle}>
+          {data.projectName || "TÊN DỰ ÁN"}
         </Text>
+        <Image style={pdfStyles.logoHeader} source={logoSource} />
       </View>
+      <View style={pdfStyles.thickDivider} />
 
-      <View style={pdfStyles.section}>
-        <Text style={pdfStyles.label}>Đối tác hợp tác</Text>
-        <Text style={pdfStyles.value}>
-          {stripHtmlTags(data.cooperation || "")}
-        </Text>
-      </View>
+      <Text style={pdfStyles.subsectionTitle}>E. NGUỒN LỰC THỰC HIỆN</Text>
+      <ItemWithIcon label="Cơ cấu nhân sự (Team)" value={data.team} />
+      <ItemWithIcon label="Đánh giá nguồn nhân lực" value={data.hrEvaluation} />
+      <ItemWithIcon label="Đối tác hợp tác" value={data.cooperation} />
 
-      <View style={pdfStyles.dividerThin} />
-
-      <View style={pdfStyles.subheader}>
-        <Text>F. KÊNH TRUYỀN THÔNG VÀ TIẾP THỊ</Text>
-      </View>
-
-      <View style={pdfStyles.section}>
-        <Text style={pdfStyles.label}>Mục tiêu truyền thông</Text>
-        <Text style={pdfStyles.value}>
-          {stripHtmlTags(data.mediaGoal || "")}
-        </Text>
-      </View>
-
-      <View style={pdfStyles.section}>
-        <Text style={pdfStyles.label}>Đối tượng mục tiêu</Text>
-        <Text style={pdfStyles.value}>
-          {stripHtmlTags(data.mediaTarget || "")}
-        </Text>
-      </View>
-
-      <View style={pdfStyles.section}>
-        <Text style={pdfStyles.label}>Kênh truyền thông</Text>
-        <Text style={pdfStyles.value}>
-          {stripHtmlTags(data.mediaChannel || "")}
-        </Text>
-      </View>
-
-      <View style={pdfStyles.section}>
-        <Text style={pdfStyles.label}>Chiến dịch Marketing (Quý)</Text>
-        <Text style={pdfStyles.value}>
-          {stripHtmlTags(data.marketingCampaign || "")}
-        </Text>
-      </View>
-
-      <View style={pdfStyles.section}>
-        <Text style={pdfStyles.label}>Công cụ truyền thông</Text>
-        <Text style={pdfStyles.value}>
-          {stripHtmlTags(data.mediaTool || "")}
-        </Text>
-      </View>
-
-      <View style={pdfStyles.section}>
-        <Text style={pdfStyles.label}>Đo lường và đánh giá</Text>
-        <Text style={pdfStyles.value}>
-          {stripHtmlTags(data.mediaMeasure || "")}
-        </Text>
-      </View>
-
-      {imagesPage5.length > 0 && (
-        <>
-          <View style={pdfStyles.dividerThin} />
-          <View style={pdfStyles.section}>
-            <Text style={pdfStyles.label}>Hình ảnh sản phẩm (tiếp theo)</Text>
-            <View style={pdfStyles.imagesContainer}>
-              {imagesPage5.map((img, idx) => (
-                <Image
-                  key={`img-${idx}`}
-                  style={pdfStyles.image}
-                  source={img}
-                />
-              ))}
-            </View>
-          </View>
-        </>
-      )}
+      <Text style={pdfStyles.subsectionTitle}>
+        F. KÊNH TRUYỀN THÔNG VÀ TIẾP THỊ
+      </Text>
+      <ItemWithIcon label="Mục tiêu truyền thông" value={data.mediaGoal} />
+      <ItemWithIcon label="Đối tượng mục tiêu" value={data.mediaTarget} />
+      <ItemWithIcon label="Kênh truyền thông" value={data.mediaChannel} />
+      <ItemWithIcon
+        label="Chiến dịch Marketing (quý)"
+        value={data.marketingCampaign}
+      />
+      <ItemWithIcon label="Công cụ truyền thông" value={data.mediaTool} />
+      <ItemWithIcon label="Đo lường và đánh giá" value={data.mediaMeasure} />
 
       <Text style={pdfStyles.pageNumber}>Trang 5/5</Text>
     </Page>,
@@ -1056,6 +981,30 @@ export default function ProjectProfileFullForm({
   const lastScrollPosition = useRef(0);
   const isUpdatingFromChatbot = useRef(false);
 
+  // Thêm state và ref cho toast (thêm vào đầu component, sau các state hiện có)
+  const [toast, setToast] = useState({
+    visible: false,
+    message: "",
+    type: "info",
+  });
+  const toastTimerRef = useRef(null);
+
+  // Thêm hàm showToast
+  const showToast = (message, type = "info", ms = 3500) => {
+    if (toastTimerRef.current) clearTimeout(toastTimerRef.current);
+    setToast({ visible: true, message, type });
+    toastTimerRef.current = setTimeout(() => {
+      setToast({ visible: false, message: "", type: "info" });
+      toastTimerRef.current = null;
+    }, ms);
+  };
+
+  const closeToast = () => {
+    if (toastTimerRef.current) clearTimeout(toastTimerRef.current);
+    toastTimerRef.current = null;
+    setToast({ visible: false, message: "", type: "info" });
+  };
+
   // Lưu vị trí scroll trước khi update
   useEffect(() => {
     const handleScroll = () => {
@@ -1260,15 +1209,20 @@ export default function ProjectProfileFullForm({
     }
   };
   const handleSaveClick = async () => {
-    // Lưu dữ liệu qua API
     const token =
       localStorage.getItem("token") || localStorage.getItem("access_token");
     if (!token) {
-      alert("Bạn cần đăng nhập để lưu hồ sơ");
+      showToast("Bạn cần đăng nhập để lưu hồ sơ", "warning");
       return;
     }
 
-    // Chuẩn bị payload để gửi lên backend
+    // Validation
+    if (!form.projectName || form.projectName.trim().length < 3) {
+      showToast("Tên dự án phải có ít nhất 3 ký tự", "warning");
+      return;
+    }
+
+    // Lưu dữ liệu qua API
     const payload = {
       name: form.projectName || "Dự án chưa có tên",
       tagline: form.mainIdea ? form.mainIdea.substring(0, 150) : "",
@@ -1318,9 +1272,10 @@ export default function ProjectProfileFullForm({
       if (!res.ok) {
         const errorData = await res.json();
         console.error("API Error:", errorData);
-        alert(
-          "Lỗi lưu hồ sơ: " +
-            (errorData.detail || errorData.message || "Vui lòng thử lại")
+        showToast(
+          "❌ Lỗi lưu hồ sơ: " +
+            (errorData.detail || errorData.message || "Vui lòng thử lại"),
+          "error"
         );
         return;
       }
@@ -1328,21 +1283,10 @@ export default function ProjectProfileFullForm({
       const data = await res.json();
       console.log("✓ Project created:", data);
 
-      if (window.$) {
-        window
-          .$('<div class="my-toast">Lưu hồ sơ thành công!</div>')
-          .appendTo("body")
-          .fadeIn()
-          .delay(2000)
-          .fadeOut(function () {
-            $(this).remove();
-          });
-      } else {
-        alert("Lưu hồ sơ thành công!");
-      }
+      showToast("✓ Lưu hồ sơ thành công!", "success");
     } catch (err) {
       console.error("Save error:", err);
-      alert("Lỗi khi lưu hồ sơ: " + err.message);
+      showToast("❌ Lỗi khi lưu hồ sơ: " + err.message, "error");
     }
   };
   // Kích thước chữ cho editor khi chế độ compact
@@ -1429,27 +1373,6 @@ export default function ProjectProfileFullForm({
                       </PDFDownloadLink>
                     </div>
                     <div className="flex gap-1.5 justify-between sm:justify-start">
-                      {/* Nút Đăng đa nền tảng - Cải thiện style */}
-                      <button
-                        type="button"
-                        className="px-4 py-2 bg-blue-600 text-white font-semibold rounded-md shadow hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 transition-all duration-200 z-20 flex items-center gap-1 flex-1 sm:flex-none"
-                        onClick={handlePublishClick}
-                      >
-                        <svg
-                          className="w-3 h-3"
-                          fill="none"
-                          stroke="currentColor"
-                          viewBox="0 0 24 24"
-                        >
-                          <path
-                            strokeLinecap="round"
-                            strokeLinejoin="round"
-                            strokeWidth={2}
-                            d="M13 10V3L4 14h7v7l9-11h-7z"
-                          />
-                        </svg>
-                        Đăng bài
-                      </button>
                       {/* Nút Lưu - Nhỏ gọn chuyên nghiệp */}
                       <button
                         type="button"
@@ -1845,6 +1768,32 @@ export default function ProjectProfileFullForm({
           </div>
         ))}
       </form>
+
+      {/* Toast notification */}
+      {toast.visible && (
+        <div className="fixed right-4 bottom-6 z-50">
+          <div
+            className={`flex items-start gap-3 px-4 py-3 rounded-lg shadow-lg text-white ${
+              toast.type === "error"
+                ? "bg-red-600"
+                : toast.type === "success"
+                ? "bg-green-600"
+                : toast.type === "warning"
+                ? "bg-yellow-500 text-black"
+                : "bg-gray-800"
+            }`}
+          >
+            <div className="flex-1">{toast.message}</div>
+            <button
+              onClick={closeToast}
+              className="ml-2 opacity-90 hover:opacity-100 font-bold"
+            >
+              ×
+            </button>
+          </div>
+        </div>
+      )}
+
       {/* Modal cho Xem trước PDF - Cải thiện modal để chuyên nghiệp hơn */}
       {showPdfModal && (
         <div className="fixed inset-0 z-50 flex justify-center items-stretch bg-black bg-opacity-60 backdrop-blur-sm">
