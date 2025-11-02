@@ -351,16 +351,6 @@ const ProjectAboutAndDetails = ({ project }) => {
             {project.description && (
                 <div className="mb-6 p-4 bg-gray-50 rounded-xl border border-gray-200 shadow-sm">
                     <p className="text-gray-700 text-base leading-relaxed">{project.description}</p>
-                    {project.website_url && (
-                        <a
-                            href={project.website_url}
-                            target="_blank"
-                            rel="noopener noreferrer"
-                            className="inline-flex items-center gap-2 text-[#FFCE23] hover:text-[#fdc142] font-semibold text-sm mt-3"
-                        >
-                            <FontAwesomeIcon icon={faLink} /> Truy cập website
-                        </a>
-                    )}
                 </div>
             )}
             <ProjectDetailsContent project={project} />

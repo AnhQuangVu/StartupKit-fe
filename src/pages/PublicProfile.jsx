@@ -150,7 +150,7 @@ const PublicProfile = () => {
                 <h3 className="text-lg font-semibold text-gray-800 flex items-center">
                   <FontAwesomeIcon icon={faUser} className="text-gray-700 mr-2" /> Thông tin cá nhân
                 </h3>
-                <button className="px-4 py-2 bg-blue-500 text-white rounded-full font-semibold shadow hover:bg-blue-600 transition">Kết nối</button>
+                <button className="px-4 py-2 bg-[#FFCE23] text-black rounded-full font-semibold shadow hover:bg-[#fdc142] transition">Kết nối</button>
               </div>
               <div className="grid grid-cols-1 sm:grid-cols-2 gap-x-8 gap-y-3 text-[15px]">
                   <div className="flex items-center"><span className="font-medium text-gray-700 mr-2">Họ và tên Founder:</span><span className="font-semibold text-black">{user.name}</span></div>
