@@ -43,14 +43,17 @@ export default function Profile() {
   const [coverPreview, setCoverPreview] = useState("");
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [updateMessage, setUpdateMessage] = useState({ type: "", text: "" });
-  console.log('RENDER formData.connect_goal:', formData?.connect_goal);
   useEffect(() => {
     if (!authUser) return;
 
+    // ✅ FIX: Kiểm tra URL ở cả root (authUser.avatar_url) VÀ (authUser.profile.avatar_url)
+    const effectiveAvatarUrl = authUser.avatar_url || authUser.profile?.avatar_url || "";
+    const effectiveCoverUrl = authUser.cover_url || authUser.profile?.cover_url || "";
+
     const nextFormData = {
       full_name: authUser.full_name || "",
-      avatar_url: authUser.profile?.avatar_url || "",
-      cover_url: authUser.profile?.cover_url || "",
+      avatar_url: effectiveAvatarUrl,
+      cover_url: effectiveCoverUrl,
       bio: authUser.profile?.bio || "",
       website_url: authUser.profile?.website_url || "",
       location: authUser.profile?.location || "",
@@ -91,7 +94,6 @@ export default function Profile() {
       setAchievements([{ content: "", link: "" }]);
     }
 
-    // startup info
     if (
       Array.isArray(authUser.profile?.startups) &&
       authUser.profile.startups.length > 0
@@ -109,9 +111,9 @@ export default function Profile() {
       ]);
     }
 
-    // preview images
-    setCoverPreview(authUser.profile?.cover_url || "");
-    setAvatarPreview(authUser.profile?.avatar_url || "");
+    // ✅ FIX: Cập nhật preview images bằng URL đã xác định
+    setCoverPreview(effectiveCoverUrl);
+    setAvatarPreview(effectiveAvatarUrl);
   }, [authUser]);
 
   const handleInputChange = (e) => {
@@ -690,7 +692,25 @@ export default function Profile() {
                         </button>
                         <button
                           type="button"
-                          onClick={() => navigate("/public-profile")}
+                          onClick={() => {
+                            // DEBUG: Log avatarPreview, coverPreview, formData
+                            console.log('Profile avatarPreview:', avatarPreview);
+                            console.log('Profile coverPreview:', coverPreview);
+                            console.log('Profile formData.avatar_url:', formData.avatar_url);
+                            console.log('Profile formData.cover_url:', formData.cover_url);
+                            const publicFormData = {
+                              ...formData,
+                              avatar_url: avatarPreview || formData.avatar_url || "",
+                              cover_url: coverPreview || formData.cover_url || ""
+                            };
+                            navigate("/public-profile", {
+                              state: {
+                                formData: publicFormData,
+                                achievements,
+                                startups
+                              }
+                            });
+                          }}
                           className="px-5 py-2 rounded-full bg-gray-200 text-gray-800 font-semibold shadow hover:bg-gray-300 transition"
                         >
                           Xem hồ sơ công khai

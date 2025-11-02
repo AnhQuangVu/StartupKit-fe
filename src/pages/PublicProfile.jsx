@@ -1,4 +1,5 @@
 import React from "react";
+import { useLocation } from "react-router-dom";
 import Navbar from "../components/layout/Navbar";
 import Footer from "../components/layout/Footer";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
@@ -6,61 +7,37 @@ import { faUser, faBuilding, faTrophy, faBullseye, faGlobe } from "@fortawesome/
 import { faFacebook, faLinkedin } from "@fortawesome/free-brands-svg-icons";
 
 const PublicProfile = () => {
+  const location = useLocation();
+  const state = location.state || {};
+  // DEBUG: Log navigation state and avatar/banner URLs
+  console.log('PublicProfile location.state:', state);
+  console.log('Avatar URL:', state.formData?.avatar_url);
+  console.log('Banner URL:', state.formData?.cover_url);
+  // fallback to mock data if not provided
   const user = {
-    avatar: "https://randomuser.me/api/portraits/men/32.jpg",
-    cover: "https://images.unsplash.com/photo-1465101046530-73398c7f28ca?auto=format&fit=crop&w=800&q=80",
-    name: "Trần Minh Quang",
-    username: "@tranminhquang",
-    bio: "Founder | Đổi mới sáng tạo | Đam mê AI & Fintech",
-    location: "TP. Hồ Chí Minh, Việt Nam",
-    website: "https://quangstartup.com",
-    phone: "0987654321",
-    address: "456 Đường Sáng Tạo, Quận 1, TP.HCM",
-    company: "Quang Holdings",
-    facebook: "https://facebook.com/tranminhquang",
-    linkedin: "https://linkedin.com/in/tranminhquang",
-    achievements: "Giải nhất Hackathon 2024, Top 5 Startup Châu Á 2025",
-    pitch_deck_url: "https://pitchdeck.com/quangstartup",
-    startup_website: "https://ai4life.vn",
-    startup_facebook: "https://facebook.com/ai4life",
-    startup_linkedin: "https://linkedin.com/company/ai4life",
-    cv: "CV_TranMinhQuang.pdf",
-    verified: true,
-    approved: true,
-    expertise: ["AI", "Fintech", "Edtech", "Blockchain"],
-    goal: "Kết nối nhà đầu tư, mở rộng thị trường quốc tế",
-    startups: [
-      {
-        startup_name: "AI4Life",
-        industry: "AI",
-        founded_year: "2021",
-        team_size: "15",
-        mission: "Ứng dụng AI vào chăm sóc sức khoẻ",
-        website: "https://ai4life.vn",
-        facebook: "https://facebook.com/ai4life",
-        linkedin: "https://linkedin.com/company/ai4life"
-      },
-      {
-        startup_name: "FintechPro",
-        industry: "Fintech",
-        founded_year: "2019",
-        team_size: "20",
-        mission: "Đổi mới tài chính cho doanh nghiệp nhỏ",
-        website: "https://fintechpro.vn",
-        facebook: "https://facebook.com/fintechpro",
-        linkedin: "https://linkedin.com/company/fintechpro"
-      },
-      {
-        startup_name: "EduNext",
-        industry: "Edtech",
-        founded_year: "2023",
-        team_size: "8",
-        mission: "Nâng cao chất lượng giáo dục qua công nghệ",
-        website: "https://edunext.vn",
-        facebook: "https://facebook.com/edunext",
-        linkedin: "https://linkedin.com/company/edunext"
-      }
-    ]
+    avatar: state.formData?.avatar_url || "",
+    cover: state.formData?.cover_url || "",
+    name: state.formData?.full_name || "",
+    role: state.formData?.role || "Founder",
+    bio: state.formData?.bio || "",
+    location: state.formData?.location || "",
+    website: state.formData?.website_url || "",
+    phone: state.formData?.phone || "",
+    address: state.formData?.address || "",
+    company: state.formData?.company || "",
+    facebook: state.formData?.facebook || "",
+    linkedin: state.formData?.linkedin || "",
+    achievements: Array.isArray(state.achievements)
+      ? state.achievements.map(a => a.content).filter(Boolean).join(", ")
+      : "",
+    achievementLinks: Array.isArray(state.achievements)
+      ? state.achievements.map(a => a.link).filter(Boolean)
+      : [],
+    pitch_deck_url: state.formData?.pitch_deck_url || "",
+    startups: Array.isArray(state.startups) && state.startups.length > 0
+      ? state.startups
+      : [],
+    goal: state.formData?.connect_goal || "",
   };
 
   return (
@@ -80,15 +57,19 @@ const PublicProfile = () => {
   <div className="max-w-4xl w-full bg-white rounded-2xl shadow-2xl overflow-hidden">
           {/* Cover/banner */}
           <div className="relative h-40 w-full bg-gray-200">
-            <img src={user.cover} alt="cover" className="w-full h-full object-cover" />
+            {user.cover && (
+              <img src={user.cover} alt="cover" className="w-full h-full object-cover" />
+            )}
             {/* Avatar */}
-            <div className="absolute left-6 -bottom-16">
-              <img
-                src={user.avatar}
-                alt="avatar"
-                className="w-32 h-32 rounded-full border-4 border-white shadow-xl object-cover bg-white"
-              />
-            </div>
+            {user.avatar && (
+              <div className="absolute left-6 -bottom-16">
+                <img
+                  src={user.avatar}
+                  alt="avatar"
+                  className="w-32 h-32 rounded-full border-4 border-white shadow-xl object-cover bg-white"
+                />
+              </div>
+            )}
           </div>
           {/* Profile info */}
             <div className="pt-20 pb-10 px-8 flex flex-col gap-10">
@@ -138,8 +119,18 @@ const PublicProfile = () => {
                 <h3 className="text-lg font-semibold text-gray-800 mb-4 flex items-center">
                   <FontAwesomeIcon icon={faTrophy} className="text-gray-700 mr-2" /> Thành tựu & Pitch Deck
                 </h3>
-                <div className="text-[15px] mb-2"><span className="font-medium text-gray-700">Các thành tựu nổi bật:</span> <span className="text-black">{user.achievements}</span></div>
-                <div className="text-[15px]"><span className="font-medium text-gray-700">Link video / pitch deck:</span> <a href={user.pitch_deck_url} target="_blank" rel="noopener noreferrer" className="text-blue-700 hover:underline font-normal">{user.pitch_deck_url}</a></div>
+                <div className="text-[15px] mb-2">
+                  <span className="font-medium text-gray-700">Các thành tựu nổi bật:</span> <span className="text-black">{user.achievements}</span>
+                  {user.achievementLinks.length > 0 && (
+                    <ul className="mt-2 ml-2 list-disc text-blue-700">
+                      {user.achievementLinks.map((link, idx) => (
+                        <li key={idx}>
+                          <a href={link} target="_blank" rel="noopener noreferrer" className="hover:underline font-normal">{link}</a>
+                        </li>
+                      ))}
+                    </ul>
+                  )}
+                </div>
               </div>
 
               {/* 🤝 Mục tiêu kết nối */}
