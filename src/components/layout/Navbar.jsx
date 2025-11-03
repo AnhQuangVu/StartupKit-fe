@@ -120,7 +120,7 @@ function Navbar() {
 
         {/* Desktop buttons hoặc icon người dùng */}
   <div className="hidden md:flex gap-3 ml-8 items-center">
-          <NotificationBell />
+    {isLoggedIn && <NotificationBell />}
           {!isLoggedIn ? (
             <>
               <button
