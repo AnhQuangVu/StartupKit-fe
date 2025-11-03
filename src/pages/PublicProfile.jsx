@@ -1,87 +1,220 @@
-import React from "react";
+import React, { useEffect, useState } from "react";
+import { useParams, useLocation } from "react-router-dom";
+import { API_BASE } from "../config/api";
 import Navbar from "../components/layout/Navbar";
 import Footer from "../components/layout/Footer";
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+import { faUser, faBuilding, faTrophy, faBullseye, faGlobe } from "@fortawesome/free-solid-svg-icons";
+import { faFacebook, faLinkedin } from "@fortawesome/free-brands-svg-icons";
 
 const PublicProfile = () => {
-  const user = {
-    avatar: "https://abs.twimg.com/sticky/default_profile_images/default_profile_400x400.png",
-    cover: "https://images.unsplash.com/photo-1506744038136-46273834b3fb?auto=format&fit=crop&w=800&q=80",
-    name: "Nguyen Van A",
-    username: "@nguyenvana",
-    bio: "Founder | Đam mê khởi nghiệp | Đổi mới sáng tạo",
-    location: "Hà Nội, Việt Nam",
-    website: "https://startup.vn",
-    cv: "CV_NguyenVanA.pdf",
-    verified: true,
-    approved: true,
-    expertise: ["Fintech", "AI", "Blockchain"],
-    goal: "Kết nối nhà đầu tư, phát triển dự án tầm cỡ khu vực",
-  };
+  const { id } = useParams();
+  const location = useLocation();
+  const state = location.state || {};
+  const [user, setUser] = useState(null);
+  const [loading, setLoading] = useState(true);
+  useEffect(() => {
+    async function fetchFounder() {
+      if (id) {
+        setLoading(true);
+        try {
+          const token = localStorage.getItem('token');
+          const headers = token ? { Authorization: `Bearer ${token}` } : {};
+          const response = await fetch(`http://127.0.0.1:8000/public/users/${id}`, { headers });
+          if (response.ok) {
+            const data = await response.json();
+            setUser({
+              avatar: data.avatar_url || data.avatar || "",
+              cover: data.cover_url || data.cover || "",
+              name: data.full_name || data.name || "",
+              role: data.role || "Founder",
+              bio: data.bio || "",
+              location: data.location || "",
+              website: data.website_url || "",
+              phone: data.phone || "",
+              address: data.address || "",
+              company: data.company || "",
+              facebook: data.facebook || "",
+              linkedin: data.linkedin || "",
+              achievements: Array.isArray(data.achievements)
+                ? data.achievements.map(a => a.content).filter(Boolean).join(", ")
+                : "",
+              achievementLinks: Array.isArray(data.achievements)
+                ? data.achievements.map(a => a.link).filter(Boolean)
+                : [],
+              pitch_deck_url: data.pitch_deck_url || "",
+              startups: Array.isArray(data.startups) && data.startups.length > 0
+                ? data.startups
+                : [],
+              goal: data.connect_goal || "",
+            });
+          } else {
+            setUser(null);
+          }
+        } catch (err) {
+          setUser(null);
+        } finally {
+          setLoading(false);
+        }
+      } else if (state.formData) {
+        // fallback: lấy từ location.state nếu có
+        setUser({
+          avatar: state.formData?.avatar_url || "",
+          cover: state.formData?.cover_url || "",
+          name: state.formData?.full_name || "",
+          role: state.formData?.role || "Founder",
+          bio: state.formData?.bio || "",
+          location: state.formData?.location || "",
+          website: state.formData?.website_url || "",
+          phone: state.formData?.phone || "",
+          address: state.formData?.address || "",
+          company: state.formData?.company || "",
+          facebook: state.formData?.facebook || "",
+          linkedin: state.formData?.linkedin || "",
+          achievements: Array.isArray(state.achievements)
+            ? state.achievements.map(a => a.content).filter(Boolean).join(", ")
+            : "",
+          achievementLinks: Array.isArray(state.achievements)
+            ? state.achievements.map(a => a.link).filter(Boolean)
+            : [],
+          pitch_deck_url: state.formData?.pitch_deck_url || "",
+          startups: Array.isArray(state.startups) && state.startups.length > 0
+            ? state.startups
+            : [],
+          goal: state.formData?.connect_goal || "",
+        });
+        setLoading(false);
+      }
+    }
+    fetchFounder();
+  }, [id]);
 
+  if (loading) {
+    return (
+      <div className="min-h-screen bg-gray-50 flex flex-col">
+        <Navbar />
+        <div className="flex flex-col items-center justify-center flex-1 py-8 px-2">
+          <div className="text-xl text-gray-500">Đang tải thông tin...</div>
+        </div>
+        <Footer />
+      </div>
+    );
+  }
+  if (!user) {
+    return (
+      <div className="min-h-screen bg-gray-50 flex flex-col">
+        <Navbar />
+        <div className="flex flex-col items-center justify-center flex-1 py-8 px-2">
+          <div className="text-xl text-gray-500">Không tìm thấy thông tin người dùng.</div>
+        </div>
+        <Footer />
+      </div>
+    );
+  }
   return (
     <div className="min-h-screen bg-gray-50 flex flex-col">
       <Navbar />
       <div className="flex flex-col items-center justify-center flex-1 py-8 px-2">
         {/* Nút quay lại */}
-        <div className="w-full max-w-xl mb-4 flex justify-start">
+        <div className="w-full max-w-4xl mb-6 flex justify-start">
           <button
             onClick={() => window.history.back()}
-            className="flex items-center gap-2 px-4 py-2 rounded-full bg-[#FFCE23] text-black font-semibold shadow hover:bg-yellow-300 transition"
+            className="flex items-center gap-2 px-5 py-2 rounded-full bg-[#FFCE23] text-black font-semibold shadow hover:bg-yellow-400 transition duration-150"
           >
             <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 19l-7-7 7-7" /></svg>
             Quay lại
           </button>
         </div>
-        <div className="max-w-xl w-full bg-white rounded-2xl shadow-2xl overflow-hidden">
+        <div className="max-w-4xl w-full bg-white rounded-2xl shadow-2xl overflow-hidden">
           {/* Cover/banner */}
           <div className="relative h-40 w-full bg-gray-200">
-            <img src={user.cover} alt="cover" className="w-full h-full object-cover" />
+            {user.cover && (
+              <img src={user.cover} alt="cover" className="w-full h-full object-cover" />
+            )}
             {/* Avatar */}
-            <div className="absolute left-6 -bottom-16">
-              <img
-                src={user.avatar}
-                alt="avatar"
-                className="w-32 h-32 rounded-full border-4 border-white shadow-xl object-cover bg-white"
-              />
-            </div>
+            {user.avatar && (
+              <div className="absolute left-6 -bottom-16">
+                <img
+                  src={user.avatar}
+                  alt="avatar"
+                  className="w-32 h-32 rounded-full border-4 border-white shadow-xl object-cover bg-white"
+                />
+              </div>
+            )}
           </div>
           {/* Profile info */}
-          <div className="pt-20 pb-8 px-8 flex flex-col gap-2">
-            <div className="flex items-center gap-2">
-              <h2 className="text-2xl font-bold text-gray-900">{user.name}</h2>
-              {/* Đã bỏ badge Verified và Approved */}
-            </div>
-            <div className="text-gray-500 text-base">{user.username}</div>
-            <p className="text-gray-700 text-base mb-2 mt-1">{user.bio}</p>
-            <div className="flex flex-wrap gap-2 mb-2">
-              {user.expertise.map((exp) => (
-                <span key={exp} className="bg-purple-200 text-purple-800 px-3 py-1 rounded-full text-xs font-semibold shadow-sm">{exp}</span>
-              ))}
-            </div>
-            <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 text-sm mt-2 mb-4">
-              <div className="flex items-center gap-2 text-gray-600">
-                <i className="fa fa-map-marker text-blue-400" />
-                <span>{user.location}</span>
+          <div className="pt-20 pb-10 px-8 flex flex-col gap-10">
+            {/* 👤 Thông tin cá nhân */}
+            <div className="rounded-xl border bg-white shadow-sm p-7 mb-2">
+              <div className="flex justify-between items-center mb-4">
+                <h3 className="text-lg font-semibold text-gray-800 flex items-center">
+                  <FontAwesomeIcon icon={faUser} className="text-gray-700 mr-2" /> Thông tin cá nhân
+                </h3>
+                <button className="px-4 py-2 bg-[#FFCE23] text-black rounded-full font-semibold shadow hover:bg-[#fdc142] transition">Kết nối</button>
               </div>
-              <div className="flex items-center gap-2 text-gray-600">
-                <i className="fa fa-link text-blue-400" />
-                <a href={user.website} target="_blank" rel="noopener noreferrer" className="text-[#FFCE23] hover:underline font-semibold">{user.website.replace("https://", "")}</a>
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-x-8 gap-y-3 text-[15px]">
+                  <div className="flex items-center"><span className="font-medium text-gray-700 mr-2">Họ và tên Founder:</span><span className="font-semibold text-black">{user.name}</span></div>
+                  <div className="flex items-center"><span className="font-medium text-gray-700 mr-2">Vai trò:</span><span className="text-black">Founder</span></div>
+                  <div className="flex items-center"><span className="font-medium text-gray-700 mr-2">Địa điểm:</span><span className="text-black">{user.location}</span></div>
+                  <div className="flex items-center"><span className="font-medium text-gray-700 mr-2">Website cá nhân:</span><a href={user.website} target="_blank" rel="noopener noreferrer" className="text-blue-700 hover:underline font-normal">{user.website.replace("https://", "")}</a></div>
+                  <div className="sm:col-span-2 mt-2"><span className="font-medium text-gray-700 mr-2">Giới thiệu ngắn:</span><span className="text-black">{user.bio}</span></div>
+                </div>
               </div>
-              <div className="flex items-center gap-2 text-gray-600">
-                <i className="fa fa-file-pdf-o text-blue-400" />
-                <a href={user.cv} target="_blank" rel="noopener noreferrer" className="text-[#FFCE23] hover:underline font-semibold">Tải CV</a>
+
+              {/* 🚀 Thông tin Startup */}
+              <div className="rounded-xl border bg-white shadow-sm p-7 mb-2">
+                <h3 className="text-lg font-semibold text-gray-800 mb-4 flex items-center">
+                  <FontAwesomeIcon icon={faBuilding} className="text-gray-700 mr-2" /> Thông tin Startup
+                </h3>
+                {user.startups && user.startups.length > 0 ? (
+                  user.startups.map((startup, idx) => (
+                    <div key={idx} className="rounded-lg border bg-gray-50 p-5 mb-5">
+                      <div className="grid grid-cols-1 sm:grid-cols-2 gap-x-8 gap-y-3 text-[15px]">
+                        <div className="flex items-center"><span className="font-medium text-gray-700 mr-2">Tên startup:</span><span className="font-semibold text-black">{startup.startup_name}</span></div>
+                        <div className="flex items-center"><span className="font-medium text-gray-700 mr-2">Lĩnh vực hoạt động:</span><span className="text-black">{startup.industry}</span></div>
+                        <div className="flex items-center"><span className="font-medium text-gray-700 mr-2">Năm thành lập:</span><span className="text-black">{startup.founded_year}</span></div>
+                        <div className="flex items-center"><span className="font-medium text-gray-700 mr-2">Quy mô đội ngũ:</span><span className="text-black">{startup.team_size}</span></div>
+                        <div className="sm:col-span-2 mt-2"><span className="font-medium text-gray-700 mr-2">Sứ mệnh / Giá trị cốt lõi:</span><span className="text-black">{startup.mission}</span></div>
+                        <div className="sm:col-span-2 flex gap-4 mt-2">
+                          {startup.website && <a href={startup.website} target="_blank" rel="noopener noreferrer" className="text-blue-700 hover:underline font-normal"><FontAwesomeIcon icon={faGlobe} className="text-gray-700 mr-1" />Website</a>}
+                          {startup.facebook && <a href={startup.facebook} target="_blank" rel="noopener noreferrer" className="text-blue-700 hover:underline font-normal"><FontAwesomeIcon icon={faFacebook} className="text-gray-700 mr-1" />Facebook</a>}
+                          {startup.linkedin && <a href={startup.linkedin} target="_blank" rel="noopener noreferrer" className="text-blue-700 hover:underline font-normal"><FontAwesomeIcon icon={faLinkedin} className="text-gray-700 mr-1" />LinkedIn</a>}
+                        </div>
+                      </div>
+                    </div>
+                  ))
+                ) : (
+                  <div className="text-gray-400">Chưa có startup nào được khai báo.</div>
+                )}
               </div>
-              <div className="flex items-center gap-2 text-gray-600">
-                <i className="fa fa-bullseye text-blue-400" />
-                <span>{user.goal}</span>
+
+              {/* 🏆 Thành tựu & Pitch Deck */}
+              <div className="rounded-xl border bg-white shadow-sm p-7 mb-2">
+                <h3 className="text-lg font-semibold text-gray-800 mb-4 flex items-center">
+                  <FontAwesomeIcon icon={faTrophy} className="text-gray-700 mr-2" /> Thành tựu & Pitch Deck
+                </h3>
+                <div className="text-[15px] mb-2">
+                  <span className="font-medium text-gray-700">Các thành tựu nổi bật:</span> <span className="text-black">{user.achievements}</span>
+                  {user.achievementLinks.length > 0 && (
+                    <ul className="mt-2 ml-2 list-disc text-blue-700">
+                      {user.achievementLinks.map((link, idx) => (
+                        <li key={idx}>
+                          <a href={link} target="_blank" rel="noopener noreferrer" className="hover:underline font-normal">{link}</a>
+                        </li>
+                      ))}
+                    </ul>
+                  )}
+                </div>
+              </div>
+
+              {/* 🤝 Mục tiêu kết nối */}
+              <div className="rounded-xl border bg-white shadow-sm p-7 mb-2">
+                <h3 className="text-lg font-semibold text-gray-800 mb-4 flex items-center">
+                  <FontAwesomeIcon icon={faBullseye} className="text-gray-700 mr-2" /> Mục tiêu kết nối
+                </h3>
+                <div className="text-[15px]"><span className="font-medium text-gray-700">Nhà đầu tư, mentor, đối tác:</span> <span className="text-black">{user.goal}</span></div>
               </div>
             </div>
-            {/* Action buttons */}
-            <div className="flex gap-3 mt-2">
-              <button className="px-5 py-2 rounded-full bg-[#FFCE23] text-black font-semibold shadow hover:bg-yellow-300 transition">Theo dõi</button>
-              <button className="px-5 py-2 rounded-full bg-[#FFCE23] text-black font-semibold shadow hover:bg-yellow-300 transition">Kết nối</button>
-            </div>
-          </div>
         </div>
       </div>
       <Footer />
