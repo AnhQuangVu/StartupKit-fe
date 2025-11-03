@@ -109,7 +109,7 @@ const Register = () => {
       const data = await response.json();
 
       if (response.ok) {
-        toast.success("Đăng ký thành công! Vui lòng đăng nhập.");
+        toast.success("Đăng ký thành công!");
         const t1 = performance.now();
         const ms = Math.round(t1 - t0);
         if (ms > 2000) {
@@ -117,10 +117,28 @@ const Register = () => {
             autoClose: 2500,
           });
         }
-        setTimeout(() => {
+        // If backend returned token and user, auto-login so onboarding can start immediately.
+        // Otherwise fall back to redirecting to the login page.
+        try {
+          const token = data?.token || data?.access_token;
+          if (token && data?.user) {
+            login(token, data.user);
+            setTimeout(() => {
+              setIsSubmitting(false);
+              navigate('/');
+            }, 800);
+          } else {
+            // Backend didn't return credentials. Flag onboarding to run after next login.
+            try { localStorage.setItem('force_onboarding', 'true'); } catch (e) {}
+            setTimeout(() => {
+              setIsSubmitting(false);
+              navigate('/dang-nhap');
+            }, 1500);
+          }
+        } catch (e) {
           setIsSubmitting(false);
-          navigate("/dang-nhap");
-        }, 1500);
+          navigate('/dang-nhap');
+        }
       } else {
         setIsSubmitting(false); // Cho phép bấm lại nếu lỗi
         const msg =

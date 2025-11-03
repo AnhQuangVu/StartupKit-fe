@@ -1,5 +1,6 @@
 import { Routes, Route } from "react-router-dom";
 import ErrorBoundary from "./components/common/ErrorBoundary";
+import OnboardingTour from "./components/common/OnboardingTour";
 import TrangChu from "./pages/TrangChu";
 import ProjectProfilePreview from "./components/project/ProjectProfilePreview";
 import Profile from "./pages/Profile";
@@ -23,6 +24,7 @@ import PublicProfile from "./pages/PublicProfile";
 export default function App() {
   return (
     <ErrorBoundary>
+    <OnboardingTour />
     <Routes>
       <Route path="/" element={<TrangChu />} />
       <Route path="/register" element={<Register />} />
