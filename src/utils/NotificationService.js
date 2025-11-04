@@ -1,31 +1,76 @@
 // NotificationService.js
 // Service để gọi các API thông báo
+import { API_BASE } from '../config/api';
 
-const API_BASE = '/api/notifications';
+const NOTIFICATIONS_API = `${API_BASE}/api/notifications`;
 
 export const NotificationService = {
   async getList() {
-    const res = await fetch(`${API_BASE}/list`, { credentials: 'include' });
-    return res.json();
+    try {
+      const res = await fetch(`${NOTIFICATIONS_API}/list`, { credentials: 'include' });
+      if (!res.ok) return [];
+      const data = await res.json();
+      return Array.isArray(data) ? data : [];
+    } catch (e) {
+      console.error('Error fetching notifications:', e);
+      return [];
+    }
   },
   async getCount() {
-    const res = await fetch(`${API_BASE}/count`, { credentials: 'include' });
-    return res.json();
+    try {
+      const res = await fetch(`${NOTIFICATIONS_API}/count`, { credentials: 'include' });
+      if (!res.ok) return { count: 0 };
+      const data = await res.json();
+      return { count: data?.count || 0 };
+    } catch (e) {
+      console.error('Error fetching notification count:', e);
+      return { count: 0 };
+    }
   },
   async getDetail(id) {
-    const res = await fetch(`${API_BASE}/detail/${id}`, { credentials: 'include' });
-    return res.json();
+    try {
+      const res = await fetch(`${NOTIFICATIONS_API}/detail/${id}`, { credentials: 'include' });
+      if (!res.ok) return null;
+      return await res.json();
+    } catch (e) {
+      console.error('Error fetching notification detail:', e);
+      return null;
+    }
   },
   async markRead(id) {
-    const res = await fetch(`${API_BASE}/mark-read/${id}`, { method: 'POST', credentials: 'include' });
-    return res.json();
+    try {
+      const res = await fetch(`${NOTIFICATIONS_API}/mark-read/${id}`, { 
+        method: 'POST', 
+        credentials: 'include' 
+      });
+      return res.ok;
+    } catch (e) {
+      console.error('Error marking notification as read:', e);
+      return false;
+    }
   },
   async delete(id) {
-    const res = await fetch(`${API_BASE}/delete/${id}`, { method: 'DELETE', credentials: 'include' });
-    return res.json();
+    try {
+      const res = await fetch(`${NOTIFICATIONS_API}/delete/${id}`, { 
+        method: 'DELETE', 
+        credentials: 'include' 
+      });
+      return res.ok;
+    } catch (e) {
+      console.error('Error deleting notification:', e);
+      return false;
+    }
   },
   async markAllRead() {
-    const res = await fetch(`${API_BASE}/mark-all-read`, { method: 'POST', credentials: 'include' });
-    return res.json();
+    try {
+      const res = await fetch(`${NOTIFICATIONS_API}/mark-all-read`, { 
+        method: 'POST', 
+        credentials: 'include' 
+      });
+      return res.ok;
+    } catch (e) {
+      console.error('Error marking all notifications as read:', e);
+      return false;
+    }
   }
 };
