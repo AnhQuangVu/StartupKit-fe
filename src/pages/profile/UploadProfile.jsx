@@ -205,7 +205,7 @@ export default function UploadProfile() {
       }));
 
       // Try to fetch members if backend exposes endpoint
-      const memRes = await fetchWithTimeout(`${API_BASE}/projects/${projectId}/members`, { headers: authHeaders(token), timeout: 8000 });
+      const memRes = await fetchWithTimeout(`${API_BASE}/projects/${projectId}/members/`, { headers: authHeaders(token), timeout: 8000 });
       if (memRes.ok) {
         const mems = await memRes.json();
         setMembers(mems.map(m => ({ id: m.id, name: m.name || (m.user_id ? `User ${m.user_id}` : ''), position: m.role_in_project || '', avatar: m.avatar_url || '' })));
@@ -303,7 +303,7 @@ export default function UploadProfile() {
       };
 
 
-      const res = await fetch(`${API_BASE}/projects/${projectId}/members`, {
+      const res = await fetch(`${API_BASE}/projects/${projectId}/members/`, {
         method: 'POST',
         headers: { ...authHeaders(token), 'Content-Type': 'application/json' },
         body: JSON.stringify(body)
@@ -641,7 +641,7 @@ export default function UploadProfile() {
     setSaving(true);
     try {
       const t0 = performance.now();
-      const res = await fetchWithTimeout(`${API_BASE}/projects/${projectId}/publish`, {
+      const res = await fetchWithTimeout(`${API_BASE}/projects/${projectId}/publish/`, {
         method: 'POST',
         headers: authHeaders(token),
         timeout: 10000

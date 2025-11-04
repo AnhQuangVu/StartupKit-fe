@@ -700,7 +700,7 @@ export default function Profile() {
                               avatar_url: avatarPreview || formData.avatar_url || "",
                               cover_url: coverPreview || formData.cover_url || ""
                             };
-                            navigate("/public-profile", {
+                            navigate("/public-profile/", {
                               state: {
                                 formData: publicFormData,
                                 achievements,
