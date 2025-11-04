@@ -164,7 +164,7 @@ export default function DienDan() {
 
     setLoading(true);
     try {
-      const response = await fetch(`${API_BASE}/projects?skip=0&limit=50`, {
+      const response = await fetch(`${API_BASE}/projects/?skip=0&limit=50`, {
         headers: authHeaders(token),
       });
 
@@ -1012,8 +1012,8 @@ const ProjectListView = ({
                 alt={project.name}
                 className="w-full h-full object-cover"
                 onError={(e) => {
-                  e.target.src =
-                    "https://via.placeholder.com/400x160/F3F4F6/9CA3AF?text=Project+Image";
+                  e.target.onerror = null; // Prevent infinite loop
+                  e.target.src = 'data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iNDAwIiBoZWlnaHQ9IjE2MCIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIj48cmVjdCB3aWR0aD0iMTAwJSIgaGVpZ2h0PSIxMDAlIiBmaWxsPSIjRjNGNEY2Ii8+PHRleHQgeD0iNTAlIiB5PSI1MCUiIGZvbnQtZmFtaWx5PSJBcmlhbCIgZm9udC1zaXplPSIxNnB4IiBmaWxsPSIjOUNBM0FGIiB0ZXh0LWFuY2hvcj0ibWlkZGxlIiBkeT0iLjNlbSI+Tm8gaW1hZ2U8L3RleHQ+PC9zdmc+';
                 }}
               />
             </div>
