@@ -166,7 +166,7 @@ export default function UploadProfile() {
     try {
       setLoadingProject(true);
       const t0 = performance.now();
-      const res = await fetchWithTimeout(`${API_BASE}/projects/${projectId}`, {
+      const res = await fetchWithTimeout(`${API_BASE}/projects/${projectId}/`, {
         headers: authHeaders(token)
       , timeout: 10000 });
       if (!res.ok) {

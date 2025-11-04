@@ -7,7 +7,7 @@ const NOTIFICATIONS_API = `${API_BASE}/api/notifications`;
 export const NotificationService = {
   async getList() {
     try {
-      const res = await fetch(`${NOTIFICATIONS_API}/list`, { credentials: 'include' });
+      const res = await fetch(`${NOTIFICATIONS_API}/list/`, { credentials: 'include' });
       if (!res.ok) return [];
       const data = await res.json();
       return Array.isArray(data) ? data : [];

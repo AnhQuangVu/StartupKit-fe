@@ -63,7 +63,7 @@ function ProfileManagement({ userType = "startup", isLoggedIn = true }) {
       setError("");
       try {
         const token = localStorage.getItem("token");
-        const res = await fetch(`${API_BASE}/projects?skip=0&limit=50`, {
+        const res = await fetch(`${API_BASE}/projects?skip=0&limit=50/`, {
           headers: {
             ...authHeaders(token),
             "Content-Type": "application/json",
