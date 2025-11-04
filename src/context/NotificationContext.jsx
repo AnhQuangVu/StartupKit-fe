@@ -15,11 +15,13 @@ export const NotificationProvider = ({ children }) => {
     setLoading(true);
     try {
       const list = await NotificationService.getList();
-      setNotifications(list);
+      setNotifications(Array.isArray(list) ? list : []);
       const cnt = await NotificationService.getCount();
-      setCount(cnt.count || 0);
+      setCount(cnt?.count || 0);
     } catch (e) {
-      // handle error
+      console.error('Error fetching notifications:', e);
+      setNotifications([]);
+      setCount(0);
     }
     setLoading(false);
   };

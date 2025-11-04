@@ -1,7 +1,8 @@
 // NotificationService.js
 // Service để gọi các API thông báo
+import { API_BASE } from '../config/api';
 
-const API_BASE = '/api/notifications';
+const NOTIFICATIONS_API = `${API_BASE}/api/notifications`;
 
 export const NotificationService = {
   async getList() {
