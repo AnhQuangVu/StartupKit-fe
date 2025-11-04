@@ -75,7 +75,6 @@ export default function LoginForm() {
       });
       const t1 = performance.now();
       const data = await tokenRes.json();
-      console.log("Login response:", data); // DEBUG
 
       if (tokenRes.ok && data.access_token) {
         // Gọi API lấy thông tin user
@@ -86,7 +85,6 @@ export default function LoginForm() {
         });
         const user = await userRes.json();
         const tUser1 = performance.now();
-        console.log("User info:", user); // DEBUG
 
         // Lưu vào context
         login(data.access_token, user);
@@ -96,7 +94,6 @@ export default function LoginForm() {
         const userMs = Math.round(tUser1 - tUser0);
         const totalMs = Math.round(tUser1 - t0);
         if (tokenMs > 2000 || userMs > 2000) {
-          console.warn(`Login slow: token ${tokenMs}ms, user ${userMs}ms, total ${totalMs}ms`);
           toast.info("Máy chủ đang phản hồi chậm. Vui lòng kiên nhẫn hoặc thử lại sau.", { autoClose: 3000 });
         }
         setTimeout(() => {

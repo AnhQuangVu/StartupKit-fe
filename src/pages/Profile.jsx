@@ -694,10 +694,7 @@ export default function Profile() {
                           type="button"
                           onClick={() => {
                             // DEBUG: Log avatarPreview, coverPreview, formData
-                            console.log('Profile avatarPreview:', avatarPreview);
-                            console.log('Profile coverPreview:', coverPreview);
-                            console.log('Profile formData.avatar_url:', formData.avatar_url);
-                            console.log('Profile formData.cover_url:', formData.cover_url);
+
                             const publicFormData = {
                               ...formData,
                               avatar_url: avatarPreview || formData.avatar_url || "",

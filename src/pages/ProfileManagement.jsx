@@ -128,7 +128,7 @@ function ProfileManagement({ userType = "startup", isLoggedIn = true }) {
       });
       setSearchResults(results);
     } catch (err) {
-      console.error("Lỗi tìm kiếm:", err);
+
       setSearchResults([]);
     } finally {
       setSearchLoading(false);

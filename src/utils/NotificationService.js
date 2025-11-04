@@ -12,7 +12,6 @@ export const NotificationService = {
       const data = await res.json();
       return Array.isArray(data) ? data : [];
     } catch (e) {
-      console.error('Error fetching notifications:', e);
       return [];
     }
   },
@@ -23,7 +22,6 @@ export const NotificationService = {
       const data = await res.json();
       return { count: data?.count || 0 };
     } catch (e) {
-      console.error('Error fetching notification count:', e);
       return { count: 0 };
     }
   },
@@ -33,7 +31,6 @@ export const NotificationService = {
       if (!res.ok) return null;
       return await res.json();
     } catch (e) {
-      console.error('Error fetching notification detail:', e);
       return null;
     }
   },
@@ -45,7 +42,6 @@ export const NotificationService = {
       });
       return res.ok;
     } catch (e) {
-      console.error('Error marking notification as read:', e);
       return false;
     }
   },
@@ -57,7 +53,6 @@ export const NotificationService = {
       });
       return res.ok;
     } catch (e) {
-      console.error('Error deleting notification:', e);
       return false;
     }
   },
@@ -69,7 +64,6 @@ export const NotificationService = {
       });
       return res.ok;
     } catch (e) {
-      console.error('Error marking all notifications as read:', e);
       return false;
     }
   }

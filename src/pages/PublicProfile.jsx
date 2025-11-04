@@ -20,7 +20,7 @@ const PublicProfile = () => {
         try {
           const token = localStorage.getItem('token');
           const headers = token ? { Authorization: `Bearer ${token}` } : {};
-          const response = await fetch(`http://127.0.0.1:8000/public/users/${id}`, { headers });
+          const response = await fetch(`${API_BASE}/public/users/${id}`, { headers });
           if (response.ok) {
             const data = await response.json();
             setUser({

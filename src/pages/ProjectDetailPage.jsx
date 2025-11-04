@@ -45,7 +45,7 @@ function useProjectDetails(projectId) {
                         }
                         setProject(mapped);
         } catch (error) {
-            console.error('Fetch project error:', error);
+
             // Logic Fallback Mock Data
             try {
                 const mockList = typeof getMockData === 'function' ? getMockData() : [];
@@ -71,7 +71,7 @@ function useProjectDetails(projectId) {
                     setIsFollowing(userIsFollowing);
                 }
             }
-        } catch (error) { console.error('Fetch followers error:', error); }
+        } catch (error) { }
     }, [projectId, isLoggedIn, user?.id]);
     
     const updateFollowersCount = useCallback(async () => {
@@ -83,7 +83,7 @@ function useProjectDetails(projectId) {
                 const data = await response.json();
                 setFollowers(Array.isArray(data) ? data : []);
             }
-        } catch (error) { console.error('Update followers count error:', error); }
+        } catch (error) { }
     }, [projectId]);
 
     const fetchProjectMembers = useCallback(async () => {
@@ -95,7 +95,7 @@ function useProjectDetails(projectId) {
                 const data = await response.json();
                 setMembers(Array.isArray(data) ? data : []);
             }
-        } catch (error) { console.error('Fetch members error:', error); }
+        } catch (error) { }
     }, [projectId]);
 
     const fetchProjectPosts = useCallback(async () => {
@@ -112,7 +112,7 @@ function useProjectDetails(projectId) {
                 }));
                 setPosts(mapped);
             }
-        } catch (error) { console.error('Fetch posts error:', error); }
+        } catch (error) { }
     }, [projectId]);
 
     useEffect(() => {
@@ -326,7 +326,7 @@ const ProjectDetailsContent = ({ project }) => {
 const ProjectAboutAndDetails = ({ project }) => {
     const navigate = useNavigate();
     const handleFounderClick = () => {
-        console.log('Founder data:', project.founder);
+
         if (project.founder && project.founder.id) {
             navigate(`/public-profile/${project.founder.id}`);
         } else {
@@ -369,7 +369,7 @@ const PostItem = ({ post, isLoggedIn, likedPosts, handleLikePost, comments, setC
             try {
                 const commentsData = await listPostComments(postId);
                 setComments(prev => ({ ...prev, [postId]: commentsData }));
-            } catch (error) { console.error('Load comments error:', error); }
+            } catch (error) { }
         }
         setShowComments(prev => !prev);
     }, [comments, setComments]);
@@ -545,8 +545,8 @@ export default function ProjectDetailPage() {
                 const newFollowingState = !isFollowing;
                 setIsFollowing(newFollowingState);
                 setTimeout(() => { updateFollowersCount(); }, 500);
-            } else { console.error('Follow failed with status:', response.status); }
-        } catch (error) { console.error('Toggle follow error:', error); }
+            }
+        } catch (error) { }
     };
     
     // Logic SEO (Giữ nguyên)

@@ -55,8 +55,6 @@ async function compressImage(file, { maxWidth = 1600, maxHeight = 1600, quality 
 
 export async function uploadToCloudinary(file, options = {}) {
   const { onProgress, signal } = options;
-  console.log('🔄 Uploading to Cloudinary:', { fileName: file.name, fileSize: file.size, fileType: file.type });
-
   let uploadFile = file;
   // Điều kiện nén: file > 1.2MB hoặc không phải vector và không quá nhỏ
   const SHOULD_COMPRESS = (file.size > 1_200_000)
@@ -74,9 +72,7 @@ export async function uploadToCloudinary(file, options = {}) {
         throw createAbortError();
       }
       const t1 = performance.now();
-      console.log(`🗜️ Nén ảnh: ${Math.round(file.size/1024)}KB -> ${Math.round(uploadFile.size/1024)}KB in ${Math.round(t1 - t0)}ms`);
     } catch (e) {
-      console.warn('⚠️ Không nén được ảnh, dùng file gốc. Lý do:', e?.message || e);
       uploadFile = file;
     }
   }
@@ -109,11 +105,9 @@ export async function uploadToCloudinary(file, options = {}) {
             try {
               const data = JSON.parse(xhr.responseText || '{}');
               if (xhr.status >= 200 && xhr.status < 300 && data.secure_url) {
-                console.log('✅ Upload thành công:', data.secure_url);
                 if (signal && abortHandler) try { signal.removeEventListener('abort', abortHandler); } catch {}
                 resolve(data.secure_url);
               } else {
-                console.error('❌ Cloudinary error:', data);
                 let msg = 'Lỗi upload ảnh lên Cloudinary.';
                 if (data?.error?.message) msg += "\n" + data.error.message;
                 if (signal && abortHandler) try { signal.removeEventListener('abort', abortHandler); } catch {}
@@ -145,7 +139,6 @@ export async function uploadToCloudinary(file, options = {}) {
       });
       return await p;
     } catch (err) {
-      console.warn('⚠️ XHR upload failed, fallback to fetch. Reason:', err?.message || err);
       // fallthrough to fetch
     }
   }
@@ -162,12 +155,10 @@ export async function uploadToCloudinary(file, options = {}) {
     try {
       data = await res.json();
     } catch (err) {
-      console.error('❌ Cloudinary response parsing error:', err);
       throw new Error("Không thể đọc phản hồi từ Cloudinary. Kiểm tra kết nối mạng hoặc cấu hình.");
     }
 
     if (data.error) {
-      console.error('❌ Cloudinary error:', data.error);
       let msg = "Lỗi upload ảnh lên Cloudinary.";
       if (data.error.message) msg += "\n" + data.error.message;
       if (data.error.http_code) msg += ` (HTTP ${data.error.http_code})`;
@@ -176,14 +167,11 @@ export async function uploadToCloudinary(file, options = {}) {
     }
 
     if (!data.secure_url) {
-      console.error('❌ No secure_url in response:', data);
       throw new Error("Upload thành công nhưng không nhận được URL ảnh. Kiểm tra lại preset và cloud_name.");
     }
 
-    console.log('✅ Upload thành công:', data.secure_url);
     return data.secure_url;
   } catch (err) {
-    console.error('❌ Upload error:', err);
     throw err;
   }
 }

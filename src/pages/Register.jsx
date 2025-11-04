@@ -130,7 +130,7 @@ const Register = () => {
             : data?.detail) ||
           "Đăng ký thất bại. Vui lòng thử lại.";
         toast.error(msg);
-        console.error("Lỗi đăng ký:", data);
+
       }
     } catch (error) {
       if (

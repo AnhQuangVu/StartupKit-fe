@@ -215,7 +215,7 @@ export default function UploadProfile() {
         showToast('Máy chủ phản hồi chậm khi tải project (' + ms + 'ms)', 'warning', 2500);
       }
     } catch (err) {
-      console.error('loadProject error', err);
+
     } finally {
       setLoadingProject(false);
     }
@@ -261,7 +261,7 @@ export default function UploadProfile() {
       const reader = new FileReader();
       reader.onloadend = () => {
         const base64 = reader.result;
-        console.log(`Image selected (${type}):`, base64.substring(0, 50) + '...');
+
         
         // Lưu base64 vào state - key khác nhau
         if (type === 'logo') {
@@ -302,7 +302,7 @@ export default function UploadProfile() {
         role_in_project: newMember.position.trim()
       };
 
-      console.log('Adding member:', body);
+
       const res = await fetch(`${API_BASE}/projects/${projectId}/members`, {
         method: 'POST',
         headers: { ...authHeaders(token), 'Content-Type': 'application/json' },
@@ -311,13 +311,13 @@ export default function UploadProfile() {
 
       if (!res.ok) {
         const txt = await res.text();
-        console.error('add member failed', txt);
+
         showToast('Thêm thành viên thất bại: ' + txt.substring(0, 150), 'error');
         return;
       }
 
       const created = await res.json();
-      console.log('Member created:', created);
+
 
       // Thêm vào UI list
       const newMemberItem = {
@@ -331,7 +331,7 @@ export default function UploadProfile() {
       setNewMember({ name: '', position: '' });
       showToast('✓ Thêm thành viên thành công!', 'success');
     } catch (err) {
-      console.error('handleAddMember error:', err);
+
       showToast('Lỗi thêm thành viên: ' + err.message, 'error');
     }
   };
@@ -397,10 +397,10 @@ export default function UploadProfile() {
             logo_url = uploadResponse.url;
             logoPublicId = uploadResponse.public_id || '';
           }
-          console.log('✅ Logo upload thành công, URL:', logo_url, 'Public ID:', logoPublicId);
+
           showToast('✓ Logo upload thành công', 'success', 2000);
         } catch (err) {
-          console.error('Logo upload error:', err);
+
           showToast(`⚠️ Upload logo thất bại: ${err.message}. Vui lòng thử lại.`, 'warning', 5000);
         } finally {
           setTimeout(() => setLogoProgress(0), 600);
@@ -419,7 +419,7 @@ export default function UploadProfile() {
             team_image_url = uploadResponse.url;
             bannerPublicId = uploadResponse.public_id || '';
           }
-          console.log('✅ Banner upload thành công, URL:', team_image_url, 'Public ID:', bannerPublicId);
+
           showToast('✓ Banner upload thành công', 'success', 2000);
         } catch (err) {
           console.error('Banner upload error:', err);
