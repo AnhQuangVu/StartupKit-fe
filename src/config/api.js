@@ -1,5 +1,5 @@
 // Backend API Base URL - đọc từ .env file
-const API_BASE = import.meta.env.VITE_API_BASE || 'https://startupkitapi.nhd472004.io.vn';
+const API_BASE = import.meta.env.VITE_API_BASE || '/api';
 export { API_BASE };
 export const authHeaders = (token) => ({ Authorization: `Bearer ${token}` });
 
