@@ -513,7 +513,7 @@ export default function UploadProfile() {
 
   const method = projectId ? 'PATCH' : 'POST';
   // Backend của bạn chấp nhận đường dẫn không có trailing slash
-  const url = projectId ? `${API_BASE}/projects/${projectId}` : `${API_BASE}/projects`;
+  const url = projectId ? `${API_BASE}/projects/${projectId}` : `${API_BASE}/projects/`;
 
       // Log payload để debug
       console.log('Final payload:', JSON.stringify(payload, null, 2));
@@ -641,7 +641,7 @@ export default function UploadProfile() {
     setSaving(true);
     try {
       const t0 = performance.now();
-      const res = await fetchWithTimeout(`${API_BASE}/projects/${projectId}/publish/`, {
+      const res = await fetchWithTimeout(`${API_BASE}/projects/${projectId}/publish`, {
         method: 'POST',
         headers: authHeaders(token),
         timeout: 10000
