@@ -21,7 +21,7 @@ import Footer from "../components/layout/Footer";
 import { API_BASE, authHeaders, fetchWithTimeout } from "../config/api";
 
 export default function Profile() {
-  // Debug: log connect_goal every render
+  const [isLoading, setIsLoading] = useState(true);
 
   const { user: authUser, logout, updateUser } = useAuth();
   const navigate = useNavigate();
@@ -42,7 +42,6 @@ export default function Profile() {
   const [avatarPreview, setAvatarPreview] = useState("");
   const [coverPreview, setCoverPreview] = useState("");
   const [isSubmitting, setIsSubmitting] = useState(false);
-  const [updateMessage, setUpdateMessage] = useState({ type: "", text: "" });
   useEffect(() => {
     if (!authUser) return;
 
@@ -202,10 +201,10 @@ export default function Profile() {
   const handleUpdateProfile = async (e) => {
     e.preventDefault();
     setIsSubmitting(true);
-    setUpdateMessage({ type: "", text: "" });
-
     try {
       let payload = { ...formData };
+      // Ensure role stays fixed as 'Founder' regardless of UI changes
+      payload.role = 'Founder';
       payload.startups = startups;
       payload.achievements = achievements.filter(
         (a) => a.content.trim() !== "" || a.link.trim() !== ""
@@ -279,7 +278,59 @@ export default function Profile() {
     }
   };
 
-  if (!authUser) {
+  // Thêm useEffect mới để fetch profile data
+  useEffect(() => {
+    const fetchProfile = async () => {
+      try {
+        const token = localStorage.getItem('token');
+        const response = await fetchWithTimeout(`${API_BASE}/users/me`, {
+          headers: authHeaders(token)
+        });
+        const data = await response.json();
+        
+        // Merge fetched fields into existing formData to avoid accidentally wiping fields
+        setFormData((prev) => ({
+          full_name: data.full_name || prev.full_name || "",
+          avatar_url: data.avatar_url || prev.avatar_url || prev.full_name || "",
+          cover_url: data.cover_url || data.profile?.cover_url || prev.cover_url || "",
+          bio: data.profile?.bio || prev.bio || "",
+          website_url: data.profile?.website_url || prev.website_url || "",
+          location: data.profile?.location || prev.location || "",
+          phone: data.profile?.phone || prev.phone || "",
+          address: data.profile?.address || prev.address || "",
+          company: data.profile?.company || prev.company || "",
+          role: data.profile?.role || prev.role || "Founder",
+          pitch_deck_url: data.profile?.pitch_deck_url || prev.pitch_deck_url || "",
+          connect_goal: data.connect_goal || data.profile?.connect_goal || prev.connect_goal || "",
+        }));
+
+        // Cập nhật achievements
+        if (Array.isArray(data.profile?.achievements) && data.profile.achievements.length > 0) {
+          setAchievements(data.profile.achievements.map(a => 
+            typeof a === 'object' ? a : { content: a, link: '' }
+          ));
+        }
+
+        // Cập nhật startups
+        if (Array.isArray(data.profile?.startups) && data.profile.startups.length > 0) {
+          setStartups(data.profile.startups);
+        }
+
+      } catch {
+        // ignore fetch errors silently
+      } finally {
+        setIsLoading(false);
+      }
+    };
+
+    const token = localStorage.getItem('token');
+    if (token) {
+      fetchProfile();
+    }
+  }, []); 
+
+ 
+  if (isLoading) {
     return (
       <div className="flex flex-col min-h-screen">
         <Navbar />
@@ -429,12 +480,14 @@ export default function Profile() {
                                 color="#FFD600"
                               />
                             </span>
+                            {/* Role fixed as Founder: show read-only field and prevent editing */}
                             <input
                               name="role"
-                              placeholder="Vai trò (Founder, CEO...)"
-                              value={formData.role || ""}
-                              onChange={handleInputChange}
-                              className="border p-2 rounded pl-10 w-full"
+                              placeholder="Vai trò (Founder)"
+                              value={formData.role || "Founder"}
+                              readOnly
+                              aria-readonly="true"
+                              className="border p-2 rounded pl-10 w-full bg-gray-100 text-gray-700"
                             />
                           </div>
                           <div className="relative">
@@ -680,7 +733,7 @@ export default function Profile() {
                         </div>
                       </div>
 
-                      <div className="flex gap-3 mt-8">
+                      <div className="flex gap-3 mt-8 md:hidden">
                         <button
                           type="submit"
                           disabled={isSubmitting}
@@ -693,8 +746,6 @@ export default function Profile() {
                         <button
                           type="button"
                           onClick={() => {
-                            // DEBUG: Log avatarPreview, coverPreview, formData
-
                             const publicFormData = {
                               ...formData,
                               avatar_url: avatarPreview || formData.avatar_url || "",
@@ -721,6 +772,39 @@ export default function Profile() {
           </div>
         </div>
       </main>
+      {/* Fixed bottom action bar for desktop: visible on md+; keeps original inline buttons for mobile */}
+  <div className="fixed bottom-6 inset-x-0 justify-center z-50 hidden md:flex">
+        <div className="bg-white/90 backdrop-blur-sm border border-gray-200 rounded-full px-3 py-2 shadow-lg flex items-center gap-3">
+          <button
+            onClick={(e) => handleUpdateProfile(e)}
+            disabled={isSubmitting}
+            className={`px-4 py-2 rounded-full bg-[#FFCE23] text-black font-semibold shadow hover:bg-yellow-300 transition ${isSubmitting ? 'opacity-70 cursor-not-allowed' : ''}`}
+          >
+            {isSubmitting ? 'Đang cập nhật...' : 'Lưu thay đổi'}
+          </button>
+
+          <button
+            onClick={() => {
+              const publicFormData = {
+                ...formData,
+                avatar_url: avatarPreview || formData.avatar_url || "",
+                cover_url: coverPreview || formData.cover_url || ""
+              };
+              navigate('/public-profile/', {
+                state: {
+                  formData: publicFormData,
+                  achievements,
+                  startups
+                }
+              });
+            }}
+            className="px-4 py-2 rounded-full bg-gray-200 text-gray-800 font-semibold shadow hover:bg-gray-300 transition"
+          >
+            Xem hồ sơ công khai
+          </button>
+        </div>
+      </div>
+
       <Footer />
     </div>
   );
