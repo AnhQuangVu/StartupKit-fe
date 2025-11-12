@@ -1,14 +1,15 @@
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import {
   faUserTie,
+  faBuilding,
   faMapMarkerAlt,
-  faBriefcase,
+  faUser,
+  faLink,
+  faAlignLeft,
   faChartLine,
-  faStar,
   faCheckCircle,
   faRocket,
   faTrophy,
-  faGlobe,
   faLightbulb
 } from "@fortawesome/free-solid-svg-icons";
 
@@ -22,7 +23,7 @@ export default function ProfileCard({
   full_name,
   role,
 
-  // Mentor specific
+  // Mentor/Founder specific
   title,
   company,
   current_position,
@@ -37,9 +38,8 @@ export default function ProfileCard({
   website_url,
   community_link,
 
-  // Achievements & Investments
+  // Achievements
   achievements,
-  notableInvestments,
 
   // Startup info (for founders)
   startups,
@@ -118,7 +118,7 @@ export default function ProfileCard({
 
         {/* Name and Title Section */}
         <div className="mb-4">
-          <div className="flex items-start justify-between gap-2 mb-2">
+          <div className="flex items-start justify-between gap-2 mb-3">
             <h3 className={`font-bold ${small ? 'text-lg' : 'text-xl'} text-gray-900 leading-tight`}>
               {displayName || 'Chưa có tên'}
             </h3>
@@ -131,33 +131,71 @@ export default function ProfileCard({
             )}
           </div>
 
+          {/* Company/Organization */}
           {displayTitle && (
-            <p className="text-sm font-medium text-gray-600 flex items-center gap-2 mb-1">
-              <FontAwesomeIcon icon={faBriefcase} className="text-gray-400 text-xs" />
-              <span className="line-clamp-1">{displayTitle}</span>
+            <p className="text-sm text-gray-700 flex items-start gap-2 mb-2">
+              <FontAwesomeIcon icon={faBuilding} className="text-gray-600 text-xs mt-0.5" />
+              <span className="font-medium whitespace-nowrap">
+                {role === 'mentor' ? 'Công ty/Tổ chức:' : 'Vị trí:'}
+              </span>
+              <span className="text-gray-900 font-medium">{displayTitle}</span>
             </p>
           )}
 
+          {/* Location */}
           {location && (
-            <p className="text-sm text-gray-500 flex items-center gap-2">
-              <FontAwesomeIcon icon={faMapMarkerAlt} className="text-gray-400 text-xs" />
-              <span>{location}</span>
+            <p className="text-sm text-gray-700 flex items-start gap-2 mb-2">
+              <FontAwesomeIcon icon={faMapMarkerAlt} className="text-gray-600 text-xs mt-0.5" />
+              <span className="font-medium whitespace-nowrap">Địa điểm:</span>
+              <span className="text-gray-900">{location}</span>
+            </p>
+          )}
+
+          {/* Role */}
+          <p className="text-sm text-gray-700 flex items-start gap-2 mb-2">
+            <FontAwesomeIcon icon={faUser} className="text-gray-600 text-xs mt-0.5" />
+            <span className="font-medium whitespace-nowrap">Vai trò:</span>
+            <span className="text-gray-900 font-medium capitalize">{role === 'mentor' ? 'Mentor' : 'Founder'}</span>
+          </p>
+
+          {/* Website/Community Link */}
+          {displayWebsite && (
+            <p className="text-sm text-gray-700 flex items-start gap-2 mb-2">
+              <FontAwesomeIcon icon={faLink} className="text-gray-600 text-xs mt-0.5" />
+              <span className="font-medium whitespace-nowrap">
+                {role === 'mentor' ? 'Link cộng đồng:' : 'Website:'}
+              </span>
+              <a
+                href={displayWebsite.startsWith('http') ? displayWebsite : `https://${displayWebsite}`}
+                target="_blank"
+                rel="noopener noreferrer"
+                className="text-blue-600 hover:text-blue-700 hover:underline break-all"
+                onClick={(e) => e.stopPropagation()}
+              >
+                {displayWebsite}
+              </a>
             </p>
           )}
         </div>
 
         {/* Bio */}
         {bio && (
-          <p className="text-sm text-gray-600 leading-relaxed mb-4 pl-1" style={{
-            display: '-webkit-box',
-            WebkitLineClamp: 3,
-            WebkitBoxOrient: 'vertical',
-            overflow: 'hidden',
-            minHeight: '3.6em',
-            lineHeight: '1.2em'
-          }}>
-            {bio}
-          </p>
+          <div className="mb-4 border-t pt-3">
+            <p className="text-sm font-medium text-gray-700 mb-1.5 flex items-start gap-2">
+              <FontAwesomeIcon icon={faAlignLeft} className="text-gray-600 text-xs mt-0.5" />
+              <span>Giới thiệu bản thân:</span>
+            </p>
+            <p className="text-sm text-gray-600 leading-relaxed" style={{
+              display: '-webkit-box',
+              WebkitLineClamp: 3,
+              WebkitBoxOrient: 'vertical',
+              overflow: 'hidden',
+              minHeight: '3.6em',
+              lineHeight: '1.2em'
+            }}>
+              {bio}
+            </p>
+          </div>
         )}
 
         {/* Focus/Expertise - Prominent Display */}
@@ -190,22 +228,6 @@ export default function ProfileCard({
               )}
             </div>
           </div>
-        )}
-
-        {/* Website Link */}
-        {displayWebsite && (
-          <a
-            href={displayWebsite.startsWith('http') ? displayWebsite : `https://${displayWebsite}`}
-            target="_blank"
-            rel="noopener noreferrer"
-            className="flex items-center gap-2 text-sm text-blue-600 hover:text-blue-700 font-medium mb-4 group/link"
-            onClick={(e) => e.stopPropagation()}
-          >
-            <FontAwesomeIcon icon={faGlobe} className="text-blue-500" />
-            <span className="group-hover/link:underline">
-              {role === 'mentor' ? 'Cộng đồng của tôi' : 'Website'}
-            </span>
-          </a>
         )}
 
         {/* Primary Startup (Founder) */}
@@ -249,31 +271,6 @@ export default function ProfileCard({
               {achievements.length > 3 && (
                 <span className="inline-flex items-center px-2.5 py-1.5 text-gray-600 text-xs font-medium">
                   +{achievements.length - 3} khác
-                </span>
-              )}
-            </div>
-          </div>
-        )}
-
-        {/* Notable Investments */}
-        {notableInvestments && notableInvestments.length > 0 && (
-          <div className="mb-4" style={{ minHeight: '70px' }}>
-            <div className="flex items-center gap-2 mb-2">
-              <FontAwesomeIcon icon={faStar} className="text-yellow-500 text-sm" />
-              <span className="text-xs font-bold text-gray-700 uppercase tracking-wide">Đầu tư</span>
-            </div>
-            <div className="flex flex-wrap gap-2">
-              {notableInvestments.slice(0, 3).map((inv, idx) => (
-                <span
-                  key={idx}
-                  className="inline-flex items-center px-3 py-1.5 bg-yellow-50 border border-yellow-200 text-yellow-800 rounded-lg text-xs font-medium"
-                >
-                  {inv}
-                </span>
-              ))}
-              {notableInvestments.length > 3 && (
-                <span className="inline-flex items-center px-2.5 py-1.5 text-gray-600 text-xs font-medium">
-                  +{notableInvestments.length - 3} khác
                 </span>
               )}
             </div>

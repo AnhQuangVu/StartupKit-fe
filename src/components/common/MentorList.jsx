@@ -125,13 +125,12 @@ export default function MentorList({
                   banner={mentor.cover_url}
                   name={mentor.full_name}
                   role="mentor"
-                  title={mentor.mentor_profile?.current_position}
-                  company={mentor.mentor_profile?.company}
+                  company={mentor.company}
                   bio={mentor.bio}
                   location={mentor.location}
-                  expertise_areas={mentor.mentor_profile?.expertise_areas}
+                  expertise_areas={mentor.expertise_areas}
+                  website_url={mentor.website_url}
                   achievements={mentor.achievements}
-                  community_link={mentor.mentor_profile?.community_link}
                   is_active={mentor.is_active}
                   button="Xem hồ sơ"
                   onClick={() => {
