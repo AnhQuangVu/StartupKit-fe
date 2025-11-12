@@ -1,52 +1,301 @@
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { faUserTie, faMapMarkerAlt, faBriefcase, faLink, faChartLine, faStar, faEnvelope, faCheckCircle } from "@fortawesome/free-solid-svg-icons";
+import {
+  faUserTie,
+  faMapMarkerAlt,
+  faBriefcase,
+  faChartLine,
+  faStar,
+  faCheckCircle,
+  faRocket,
+  faTrophy,
+  faGlobe,
+  faLightbulb
+} from "@fortawesome/free-solid-svg-icons";
 
-export default function ProfileCard({ avatar, name, focus, notableInvestments, status, contact, button, small = false }) {
+export default function ProfileCard({
+  // User basic info
+  avatar,
+  avatar_url,
+  banner,
+  cover_url,
+  name,
+  full_name,
+  role,
+
+  // Mentor specific
+  title,
+  company,
+  current_position,
+
+  // Common info
+  bio,
+  location,
+  focus,
+  expertise_areas,
+
+  // Links
+  website_url,
+  community_link,
+
+  // Achievements & Investments
+  achievements,
+  notableInvestments,
+
+  // Startup info (for founders)
+  startups,
+
+  // UI props
+  status,
+  is_active,
+  button,
+  small = false,
+  onClick
+}) {
+  // Normalize data
+  const displayAvatar = avatar || avatar_url;
+  const displayBanner = banner || cover_url;
+  const displayName = name || full_name;
+  const displayTitle = title || company || current_position;
+  const displayStatus = status !== undefined ? status : is_active;
+  const displayWebsite = website_url || community_link;
+  const displayFocus = focus || (Array.isArray(expertise_areas) ? expertise_areas.join(', ') : expertise_areas);
+  const primaryStartup = Array.isArray(startups) && startups.length > 0 ? startups[0] : null;
+
   return (
-  <div className={`${small ? 'p-3' : 'p-5'} bg-white border border-gray-200 rounded-xl shadow-lg w-full h-full flex flex-col gap-2 hover:shadow-2xl hover:-translate-y-1 transition-all duration-200 relative`}>
-      <div className="flex gap-4 items-center">
-        {avatar && (
+    <div
+      className={`group bg-white rounded-2xl shadow-md hover:shadow-2xl border border-gray-100 overflow-hidden transition-all duration-300 ${onClick ? 'cursor-pointer hover:-translate-y-2' : ''} ${small ? 'max-w-sm' : 'w-full'} flex flex-col`}
+      onClick={onClick}
+      style={{ minHeight: small ? '400px' : '520px' }}
+    >
+      {/* Banner with gradient overlay */}
+      <div className={`relative w-full ${small ? 'h-24' : 'h-32'} overflow-hidden`}>
+        {displayBanner ? (
           <img
-            src={avatar}
-            alt={name}
-            className="w-16 h-16 object-cover rounded-lg border flex-shrink-0"
-            style={{ objectFit: "cover" }}
+            src={displayBanner}
+            alt="banner"
+            className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
           />
+        ) : (
+          <div className={`w-full h-full bg-gradient-to-br ${role === 'mentor'
+            ? 'from-gray-600 via-gray-700 to-gray-800'
+            : 'from-gray-600 via-gray-700 to-gray-800'
+            }`}>
+            <div className="absolute inset-0 bg-[url('data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iNjAiIGhlaWdodD0iNjAiIHZpZXdCb3g9IjAgMCA2MCA2MCIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIj48ZyBmaWxsPSJub25lIiBmaWxsLXJ1bGU9ImV2ZW5vZGQiPjxnIGZpbGw9IiNmZmZmZmYiIGZpbGwtb3BhY2l0eT0iMC4xIj48cGF0aCBkPSJNMzYgMzRjMC0yLjIxLTEuNzktNC00LTRzLTQgMS43OS00IDQgMS43OSA0IDQgNCA0LTEuNzkgNC00em0wLTEwYzAtMi4yMS0xLjc5LTQtNC00cy00IDEuNzktNCA0IDEuNzkgNCA0IDQgNC0xLjc5IDQtNHptMC0xMGMwLTIuMjEtMS43OS00LTQtNHMtNCAxLjc5LTQgNCAxLjc5IDQgNCA0IDQtMS43OSA0LTR6bTEwIDBjMC0yLjIxLTEuNzktNC00LTRzLTQgMS43OS00IDQgMS43OSA0IDQgNCA0LTEuNzkgNC00em0xMCAwYzAtMi4yMS0xLjc5LTQtNC00cy00IDEuNzktNCA0IDEuNzkgNCA0IDQgNC0xLjc5IDQtNHptLTMwIDBjMC0yLjIxLTEuNzktNC00LTRzLTQgMS43OS00IDQgMS43OSA0IDQgNCA0LTEuNzkgNC00em0tMTAgMGMwLTIuMjEtMS43OS00LTQtNHMtNCAxLjc5LTQgNCAxLjc5IDQgNCA0IDQtMS43OSA0LTR6bS0xMCAwYzAtMi4yMS0xLjc5LTQtNC00cy00IDEuNzktNCA0IDEuNzkgNCA0IDQgNC0xLjc5IDQtNHoiLz48L2c+PC9nPjwvc3ZnPg==')] opacity-30"></div>
+          </div>
         )}
-        <div className="flex flex-col flex-1 min-w-0">
-          <h3 className="font-bold text-lg text-gray-900 mb-1 truncate flex items-center gap-2">
-            {name}
-            {status && (
-              <FontAwesomeIcon icon={faCheckCircle} className="text-green-500" title="Đang hoạt động" />
+
+        {/* Role badge */}
+        {role && (
+          <div className="absolute top-3 right-3">
+            <span className={`inline-flex items-center gap-1.5 px-3 py-1.5 rounded-full text-xs font-bold shadow-xl backdrop-blur-md border ${role === 'mentor'
+              ? 'bg-gray-700/90 text-white border-gray-400/30'
+              : 'bg-gray-700/90 text-white border-gray-400/30'
+              }`}>
+              <FontAwesomeIcon icon={role === 'mentor' ? faUserTie : faRocket} className="text-sm" />
+              {role === 'mentor' ? 'Mentor' : 'Founder'}
+            </span>
+          </div>
+        )}
+      </div>
+
+      {/* Avatar - positioned outside banner */}
+      <div className="relative px-6 flex-1 flex flex-col">
+        <div className={`${small ? '-mt-10' : '-mt-12'} mb-4`}>
+          <div className={`${small ? 'w-20 h-20' : 'w-24 h-24'} rounded-2xl border-4 border-white bg-white shadow-xl overflow-hidden group-hover:scale-105 transition-transform duration-300`}>
+            {displayAvatar ? (
+              <img
+                src={displayAvatar}
+                alt={displayName}
+                className="w-full h-full object-cover"
+              />
+            ) : (
+              <div className="w-full h-full bg-gradient-to-br from-gray-100 via-gray-50 to-gray-100 flex items-center justify-center">
+                <FontAwesomeIcon icon={faUserTie} className="text-gray-400 text-3xl" />
+              </div>
             )}
-          </h3>
-          {focus && (
-            <div className="flex items-center gap-1 text-xs text-gray-700 mb-1">
-              <FontAwesomeIcon icon={faChartLine} />
-              <span className="font-semibold">Lĩnh vực:</span> {focus}
-            </div>
+          </div>
+        </div>
+
+        {/* Name and Title Section */}
+        <div className="mb-4">
+          <div className="flex items-start justify-between gap-2 mb-2">
+            <h3 className={`font-bold ${small ? 'text-lg' : 'text-xl'} text-gray-900 leading-tight`}>
+              {displayName || 'Chưa có tên'}
+            </h3>
+            {displayStatus && (
+              <FontAwesomeIcon
+                icon={faCheckCircle}
+                className="text-green-500 text-lg flex-shrink-0 mt-0.5"
+                title="Đang hoạt động"
+              />
+            )}
+          </div>
+
+          {displayTitle && (
+            <p className="text-sm font-medium text-gray-600 flex items-center gap-2 mb-1">
+              <FontAwesomeIcon icon={faBriefcase} className="text-gray-400 text-xs" />
+              <span className="line-clamp-1">{displayTitle}</span>
+            </p>
           )}
-          {notableInvestments && notableInvestments.length > 0 && (
-            <div className="flex items-center gap-1 text-xs text-gray-700 mb-1 flex-wrap">
-              <FontAwesomeIcon icon={faStar} />
-              <span className="font-semibold">Khoản đầu tư nổi bật:</span>
-              {notableInvestments.map((inv, idx) => (
-                <a key={idx} href={`https://www.google.com/search?q=${encodeURIComponent(inv)}`} target="_blank" rel="noopener noreferrer" className="bg-yellow-50 text-yellow-700 px-2 py-1 rounded-full border border-yellow-200 mx-1 inline-block">{inv}</a>
-              ))}
-            </div>
+
+          {location && (
+            <p className="text-sm text-gray-500 flex items-center gap-2">
+              <FontAwesomeIcon icon={faMapMarkerAlt} className="text-gray-400 text-xs" />
+              <span>{location}</span>
+            </p>
           )}
         </div>
-      </div>
-      <div className="flex flex-wrap gap-2 items-center mt-2 justify-end">
-        {contact && (() => {
-          // do not display gmail addresses for privacy per UX requirement
-          const c = String(contact || "").trim();
 
-        })()}
+        {/* Bio */}
+        {bio && (
+          <p className="text-sm text-gray-600 leading-relaxed mb-4 pl-1" style={{
+            display: '-webkit-box',
+            WebkitLineClamp: 3,
+            WebkitBoxOrient: 'vertical',
+            overflow: 'hidden',
+            minHeight: '3.6em',
+            lineHeight: '1.2em'
+          }}>
+            {bio}
+          </p>
+        )}
+
+        {/* Focus/Expertise - Prominent Display */}
+        {displayFocus && (
+          <div className={`rounded-xl p-3 mb-4 ${role === 'mentor'
+            ? 'bg-gradient-to-r from-gray-50 to-slate-50 border border-gray-200'
+            : 'bg-gradient-to-r from-gray-50 to-slate-50 border border-gray-200'
+            }`}
+            style={{ minHeight: '70px' }}
+          >
+            <div className="flex items-start gap-2.5">
+              <FontAwesomeIcon
+                icon={role === 'mentor' ? faLightbulb : faChartLine}
+                className={`${role === 'mentor' ? 'text-gray-700' : 'text-gray-700'} text-base mt-0.5 flex-shrink-0`}
+              />
+              {role === 'mentor' ? (
+                <div className="flex-1 min-w-0">
+                  <div className="text-xs font-bold uppercase tracking-wide mb-1 text-gray-700">
+                    Chuyên môn
+                  </div>
+                  <div className="text-sm font-medium leading-relaxed text-gray-900">
+                    {displayFocus}
+                  </div>
+                </div>
+              ) : (
+                <div className="flex-1 min-w-0">
+                  <span className="text-xs font-bold uppercase tracking-wide text-gray-700">Lĩnh vực: </span>
+                  <span className="text-sm font-medium leading-relaxed text-gray-900">{displayFocus}</span>
+                </div>
+              )}
+            </div>
+          </div>
+        )}
+
+        {/* Website Link */}
+        {displayWebsite && (
+          <a
+            href={displayWebsite.startsWith('http') ? displayWebsite : `https://${displayWebsite}`}
+            target="_blank"
+            rel="noopener noreferrer"
+            className="flex items-center gap-2 text-sm text-blue-600 hover:text-blue-700 font-medium mb-4 group/link"
+            onClick={(e) => e.stopPropagation()}
+          >
+            <FontAwesomeIcon icon={faGlobe} className="text-blue-500" />
+            <span className="group-hover/link:underline">
+              {role === 'mentor' ? 'Cộng đồng của tôi' : 'Website'}
+            </span>
+          </a>
+        )}
+
+        {/* Primary Startup (Founder) */}
+        {role === 'founder' && primaryStartup && (
+          <div className="bg-gradient-to-r from-gray-50 to-slate-50 border border-gray-200 rounded-xl p-3.5 mb-4" style={{ minHeight: '70px' }}>
+            <div className="flex items-start gap-3">
+              <div className="w-10 h-10 rounded-lg bg-gray-100 flex items-center justify-center flex-shrink-0">
+                <FontAwesomeIcon icon={faRocket} className="text-gray-700 text-lg" />
+              </div>
+              <div className="flex-1 min-w-0">
+                <div className="font-bold text-gray-900 mb-0.5 truncate">
+                  {primaryStartup.startup_name || primaryStartup.name}
+                </div>
+                {primaryStartup.industry && (
+                  <div className="text-xs font-medium text-gray-600 truncate">
+                    {primaryStartup.industry}
+                  </div>
+                )}
+              </div>
+            </div>
+          </div>
+        )}
+
+        {/* Achievements (Mentor) */}
+        {role === 'mentor' && achievements && achievements.length > 0 && (
+          <div className="mb-4" style={{ minHeight: '70px' }}>
+            <div className="flex items-center gap-2 mb-2">
+              <FontAwesomeIcon icon={faTrophy} className="text-amber-500 text-sm" />
+              <span className="text-xs font-bold text-gray-700 uppercase tracking-wide">Thành tích</span>
+            </div>
+            <div className="flex flex-wrap gap-2">
+              {achievements.slice(0, 3).map((ach, idx) => (
+                <span
+                  key={idx}
+                  className="inline-flex items-center px-3 py-1.5 bg-white border border-amber-200 text-amber-800 rounded-lg text-xs font-medium shadow-sm hover:shadow-md transition-shadow"
+                  title={typeof ach === 'string' ? ach : ach.content}
+                >
+                  {typeof ach === 'string' ? ach : ach.content}
+                </span>
+              ))}
+              {achievements.length > 3 && (
+                <span className="inline-flex items-center px-2.5 py-1.5 text-gray-600 text-xs font-medium">
+                  +{achievements.length - 3} khác
+                </span>
+              )}
+            </div>
+          </div>
+        )}
+
+        {/* Notable Investments */}
+        {notableInvestments && notableInvestments.length > 0 && (
+          <div className="mb-4" style={{ minHeight: '70px' }}>
+            <div className="flex items-center gap-2 mb-2">
+              <FontAwesomeIcon icon={faStar} className="text-yellow-500 text-sm" />
+              <span className="text-xs font-bold text-gray-700 uppercase tracking-wide">Đầu tư</span>
+            </div>
+            <div className="flex flex-wrap gap-2">
+              {notableInvestments.slice(0, 3).map((inv, idx) => (
+                <span
+                  key={idx}
+                  className="inline-flex items-center px-3 py-1.5 bg-yellow-50 border border-yellow-200 text-yellow-800 rounded-lg text-xs font-medium"
+                >
+                  {inv}
+                </span>
+              ))}
+              {notableInvestments.length > 3 && (
+                <span className="inline-flex items-center px-2.5 py-1.5 text-gray-600 text-xs font-medium">
+                  +{notableInvestments.length - 3} khác
+                </span>
+              )}
+            </div>
+          </div>
+        )}
+
+        {/* Action Button */}
         {button && (
-          <button className={`${small ? 'px-3 py-1 text-xs' : 'px-4 py-2 text-sm'} bg-[#fdc142] hover:bg-yellow-400 text-black font-semibold rounded-full shadow transition`}>
-            {button}
-          </button>
+          <div className="mt-auto pt-2">
+            <button
+              className={`w-full py-3 rounded-xl font-bold text-sm shadow-lg hover:shadow-xl transition-all duration-200 mb-6 ${role === 'mentor'
+                ? 'bg-gradient-to-r from-gray-600 to-gray-700 hover:from-amber-500 hover:to-amber-600 text-white'
+                : 'bg-gradient-to-r from-gray-700 to-gray-800 hover:from-gray-800 hover:to-gray-900 text-white'
+                }`}
+              onClick={(e) => {
+                e.stopPropagation();
+                if (onClick) onClick();
+              }}
+            >
+              {button}
+            </button>
+          </div>
         )}
       </div>
     </div>
