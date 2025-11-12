@@ -24,34 +24,39 @@ const PublicProfile = () => {
           if (response.ok) {
             const data = await response.json();
             setUser({
-              avatar: data.avatar_url || data.avatar || "",
-              cover: data.cover_url || data.cover || "",
-              name: data.full_name || data.name || "",
-              role: data.role || "Founder",
+              avatar: data.avatar || "",
+              cover: data.cover || "",
+              name: data.name || "",
+              role: data.role || "",
               bio: data.bio || "",
               location: data.location || "",
-              website: data.website_url || "",
+              website: data.website || "",
               phone: data.phone || "",
               address: data.address || "",
               company: data.company || "",
               facebook: data.facebook || "",
               linkedin: data.linkedin || "",
-              achievements: Array.isArray(data.achievements)
-                ? data.achievements.map(a => a.content).filter(Boolean).join(", ")
-                : "",
-              achievementLinks: Array.isArray(data.achievements)
-                ? data.achievements.map(a => a.link).filter(Boolean)
-                : [],
+              achievements: data.achievements || "",
+              achievementLinks: Array.isArray(data.achievementLinks) ? data.achievementLinks : [],
               pitch_deck_url: data.pitch_deck_url || "",
-              startups: Array.isArray(data.startups) && data.startups.length > 0
-                ? data.startups
-                : [],
-              goal: data.connect_goal || "",
+              startups: Array.isArray(data.startups) && data.startups.length > 0 ? data.startups : [],
+              goal: data.goal || "",
+              // Mentor specific fields (backend flattened them already)
+              currentPosition: data.current_position || "",
+              expertiseAreas: Array.isArray(data.expertise_areas) ? data.expertise_areas : [],
+              yearsOfExperience: data.years_of_experience || "",
+              industries: Array.isArray(data.industries) ? data.industries : [],
+              investmentRange: data.investment_range || "",
+              preferredStage: Array.isArray(data.preferred_stage) ? data.preferred_stage : [],
+              previousCompanies: Array.isArray(data.previous_companies) ? data.previous_companies : [],
+              linkedinUrl: data.linkedin_url || "",
+              calendlyUrl: data.calendly_url || "",
+              isActive: data.is_active || false,
             });
           } else {
             setUser(null);
           }
-        } catch (err) {
+        } catch {
           setUser(null);
         } finally {
           setLoading(false);
@@ -62,7 +67,7 @@ const PublicProfile = () => {
           avatar: state.formData?.avatar_url || "",
           cover: state.formData?.cover_url || "",
           name: state.formData?.full_name || "",
-          role: state.formData?.role || "Founder",
+          role: state.formData?.role || "",
           bio: state.formData?.bio || "",
           location: state.formData?.location || "",
           website: state.formData?.website_url || "",
@@ -87,6 +92,7 @@ const PublicProfile = () => {
       }
     }
     fetchFounder();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [id]);
 
   if (loading) {
@@ -153,15 +159,134 @@ const PublicProfile = () => {
                 <button className="px-4 py-2 bg-[#FFCE23] text-black rounded-full font-semibold shadow hover:bg-[#fdc142] transition">Kết nối</button>
               </div>
               <div className="grid grid-cols-1 sm:grid-cols-2 gap-x-8 gap-y-3 text-[15px]">
-                  <div className="flex items-center"><span className="font-medium text-gray-700 mr-2">Họ và tên Founder:</span><span className="font-semibold text-black">{user.name}</span></div>
-                  <div className="flex items-center"><span className="font-medium text-gray-700 mr-2">Vai trò:</span><span className="text-black">Founder</span></div>
-                  <div className="flex items-center"><span className="font-medium text-gray-700 mr-2">Địa điểm:</span><span className="text-black">{user.location}</span></div>
-                  <div className="flex items-center"><span className="font-medium text-gray-700 mr-2">Website cá nhân:</span><a href={user.website} target="_blank" rel="noopener noreferrer" className="text-blue-700 hover:underline font-normal">{user.website.replace("https://", "")}</a></div>
-                  <div className="sm:col-span-2 mt-2"><span className="font-medium text-gray-700 mr-2">Giới thiệu ngắn:</span><span className="text-black">{user.bio}</span></div>
+                <div className="flex items-center">
+                  <span className="font-medium text-gray-700 mr-2">
+                    {user.role === 'mentor' ? 'Họ và tên Mentor:' : 'Họ và tên Founder:'}
+                  </span>
+                  <span className="font-semibold text-black">{user.name}</span>
+                </div>
+
+                {/* Tiêu đề/Định vị - chỉ hiện cho Mentor */}
+                {user.role === 'mentor' && user.company && (
+                  <div className="flex items-center">
+                    <span className="font-medium text-gray-700 mr-2">Công ty/Tổ chức:</span>
+                    <span className="text-black">{user.company}</span>
+                  </div>
+                )}
+
+                {/* Vị trí hiện tại - cho Mentor */}
+                {user.role === 'mentor' && user.currentPosition && (
+                  <div className="flex items-center">
+                    <span className="font-medium text-gray-700 mr-2">Vị trí công việc:</span>
+                    <span className="text-black">{user.currentPosition}</span>
+                  </div>
+                )}
+
+                {/* Chuyên môn - cho Mentor */}
+                {user.role === 'mentor' && user.expertiseAreas && user.expertiseAreas.length > 0 && (
+                  <div className="flex items-start sm:col-span-2">
+                    <span className="font-medium text-gray-700 mr-2">Chuyên môn:</span>
+                    <span className="text-black">{Array.isArray(user.expertiseAreas) ? user.expertiseAreas.join(', ') : user.expertiseAreas}</span>
+                  </div>
+                )}
+
+                {/* Kinh nghiệm - cho Mentor */}
+                {user.role === 'mentor' && user.yearsOfExperience && (
+                  <div className="flex items-center">
+                    <span className="font-medium text-gray-700 mr-2">Số năm kinh nghiệm:</span>
+                    <span className="text-black">{user.yearsOfExperience} năm</span>
+                  </div>
+                )}
+
+                {/* Lĩnh vực - cho Mentor */}
+                {user.role === 'mentor' && user.industries && user.industries.length > 0 && (
+                  <div className="flex items-start sm:col-span-2">
+                    <span className="font-medium text-gray-700 mr-2">Lĩnh vực quan tâm:</span>
+                    <span className="text-black">{Array.isArray(user.industries) ? user.industries.join(', ') : user.industries}</span>
+                  </div>
+                )}
+
+                {/* Công ty trước đây - cho Mentor */}
+                {user.role === 'mentor' && user.previousCompanies && user.previousCompanies.length > 0 && (
+                  <div className="flex items-start sm:col-span-2">
+                    <span className="font-medium text-gray-700 mr-2">Kinh nghiệm làm việc:</span>
+                    <span className="text-black">{Array.isArray(user.previousCompanies) ? user.previousCompanies.join(', ') : user.previousCompanies}</span>
+                  </div>
+                )}
+
+                {/* Investment Range - cho Mentor/Investor */}
+                {user.role === 'mentor' && user.investmentRange && (
+                  <div className="flex items-center sm:col-span-2">
+                    <span className="font-medium text-gray-700 mr-2">Mức đầu tư quan tâm:</span>
+                    <span className="text-black">{user.investmentRange}</span>
+                  </div>
+                )}
+
+                {/* Preferred Stage - cho Mentor/Investor */}
+                {user.role === 'mentor' && user.preferredStage && user.preferredStage.length > 0 && (
+                  <div className="flex items-start sm:col-span-2">
+                    <span className="font-medium text-gray-700 mr-2">Giai đoạn ưu tiên:</span>
+                    <span className="text-black">{Array.isArray(user.preferredStage) ? user.preferredStage.join(', ') : user.preferredStage}</span>
+                  </div>
+                )}
+
+                {/* LinkedIn - cho Mentor */}
+                {user.role === 'mentor' && user.linkedinUrl && (
+                  <div className="flex items-center sm:col-span-2">
+                    <span className="font-medium text-gray-700 mr-2">🔗 LinkedIn:</span>
+                    <a href={user.linkedinUrl} target="_blank" rel="noopener noreferrer" className="text-blue-700 hover:underline font-normal">
+                      {user.linkedinUrl.replace("https://", "").replace("http://", "")}
+                    </a>
+                  </div>
+                )}
+
+                {/* Calendly - cho Mentor */}
+                {user.role === 'mentor' && user.calendlyUrl && (
+                  <div className="flex items-center sm:col-span-2">
+                    <span className="font-medium text-gray-700 mr-2">📅 Đặt lịch hẹn:</span>
+                    <a href={user.calendlyUrl} target="_blank" rel="noopener noreferrer" className="text-blue-700 hover:underline font-normal">
+                      {user.calendlyUrl.replace("https://", "").replace("http://", "")}
+                    </a>
+                  </div>
+                )}
+
+                {/* Địa điểm - cho cả Mentor và Founder */}
+                {user.location && (
+                  <div className="flex items-center">
+                    <span className="font-medium text-gray-700 mr-2">
+                      {user.role === 'mentor' ? 'Địa điểm:' : 'Địa điểm:'}
+                    </span>
+                    <span className="text-black">{user.location}</span>
+                  </div>
+                )}
+
+                <div className="flex items-center">
+                  <span className="font-medium text-gray-700 mr-2">Vai trò:</span>
+                  <span className="text-black capitalize">{user.role === 'mentor' ? 'Mentor' : 'Founder'}</span>
+                </div>
+
+                {user.website && (
+                  <div className="flex items-center sm:col-span-2">
+                    <span className="font-medium text-gray-700 mr-2">
+                      {user.role === 'mentor' ? '🔗 Link cộng đồng:' : 'Website cá nhân:'}
+                    </span>
+                    <a href={user.website} target="_blank" rel="noopener noreferrer" className="text-blue-700 hover:underline font-normal">
+                      {user.website.replace("https://", "").replace("http://", "")}
+                    </a>
+                  </div>
+                )}
+
+                <div className="sm:col-span-2 mt-2">
+                  <span className="font-medium text-gray-700 mr-2">
+                    {user.role === 'mentor' ? '📝 Giới thiệu bản thân:' : 'Giới thiệu ngắn:'}
+                  </span>
+                  <span className="text-black">{user.bio}</span>
                 </div>
               </div>
+            </div>
 
-              {/* 🚀 Thông tin Startup */}
+            {/* 🚀 Thông tin Startup - chỉ hiển thị cho Founder */}
+            {user.role !== 'mentor' && (
               <div className="rounded-xl border bg-white shadow-sm p-7 mb-2">
                 <h3 className="text-lg font-semibold text-gray-800 mb-4 flex items-center">
                   <FontAwesomeIcon icon={faBuilding} className="text-gray-700 mr-2" /> Thông tin Startup
@@ -187,34 +312,44 @@ const PublicProfile = () => {
                   <div className="text-gray-400">Chưa có startup nào được khai báo.</div>
                 )}
               </div>
+            )}
 
-              {/* 🏆 Thành tựu & Pitch Deck */}
-              <div className="rounded-xl border bg-white shadow-sm p-7 mb-2">
-                <h3 className="text-lg font-semibold text-gray-800 mb-4 flex items-center">
-                  <FontAwesomeIcon icon={faTrophy} className="text-gray-700 mr-2" /> Thành tựu & Pitch Deck
-                </h3>
-                <div className="text-[15px] mb-2">
-                  <span className="font-medium text-gray-700">Các thành tựu nổi bật:</span> <span className="text-black">{user.achievements}</span>
-                  {user.achievementLinks.length > 0 && (
-                    <ul className="mt-2 ml-2 list-disc text-blue-700">
-                      {user.achievementLinks.map((link, idx) => (
-                        <li key={idx}>
-                          <a href={link} target="_blank" rel="noopener noreferrer" className="hover:underline font-normal">{link}</a>
-                        </li>
-                      ))}
-                    </ul>
-                  )}
-                </div>
-              </div>
-
-              {/* 🤝 Mục tiêu kết nối */}
-              <div className="rounded-xl border bg-white shadow-sm p-7 mb-2">
-                <h3 className="text-lg font-semibold text-gray-800 mb-4 flex items-center">
-                  <FontAwesomeIcon icon={faBullseye} className="text-gray-700 mr-2" /> Mục tiêu kết nối
-                </h3>
-                <div className="text-[15px]"><span className="font-medium text-gray-700">Nhà đầu tư, mentor, đối tác:</span> <span className="text-black">{user.goal}</span></div>
+            {/* 🏆 Thành tựu & Pitch Deck */}
+            <div className="rounded-xl border bg-white shadow-sm p-7 mb-2">
+              <h3 className="text-lg font-semibold text-gray-800 mb-4 flex items-center">
+                <FontAwesomeIcon icon={faTrophy} className="text-gray-700 mr-2" />
+                {user.role === 'mentor' ? 'Thành tích nổi bật' : 'Thành tựu & Pitch Deck'}
+              </h3>
+              <div className="text-[15px] mb-2">
+                <span className="font-medium text-gray-700">Các thành tựu nổi bật:</span> <span className="text-black">{user.achievements}</span>
+                {user.achievementLinks.length > 0 && (
+                  <ul className="mt-2 ml-2 list-disc text-blue-700">
+                    {user.achievementLinks.map((link, idx) => (
+                      <li key={idx}>
+                        <a href={link} target="_blank" rel="noopener noreferrer" className="hover:underline font-normal">{link}</a>
+                      </li>
+                    ))}
+                  </ul>
+                )}
               </div>
             </div>
+
+            {/* 🤝 Mục tiêu kết nối */}
+            {user.goal && (
+              <div className="rounded-xl border bg-white shadow-sm p-7 mb-2">
+                <h3 className="text-lg font-semibold text-gray-800 mb-4 flex items-center">
+                  <FontAwesomeIcon icon={faBullseye} className="text-gray-700 mr-2" />
+                  {user.role === 'mentor' ? 'Mục tiêu kết nối / Lĩnh vực hỗ trợ' : 'Mục tiêu kết nối'}
+                </h3>
+                <div className="text-[15px]">
+                  <span className="font-medium text-gray-700">
+                    {user.role === 'mentor' ? 'Tôi có thể hỗ trợ:' : 'Tìm kiếm:'}
+                  </span>
+                  <span className="text-black ml-2">{user.goal}</span>
+                </div>
+              </div>
+            )}
+          </div>
         </div>
       </div>
       <Footer />
