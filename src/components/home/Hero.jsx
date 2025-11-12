@@ -72,8 +72,7 @@ export default function Hero() {
       <div className="relative z-10 flex flex-col items-center justify-center w-full">
         <header className="w-full text-center mb-2 md:mb-4">
           <h1 className={`text-4xl md:text-6xl font-extrabold tracking-tight leading-tight ${isDark ? 'text-white' : 'text-gray-900'}`}>
-            <span className="block">Pack idea,</span>
-            <span className={`block ${isDark ? 'text-amber-300' : 'text-amber-700'}`}>launch startup</span>
+            <span className="block">Pack idea <span className={isDark ? 'text-amber-300' : 'text-amber-700'}>launch startup</span></span>
           </h1>
           <meta name="description" content="Pack idea, launch startup. Phóng ý tưởng hướng tương lai." />
         </header>
