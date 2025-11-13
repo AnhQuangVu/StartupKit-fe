@@ -9,7 +9,13 @@ import { useAuth } from "../context/AuthContext";
 import StartupCard from "../components/common/StartupCard";
 import { searchPublishedProjects } from "../api/publicProjects";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { faSearch, faFilter, faEnvelope, faBolt } from "@fortawesome/free-solid-svg-icons";
+import {
+  faSearch,
+  faFilter,
+  faEnvelope,
+  faBolt,
+  faArrowUp,
+} from "@fortawesome/free-solid-svg-icons";
 import { useSearchParams } from "react-router-dom";
 
 export default function KhamPha() {
@@ -20,6 +26,7 @@ export default function KhamPha() {
   const [stage, setStage] = useState("all");
   const [newsletterEmail, setNewsletterEmail] = useState("");
   const [subscribed, setSubscribed] = useState(false);
+  const [showScrollTop, setShowScrollTop] = useState(false);
 
   // search results state
   const [results, setResults] = useState([]);
@@ -70,7 +77,11 @@ export default function KhamPha() {
     abortRef.current = controller;
     setLoading(true);
     try {
-      const { items, nextCursor: nc, total: tt } = await searchPublishedProjects(
+      const {
+        items,
+        nextCursor: nc,
+        total: tt,
+      } = await searchPublishedProjects(
         { limit: 24, sort: "-created_at" },
         { signal: controller.signal }
       );
@@ -87,36 +98,47 @@ export default function KhamPha() {
   };
 
   // derive whether filters/search are active OR if we have any results to show
-  const filtersActive = query.trim().length > 0 || category !== "all" || stage !== "all" || results.length > 0;
+  const filtersActive =
+    query.trim().length > 0 ||
+    category !== "all" ||
+    stage !== "all" ||
+    results.length > 0;
 
   // On mount: read URL params to hydrate state and load all projects initially
   useEffect(() => {
     const qParam = searchParams.get("q") || "";
-    const catParam = searchParams.getAll("industry[]")[0] || searchParams.get("industry") || "all";
-    const stageParam = searchParams.getAll("stage[]")[0] || searchParams.get("stage") || "all";
+    const catParam =
+      searchParams.getAll("industry[]")[0] ||
+      searchParams.get("industry") ||
+      "all";
+    const stageParam =
+      searchParams.getAll("stage[]")[0] || searchParams.get("stage") || "all";
     if (qParam) setQuery(qParam);
     if (catParam) setCategory(catParam);
     if (stageParam) setStage(stageParam);
-    
+
     // Load all projects on initial mount if no filters
     if (!qParam && catParam === "all" && stageParam === "all") {
       const controller = new AbortController();
       abortRef.current = controller;
       setLoading(true);
-      searchPublishedProjects({ limit: 24, sort: "-created_at" }, { signal: controller.signal })
+      searchPublishedProjects(
+        { limit: 24, sort: "-created_at" },
+        { signal: controller.signal }
+      )
         .then(({ items, nextCursor: nc, total: tt }) => {
           setResults(items || []);
           setNextCursor(nc || null);
           setTotal(tt ?? (items ? items.length : 0));
         })
-        .catch(err => {
-          if (err.name !== 'AbortError') {
-            console.error('Initial load error', err);
+        .catch((err) => {
+          if (err.name !== "AbortError") {
+            console.error("Initial load error", err);
           }
         })
         .finally(() => setLoading(false));
     }
-  // eslint-disable-next-line react-hooks/exhaustive-deps
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
   // Sync filters to URL
@@ -146,19 +168,26 @@ export default function KhamPha() {
     setError("");
     const t = setTimeout(async () => {
       try {
-        const { items, nextCursor: nc, total: tt } = await searchPublishedProjects({
-          q: query.trim() || undefined,
-          industry: category !== "all" ? category : undefined,
-          stage: stage !== "all" ? stage : undefined,
-          limit: 24,
-          sort: "-created_at",
-        }, { signal: controller.signal });
+        const {
+          items,
+          nextCursor: nc,
+          total: tt,
+        } = await searchPublishedProjects(
+          {
+            q: query.trim() || undefined,
+            industry: category !== "all" ? category : undefined,
+            stage: stage !== "all" ? stage : undefined,
+            limit: 24,
+            sort: "-created_at",
+          },
+          { signal: controller.signal }
+        );
         setResults(items || []);
         setNextCursor(nc || null);
         setTotal(tt ?? (items ? items.length : 0));
       } catch (err) {
-        if (err.name !== 'AbortError') {
-          console.error('Search error', err);
+        if (err.name !== "AbortError") {
+          console.error("Search error", err);
           setError("Không thể tải kết quả. Vui lòng thử lại.");
         }
       } finally {
@@ -169,7 +198,7 @@ export default function KhamPha() {
       clearTimeout(t);
       controller.abort();
     };
-  // eslint-disable-next-line react-hooks/exhaustive-deps
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [query, category, stage]);
 
   const handleLoadMore = async () => {
@@ -177,19 +206,22 @@ export default function KhamPha() {
     const controller = new AbortController();
     try {
       setLoading(true);
-      const { items, nextCursor: nc } = await searchPublishedProjects({
-        q: query.trim() || undefined,
-        industry: category !== "all" ? category : undefined,
-        stage: stage !== "all" ? stage : undefined,
-        limit: 24,
-        cursor: nextCursor,
-        sort: "-created_at",
-      }, { signal: controller.signal });
-      setResults(prev => [...prev, ...(items || [])]);
+      const { items, nextCursor: nc } = await searchPublishedProjects(
+        {
+          q: query.trim() || undefined,
+          industry: category !== "all" ? category : undefined,
+          stage: stage !== "all" ? stage : undefined,
+          limit: 24,
+          cursor: nextCursor,
+          sort: "-created_at",
+        },
+        { signal: controller.signal }
+      );
+      setResults((prev) => [...prev, ...(items || [])]);
       setNextCursor(nc || null);
     } catch (err) {
-      if (err.name !== 'AbortError') {
-        console.error('Load more error', err);
+      if (err.name !== "AbortError") {
+        console.error("Load more error", err);
         setError("Không thể tải thêm kết quả.");
       }
     } finally {
@@ -208,6 +240,28 @@ export default function KhamPha() {
     []
   );
 
+  // Scroll to top handler
+  const scrollToTop = () => {
+    window.scrollTo({
+      top: 0,
+      behavior: "smooth",
+    });
+  };
+
+  // Show/hide scroll to top button based on scroll position
+  useEffect(() => {
+    const handleScroll = () => {
+      if (window.scrollY > 300) {
+        setShowScrollTop(true);
+      } else {
+        setShowScrollTop(false);
+      }
+    };
+
+    window.addEventListener("scroll", handleScroll);
+    return () => window.removeEventListener("scroll", handleScroll);
+  }, []);
+
   return (
     <div className="min-h-screen bg-gradient-to-b from-white to-blue-50">
       <Navbar isLoggedIn={isLoggedIn} user={user} />
@@ -215,33 +269,60 @@ export default function KhamPha() {
       <main className="max-w-6xl mx-auto px-4 py-10">
         <header className="text-center mb-8">
           <div className="inline-block bg-white border border-gray-200 rounded-2xl px-6 py-5 shadow-md">
-            <h1 className="text-3xl md:text-4xl font-extrabold text-gray-900">Khám Phá</h1>
-            <p className="text-gray-600 mt-2">Tìm kiếm startup, sự kiện, nhà đầu tư và mentor phù hợp với bạn.</p>
+            <h1 className="text-3xl md:text-4xl font-extrabold text-gray-900">
+              Khám Phá
+            </h1>
+            <p className="text-gray-600 mt-2">
+              Tìm kiếm startup, sự kiện, nhà đầu tư và mentor phù hợp với bạn.
+            </p>
           </div>
         </header>
 
-  {/* search + filters compact */}
+        {/* search + filters compact */}
         <div className="mb-6">
           <div className="bg-white rounded-xl p-4 border border-gray-200 shadow-md">
             <div className="flex flex-col md:flex-row gap-4 items-center">
               <div className="flex-1 relative">
-                <span className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400"><FontAwesomeIcon icon={faSearch} /></span>
-                <input value={query} onChange={handleSearchChange} placeholder="Tìm kiếm startup, sự kiện, nhà đầu tư..." className="w-full pl-10 pr-4 py-3 rounded-lg border border-gray-200" />
+                <span className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400">
+                  <FontAwesomeIcon icon={faSearch} />
+                </span>
+                <input
+                  value={query}
+                  onChange={handleSearchChange}
+                  placeholder="Tìm kiếm startup, sự kiện, nhà đầu tư..."
+                  className="w-full pl-10 pr-4 py-3 rounded-lg border border-gray-200"
+                />
               </div>
               <div className="flex items-center gap-2 w-full md:w-auto">
                 <div className="hidden sm:flex gap-2">
-                  {categories.map(c => (
-                    <button key={c.key} onClick={() => handleCategoryClick(c.key)} className={`px-3 py-2 rounded-full text-sm font-medium ${category===c.key ? 'bg-[#FFCE23] text-black' : 'bg-white text-gray-700 border border-gray-200'}`}>
+                  {categories.map((c) => (
+                    <button
+                      key={c.key}
+                      onClick={() => handleCategoryClick(c.key)}
+                      className={`px-3 py-2 rounded-full text-sm font-medium ${
+                        category === c.key
+                          ? "bg-[#FFCE23] text-black"
+                          : "bg-white text-gray-700 border border-gray-200"
+                      }`}
+                    >
                       {c.label}
                     </button>
                   ))}
                 </div>
                 {/* Stage selector */}
-                <select value={stage} onChange={(e)=>setStage(e.target.value)} className="px-3 py-2 rounded-lg border border-gray-200 text-sm bg-white">
-                  {stages.map(s => <option key={s.key} value={s.key}>{s.label}</option>)}
+                <select
+                  value={stage}
+                  onChange={(e) => setStage(e.target.value)}
+                  className="px-3 py-2 rounded-lg border border-gray-200 text-sm bg-white"
+                >
+                  {stages.map((s) => (
+                    <option key={s.key} value={s.key}>
+                      {s.label}
+                    </option>
+                  ))}
                 </select>
-                <button 
-                  onClick={handleReset} 
+                <button
+                  onClick={handleReset}
                   className="px-4 py-2 rounded-lg bg-white border border-gray-200 hover:bg-gray-50 transition-colors"
                   disabled={loading}
                 >
@@ -257,25 +338,39 @@ export default function KhamPha() {
           <section className="mb-8 animate-fade-in">
             <div className="bg-white rounded-xl p-4 border border-gray-200 shadow-md animate-slide-in animate-duration-700">
               <div className="flex items-center justify-between mb-4">
-                <h3 className="text-lg font-semibold">Kết quả tìm kiếm {total != null && (<span className="text-gray-500 font-normal">({total})</span>)}</h3>
-                {loading && <span className="text-sm text-gray-500">Đang tải…</span>}
+                <h3 className="text-lg font-semibold">
+                  Kết quả tìm kiếm{" "}
+                  {total != null && (
+                    <span className="text-gray-500 font-normal">({total})</span>
+                  )}
+                </h3>
+                {loading && (
+                  <span className="text-sm text-gray-500">Đang tải…</span>
+                )}
               </div>
-              {error && <div className="text-red-600 text-sm mb-3">{error}</div>}
+              {error && (
+                <div className="text-red-600 text-sm mb-3">{error}</div>
+              )}
               <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
                 {(results || []).map((p) => {
                   const card = {
                     id: p.id,
-                    img: p.logo_url || `https://picsum.photos/300/300?random=${p.id}`,
+                    img:
+                      p.logo_url ||
+                      `https://picsum.photos/300/300?random=${p.id}`,
                     title: p.name,
-                    desc: p.tagline || p.description || 'Khởi nghiệp sáng tạo',
-                    tag: p.industry || 'Startup',
+                    desc: p.tagline || p.description || "Khởi nghiệp sáng tạo",
+                    tag: p.industry || "Startup",
                     stage: p.stage,
                     members: p.member_count || 0,
-                    raised: p.capital_source || 'N/A',
-                    link: `/projects/${p.id}`
+                    raised: p.capital_source || "N/A",
+                    link: `/projects/${p.id}`,
                   };
                   return (
-                    <div key={p.id} className="w-full animate-fade-in animate-duration-700 animate-ease-out">
+                    <div
+                      key={p.id}
+                      className="w-full animate-fade-in animate-duration-700 animate-ease-out"
+                    >
                       <StartupCard {...card} />
                     </div>
                   );
@@ -283,8 +378,12 @@ export default function KhamPha() {
               </div>
               {nextCursor && (
                 <div className="flex justify-center mt-4">
-                  <button onClick={handleLoadMore} className="px-4 py-2 rounded-lg bg-[#FFCE23] text-black font-semibold disabled:opacity-60 animate-fade-in animate-duration-500" disabled={loading}>
-                    {loading ? 'Đang tải…' : 'Tải thêm'}
+                  <button
+                    onClick={handleLoadMore}
+                    className="px-4 py-2 rounded-lg bg-[#FFCE23] text-black font-semibold disabled:opacity-60 animate-fade-in animate-duration-500"
+                    disabled={loading}
+                  >
+                    {loading ? "Đang tải…" : "Tải thêm"}
                   </button>
                 </div>
               )}
@@ -294,8 +393,11 @@ export default function KhamPha() {
 
         {/* stats */}
         <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-4 mb-8 animate-fade-in animate-duration-700">
-          {stats.map((s,i) => (
-            <div key={i} className="bg-white rounded-xl p-5 shadow-md border border-gray-200 text-center animate-slide-in animate-duration-700">
+          {stats.map((s, i) => (
+            <div
+              key={i}
+              className="bg-white rounded-xl p-5 shadow-md border border-gray-200 text-center animate-slide-in animate-duration-700"
+            >
               <div className="text-2xl font-bold text-gray-900">{s.number}</div>
               <div className="text-sm text-gray-600">{s.label}</div>
             </div>
@@ -305,11 +407,31 @@ export default function KhamPha() {
         {/* Trends */}
         <section className="mb-8 animate-fade-in animate-duration-700">
           <div className="bg-white rounded-xl p-4 border border-gray-200 shadow-md animate-slide-in animate-duration-700">
-            <h3 className="text-xl font-semibold mb-4">Xu hướng Khởi nghiệp 2025</h3>
+            <h3 className="text-xl font-semibold mb-4">
+              Xu hướng Khởi nghiệp 2025
+            </h3>
             <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-              <div className="bg-white rounded-lg p-4 shadow-md border border-gray-100 animate-fade-in animate-duration-700"> <h4 className="font-semibold">AI & Automation</h4><p className="text-sm text-gray-600">AI trong SaaS và tự động hoá quy trình.</p></div>
-              <div className="bg-white rounded-lg p-4 shadow-md border border-gray-100 animate-fade-in animate-duration-700"> <h4 className="font-semibold">Sustainability</h4><p className="text-sm text-gray-600">Năng lượng sạch & kinh doanh tuần hoàn.</p></div>
-              <div className="bg-white rounded-lg p-4 shadow-md border border-gray-100 animate-fade-in animate-duration-700"> <h4 className="font-semibold">Healthtech & EduTech</h4><p className="text-sm text-gray-600">Chăm sóc sức khoẻ số & công nghệ giáo dục.</p></div>
+              <div className="bg-white rounded-lg p-4 shadow-md border border-gray-100 animate-fade-in animate-duration-700">
+                {" "}
+                <h4 className="font-semibold">AI & Automation</h4>
+                <p className="text-sm text-gray-600">
+                  AI trong SaaS và tự động hoá quy trình.
+                </p>
+              </div>
+              <div className="bg-white rounded-lg p-4 shadow-md border border-gray-100 animate-fade-in animate-duration-700">
+                {" "}
+                <h4 className="font-semibold">Sustainability</h4>
+                <p className="text-sm text-gray-600">
+                  Năng lượng sạch & kinh doanh tuần hoàn.
+                </p>
+              </div>
+              <div className="bg-white rounded-lg p-4 shadow-md border border-gray-100 animate-fade-in animate-duration-700">
+                {" "}
+                <h4 className="font-semibold">Healthtech & EduTech</h4>
+                <p className="text-sm text-gray-600">
+                  Chăm sóc sức khoẻ số & công nghệ giáo dục.
+                </p>
+              </div>
             </div>
           </div>
         </section>
@@ -344,8 +466,23 @@ export default function KhamPha() {
           <div className="bg-white rounded-xl p-4 border border-gray-200 shadow-md">
             <h3 className="text-lg font-semibold mb-4">Tài nguyên hữu ích</h3>
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-              {["Hướng dẫn gọi vốn (checklist)","Mẫu pitchdeck","Hợp đồng mẫu","Chương trình hỗ trợ sinh viên","Danh sách quỹ","Khu vực pháp lý","Tài liệu phát triển sản phẩm","Mạng lưới mentor"].map((t,i)=>(
-                <a key={i} className="block p-4 bg-white rounded-lg shadow-sm border border-gray-200" href="/coming-soon">{t}</a>
+              {[
+                "Hướng dẫn gọi vốn (checklist)",
+                "Mẫu pitchdeck",
+                "Hợp đồng mẫu",
+                "Chương trình hỗ trợ sinh viên",
+                "Danh sách quỹ",
+                "Khu vực pháp lý",
+                "Tài liệu phát triển sản phẩm",
+                "Mạng lưới mentor",
+              ].map((t, i) => (
+                <a
+                  key={i}
+                  className="block p-4 bg-white rounded-lg shadow-sm border border-gray-200"
+                  href="/coming-soon"
+                >
+                  {t}
+                </a>
               ))}
             </div>
           </div>
@@ -356,15 +493,45 @@ export default function KhamPha() {
           <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-4">
             <div>
               <h4 className="text-lg font-semibold">Nhận tin Khám Phá</h4>
-              <p className="text-sm text-gray-600">Đăng ký để nhận cập nhật về sự kiện, quỹ và chương trình.</p>
+              <p className="text-sm text-gray-600">
+                Đăng ký để nhận cập nhật về sự kiện, quỹ và chương trình.
+              </p>
             </div>
-            <form onSubmit={handleSubscribe} className="flex gap-2 w-full md:w-auto">
-              <input type="email" value={newsletterEmail} onChange={(e)=>setNewsletterEmail(e.target.value)} placeholder="Email của bạn" className="px-4 py-3 rounded-lg border border-gray-200 w-full md:w-72" />
-              <button className="bg-[#FFCE23] text-black px-4 py-2 rounded-lg" disabled={subscribed}>{subscribed? 'Đã đăng ký' : 'Đăng ký'}</button>
+            <form
+              onSubmit={handleSubscribe}
+              className="flex gap-2 w-full md:w-auto"
+            >
+              <input
+                type="email"
+                value={newsletterEmail}
+                onChange={(e) => setNewsletterEmail(e.target.value)}
+                placeholder="Email của bạn"
+                className="px-4 py-3 rounded-lg border border-gray-200 w-full md:w-72"
+              />
+              <button
+                className="bg-[#FFCE23] text-black px-4 py-2 rounded-lg"
+                disabled={subscribed}
+              >
+                {subscribed ? "Đã đăng ký" : "Đăng ký"}
+              </button>
             </form>
           </div>
         </div>
       </main>
+
+      {/* Scroll to Top Button */}
+      <button
+        onClick={scrollToTop}
+        className={`fixed bottom-8 right-8 bg-[#FFCE23] hover:bg-yellow-500 text-black p-4 rounded-full shadow-lg transition-all duration-300 z-50 ${
+          showScrollTop
+            ? "opacity-100 translate-y-0"
+            : "opacity-0 translate-y-16 pointer-events-none"
+        }`}
+        aria-label="Scroll to top"
+      >
+        <FontAwesomeIcon icon={faArrowUp} className="text-xl" />
+      </button>
+
       <Footer />
     </div>
   );
