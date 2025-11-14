@@ -76,7 +76,7 @@ export default function Platform() {
             <p className="text-sm text-gray-600 flex-1">{description}</p>
         </div>
     );
-    
+
     // Pricing Feature List Item
     const PlanFeatureItem = ({ children, isIncluded, isPro }) => (
         <li className={`flex items-start text-sm ${isIncluded ? 'text-gray-700' : 'text-gray-400'}`}>
@@ -98,8 +98,8 @@ export default function Platform() {
                 <header className="py-20 bg-gradient-to-br from-white to-amber-50 relative overflow-hidden">
                     <div className="max-w-6xl mx-auto px-4 text-center">
                         <p className={`text-base font-semibold uppercase tracking-widest ${primaryText} mb-3 drop-shadow`}>NỀN TẢNG KHỞI NGHIỆP</p>
-                        <h1 className="text-5xl sm:text-7xl font-extrabold text-gray-900 leading-tight drop-shadow-md">
-                            Xây dựng. Kết nối. <span className={`text-blue-600`}>Tăng trưởng.</span>
+                        <h1 className="text-5xl sm:text-7xl font-extrabold text-gray-900 leading-tight drop-shadow-md whitespace-nowrap">
+                            Xây dựng. Kết nối. Tăng trưởng.
                         </h1>
                         <p className="mt-5 text-xl text-gray-700 max-w-4xl mx-auto">
                             StartupKit trao quyền cho các nhà sáng lập bằng cách cung cấp các công cụ gọi vốn, mạng lưới mentor ưu tú và tài nguyên vận hành cần thiết.

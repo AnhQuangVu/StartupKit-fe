@@ -656,13 +656,23 @@ export default function UploadProfile() {
 
       const data = await res.json();
       showToast('Đăng tải project thành công!', 'success');
+      
+      // Chờ 1.5s để user đọc thông báo thành công
+      setTimeout(() => {
+        // Chuyển đến trang khám phá với anchor #startup-list
+        navigate('/kham-pha#startup-list', { 
+          state: { 
+            fromPublish: true,
+            projectId: projectId 
+          }
+        });
+      }, 1500);
+
       const t1 = performance.now();
       const ms = Math.round(t1 - t0);
       if (ms > 2000) {
         showToast('Máy chủ xử lý publish chậm (' + ms + 'ms)', 'warning', 2500);
       }
-      // Có thể redirect hoặc update UI tùy ý
-      console.log('Published project:', data);
     } catch (err) {
       console.error('publishProject error', err);
       const msg = err?.name === 'AbortError' ? 'Máy chủ phản hồi quá lâu (timeout) khi publish.' : 'Lỗi khi đăng tải project';
@@ -1114,10 +1124,23 @@ export default function UploadProfile() {
       </div>
       {/* Toast */}
       {toast.visible && (
-        <div className="fixed right-4 bottom-6 z-50">
-          <div className={`flex items-start gap-3 px-4 py-2 rounded shadow text-white ${toast.type === 'error' ? 'bg-red-600' : toast.type === 'success' ? 'bg-green-600' : toast.type === 'warning' ? 'bg-yellow-500 text-black' : 'bg-gray-800'}`}>
-            <div className="flex-1">{toast.message}</div>
-            <button onClick={closeToast} className="ml-2 opacity-90 hover:opacity-100">×</button>
+        <div className="fixed top-20 inset-x-0 flex items-start justify-center z-50">
+          <div className={`relative flex items-center gap-3 px-6 py-3 rounded-lg shadow-lg text-white animate-slideDown ${
+            toast.type === 'error' 
+              ? 'bg-red-600' 
+              : toast.type === 'success' 
+              ? 'bg-green-600' 
+              : toast.type === 'warning' 
+              ? 'bg-yellow-500 text-black' 
+              : 'bg-gray-800'
+          }`}>
+            <div className="flex-1 text-center font-medium">{toast.message}</div>
+            <button 
+              onClick={closeToast} 
+              className="ml-2 opacity-90 hover:opacity-100 text-xl"
+            >
+              ×
+            </button>
           </div>
         </div>
       )}

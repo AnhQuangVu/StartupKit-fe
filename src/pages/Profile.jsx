@@ -21,7 +21,7 @@ import Footer from "../components/layout/Footer";
 import { API_BASE, authHeaders, fetchWithTimeout } from "../config/api";
 
 export default function Profile() {
-  // Debug: log connect_goal every render
+  const [isLoading, setIsLoading] = useState(true);
 
   const { user: authUser, logout, updateUser } = useAuth();
   const navigate = useNavigate();
@@ -42,7 +42,6 @@ export default function Profile() {
   const [avatarPreview, setAvatarPreview] = useState("");
   const [coverPreview, setCoverPreview] = useState("");
   const [isSubmitting, setIsSubmitting] = useState(false);
-  const [updateMessage, setUpdateMessage] = useState({ type: "", text: "" });
   useEffect(() => {
     if (!authUser) return;
 
@@ -62,7 +61,7 @@ export default function Profile() {
       company: authUser.profile?.company || "",
       facebook: authUser.profile?.facebook || "",
       linkedin: authUser.profile?.linkedin || "",
-      role: authUser.profile?.role || "Founder",
+      role: authUser.role || authUser.profile?.role || "",
       pitch_deck_url: authUser.profile?.pitch_deck_url || "",
       connect_goal:
         authUser.connect_goal ?? authUser.profile?.connect_goal ?? "",
@@ -202,11 +201,15 @@ export default function Profile() {
   const handleUpdateProfile = async (e) => {
     e.preventDefault();
     setIsSubmitting(true);
-    setUpdateMessage({ type: "", text: "" });
 
     try {
       let payload = { ...formData };
-      payload.startups = startups;
+
+      // Only send startups for non-mentor roles
+      if (authUser?.role !== 'mentor') {
+        payload.startups = startups;
+      }
+
       payload.achievements = achievements.filter(
         (a) => a.content.trim() !== "" || a.link.trim() !== ""
       );
@@ -240,6 +243,9 @@ export default function Profile() {
       // Always send bio
       payload.bio = formData.bio || authUser.profile?.bio || "";
 
+      // Remove role from payload (read-only field)
+      delete payload.role;
+
       Object.keys(payload).forEach((k) => {
         if (payload[k] === "") payload[k] = null;
       });
@@ -254,7 +260,18 @@ export default function Profile() {
       const responseData = await response.json();
       if (!response.ok) throw new Error(responseData.detail || "Lỗi cập nhật");
 
+      // Update formData immediately with response data
+      setFormData(prev => ({
+        ...prev,
+        connect_goal: responseData.connect_goal || prev.connect_goal
+      }));
+
+      // Update authUser with PATCH response immediately
       if (updateUser) {
+        // First update with PATCH response
+        updateUser(responseData);
+
+        // Then try to fetch full data
         try {
           const userRes = await fetchWithTimeout(`${API_BASE}/users/me`, {
             method: "GET",
@@ -265,9 +282,13 @@ export default function Profile() {
             timeout: 8000,
           });
           const userData = await userRes.json();
-          updateUser(userData);
+
+          // Only update if GET returns connect_goal, otherwise keep PATCH response
+          if (userData.connect_goal) {
+            updateUser(userData);
+          }
         } catch {
-          updateUser(responseData);
+          // Keep the PATCH response that was already set
         }
       }
 
@@ -279,7 +300,59 @@ export default function Profile() {
     }
   };
 
-  if (!authUser) {
+  // Thêm useEffect mới để fetch profile data
+  useEffect(() => {
+    const fetchProfile = async () => {
+      try {
+        const token = localStorage.getItem('token');
+        const response = await fetchWithTimeout(`${API_BASE}/users/me`, {
+          headers: authHeaders(token)
+        });
+        const data = await response.json();
+
+        // Merge fetched fields into existing formData to avoid accidentally wiping fields
+        setFormData((prev) => ({
+          full_name: data.full_name || prev.full_name || "",
+          avatar_url: data.avatar_url || prev.avatar_url || prev.full_name || "",
+          cover_url: data.cover_url || data.profile?.cover_url || prev.cover_url || "",
+          bio: data.profile?.bio || prev.bio || "",
+          website_url: data.profile?.website_url || prev.website_url || "",
+          location: data.profile?.location || prev.location || "",
+          phone: data.profile?.phone || prev.phone || "",
+          address: data.profile?.address || prev.address || "",
+          company: data.profile?.company || prev.company || "",
+          role: data.profile?.role || prev.role || "Founder",
+          pitch_deck_url: data.profile?.pitch_deck_url || prev.pitch_deck_url || "",
+          connect_goal: data.connect_goal || data.profile?.connect_goal || prev.connect_goal || "",
+        }));
+
+        // Cập nhật achievements
+        if (Array.isArray(data.profile?.achievements) && data.profile.achievements.length > 0) {
+          setAchievements(data.profile.achievements.map(a =>
+            typeof a === 'object' ? a : { content: a, link: '' }
+          ));
+        }
+
+        // Cập nhật startups
+        if (Array.isArray(data.profile?.startups) && data.profile.startups.length > 0) {
+          setStartups(data.profile.startups);
+        }
+
+      } catch {
+        // ignore fetch errors silently
+      } finally {
+        setIsLoading(false);
+      }
+    };
+
+    const token = localStorage.getItem('token');
+    if (token) {
+      fetchProfile();
+    }
+  }, []);
+
+
+  if (isLoading) {
     return (
       <div className="flex flex-col min-h-screen">
         <Navbar />
@@ -299,21 +372,19 @@ export default function Profile() {
           {/* Sidebar */}
           <div className="flex flex-col w-full md:w-1/4">
             <button
-              className={`py-2 px-3 font-semibold text-xs text-left rounded ${
-                activeTab === "hoso"
-                  ? "bg-[#FFF9E0] text-[#FFCE23]"
-                  : "bg-gray-50 text-gray-700 hover:bg-[#FFF9E0] hover:text-[#FFCE23]"
-              }`}
+              className={`py-2 px-3 font-semibold text-xs text-left rounded ${activeTab === "hoso"
+                ? "bg-[#FFF9E0] text-[#FFCE23]"
+                : "bg-gray-50 text-gray-700 hover:bg-[#FFF9E0] hover:text-[#FFCE23]"
+                }`}
               onClick={() => setActiveTab("hoso")}
             >
               Hồ sơ cá nhân
             </button>
             <button
-              className={`py-2 px-3 font-semibold text-xs text-left rounded mt-2 ${
-                activeTab === "thongbao"
-                  ? "bg-[#FFF9E0] text-[#FFCE23]"
-                  : "bg-gray-50 text-gray-700 hover:bg-[#FFF9E0] hover:text-[#FFCE23]"
-              }`}
+              className={`py-2 px-3 font-semibold text-xs text-left rounded mt-2 ${activeTab === "thongbao"
+                ? "bg-[#FFF9E0] text-[#FFCE23]"
+                : "bg-gray-50 text-gray-700 hover:bg-[#FFF9E0] hover:text-[#FFCE23]"
+                }`}
               onClick={() => setActiveTab("thongbao")}
             >
               Quản lý thông báo
@@ -410,63 +481,82 @@ export default function Profile() {
                           👤 Thông tin cá nhân
                         </h3>
                         <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-                          <div className="relative">
-                            <span className="absolute left-3 top-1/2 transform -translate-y-1/2">
-                              <FontAwesomeIcon icon={faUser} color="#222" />
+                          {/* Tên - full width */}
+                          <div className="relative sm:col-span-2">
+                            <span className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-700">
+                              <FontAwesomeIcon icon={faUser} />
                             </span>
                             <input
                               name="full_name"
-                              placeholder="Họ và tên Founder"
+                              placeholder={authUser?.role === 'mentor' ? "Họ và tên Mentor" : "Họ và tên Founder"}
                               value={formData.full_name || ""}
                               onChange={handleInputChange}
                               className="border p-2 rounded pl-10 w-full"
                             />
                           </div>
-                          <div className="relative">
-                            <span className="absolute left-3 top-1/2 transform -translate-y-1/2">
-                              <FontAwesomeIcon
-                                icon={faRocket}
-                                color="#FFD600"
+
+                          {/* Mentor: Tiêu đề/Định vị */}
+                          {authUser?.role === 'mentor' && (
+                            <div className="relative sm:col-span-2">
+                              <span className="absolute left-3 top-1/2 transform -translate-y-1/2 text-amber-600">
+                                <FontAwesomeIcon icon={faRocket} />
+                              </span>
+                              <input
+                                name="company"
+                                placeholder="Tiêu đề / Định vị (VD: CEO tại ABC Corp, Expert về AI/ML)"
+                                value={formData.company || ""}
+                                onChange={handleInputChange}
+                                className="border p-2 rounded pl-10 w-full"
                               />
-                            </span>
-                            <input
-                              name="role"
-                              placeholder="Vai trò (Founder, CEO...)"
-                              value={formData.role || ""}
-                              onChange={handleInputChange}
-                              className="border p-2 rounded pl-10 w-full"
-                            />
-                          </div>
+                            </div>
+                          )}
+
+                          {/* Vị trí công việc / Địa điểm */}
                           <div className="relative">
-                            <span className="absolute left-3 top-1/2 transform -translate-y-1/2">
-                              <FontAwesomeIcon
-                                icon={faMapMarkerAlt}
-                                color="#888"
-                              />
+                            <span className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-700">
+                              <FontAwesomeIcon icon={faMapMarkerAlt} />
                             </span>
                             <input
                               name="location"
-                              placeholder="Địa điểm"
+                              placeholder={authUser?.role === 'mentor' ? "Vị trí công việc hiện tại" : "Địa điểm"}
                               value={formData.location || ""}
                               onChange={handleInputChange}
                               className="border p-2 rounded pl-10 w-full"
                             />
                           </div>
+
+                          {/* Role - read only */}
                           <div className="relative">
-                            <span className="absolute left-3 top-1/2 transform -translate-y-1/2">
-                              <FontAwesomeIcon icon={faGlobe} color="#FFD600" />
+                            <span className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-700">
+                              <FontAwesomeIcon icon={faBuilding} />
+                            </span>
+                            <input
+                              name="role"
+                              placeholder="Vai trò"
+                              value={authUser?.role || formData.role || ""}
+                              readOnly
+                              className="border p-2 rounded pl-10 w-full bg-gray-100 cursor-not-allowed text-gray-600"
+                            />
+                          </div>
+
+                          {/* Link cộng đồng (mentor) hoặc Website (founder) */}
+                          <div className="relative sm:col-span-2">
+                            <span className="absolute left-3 top-1/2 transform -translate-y-1/2 text-amber-600">
+                              <FontAwesomeIcon icon={faGlobe} />
                             </span>
                             <input
                               name="website_url"
-                              placeholder="Website cá nhân"
+                              placeholder={authUser?.role === 'mentor' ? "🔗 Link cộng đồng - Tham gia cộng đồng của tôi" : "Website cá nhân"}
                               value={formData.website_url || ""}
                               onChange={handleInputChange}
                               className="border p-2 rounded pl-10 w-full"
                             />
                           </div>
+
+                          {/* Bio - full width */}
                           <textarea
                             name="bio"
-                            placeholder="Giới thiệu ngắn..."
+                            placeholder={authUser?.role === 'mentor' ? "📝 Giới thiệu bản thân, kinh nghiệm và chuyên môn của bạn..." : "Giới thiệu ngắn..."}
                             value={formData.bio || ""}
                             onChange={handleInputChange}
                             onInput={(e) => autoResizeEl(e.target)}
@@ -475,115 +565,105 @@ export default function Profile() {
                         </div>
                       </div>
 
-                      {/* Thông tin startup */}
-                      <div className="mb-8 border-b pb-6">
-                        <h3 className="text-lg font-bold text-gray-800 mb-4">
-                          <span className="inline-block mr-2 align-middle">
-                            <FontAwesomeIcon icon={faBuilding} color="#222" />
-                          </span>{" "}
-                          Thông tin Startup
-                        </h3>
-                        {startups.map((startup, idx) => (
-                          <div
-                            key={idx}
-                            className="grid grid-cols-1 sm:grid-cols-2 gap-4 mb-6 relative border rounded-lg p-4"
-                          >
-                            <button
-                              type="button"
-                              className="absolute right-2 top-2 text-xs text-red-500"
-                              onClick={() => removeStartup(idx)}
-                              disabled={startups.length === 1}
+                      {/* Thông tin startup - only show for founder */}
+                      {authUser?.role !== 'mentor' && (
+                        <div className="mb-8 border-b pb-6">
+                          <h3 className="text-lg font-bold text-gray-800 mb-4">
+                            <span className="inline-block mr-2 align-middle text-gray-700">
+                              <FontAwesomeIcon icon={faBuilding} />
+                            </span>{" "}
+                            Thông tin Startup
+                          </h3>
+                          {startups.map((startup, idx) => (
+                            <div
+                              key={idx}
+                              className="grid grid-cols-1 sm:grid-cols-2 gap-4 mb-6 relative border rounded-lg p-4"
                             >
-                              X
-                            </button>
-                            <div className="relative">
-                              <span className="absolute left-3 top-1/2 transform -translate-y-1/2">
-                                <FontAwesomeIcon
-                                  icon={faBuilding}
-                                  color="#222"
+                              <button
+                                type="button"
+                                className="absolute right-2 top-2 text-xs text-red-500"
+                                onClick={() => removeStartup(idx)}
+                                disabled={startups.length === 1}
+                              >
+                                X
+                              </button>
+                              <div className="relative">
+                                <span className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-700">
+                                  <FontAwesomeIcon icon={faBuilding} />
+                                </span>
+                                <input
+                                  name="startup_name"
+                                  placeholder="Tên startup"
+                                  value={startup.startup_name}
+                                  onChange={(e) => handleStartupChange(idx, e)}
+                                  className="border p-2 rounded pl-10 w-full"
                                 />
-                              </span>
-                              <input
-                                name="startup_name"
-                                placeholder="Tên startup"
-                                value={startup.startup_name}
+                              </div>
+                              <div className="relative">
+                                <span className="absolute left-3 top-1/2 transform -translate-y-1/2 text-amber-600">
+                                  <FontAwesomeIcon icon={faIndustry} />
+                                </span>
+                                <input
+                                  name="industry"
+                                  placeholder="Lĩnh vực hoạt động"
+                                  value={startup.industry}
+                                  onChange={(e) => handleStartupChange(idx, e)}
+                                  className="border p-2 rounded pl-10 w-full"
+                                />
+                              </div>
+                              <div className="relative">
+                                <span className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-700">
+                                  <FontAwesomeIcon icon={faCalendarAlt} />
+                                </span>
+                                <input
+                                  type="number"
+                                  name="founded_year"
+                                  placeholder="Năm thành lập"
+                                  value={startup.founded_year}
+                                  onChange={(e) => handleStartupChange(idx, e)}
+                                  className="border p-2 rounded pl-10 w-full"
+                                />
+                              </div>
+                              <div className="relative">
+                                <span className="absolute left-3 top-1/2 transform -translate-y-1/2 text-amber-600">
+                                  <FontAwesomeIcon icon={faUsers} />
+                                </span>
+                                <input
+                                  type="number"
+                                  name="team_size"
+                                  placeholder="Quy mô đội ngũ"
+                                  value={startup.team_size}
+                                  onChange={(e) => handleStartupChange(idx, e)}
+                                  className="border p-2 rounded pl-10 w-full"
+                                />
+                              </div>
+                              <textarea
+                                name="mission"
+                                placeholder="Sứ mệnh / Giá trị cốt lõi"
+                                value={startup.mission}
                                 onChange={(e) => handleStartupChange(idx, e)}
-                                className="border p-2 rounded pl-10 w-full"
+                                onInput={(e) => autoResizeEl(e.target)}
+                                className="border p-2 rounded sm:col-span-2 resize-none overflow-hidden auto-resize"
                               />
                             </div>
-                            <div className="relative">
-                              <span className="absolute left-3 top-1/2 transform -translate-y-1/2">
-                                <FontAwesomeIcon
-                                  icon={faIndustry}
-                                  color="#FFD600"
-                                />
-                              </span>
-                              <input
-                                name="industry"
-                                placeholder="Lĩnh vực hoạt động"
-                                value={startup.industry}
-                                onChange={(e) => handleStartupChange(idx, e)}
-                                className="border p-2 rounded pl-10 w-full"
-                              />
-                            </div>
-                            <div className="relative">
-                              <span className="absolute left-3 top-1/2 transform -translate-y-1/2">
-                                <FontAwesomeIcon
-                                  icon={faCalendarAlt}
-                                  color="#888"
-                                />
-                              </span>
-                              <input
-                                type="number"
-                                name="founded_year"
-                                placeholder="Năm thành lập"
-                                value={startup.founded_year}
-                                onChange={(e) => handleStartupChange(idx, e)}
-                                className="border p-2 rounded pl-10 w-full"
-                              />
-                            </div>
-                            <div className="relative">
-                              <span className="absolute left-3 top-1/2 transform -translate-y-1/2">
-                                <FontAwesomeIcon
-                                  icon={faUsers}
-                                  color="#FFD600"
-                                />
-                              </span>
-                              <input
-                                type="number"
-                                name="team_size"
-                                placeholder="Quy mô đội ngũ"
-                                value={startup.team_size}
-                                onChange={(e) => handleStartupChange(idx, e)}
-                                className="border p-2 rounded pl-10 w-full"
-                              />
-                            </div>
-                            <textarea
-                              name="mission"
-                              placeholder="Sứ mệnh / Giá trị cốt lõi"
-                              value={startup.mission}
-                              onChange={(e) => handleStartupChange(idx, e)}
-                              onInput={(e) => autoResizeEl(e.target)}
-                              className="border p-2 rounded sm:col-span-2 resize-none overflow-hidden auto-resize"
-                            />
-                          </div>
-                        ))}
-                        <button
-                          type="button"
-                          className="mt-2 px-4 py-2 bg-yellow-100 text-yellow-700 rounded shadow"
-                          onClick={addStartup}
-                        >
-                          + Thêm Startup
-                        </button>
-                      </div>
+                          ))}
+                          <button
+                            type="button"
+                            className="mt-2 px-4 py-2 bg-yellow-100 text-yellow-700 rounded shadow"
+                            onClick={addStartup}
+                          >
+                            + Thêm Startup
+                          </button>
+                        </div>
+                      )}
 
-                      {/* Thành tựu */}
+                      {/* Thành tựu - show for both but with different labels */}
                       <div className="mb-8 border-b pb-6">
                         <h3 className="text-lg font-bold text-gray-800 mb-4">
-                          <span className="inline-block mr-2 align-middle">
-                            <FontAwesomeIcon icon={faTrophy} color="#222" />
+                          <span className="inline-block mr-2 align-middle text-amber-600">
+                            <FontAwesomeIcon icon={faTrophy} />
                           </span>{" "}
-                          Thành tựu & Pitch Deck
+                          {authUser?.role === 'mentor' ? 'Thành tích nổi bật' : 'Thành tựu & Pitch Deck'}
                         </h3>
                         <div className="grid grid-cols-1 gap-4">
                           {/* Achievements list */}
@@ -593,7 +673,7 @@ export default function Profile() {
                               className="relative bg-gray-50 rounded-lg border p-4 mb-4 flex flex-col gap-3 shadow-sm"
                             >
                               <div className="flex flex-row items-center gap-3">
-                                <span className="text-yellow-500">
+                                <span className="text-amber-600">
                                   <FontAwesomeIcon icon={faTrophy} />
                                 </span>
                                 <label className="font-medium text-gray-700 w-32">
@@ -657,17 +737,14 @@ export default function Profile() {
                       {/* Mục tiêu kết nối */}
                       <div>
                         <h3 className="text-lg font-bold text-gray-800 mb-4">
-                          <span className="inline-block mr-2 align-middle">
-                            <FontAwesomeIcon icon={faBullseye} color="#222" />
+                          <span className="inline-block mr-2 align-middle text-amber-600">
+                            <FontAwesomeIcon icon={faBullseye} />
                           </span>{" "}
                           Mục tiêu kết nối
                         </h3>
                         <div className="relative">
-                          <span className="absolute left-3 top-3">
-                            <FontAwesomeIcon
-                              icon={faBullseye}
-                              color="#FFD600"
-                            />
+                          <span className="absolute left-3 top-3 text-amber-600">
+                            <FontAwesomeIcon icon={faBullseye} />
                           </span>
                           <textarea
                             name="connect_goal"
@@ -680,21 +757,18 @@ export default function Profile() {
                         </div>
                       </div>
 
-                      <div className="flex gap-3 mt-8">
+                      <div className="flex gap-3 mt-8 md:hidden">
                         <button
                           type="submit"
                           disabled={isSubmitting}
-                          className={`px-5 py-2 rounded-full bg-[#FFCE23] text-black font-semibold shadow hover:bg-yellow-300 transition ${
-                            isSubmitting ? "opacity-70 cursor-not-allowed" : ""
-                          }`}
+                          className={`px-5 py-2 rounded-full bg-[#FFCE23] text-black font-semibold shadow hover:bg-yellow-300 transition ${isSubmitting ? "opacity-70 cursor-not-allowed" : ""
+                            }`}
                         >
                           {isSubmitting ? "Đang cập nhật..." : "Lưu thay đổi"}
                         </button>
                         <button
                           type="button"
                           onClick={() => {
-                            // DEBUG: Log avatarPreview, coverPreview, formData
-
                             const publicFormData = {
                               ...formData,
                               avatar_url: avatarPreview || formData.avatar_url || "",
@@ -721,6 +795,39 @@ export default function Profile() {
           </div>
         </div>
       </main>
+      {/* Fixed bottom action bar for desktop: visible on md+; keeps original inline buttons for mobile */}
+      <div className="fixed bottom-6 inset-x-0 justify-center z-50 hidden md:flex">
+        <div className="bg-white/90 backdrop-blur-sm border border-gray-200 rounded-full px-3 py-2 shadow-lg flex items-center gap-3">
+          <button
+            onClick={(e) => handleUpdateProfile(e)}
+            disabled={isSubmitting}
+            className={`px-4 py-2 rounded-full bg-[#FFCE23] text-black font-semibold shadow hover:bg-yellow-300 transition ${isSubmitting ? 'opacity-70 cursor-not-allowed' : ''}`}
+          >
+            {isSubmitting ? 'Đang cập nhật...' : 'Lưu thay đổi'}
+          </button>
+
+          <button
+            onClick={() => {
+              const publicFormData = {
+                ...formData,
+                avatar_url: avatarPreview || formData.avatar_url || "",
+                cover_url: coverPreview || formData.cover_url || ""
+              };
+              navigate('/public-profile/', {
+                state: {
+                  formData: publicFormData,
+                  achievements,
+                  startups
+                }
+              });
+            }}
+            className="px-4 py-2 rounded-full bg-gray-200 text-gray-800 font-semibold shadow hover:bg-gray-300 transition"
+          >
+            Xem hồ sơ công khai
+          </button>
+        </div>
+      </div>
+
       <Footer />
     </div>
   );

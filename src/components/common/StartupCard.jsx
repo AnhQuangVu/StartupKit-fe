@@ -57,11 +57,21 @@ export default function LightStartupCard({
     <div className="bg-white rounded-2xl shadow-lg overflow-hidden border border-gray-100 hover:border-amber-400 transition duration-300">
       {/* Banner + Avatar */}
       <div className="relative">
-        {team_image?.url && (
-          <div className="w-full h-36 bg-gray-100 flex items-center justify-center overflow-hidden">
-            <img src={team_image.url} alt="Ảnh banner" className="w-full h-full object-cover" />
-          </div>
-        )}
+        {/* Always render banner container to preserve layout. Show image if available, otherwise a neutral placeholder */}
+        <div className="w-full h-36 bg-gray-100 flex items-center justify-center overflow-hidden">
+          {team_image?.url ? (
+            <img
+              src={team_image.url}
+              alt="Ảnh banner"
+              className="w-full h-full object-cover"
+              onError={(e) => { e.target.style.display = 'none'; }}
+            />
+          ) : (
+            <div className="w-full h-full bg-gradient-to-r from-gray-100 to-gray-200 flex items-center justify-center text-gray-400">
+              <span className="text-sm">Banner chưa có</span>
+            </div>
+          )}
+        </div>
         {/* Avatar - đè lên Banner, căn giữa */}
         <div className="absolute left-1/2 -translate-x-1/2 -bottom-10 z-10">
           <div className="w-24 h-24 bg-white rounded-2xl overflow-hidden flex items-center justify-center border-4 border-white shadow-xl">
