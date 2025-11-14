@@ -2,6 +2,8 @@ import React, { useState } from "react";
 import Navbar from "../components/layout/Navbar";
 import Hero from "../components/home/Hero";
 import Footer from "../components/layout/Footer";
+import FeedbackButton from "../components/common/FeedbackButton";
+import ChatBot from "../components/common/ChatBot";
 import { useAuth } from "../context/AuthContext";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { useNavigate } from "react-router-dom";
@@ -358,9 +360,10 @@ export default function TrangChu() {
                   className="w-full text-left px-6 py-4 flex items-center justify-between hover:bg-gray-50 transition-colors"
                 >
                   <span className="font-semibold text-gray-900">{faq.q}</span>
-                  <FontAwesomeIcon 
-                    icon={faChevronDown} 
-                    className={`text-gray-500 transition-transform ${openFaq === idx ? 'rotate-180' : ''}`}
+                  <FontAwesomeIcon
+                    icon={faChevronDown}
+                    className={`text-gray-500 transition-transform ${openFaq === idx ? "rotate-180" : ""
+                      }`}
                   />
                 </button>
                 {openFaq === idx && (
@@ -401,6 +404,10 @@ export default function TrangChu() {
       </main>
 
       <Footer />
+
+      <ChatBot />
+      {/* Feedback Button */}
+      <FeedbackButton formLink="https://forms.gle/2eGMUWPXxKD8ZXnx6" />
     </div>
   );
 }
