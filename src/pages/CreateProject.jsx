@@ -5,8 +5,6 @@ import ProjectProfileFullForm, {
 } from "../components/project/ProjectProfileFullForm";
 import { useAuth } from "../context/AuthContext";
 import ProjectProfileChatbot from "../components/project/ProjectProfileChatbot";
-import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { faArrowUp } from "@fortawesome/free-solid-svg-icons";
 
 // Sidebar các bước tạo hồ sơ
 function ProjectSteps({ currentStep, onStepClick }) {
@@ -176,7 +174,6 @@ function CreateProject() {
   const [selectedTemplate, setSelectedTemplate] = useState(null);
   const [mobileChatbotOpen, setMobileChatbotOpen] = useState(false);
   const [form, setForm] = useState({});
-  const [showScrollTop, setShowScrollTop] = useState(false);
   const location = useLocation();
   const mainContainerRef = useRef(null);
 
@@ -349,28 +346,6 @@ function CreateProject() {
     }, 50);
   };
 
-  // Scroll to top handler
-  const scrollToTop = () => {
-    window.scrollTo({
-      top: 0,
-      behavior: "smooth",
-    });
-  };
-
-  // Show/hide scroll to top button based on scroll position
-  useEffect(() => {
-    const handleScroll = () => {
-      if (window.scrollY > 300) {
-        setShowScrollTop(true);
-      } else {
-        setShowScrollTop(false);
-      }
-    };
-
-    window.addEventListener("scroll", handleScroll);
-    return () => window.removeEventListener("scroll", handleScroll);
-  }, []);
-
   if (role !== "founder") {
     return (
       <div className="max-w-xl mx-auto mt-10 p-6 bg-white rounded shadow text-center">
@@ -505,23 +480,6 @@ function CreateProject() {
           </div>
         </div>
       </div>
-
-      {/* Scroll to Top Button */}
-      <button
-        onClick={scrollToTop}
-        className={`fixed ${
-          currentStep === 1 && !mobileChatbotOpen
-            ? "bottom-20 right-4" // Mobile: ngay trên nút chatbot khi ở step 1
-            : "bottom-8 right-4" // Mobile: vị trí mặc định khi không có chatbot
-        } lg:bottom-8 lg:right-8 bg-[#FFCE23] hover:bg-yellow-500 text-black p-3 rounded-full shadow-lg transition-all duration-300 z-40 focus:outline-none ${
-          showScrollTop && !mobileChatbotOpen
-            ? "opacity-100 translate-y-0"
-            : "opacity-0 translate-y-16 pointer-events-none"
-        }`}
-        aria-label="Scroll to top"
-      >
-        <FontAwesomeIcon icon={faArrowUp} className="text-lg" />
-      </button>
 
       {/* Floating chatbot icon và dialog cho mobile - chỉ hiện ở step 1 */}
       {currentStep === 1 && (

@@ -1,7 +1,6 @@
 import React, { useState, useRef, useEffect } from "react";
 import { API_BASE, authHeaders } from "../../config/api";
 import iconAI from "../../assets/images/iconAI.jpg";
-import ReactMarkdown from "react-markdown";
 
 export default function ProjectProfileChatbot({ form, onFillField }) {
   const [messages, setMessages] = useState([
@@ -15,15 +14,6 @@ export default function ProjectProfileChatbot({ form, onFillField }) {
   const [suggestion, setSuggestion] = useState(null);
   const messagesEndRef = useRef(null);
   const messagesContainerRef = useRef(null);
-
-  // Danh sách câu hỏi gợi ý
-  const [suggestedQuestions, setSuggestedQuestions] = useState([
-    "Ý tưởng giải quyết vấn đề gì?",
-    "Có những biểu mẫu phân tích thị trường nào cho startup?",
-    "Business model canvas là gì?",
-    "Mô hình kinh doanh nào phù hợp với dự án này?",
-    "Cấu trúc chi phí chuyên nghiệp cho startup?",
-  ]);
 
   const scrollToBottom = () => {
     // Chỉ scroll trong container của chatbot, không ảnh hưởng trang
@@ -156,20 +146,16 @@ export default function ProjectProfileChatbot({ form, onFillField }) {
     return null;
   };
 
-  const handleSend = async (messageText = null) => {
-    const textToSend = messageText || input;
-    if (!textToSend.trim() || loading) return;
+  const handleSend = async () => {
+    if (!input.trim() || loading) return;
 
-    const userMessage = { sender: "user", text: textToSend };
+    const userMessage = { sender: "user", text: input };
     setMessages([...messages, userMessage]);
-
-    // Xóa câu hỏi gợi ý nếu người dùng đã hỏi
-    setSuggestedQuestions((prev) => prev.filter((q) => q !== textToSend));
-
+    const userInput = input;
     setInput("");
     setLoading(true);
 
-    const detectedField = detectField(textToSend);
+    const detectedField = detectField(userInput);
 
     try {
       const token =
@@ -182,7 +168,7 @@ export default function ProjectProfileChatbot({ form, onFillField }) {
           "Content-Type": "application/json",
         },
         body: JSON.stringify({
-          message: textToSend,
+          message: userInput,
           project_id: form?.id || null,
           use_google: true,
           max_length: 300,
@@ -249,13 +235,6 @@ export default function ProjectProfileChatbot({ form, onFillField }) {
     setSuggestion(null);
   };
 
-  const handleQuestionClick = (question) => {
-    handleSend(question);
-  };
-
-  // Hiển thị 3 câu hỏi gợi ý
-  const displayedQuestions = suggestedQuestions.slice(0, 3);
-
   return (
     <div className="w-full flex flex-col h-full bg-white rounded-lg overflow-hidden">
       {/* Header - Premium Design - Không border radius trên mobile */}
@@ -269,7 +248,7 @@ export default function ProjectProfileChatbot({ form, onFillField }) {
             <h3 className="font-bold text-lg tracking-wide">Trợ Lý Creata</h3>
             <p className="text-xs text-yellow-100 font-light">
               Gợi ý thông minh cho dự án
-            </p>
+            </p>     
           </div>
         </div>
       </div>
@@ -309,48 +288,7 @@ export default function ProjectProfileChatbot({ form, onFillField }) {
                   : "bg-white text-gray-800 rounded-tl-none shadow-md border border-gray-100"
               }`}
             >
-              {msg.sender === "bot" ? (
-                <div className="prose prose-sm max-w-none">
-                  <ReactMarkdown
-                    components={{
-                      p: ({ node, ...props }) => (
-                        <p className="mb-2" {...props} />
-                      ),
-                      ul: ({ node, ...props }) => (
-                        <ul className="list-disc pl-4 mb-2" {...props} />
-                      ),
-                      ol: ({ node, ...props }) => (
-                        <ol className="list-decimal pl-4 mb-2" {...props} />
-                      ),
-                      li: ({ node, ...props }) => (
-                        <li className="mb-1" {...props} />
-                      ),
-                      strong: ({ node, ...props }) => (
-                        <strong className="font-bold" {...props} />
-                      ),
-                      em: ({ node, ...props }) => (
-                        <em className="italic" {...props} />
-                      ),
-                      code: ({ node, inline, ...props }) =>
-                        inline ? (
-                          <code
-                            className="bg-gray-100 px-1 py-0.5 rounded text-xs"
-                            {...props}
-                          />
-                        ) : (
-                          <code
-                            className="block bg-gray-100 p-2 rounded text-xs overflow-x-auto"
-                            {...props}
-                          />
-                        ),
-                    }}
-                  >
-                    {msg.text}
-                  </ReactMarkdown>
-                </div>
-              ) : (
-                <p className="text-base">{msg.text}</p>
-              )}
+              <p className="text-base">{msg.text}</p>
               {msg.sources && (
                 <div className="text-xs mt-3 opacity-70 italic text-gray-500 pt-2 border-t border-gray-200 border-opacity-30">
                   📚 {msg.sources.documents?.length || 0} tài liệu tham khảo
@@ -391,22 +329,6 @@ export default function ProjectProfileChatbot({ form, onFillField }) {
             </div>
           </div>
         )}
-
-        {/* Suggested Questions */}
-        {displayedQuestions.length > 0 && !loading && (
-          <div className="flex flex-wrap gap-2 animate-fadeIn">
-            {displayedQuestions.map((question, idx) => (
-              <button
-                key={idx}
-                onClick={() => handleQuestionClick(question)}
-                className="bg-gradient-to-r from-yellow-50 to-amber-50 hover:from-yellow-100 hover:to-amber-100 text-gray-700 text-xs font-medium px-4 py-2 rounded-full border border-yellow-200 transition-all duration-200 shadow-sm hover:shadow-md transform hover:scale-105 active:scale-95"
-              >
-                💡 {question}
-              </button>
-            ))}
-          </div>
-        )}
-
         <div ref={messagesEndRef} />
       </div>
 
@@ -467,7 +389,7 @@ export default function ProjectProfileChatbot({ form, onFillField }) {
           </div>
           <button
             className="bg-gradient-to-r from-yellow-500 to-amber-500 hover:from-yellow-600 hover:to-amber-600 disabled:from-gray-300 disabled:to-gray-400 text-white disabled:text-gray-600 font-bold px-7 py-4 rounded-full transition-all duration-200 shadow-lg hover:shadow-xl transform hover:scale-105 disabled:scale-100 active:scale-95 flex-shrink-0"
-            onClick={() => handleSend()}
+            onClick={handleSend}
             disabled={loading || !input.trim()}
           >
             {loading ? (
