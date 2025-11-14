@@ -3,6 +3,7 @@ import Navbar from "../components/layout/Navbar";
 import Hero from "../components/home/Hero";
 import Footer from "../components/layout/Footer";
 import FeedbackButton from "../components/common/FeedbackButton";
+import ChatBot from "../components/common/ChatBot";
 import { useAuth } from "../context/AuthContext";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { useNavigate } from "react-router-dom";
@@ -430,9 +431,8 @@ export default function TrangChu() {
                   <span className="font-semibold text-gray-900">{faq.q}</span>
                   <FontAwesomeIcon
                     icon={faChevronDown}
-                    className={`text-gray-500 transition-transform ${
-                      openFaq === idx ? "rotate-180" : ""
-                    }`}
+                    className={`text-gray-500 transition-transform ${openFaq === idx ? "rotate-180" : ""
+                      }`}
                   />
                 </button>
                 {openFaq === idx && (
@@ -474,6 +474,7 @@ export default function TrangChu() {
 
       <Footer />
 
+      <ChatBot />
       {/* Feedback Button */}
       <FeedbackButton formLink="https://forms.gle/2eGMUWPXxKD8ZXnx6" />
     </div>
