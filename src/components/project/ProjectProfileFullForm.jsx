@@ -1,3 +1,4 @@
+import { generateStartupDescription } from "../../api/ai";
 import React, { useState, useRef, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import ReactQuill from "react-quill";
@@ -1269,6 +1270,33 @@ export default function ProjectProfileFullForm({
 }) {
   const TOOLBAR_BG = "linear-gradient(180deg, rgba(255,255,255,0.99), #ececec)";
   const navigate = useNavigate();
+  const [aiGenerating, setAiGenerating] = useState(false);
+
+  const handleAiGenerateDescription = async () => {
+    setAiGenerating(true);
+    try {
+      const token = localStorage.getItem("token");
+      const res = await generateStartupDescription({
+        name: form.projectName,
+        industry: form.field,
+        target_audience: form.targetCustomer,
+        key_features: form.mainIdea || form.productValue,
+        current_description: form.productValue,
+        token: token,
+      });
+      if (res && res.description) {
+        handleChange("productValue", res.description);
+        if (res.tagline && !form.mainIdea) {
+          handleChange("mainIdea", res.tagline);
+        }
+      }
+    } catch (err) {
+      alert("Không thể sinh mô tả AI: " + (err.message || err));
+    } finally {
+      setAiGenerating(false);
+    }
+  };
+
   const [form, setForm] = useState(() => {
     const obj = {};
     FORM_SECTIONS.forEach((sec) =>
@@ -1740,9 +1768,26 @@ export default function ProjectProfileFullForm({
             >
               {section.fields.map((field) => (
                 <div key={field.key} className="flex flex-col gap-1">
-                  <label className="font-medium text-gray-700 mb-1">
-                    {field.label}
-                  </label>
+                  <div className="flex items-center justify-between mb-1">
+                    <label className="font-medium text-gray-700">
+                      {field.label}
+                    </label>
+                    {field.key === "productValue" && (
+                      <button
+                        type="button"
+                        disabled={aiGenerating}
+                        onClick={handleAiGenerateDescription}
+                        className="inline-flex items-center gap-1.5 px-3 py-1 text-xs font-semibold text-purple-700 bg-purple-50 hover:bg-purple-100 border border-purple-200 rounded-md transition shadow-sm disabled:opacity-50"
+                        title="Tự động sinh mô tả sản phẩm / dịch vụ bằng AI"
+                      >
+                        {aiGenerating ? (
+                          <span>✨ Đang sinh mô tả...</span>
+                        ) : (
+                          <span>✨ AI Generate Description</span>
+                        )}
+                      </button>
+                    )}
+                  </div>
                   {field.type === "input" && (
                     <input
                       type="text"
