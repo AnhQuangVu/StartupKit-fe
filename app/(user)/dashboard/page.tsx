@@ -10,7 +10,7 @@ import {
   Brain,
   Shield,
 } from "lucide-react";
-import { Link } from "react-router-dom";
+import Link from "next/link";
 
 const stats = [
   {
@@ -93,8 +93,8 @@ const DashboardPage = () => {
               Dưới đây là tổng quan hoạt động của bạn trong tuần
             </p>
           </div>
-          <Link to="/dashboard/project/edit">
-            <Button variant="hero" className="gap-2">
+          <Link href="/dashboard/project/edit">
+            <Button  className="gap-2">
               <Plus className="w-4 h-4" />
               Tạo dự án mới
             </Button>
@@ -138,7 +138,7 @@ const DashboardPage = () => {
             <div className="flex items-center justify-between mb-6">
               <h2 className="text-lg font-bold text-foreground">Dự án của tôi</h2>
               <Link
-                to="/dashboard/projects"
+                href="/dashboard/projects"
                 className="text-sm text-primary hover:underline flex items-center gap-1"
               >
                 Xem tất cả
@@ -175,7 +175,7 @@ const DashboardPage = () => {
                   </div>
                 </div>
               ))}
-              <Link to="/dashboard/project/edit">
+              <Link href="/dashboard/project/edit">
                 <Button variant="outline" className="w-full gap-2">
                   <Plus className="w-4 h-4" />
                   Tạo dự án mới
@@ -189,7 +189,7 @@ const DashboardPage = () => {
             <div className="flex items-center justify-between mb-6">
               <h2 className="text-lg font-bold text-foreground">Cuộc thi sắp tới</h2>
               <Link
-                to="/competitions"
+                href="/competitions"
                 className="text-sm text-primary hover:underline flex items-center gap-1"
               >
                 Xem tất cả
@@ -222,7 +222,7 @@ const DashboardPage = () => {
                         {competition.prize}
                       </span>
                     </div>
-                    <Link to={`/competitions/${competition.id}`}>
+                    <Link href={`/competitions/${competition.id}`}>
                       <Button variant="outline" size="sm">
                         Xem chi tiết
                       </Button>
@@ -249,8 +249,8 @@ const DashboardPage = () => {
               </p>
             </div>
           </div>
-          <Link to="/dashboard/project/edit">
-            <Button variant="hero" size="lg" className="gap-2 whitespace-nowrap">
+          <Link href="/dashboard/project/edit">
+            <Button variant="outline" size="lg" className="gap-2 whitespace-nowrap">
               Audit ngay
               <ArrowRight className="w-4 h-4" />
             </Button>

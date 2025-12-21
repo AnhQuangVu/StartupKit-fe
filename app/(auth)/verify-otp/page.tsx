@@ -1,7 +1,9 @@
+"use client";
 import { useState, useRef, useEffect } from "react";
 import { Button } from "@/components/ui/button";
 import { Rocket, ArrowRight, RefreshCw } from "lucide-react";
-import { Link, useNavigate } from "react-router-dom";
+import { useRouter } from "next/navigation";
+import Link from "next/link";
 import { useToast } from "@/hooks/use-toast";
 
 const VerifyOtpPage = () => {
@@ -10,7 +12,7 @@ const VerifyOtpPage = () => {
   const [countdown, setCountdown] = useState(60);
   const [canResend, setCanResend] = useState(false);
   const inputRefs = useRef<(HTMLInputElement | null)[]>([]);
-  const navigate = useNavigate();
+  const router = useRouter();
   const { toast } = useToast();
 
   useEffect(() => {
@@ -70,7 +72,7 @@ const VerifyOtpPage = () => {
         title: "Thành công!",
         description: "Tài khoản đã được xác thực",
       });
-      navigate("/onboarding");
+      router.push("/onboarding");
     }, 1500);
   };
 
@@ -87,7 +89,7 @@ const VerifyOtpPage = () => {
     <div className="min-h-screen bg-background flex items-center justify-center p-4">
       <div className="w-full max-w-md space-y-8">
         {/* Logo */}
-        <Link to="/" className="flex items-center gap-2 justify-center">
+        <Link href="/" className="flex items-center gap-2 justify-center">
           <div className="w-10 h-10 bg-primary rounded-lg flex items-center justify-center">
             <Rocket className="w-5 h-5 text-primary-foreground" />
           </div>
@@ -114,7 +116,7 @@ const VerifyOtpPage = () => {
               {otp.map((digit, index) => (
                 <input
                   key={index}
-                  ref={(el) => (inputRefs.current[index] = el)}
+                  // ref={(el) => (inputRefs.current[index] = el)}
                   type="text"
                   inputMode="numeric"
                   maxLength={1}
@@ -148,7 +150,7 @@ const VerifyOtpPage = () => {
 
             <Button
               type="submit"
-              variant="hero"
+              // variant="hero"
               className="w-full h-12"
               disabled={isLoading}
             >
@@ -172,7 +174,7 @@ const VerifyOtpPage = () => {
         </div>
 
         <p className="text-center text-sm text-muted-foreground">
-          <Link to="/auth" className="text-primary hover:underline">
+          <Link href="/auth" className="text-primary hover:underline">
             ← Quay lại đăng nhập
           </Link>
         </p>

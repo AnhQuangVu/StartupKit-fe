@@ -1,3 +1,4 @@
+'use client';
 import { useState } from "react";
 import DashboardLayout from "@/components/dashboard/DashboardLayout";
 import { Button } from "@/components/ui/button";
@@ -114,7 +115,7 @@ const ProjectEditorPage = () => {
               <Save className="w-4 h-4" />
               Lưu nháp
             </Button>
-            <Button variant="hero" onClick={handleAudit} disabled={isAuditing} className="gap-2">
+            <Button onClick={handleAudit} disabled={isAuditing} className="gap-2">
               {isAuditing ? (
                 <Loader2 className="w-4 h-4 animate-spin" />
               ) : (
@@ -168,9 +169,7 @@ const ProjectEditorPage = () => {
                       <Label htmlFor="sector">Lĩnh vực *</Label>
                       <Select
                         value={formData.sector}
-                        onValueChange={(value) =>
-                          setFormData({ ...formData, sector: value })
-                        }
+                        
                       >
                         <SelectTrigger>
                           <SelectValue placeholder="Chọn lĩnh vực" />
@@ -189,9 +188,7 @@ const ProjectEditorPage = () => {
                       <Label htmlFor="stage">Giai đoạn *</Label>
                       <Select
                         value={formData.stage}
-                        onValueChange={(value) =>
-                          setFormData({ ...formData, stage: value })
-                        }
+                        
                       >
                         <SelectTrigger>
                           <SelectValue placeholder="Chọn giai đoạn" />
@@ -405,7 +402,6 @@ const ProjectEditorPage = () => {
               )}
 
               <Button
-                variant="hero"
                 className="w-full gap-2"
                 onClick={handleAudit}
                 disabled={isAuditing}

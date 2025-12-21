@@ -1,3 +1,4 @@
+"use client";
 import { useState } from "react";
 import Header from "@/components/landing/Header";
 import Footer from "@/components/landing/Footer";
@@ -11,7 +12,7 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import { Search, Calendar, Trophy, Users, ArrowRight, Filter } from "lucide-react";
-import { Link } from "react-router-dom";
+import Link from "next/link";
 
 const competitions = [
   {
@@ -179,9 +180,8 @@ const CompetitionsPage = () => {
                     <span className="font-bold">{competition.prize}</span>
                   </div>
 
-                  <Link to={`/competitions/${competition.id}`}>
+                  <Link href={`/competitions/${competition.id}`}>
                     <Button
-                      variant={competition.status === "open" ? "hero" : "outline"}
                       className="w-full gap-2"
                       disabled={competition.status === "closed"}
                     >

@@ -1,7 +1,9 @@
+'use client';
 import { useState } from "react";
 import { Button } from "@/components/ui/button";
 import { Rocket, Lightbulb, Briefcase, Flag, ArrowRight, Check } from "lucide-react";
-import { Link, useNavigate } from "react-router-dom";
+import { useRouter } from "next/navigation";
+import Link from "next/link";
 import { cn } from "@/lib/utils";
 
 const roles = [
@@ -42,7 +44,7 @@ const roles = [
 const OnboardingPage = () => {
   const [selectedRole, setSelectedRole] = useState<string | null>(null);
   const [isLoading, setIsLoading] = useState(false);
-  const navigate = useNavigate();
+  const router = useRouter();
 
   const handleContinue = () => {
     if (!selectedRole) return;
@@ -50,7 +52,7 @@ const OnboardingPage = () => {
     setIsLoading(true);
     setTimeout(() => {
       setIsLoading(false);
-      navigate("/dashboard");
+      router.push("/dashboard");
     }, 1000);
   };
 
@@ -58,7 +60,7 @@ const OnboardingPage = () => {
     <div className="min-h-screen bg-background flex items-center justify-center p-4">
       <div className="w-full max-w-3xl space-y-8">
         {/* Logo */}
-        <Link to="/" className="flex items-center gap-2 justify-center">
+        <Link href="/" className="flex items-center gap-2 justify-center">
           <div className="w-10 h-10 bg-primary rounded-lg flex items-center justify-center">
             <Rocket className="w-5 h-5 text-primary-foreground" />
           </div>
@@ -118,8 +120,6 @@ const OnboardingPage = () => {
         {/* Continue Button */}
         <div className="flex justify-center">
           <Button
-            variant="hero"
-            size="xl"
             onClick={handleContinue}
             disabled={!selectedRole || isLoading}
             className="min-w-64"

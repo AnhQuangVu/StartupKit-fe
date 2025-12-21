@@ -1,7 +1,7 @@
 import DashboardLayout from "@/components/dashboard/DashboardLayout";
 import { Button } from "@/components/ui/button";
 import { Shield, Trophy, Calendar, ExternalLink, Edit } from "lucide-react";
-import { Link } from "react-router-dom";
+import Link from "next/link";
 
 const achievements = [
   {
@@ -82,7 +82,7 @@ const PassportPage = () => {
               </div>
 
               {/* Edit Button */}
-              <Link to="/dashboard/project/edit">
+              <Link href="/dashboard/project/edit">
                 <Button variant="outline" size="sm" className="gap-2">
                   <Edit className="w-4 h-4" />
                   Chỉnh sửa
@@ -156,8 +156,8 @@ const PassportPage = () => {
             <p className="text-muted-foreground mb-4">
               Tham gia các cuộc thi để nhận huy hiệu xác thực
             </p>
-            <Link to="/competitions">
-              <Button variant="hero">Khám phá cuộc thi</Button>
+            <Link href="/competitions">
+              <Button>Khám phá cuộc thi</Button>
             </Link>
           </div>
         )}

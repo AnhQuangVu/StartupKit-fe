@@ -1,4 +1,4 @@
-import { Link, useLocation } from "react-router-dom";
+import Link from "next/link";
 import {
   Sidebar,
   SidebarContent,
@@ -73,12 +73,11 @@ const bottomItems = [
 ];
 
 const DashboardSidebar = () => {
-  const location = useLocation();
-
+  const location = typeof window !== "undefined" ? window.location : null;
   return (
     <Sidebar className="border-r border-border">
       <SidebarHeader className="p-4 border-b border-border">
-        <Link to="/" className="flex items-center gap-2">
+        <Link href="/" className="flex items-center gap-2">
           <div className="w-9 h-9 bg-primary rounded-lg flex items-center justify-center">
             <Rocket className="w-5 h-5 text-primary-foreground" />
           </div>
@@ -96,12 +95,12 @@ const DashboardSidebar = () => {
           <SidebarGroupContent>
             <SidebarMenu>
               {menuItems.map((item) => {
-                const isActive = location.pathname === item.href;
+                const isActive = ''
                 return (
                   <SidebarMenuItem key={item.href}>
                     <SidebarMenuButton asChild>
                       <Link
-                        to={item.href}
+                        href={item.href}
                         className={cn(
                           "flex items-center gap-3 px-3 py-2.5 rounded-lg transition-colors",
                           isActive
@@ -127,12 +126,12 @@ const DashboardSidebar = () => {
           <SidebarGroupContent>
             <SidebarMenu>
               {bottomItems.map((item) => {
-                const isActive = location.pathname === item.href;
+                const isActive = false;
                 return (
                   <SidebarMenuItem key={item.href}>
                     <SidebarMenuButton asChild>
                       <Link
-                        to={item.href}
+                        href={item.href}
                         className={cn(
                           "flex items-center gap-3 px-3 py-2.5 rounded-lg transition-colors",
                           isActive
@@ -154,7 +153,7 @@ const DashboardSidebar = () => {
 
       <SidebarFooter className="p-4 border-t border-border">
         <Link
-          to="/auth"
+          href="/auth"
           className="flex items-center gap-3 px-3 py-2.5 rounded-lg text-destructive hover:bg-destructive/10 transition-colors"
         >
           <LogOut className="w-5 h-5" />

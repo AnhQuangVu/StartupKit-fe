@@ -1,6 +1,8 @@
+"use client";
 import { useState } from "react";
 import Header from "@/components/landing/Header";
 import Footer from "@/components/landing/Footer";
+import { useParams } from "next/navigation";
 import { Button } from "@/components/ui/button";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Checkbox } from "@/components/ui/checkbox";
@@ -33,7 +35,7 @@ import {
   FileText,
   Video,
 } from "lucide-react";
-import { useParams, Link } from "react-router-dom";
+import Link from "next/link";
 import { useToast } from "@/hooks/use-toast";
 
 const competitionData = {
@@ -92,7 +94,8 @@ const userProjects = [
 ];
 
 const CompetitionDetailPage = () => {
-  const { id } = useParams();
+  const params = useParams();
+  const postId = params?.id as string | undefined;
   const [isSubmitOpen, setIsSubmitOpen] = useState(false);
   const [selectedProject, setSelectedProject] = useState<string>("");
   const [isAgreed, setIsAgreed] = useState(false);
@@ -319,7 +322,6 @@ const CompetitionDetailPage = () => {
                   </div>
                 </div>
                 <Button
-                  variant="hero"
                   className="w-full gap-2"
                   onClick={() => setIsSubmitOpen(true)}
                 >
@@ -428,7 +430,6 @@ const CompetitionDetailPage = () => {
               <Checkbox
                 id="agreement"
                 checked={isAgreed}
-                onCheckedChange={(checked) => setIsAgreed(checked as boolean)}
               />
               <label
                 htmlFor="agreement"
@@ -445,7 +446,6 @@ const CompetitionDetailPage = () => {
               Hủy
             </Button>
             <Button
-              variant="hero"
               onClick={handleSubmit}
               disabled={!selectedProject || !isAgreed || isSubmitting}
               className="gap-2"

@@ -1,9 +1,10 @@
+"use client";
 import { useState } from "react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Rocket, Mail, Lock, Eye, EyeOff, ArrowRight } from "lucide-react";
-import  useNavigate  from "next/navigation";
+import { useRouter } from "next/navigation";
 import Link from "next/link";
 import { useToast } from "@/hooks/use-toast";
 
@@ -14,7 +15,7 @@ const AuthPage = () => {
   const [password, setPassword] = useState("");
   const [confirmPassword, setConfirmPassword] = useState("");
   const [isLoading, setIsLoading] = useState(false);
-  const navigate = useNavigate();
+  const router = useRouter();
   const { toast } = useToast();
 
   const handleSubmit = async (e: React.FormEvent) => {
@@ -35,9 +36,9 @@ const AuthPage = () => {
     setTimeout(() => {
       setIsLoading(false);
       if (isLogin) {
-        navigate("/dashboard");
+        router.push("/dashboard");
       } else {
-        navigate("/verify-otp");
+        router.push("/verify-otp");
       }
     }, 1500);
   };
@@ -46,7 +47,7 @@ const AuthPage = () => {
     setIsLoading(true);
     setTimeout(() => {
       setIsLoading(false);
-      navigate("/onboarding");
+      router.push("/onboarding");
     }, 1500);
   };
 
@@ -56,7 +57,7 @@ const AuthPage = () => {
       <div className="flex-1 flex items-center justify-center p-8">
         <div className="w-full max-w-md space-y-8">
           {/* Logo */}
-          <Link to="/" className="flex items-center gap-2 mb-8">
+          <Link href="/" className="flex items-center gap-2 mb-8">
             <div className="w-10 h-10 bg-primary rounded-lg flex items-center justify-center">
               <Rocket className="w-5 h-5 text-primary-foreground" />
             </div>
@@ -186,7 +187,7 @@ const AuthPage = () => {
 
             <Button
               type="submit"
-              variant="hero"
+              // variant="hero"
               className="w-full h-12"
               disabled={isLoading}
             >
