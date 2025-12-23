@@ -1,5 +1,7 @@
 import { Button } from "@/components/ui/button";
 import { ArrowRight, Play, Sparkles, TrendingUp, Users } from "lucide-react";
+import Link from "next/link";
+import { ROUTES } from "@/shared/const/route";
 
 const HeroSection = () => {
   return (
@@ -17,58 +19,36 @@ const HeroSection = () => {
             <div className="inline-flex items-center gap-2 px-4 py-2 bg-primary/10 border border-primary/20 rounded-full animate-fade-in">
               <Sparkles className="w-4 h-4 text-primary" />
               <span className="text-sm font-medium text-foreground">
-                Hệ sinh thái khởi nghiệp #1 Việt Nam
+                Hệ sinh thái Khởi nghiệp Toàn diện & Thông minh Tiên phong tại Việt Nam
               </span>
             </div>
 
             {/* Headline */}
             <h1 className="text-4xl md:text-5xl lg:text-6xl font-extrabold leading-tight animate-fade-in" style={{ animationDelay: "0.1s" }}>
-              Hệ sinh thái
+              PHÓNG Ý TƯỞNG,
               <br />
-              <span className="text-gradient-gold">Khởi nghiệp</span>
-              <br />
-              Toàn diện & Thông minh
+              <span className="text-primary">HƯỚNG TƯƠNG LAI</span>
             </h1>
 
             {/* Sub-headline */}
             <p className="text-lg md:text-xl text-muted-foreground max-w-xl animate-fade-in" style={{ animationDelay: "0.2s" }}>
-              Xây dựng hồ sơ chuẩn vốn với <strong className="text-foreground">AI</strong>, 
-              xác thực năng lực qua <strong className="text-foreground">StartUp Passport</strong> và 
-              kết nối trực tiếp với <strong className="text-foreground">Quỹ đầu tư</strong>.
+              Chào mừng bạn đến với StartUp Kit Ecosystem – nền tảng chuyển đổi số "All-in-One" dành riêng cho cộng đồng khởi nghiệp Việt. Với sự hỗ trợ của <strong className="text-foreground">AI</strong> trong việc chuẩn hóa hồ sơ và cơ chế <strong className="text-foreground">StartUp Passport</strong> xác thực năng lực minh bạch, chúng tôi rút ngắn khoảng cách giữa Ý tưởng và Vốn đầu tư.
             </p>
 
             {/* CTA Buttons */}
             <div className="flex flex-col sm:flex-row gap-4 animate-fade-in" style={{ animationDelay: "0.3s" }}>
-              <Button variant="hero" size="xl" className="group">
-                Tạo hồ sơ ngay
-                <ArrowRight className="w-5 h-5 group-hover:translate-x-1 transition-transform" />
+              <Button variant="default" size="lg" className="group" asChild>
+                <Link href={ROUTES.REGISTER}>
+                  Tạo hồ sơ ngay
+                  <ArrowRight className="w-5 h-5 group-hover:translate-x-1 transition-transform" />
+                </Link>
               </Button>
-              <Button variant="heroOutline" size="xl" className="group">
-                <Play className="w-5 h-5" />
-                Tổ chức cuộc thi
+              <Button variant="outline" size="lg" className="group" asChild>
+                <Link href="#competitions">
+                  <Play className="w-5 h-5" />
+                  Tổ chức cuộc thi
+                </Link>
               </Button>
-            </div>
-
-            {/* Stats */}
-            <div className="flex flex-wrap gap-8 pt-4 animate-fade-in" style={{ animationDelay: "0.4s" }}>
-              <div className="flex items-center gap-3">
-                <div className="w-12 h-12 bg-primary/10 rounded-lg flex items-center justify-center">
-                  <Users className="w-6 h-6 text-primary" />
-                </div>
-                <div>
-                  <div className="text-2xl font-bold text-foreground">5,000+</div>
-                  <div className="text-sm text-muted-foreground">Startups</div>
-                </div>
-              </div>
-              <div className="flex items-center gap-3">
-                <div className="w-12 h-12 bg-primary/10 rounded-lg flex items-center justify-center">
-                  <TrendingUp className="w-6 h-6 text-primary" />
-                </div>
-                <div>
-                  <div className="text-2xl font-bold text-foreground">500 Tỷ+</div>
-                  <div className="text-sm text-muted-foreground">VNĐ đã kết nối</div>
-                </div>
-              </div>
             </div>
           </div>
 
@@ -84,7 +64,7 @@ const HeroSection = () => {
                 </div>
                 <div className="flex-1 mx-4">
                   <div className="bg-background rounded-md px-3 py-1 text-xs text-muted-foreground">
-                    app.startupkit.vn/dashboard
+                    startupkit.com
                   </div>
                 </div>
               </div>

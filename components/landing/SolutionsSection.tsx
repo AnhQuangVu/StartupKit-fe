@@ -1,123 +1,193 @@
-import { Users, Trophy, ArrowRight } from "lucide-react";
+import { Users, Trophy, ArrowRight, Sparkles, Network, UserPlus, LayoutDashboard, Zap, BarChart, Lightbulb, Briefcase, Search, ShieldCheck, Mail } from "lucide-react";
 import { Button } from "@/components/ui/button";
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 
 const SolutionsSection = () => {
-  const solutions = [
-    {
-      icon: Users,
-      title: "StartUp Kit",
-      subtitle: "Mạng xã hội khởi nghiệp",
-      description:
-        "Nền tảng kết nối Founder, Mentor và Investor. Xây dựng hồ sơ chuẩn vốn với AI, nhận hỗ trợ từ cộng đồng chuyên gia.",
-      features: [
-        "Hồ sơ Startup theo chuẩn nhà đầu tư",
-        "AI viết lại mô tả chuyên nghiệp",
-        "Kết nối Mentor 1-1",
-        "Tìm kiếm Co-founder",
-      ],
-      cta: "Khám phá Kit",
-      highlight: false,
-    },
-    {
-      icon: Trophy,
-      title: "StartUp Link",
-      subtitle: "Nền tảng SaaS cuộc thi",
-      description:
-        "Quản lý cuộc thi & hackathon chuyên nghiệp. Nộp bài 1 chạm, chấm điểm tự động, xếp hạng realtime.",
-      features: [
-        "One-Click Submission",
-        "Chấm điểm trực tuyến",
-        "Leaderboard realtime",
-        "Export báo cáo PDF",
-      ],
-      cta: "Tổ chức ngay",
-      highlight: true,
-    },
-  ];
-
   return (
-    <section id="about" className="py-24 bg-muted/30">
+    <section id="solutions" className="py-24 bg-muted/30">
       <div className="container mx-auto px-4">
         {/* Section Header */}
         <div className="text-center max-w-3xl mx-auto mb-16">
           <h2 className="text-3xl md:text-4xl font-bold text-foreground mb-4">
-            Hai giải pháp, <span className="text-gradient-gold">một hệ sinh thái</span>
+            Giải pháp theo <span className="text-gradient-gold">Đối tượng</span>
           </h2>
           <p className="text-lg text-muted-foreground">
-            Kết hợp sức mạnh của mạng xã hội khởi nghiệp và nền tảng quản lý cuộc thi 
-            để tạo ra trải nghiệm liền mạch cho Startup.
+            Hệ sinh thái khép kín đáp ứng nhu cầu của mọi thành phần tham gia
           </p>
         </div>
 
-        {/* Solutions Grid */}
-        <div className="grid md:grid-cols-2 gap-8 max-w-5xl mx-auto">
-          {solutions.map((solution, index) => (
-            <div
-              key={index}
-              className={`group relative rounded-2xl p-8 transition-all duration-300 hover:shadow-xl ${
-                solution.highlight
-                  ? "bg-secondary text-secondary-foreground"
-                  : "bg-card border-2 border-border hover:border-primary/50"
-              }`}
-            >
-              {/* Icon */}
-              <div
-                className={`w-14 h-14 rounded-xl flex items-center justify-center mb-6 ${
-                  solution.highlight
-                    ? "bg-primary text-primary-foreground"
-                    : "bg-primary/10 text-primary"
-                }`}
-              >
-                <solution.icon className="w-7 h-7" />
-              </div>
+        <Tabs defaultValue="founder" className="max-w-5xl mx-auto">
+          <TabsList className="grid w-full grid-cols-2 lg:grid-cols-4 h-auto lg:h-14 mb-8 gap-2">
+            <TabsTrigger value="founder" className="text-base lg:text-lg font-semibold data-[state=active]:bg-primary data-[state=active]:text-primary-foreground py-2">
+              Dành cho Founder
+            </TabsTrigger>
+            <TabsTrigger value="mentor" className="text-base lg:text-lg font-semibold data-[state=active]:bg-primary data-[state=active]:text-primary-foreground py-2">
+              Dành cho Mentor
+            </TabsTrigger>
+            <TabsTrigger value="investor" className="text-base lg:text-lg font-semibold data-[state=active]:bg-primary data-[state=active]:text-primary-foreground py-2">
+              Dành cho Investor
+            </TabsTrigger>
+            <TabsTrigger value="organizer" className="text-base lg:text-lg font-semibold data-[state=active]:bg-primary data-[state=active]:text-primary-foreground py-2">
+              Dành cho Organizer
+            </TabsTrigger>
+          </TabsList>
 
-              {/* Content */}
-              <div className="space-y-4">
-                <div>
-                  <h3 className="text-2xl font-bold mb-1">{solution.title}</h3>
-                  <p className={`text-sm font-medium ${solution.highlight ? "text-primary" : "text-primary"}`}>
-                    {solution.subtitle}
+          <TabsContent value="founder" className="animate-fade-in">
+            <div className="bg-card border border-border rounded-2xl p-8 md:p-12 shadow-lg">
+              <div className="grid md:grid-cols-2 gap-12 items-center">
+                <div className="space-y-6">
+                  <div className="inline-flex items-center gap-2 px-3 py-1 bg-primary/10 text-primary rounded-full text-sm font-medium">
+                    <Users className="w-4 h-4" /> Dành cho Founder
+                  </div>
+                  <h3 className="text-3xl font-bold">Bệ phóng Công nghệ cho Hành trình Gọi vốn</h3>
+                  <p className="text-muted-foreground text-lg">
+                    Bộ công cụ "Social & AI" mạnh mẽ giúp bạn viết Pitch Deck, tìm kiếm đồng đội và nộp hồ sơ thi đấu chỉ trong 1 giây.
                   </p>
-                </div>
-
-                <p className={solution.highlight ? "text-secondary-foreground/80" : "text-muted-foreground"}>
-                  {solution.description}
-                </p>
-
-                {/* Features List */}
-                <ul className="space-y-2">
-                  {solution.features.map((feature, featureIndex) => (
-                    <li key={featureIndex} className="flex items-center gap-2 text-sm">
-                      <span className={`w-1.5 h-1.5 rounded-full ${solution.highlight ? "bg-primary" : "bg-primary"}`} />
-                      <span className={solution.highlight ? "text-secondary-foreground/90" : "text-foreground"}>
-                        {feature}
-                      </span>
+                  <ul className="space-y-4">
+                    <li className="flex gap-3">
+                      <div className="w-10 h-10 bg-blue-100 text-blue-600 rounded-lg flex items-center justify-center shrink-0"><Sparkles className="w-5 h-5" /></div>
+                      <div>
+                        <div className="font-bold">AI Pitch Writer & Auditor</div>
+                        <div className="text-sm text-muted-foreground">Đóng vai nhà đầu tư khó tính, chấm điểm và chỉ ra lỗi logic.</div>
+                      </div>
                     </li>
-                  ))}
-                </ul>
-
-                {/* CTA */}
-                <Button
-                  variant={solution.highlight ? "hero" : "outline"}
-                  className="w-full mt-4 group/btn"
-                >
-                  {solution.cta}
-                  <ArrowRight className="w-4 h-4 group-hover/btn:translate-x-1 transition-transform" />
-                </Button>
-              </div>
-
-              {/* Decorative */}
-              {solution.highlight && (
-                <div className="absolute top-4 right-4">
-                  <span className="px-3 py-1 bg-primary text-primary-foreground text-xs font-bold rounded-full">
-                    HOT
-                  </span>
+                    <li className="flex gap-3">
+                      <div className="w-10 h-10 bg-green-100 text-green-600 rounded-lg flex items-center justify-center shrink-0"><Zap className="w-5 h-5" /></div>
+                      <div>
+                        <div className="font-bold">One-Click Submission</div>
+                        <div className="text-sm text-muted-foreground">Nộp hồ sơ sang StartUp Link chỉ trong 1 giây.</div>
+                      </div>
+                    </li>
+                    <li className="flex gap-3">
+                      <div className="w-10 h-10 bg-purple-100 text-purple-600 rounded-lg flex items-center justify-center shrink-0"><UserPlus className="w-5 h-5" /></div>
+                      <div>
+                        <div className="font-bold">Team-up</div>
+                        <div className="text-sm text-muted-foreground">Tìm kiếm Co-founder tài năng để hoàn thiện đội ngũ.</div>
+                      </div>
+                    </li>
+                  </ul>
                 </div>
-              )}
+                <div className="bg-muted rounded-xl h-80 flex items-center justify-center border-2 border-dashed border-border">
+                  <span className="text-muted-foreground">Minh họa Dashboard StartUp Kit</span>
+                </div>
+              </div>
             </div>
-          ))}
+          </TabsContent>
+
+          <TabsContent value="mentor" className="animate-fade-in">
+            <div className="bg-card border border-border rounded-2xl p-8 md:p-12 shadow-lg">
+              <div className="grid md:grid-cols-2 gap-12 items-center">
+                <div className="space-y-6">
+                  <div className="inline-flex items-center gap-2 px-3 py-1 bg-purple-100 text-purple-600 rounded-full text-sm font-medium">
+                    <Lightbulb className="w-4 h-4" /> Dành cho Mentor
+                  </div>
+                  <h3 className="text-3xl font-bold">Định vị Thương hiệu Chuyên gia</h3>
+                  <p className="text-muted-foreground text-lg">
+                    Xây dựng thương hiệu cá nhân uy tín. Thuật toán thông minh gợi ý kết nối bạn với các Startup phù hợp nhất.
+                  </p>
+                  <ul className="space-y-4">
+                    <li className="flex gap-3">
+                      <div className="w-10 h-10 bg-blue-100 text-blue-600 rounded-lg flex items-center justify-center shrink-0"><Briefcase className="w-5 h-5" /></div>
+                      <div>
+                        <div className="font-bold">Hồ sơ Chuyên gia (Expert Profile)</div>
+                        <div className="text-sm text-muted-foreground">Hiển thị rõ bộ kỹ năng, kinh nghiệm và lĩnh vực chuyên sâu.</div>
+                      </div>
+                    </li>
+                    <li className="flex gap-3">
+                      <div className="w-10 h-10 bg-pink-100 text-pink-600 rounded-lg flex items-center justify-center shrink-0"><Network className="w-5 h-5" /></div>
+                      <div>
+                        <div className="font-bold">Kết nối Có chọn lọc</div>
+                        <div className="text-sm text-muted-foreground">Tránh tin nhắn rác, chỉ kết nối với Startup phù hợp.</div>
+                      </div>
+                    </li>
+                  </ul>
+                </div>
+                <div className="bg-muted rounded-xl h-80 flex items-center justify-center border-2 border-dashed border-border">
+                  <span className="text-muted-foreground">Minh họa Dashboard Mentor</span>
+                </div>
+              </div>
+            </div>
+          </TabsContent>
+
+          <TabsContent value="investor" className="animate-fade-in">
+            <div className="bg-card border border-border rounded-2xl p-8 md:p-12 shadow-lg">
+              <div className="grid md:grid-cols-2 gap-12 items-center">
+                <div className="space-y-6">
+                  <div className="inline-flex items-center gap-2 px-3 py-1 bg-green-100 text-green-600 rounded-full text-sm font-medium">
+                    <Search className="w-4 h-4" /> Dành cho Investor
+                  </div>
+                  <h3 className="text-3xl font-bold">Deal Sourcing Thông minh & Thẩm định rủi ro</h3>
+                  <p className="text-muted-foreground text-lg">
+                    Giải pháp Deal Flow tinh gọn nhờ cơ chế StartUp Passport. Nhận diện dự án tiềm năng qua "Huy hiệu xác thực".
+                  </p>
+                  <ul className="space-y-4">
+                    <li className="flex gap-3">
+                      <div className="w-10 h-10 bg-yellow-100 text-yellow-600 rounded-lg flex items-center justify-center shrink-0"><ShieldCheck className="w-5 h-5" /></div>
+                      <div>
+                        <div className="font-bold">StartUp Passport & Verified Badge</div>
+                        <div className="text-sm text-muted-foreground">Bằng chứng dự án đã thắng giải, giảm thời gian Due Diligence.</div>
+                      </div>
+                    </li>
+                    <li className="flex gap-3">
+                      <div className="w-10 h-10 bg-teal-100 text-teal-600 rounded-lg flex items-center justify-center shrink-0"><BarChart className="w-5 h-5" /></div>
+                      <div>
+                        <div className="font-bold">Dữ liệu Tăng trưởng</div>
+                        <div className="text-sm text-muted-foreground">Truy cập lịch sử hoạt động và chỉ số của Startup.</div>
+                      </div>
+                    </li>
+                  </ul>
+                </div>
+                <div className="bg-muted rounded-xl h-80 flex items-center justify-center border-2 border-dashed border-border">
+                  <span className="text-muted-foreground">Minh họa Dashboard Investor</span>
+                </div>
+              </div>
+            </div>
+          </TabsContent>
+
+          <TabsContent value="organizer" className="animate-fade-in">
+            <div className="bg-card border border-border rounded-2xl p-8 md:p-12 shadow-lg">
+              <div className="grid md:grid-cols-2 gap-12 items-center">
+                <div className="space-y-6">
+                  <div className="inline-flex items-center gap-2 px-3 py-1 bg-orange-100 text-orange-600 rounded-full text-sm font-medium">
+                    <Trophy className="w-4 h-4" /> Dành cho Organizer
+                  </div>
+                  <h3 className="text-3xl font-bold">Số hóa Quy trình Tổ chức & Chấm thi</h3>
+                  <p className="text-muted-foreground text-lg">
+                    Vận hành cuộc thi chuyên nghiệp không giấy tờ. Tự động hóa từ thiết lập vòng thi đến chấm điểm.
+                  </p>
+                  <ul className="space-y-4">
+                    <li className="flex gap-3">
+                      <div className="w-10 h-10 bg-red-100 text-red-600 rounded-lg flex items-center justify-center shrink-0"><LayoutDashboard className="w-5 h-5" /></div>
+                      <div>
+                        <div className="font-bold">Dashboard Quản lý tập trung</div>
+                        <div className="text-sm text-muted-foreground">Thiết lập vòng thi, Rubric chấm điểm và quản lý hồ sơ.</div>
+                      </div>
+                    </li>
+                    <li className="flex gap-3">
+                      <div className="w-10 h-10 bg-red-100 text-red-600 rounded-lg flex items-center justify-center shrink-0"><Mail className="w-5 h-5" /></div>
+                      <div>
+                        <div className="font-bold">Tự động hóa Email</div>
+                        <div className="text-sm text-muted-foreground">Gửi thư mời giám khảo và thông báo thí sinh tự động.</div>
+                      </div>
+                    </li>
+                    <li className="flex gap-3">
+                      <div className="w-10 h-10 bg-indigo-100 text-indigo-600 rounded-lg flex items-center justify-center shrink-0"><BarChart className="w-5 h-5" /></div>
+                      <div>
+                        <div className="font-bold">Online Grading & Leaderboard</div>
+                        <div className="text-sm text-muted-foreground">Chấm thi song song, xếp hạng realtime minh bạch.</div>
+                      </div>
+                    </li>
+                  </ul>
+                </div>
+                <div className="bg-muted rounded-xl h-80 flex items-center justify-center border-2 border-dashed border-border">
+                  <span className="text-muted-foreground">Minh họa Dashboard StartUp Link</span>
+                </div>
+              </div>
+            </div>
+          </TabsContent>
+        </Tabs>
+
         </div>
-      </div>
     </section>
   );
 };

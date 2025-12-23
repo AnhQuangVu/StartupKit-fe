@@ -7,13 +7,12 @@ import { Rocket, Mail, Lock, Eye, EyeOff, ArrowRight } from "lucide-react";
 import { useRouter } from "next/navigation";
 import Link from "next/link";
 import { useToast } from "@/hooks/use-toast";
+import { ROUTES } from "@/shared/const/route";
 
 const AuthPage = () => {
-  const [isLogin, setIsLogin] = useState(true);
   const [showPassword, setShowPassword] = useState(false);
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
-  const [confirmPassword, setConfirmPassword] = useState("");
   const [isLoading, setIsLoading] = useState(false);
   const router = useRouter();
   const { toast } = useToast();
@@ -22,24 +21,10 @@ const AuthPage = () => {
     e.preventDefault();
     setIsLoading(true);
 
-    if (!isLogin && password !== confirmPassword) {
-      toast({
-        title: "Lỗi",
-        description: "Mật khẩu xác nhận không khớp",
-        variant: "destructive",
-      });
-      setIsLoading(false);
-      return;
-    }
-
     // Simulate API call
     setTimeout(() => {
       setIsLoading(false);
-      if (isLogin) {
-        router.push("/dashboard");
-      } else {
-        router.push("/verify-otp");
-      }
+      router.push("/dashboard");
     }, 1500);
   };
 
@@ -69,12 +54,10 @@ const AuthPage = () => {
           {/* Header */}
           <div className="space-y-2">
             <h1 className="text-3xl font-bold text-foreground">
-              {isLogin ? "Chào mừng trở lại!" : "Tạo tài khoản mới"}
+              Chào mừng trở lại!
             </h1>
             <p className="text-muted-foreground">
-              {isLogin
-                ? "Đăng nhập để tiếp tục hành trình khởi nghiệp"
-                : "Bắt đầu xây dựng hồ sơ Startup của bạn"}
+              Đăng nhập để tiếp tục hành trình khởi nghiệp
             </p>
           </div>
 
@@ -103,7 +86,7 @@ const AuthPage = () => {
                 d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.07l3.66 2.84c.87-2.6 3.3-4.53 6.16-4.53z"
               />
             </svg>
-            {isLogin ? "Đăng nhập với Google" : "Đăng ký với Google"}
+            Đăng nhập với Google
           </Button>
 
           {/* Divider */}
@@ -159,31 +142,11 @@ const AuthPage = () => {
               </div>
             </div>
 
-            {!isLogin && (
-              <div className="space-y-2">
-                <Label htmlFor="confirmPassword">Xác nhận mật khẩu</Label>
-                <div className="relative">
-                  <Lock className="absolute left-3 top-1/2 -translate-y-1/2 w-5 h-5 text-muted-foreground" />
-                  <Input
-                    id="confirmPassword"
-                    type={showPassword ? "text" : "password"}
-                    placeholder="••••••••"
-                    className="pl-10 h-12"
-                    value={confirmPassword}
-                    onChange={(e) => setConfirmPassword(e.target.value)}
-                    required
-                  />
-                </div>
-              </div>
-            )}
-
-            {isLogin && (
-              <div className="flex justify-end">
-                <a href="#" className="text-sm text-primary hover:underline">
-                  Quên mật khẩu?
-                </a>
-              </div>
-            )}
+            <div className="flex justify-end">
+              <a href="#" className="text-sm text-primary hover:underline">
+                Quên mật khẩu?
+              </a>
+            </div>
 
             <Button
               type="submit"
@@ -195,7 +158,7 @@ const AuthPage = () => {
                 <div className="w-5 h-5 border-2 border-primary-foreground border-t-transparent rounded-full animate-spin" />
               ) : (
                 <>
-                  {isLogin ? "Đăng nhập" : "Đăng ký"}
+                  Đăng nhập
                   <ArrowRight className="w-5 h-5" />
                 </>
               )}
@@ -204,13 +167,13 @@ const AuthPage = () => {
 
           {/* Switch */}
           <p className="text-center text-muted-foreground">
-            {isLogin ? "Chưa có tài khoản? " : "Đã có tài khoản? "}
-            <button
-              onClick={() => setIsLogin(!isLogin)}
+            Chưa có tài khoản?{" "}
+            <Link
+              href={ROUTES.REGISTER}
               className="text-primary font-semibold hover:underline"
             >
-              {isLogin ? "Đăng ký ngay" : "Đăng nhập"}
-            </button>
+              Đăng ký ngay
+            </Link>
           </p>
         </div>
       </div>

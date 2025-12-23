@@ -1,4 +1,4 @@
-import { Brain, Shield, Zap, CheckCircle, AlertTriangle, TrendingUp } from "lucide-react";
+import { Brain, Shield, CheckCircle, AlertTriangle, Trophy, Medal } from "lucide-react";
 
 const FeaturesSection = () => {
   const features = [
@@ -6,7 +6,7 @@ const FeaturesSection = () => {
       icon: Brain,
       title: "AI Pitch Auditor",
       description:
-        "AI đóng vai nhà đầu tư, chấm điểm hồ sơ của bạn trên thang 100 và cảnh báo các lỗi logic trước khi công khai.",
+        "AI được huấn luyện trên hàng nghìn Pitch Deck thành công. Nó 'đọc hiểu' tư duy kinh doanh, phân tích tính logic giữa Vấn đề - Giải pháp, và đưa ra các cảnh báo đỏ (Red Flags) về rủi ro mô hình.",
       visual: (
         <div className="bg-secondary text-secondary-foreground rounded-xl p-6 space-y-4">
           {/* Score Display */}
@@ -74,7 +74,7 @@ const FeaturesSection = () => {
       icon: Shield,
       title: "StartUp Passport",
       description:
-        "Hộ chiếu khởi nghiệp xác thực năng lực dự án. Huy hiệu Verified được cấp tự động khi đạt giải tại các cuộc thi.",
+        "Cơ sở dữ liệu niềm tin (Trust Database). Kết quả thi đấu được đồng bộ và mã hóa thành 'Huy hiệu Verified'. Dữ liệu được khóa (Lock) tạo nên hồ sơ năng lực 'bất biến' và minh bạch tuyệt đối.",
       visual: (
         <div className="bg-card border-2 border-border rounded-xl p-6 space-y-4">
           {/* Passport Header */}
@@ -99,14 +99,18 @@ const FeaturesSection = () => {
             <div className="text-sm font-semibold text-foreground">Thành tích đã xác thực</div>
             <div className="space-y-2">
               <div className="flex items-center gap-3 bg-muted rounded-lg p-3">
-                <div className="text-2xl">🥇</div>
+                <div className="w-8 h-8 bg-primary/10 rounded-full flex items-center justify-center">
+                  <Trophy className="w-4 h-4 text-primary" />
+                </div>
                 <div>
                   <div className="font-semibold text-foreground text-sm">Giải Nhất - VietStartup 2024</div>
                   <div className="text-xs text-muted-foreground">Xác thực bởi StartUp Link</div>
                 </div>
               </div>
               <div className="flex items-center gap-3 bg-muted rounded-lg p-3">
-                <div className="text-2xl">🥈</div>
+                <div className="w-8 h-8 bg-muted-foreground/10 rounded-full flex items-center justify-center">
+                  <Medal className="w-4 h-4 text-muted-foreground" />
+                </div>
                 <div>
                   <div className="font-semibold text-foreground text-sm">Top 10 - Hackathon HCMC</div>
                   <div className="text-xs text-muted-foreground">Xác thực bởi StartUp Link</div>
@@ -123,67 +127,6 @@ const FeaturesSection = () => {
         </div>
       ),
     },
-    {
-      icon: Zap,
-      title: "One-Click Submission",
-      description:
-        "Nộp bài dự thi siêu tốc. Hệ thống tự động trích xuất dữ liệu từ StartUp Kit - chỉ cần 1 click xác nhận.",
-      visual: (
-        <div className="bg-muted rounded-xl p-6 space-y-4">
-          {/* Selection */}
-          <div className="space-y-3">
-            <div className="text-sm font-semibold text-foreground">Chọn dự án để nộp</div>
-            <div className="bg-card border-2 border-primary rounded-lg p-4 flex items-center gap-3">
-              <div className="w-10 h-10 bg-primary rounded-lg flex items-center justify-center text-primary-foreground font-bold">
-                AI
-              </div>
-              <div className="flex-1">
-                <div className="font-semibold text-foreground">AI Commerce Platform</div>
-                <div className="text-xs text-muted-foreground">Cập nhật 2 ngày trước</div>
-              </div>
-              <CheckCircle className="w-5 h-5 text-primary" />
-            </div>
-          </div>
-
-          {/* Auto-filled Preview */}
-          <div className="space-y-2">
-            <div className="text-sm font-semibold text-foreground flex items-center gap-2">
-              <Zap className="w-4 h-4 text-primary" />
-              Tự động điền từ Kit
-            </div>
-            <div className="bg-card rounded-lg p-3 space-y-2 text-sm">
-              <div className="flex justify-between">
-                <span className="text-muted-foreground">Tên dự án</span>
-                <span className="text-foreground font-medium">AI Commerce Platform</span>
-              </div>
-              <div className="flex justify-between">
-                <span className="text-muted-foreground">Pitch Deck</span>
-                <span className="text-green-500 font-medium">✓ Đã có</span>
-              </div>
-              <div className="flex justify-between">
-                <span className="text-muted-foreground">Video Demo</span>
-                <span className="text-green-500 font-medium">✓ Đã có</span>
-              </div>
-              <div className="flex justify-between">
-                <span className="text-muted-foreground">AI Score</span>
-                <span className="text-primary font-medium">85/100</span>
-              </div>
-            </div>
-          </div>
-
-          {/* Submit Button */}
-          <button className="w-full bg-gradient-gold text-primary-foreground font-bold py-4 rounded-xl flex items-center justify-center gap-2 hover:opacity-90 transition-opacity group">
-            <Zap className="w-5 h-5" />
-            Xác nhận nộp bài
-            <TrendingUp className="w-4 h-4 group-hover:translate-x-1 transition-transform" />
-          </button>
-
-          <div className="text-center text-xs text-muted-foreground">
-            Chỉ mất 10 giây • Không cần nhập lại thông tin
-          </div>
-        </div>
-      ),
-    },
   ];
 
   return (
@@ -191,15 +134,11 @@ const FeaturesSection = () => {
       <div className="container mx-auto px-4">
         {/* Section Header */}
         <div className="text-center max-w-3xl mx-auto mb-16">
-          <div className="inline-flex items-center gap-2 px-4 py-2 bg-primary/10 border border-primary/20 rounded-full mb-6">
-            <span className="text-sm font-medium text-foreground">Tính năng Signature</span>
-          </div>
           <h2 className="text-3xl md:text-4xl font-bold text-foreground mb-4">
-            Công nghệ <span className="text-gradient-gold">độc quyền</span> chỉ có tại StartUp Kit
+            Sức mạnh từ AI và <span className="text-gradient-gold">Cơ chế Xác thực</span>
           </h2>
           <p className="text-lg text-muted-foreground">
-            Ba tính năng giúp Startup tiết kiệm thời gian, nâng cao uy tín và 
-            tăng cơ hội gọi vốn thành công.
+            Lớp công nghệ lõi tạo nên lợi thế cạnh tranh độc tôn
           </p>
         </div>
 

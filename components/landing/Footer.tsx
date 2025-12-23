@@ -5,27 +5,24 @@ const Footer = () => {
     product: {
       title: "Sản phẩm",
       links: [
-        { label: "StartUp Kit", href: "#" },
-        { label: "StartUp Link", href: "#" },
-        { label: "AI Pitch Auditor", href: "#" },
+        { label: "Mạng xã hội Startup", href: "#" },
+        { label: "Quản lý cuộc thi (SaaS)", href: "#" },
         { label: "StartUp Passport", href: "#" },
       ],
     },
     company: {
-      title: "Công ty",
+      title: "Về StartUp Kit",
       links: [
-        { label: "Về chúng tôi", href: "#" },
-        { label: "Blog", href: "#" },
-        { label: "Đối tác", href: "#" },
-        { label: "Tuyển dụng", href: "#" },
+        { label: "Giới thiệu", href: "#" },
+        { label: "Tầm nhìn & Sứ mệnh", href: "#" },
+        { label: "Tuyển dụng (We're hiring)", href: "#" },
       ],
     },
     support: {
       title: "Hỗ trợ",
       links: [
         { label: "Trung tâm trợ giúp", href: "#" },
-        { label: "Liên hệ", href: "#" },
-        { label: "Điều khoản sử dụng", href: "#" },
+        { label: "API Documentation", href: "#" },
         { label: "Chính sách bảo mật", href: "#" },
       ],
     },
@@ -38,7 +35,7 @@ const Footer = () => {
   ];
 
   return (
-    <footer className="bg-secondary text-secondary-foreground">
+    <footer className="bg-black text-white">
       <div className="container mx-auto px-4 py-16">
         <div className="grid md:grid-cols-2 lg:grid-cols-5 gap-12">
           {/* Brand Column */}
@@ -51,24 +48,24 @@ const Footer = () => {
                 StartUp<span className="text-primary">Kit</span>
               </span>
             </a>
-            <p className="text-secondary-foreground/70 max-w-sm">
+            <p className="text-gray-400 max-w-sm">
               Hệ sinh thái khởi nghiệp toàn diện giúp Startup Việt Nam kết nối, 
               phát triển và gọi vốn thành công.
             </p>
             
             {/* Contact Info */}
             <div className="space-y-3">
-              <div className="flex items-center gap-3 text-sm text-secondary-foreground/70">
+              <div className="flex items-center gap-3 text-sm text-gray-400">
                 <Mail className="w-4 h-4 text-primary" />
                 <span>hello@startupkit.vn</span>
               </div>
-              <div className="flex items-center gap-3 text-sm text-secondary-foreground/70">
+              <div className="flex items-center gap-3 text-sm text-gray-400">
                 <Phone className="w-4 h-4 text-primary" />
-                <span>1900 1234</span>
+                <span>1900 xxxx</span>
               </div>
-              <div className="flex items-center gap-3 text-sm text-secondary-foreground/70">
+              <div className="flex items-center gap-3 text-sm text-gray-400">
                 <MapPin className="w-4 h-4 text-primary" />
-                <span>Tầng 10, Landmark 81, TP.HCM</span>
+                <span>Tòa nhà Innovation, Hà Nội</span>
               </div>
             </div>
 
@@ -79,7 +76,7 @@ const Footer = () => {
                   key={social.label}
                   href={social.href}
                   aria-label={social.label}
-                  className="w-10 h-10 bg-accent rounded-lg flex items-center justify-center hover:bg-primary hover:text-primary-foreground transition-colors"
+                  className="w-10 h-10 bg-white/10 rounded-lg flex items-center justify-center hover:bg-primary hover:text-primary-foreground transition-colors"
                 >
                   <social.icon className="w-5 h-5" />
                 </a>
@@ -90,13 +87,13 @@ const Footer = () => {
           {/* Links Columns */}
           {Object.values(footerLinks).map((section) => (
             <div key={section.title}>
-              <h4 className="font-bold text-secondary-foreground mb-4">{section.title}</h4>
+              <h4 className="font-bold text-white mb-4">{section.title}</h4>
               <ul className="space-y-3">
                 {section.links.map((link) => (
                   <li key={link.label}>
                     <a
                       href={link.href}
-                      className="text-secondary-foreground/70 hover:text-primary transition-colors text-sm"
+                      className="text-gray-400 hover:text-primary transition-colors text-sm"
                     >
                       {link.label}
                     </a>
@@ -108,11 +105,11 @@ const Footer = () => {
         </div>
 
         {/* Bottom Bar */}
-        <div className="mt-16 pt-8 border-t border-accent flex flex-col md:flex-row justify-between items-center gap-4">
-          <p className="text-sm text-secondary-foreground/50">
-            © 2024 StartUp Kit. Bảo lưu mọi quyền.
+        <div className="mt-16 pt-8 border-t border-white/10 flex flex-col md:flex-row justify-between items-center gap-4">
+          <p className="text-sm text-gray-500">
+            Copyright © 2025 StartUp Kit. Privacy Policy | Terms of Service.
           </p>
-          <div className="flex items-center gap-2 text-sm text-secondary-foreground/50">
+          <div className="flex items-center gap-2 text-sm text-gray-500">
             <span>Made with</span>
             <span className="text-primary">♥</span>
             <span>in Vietnam 🇻🇳</span>
