@@ -5,10 +5,47 @@ import { faCaretDown, faCaretRight } from "@fortawesome/free-solid-svg-icons";
 import React, { useState, useEffect } from "react";
 import { API_BASE, authHeaders } from "../../config/api";
 
-const initialProjects = [];
+const mockProjects = [
+  {
+    id: 1,
+    name: "EduTech Platform",
+    tagline: "Nền tảng học tập trực tuyến thông minh",
+    description: "Ứng dụng giáo dục sử dụng AI để cá nhân hóa học tập",
+    stage: "launch",
+    created_at: "2025-08-15T10:30:00",
+    updated_at: "2026-02-05T14:20:00"
+  },
+  {
+    id: 2,
+    name: "GreenEnergy Solutions",
+    tagline: "Giải pháp năng lượng tái tạo cho nhà ở",
+    description: "Hệ thống panel năng lượng mặt trời thông minh",
+    stage: "hoan-thien-san-pham",
+    created_at: "2025-10-20T08:15:00",
+    updated_at: "2026-02-08T09:45:00"
+  },
+  {
+    id: 3,
+    name: "HealthTrack App",
+    tagline: "Ứng dụng theo dõi sức khỏe cộng đồng",
+    description: "Nền tảng kết nối người khỏe mạnh và đội y tế",
+    stage: "nghien-cuu-thi-truong",
+    created_at: "2025-12-01T16:00:00",
+    updated_at: "2026-02-09T11:30:00"
+  },
+  {
+    id: 4,
+    name: "E-Commerce Logistics",
+    tagline: "Nền tảng giao hàng nhanh cho TMĐT",
+    description: "Hệ thống quản lý vận chuyển tối ưu",
+    stage: "y-tuong",
+    created_at: "2026-01-10T12:00:00",
+    updated_at: "2026-02-09T15:20:00"
+  }
+];
 
 export default function ProjectList() {
-  const [projectList, setProjectList] = useState(initialProjects);
+  const [projectList, setProjectList] = useState(mockProjects);
   const [animateId, setAnimateId] = useState(null);
 
   // Stage mapping
@@ -34,6 +71,8 @@ export default function ProjectList() {
 
   useEffect(() => {
     async function fetchProjects() {
+      // Using mock data - skip real API call
+      return;
       try {
         const token = localStorage.getItem("token");
         const res = await fetch(`${API_BASE}/projects/?skip=0&limit=50`, {
@@ -44,7 +83,8 @@ export default function ProjectList() {
           },
         });
         if (!res.ok) {
-          let errorMsg = "Không thể lấy danh sách dự án.";
+          setProjectList([]);
+          return;
           try {
             const errorData = await res.json();
             if (errorData && errorData.message) errorMsg = errorData.message;
@@ -81,6 +121,8 @@ export default function ProjectList() {
         const data = await res.json();
         setProjectList(data);
       } catch (err) {
+        setProjectList([]);
+        return;
         if (window.$) {
           window
             .$('<div class="my-toast">Lỗi kết nối API dự án</div>')

@@ -24,8 +24,12 @@ export function AuthProvider({ children }) {
       token = null;
     }
     if (token && userObj) {
+      const normalizedUser = {
+        ...userObj,
+        role: userObj.role || "founder",
+      };
       setIsLoggedIn(true);
-      setUser(userObj);
+      setUser(normalizedUser);
     } else {
       setIsLoggedIn(false);
       setUser(null);
@@ -33,10 +37,14 @@ export function AuthProvider({ children }) {
   }, []);
 
   const login = (token, userData) => {
+    const normalizedUser = {
+      ...userData,
+      role: userData?.role || "founder",
+    };
     localStorage.setItem("token", token);
-    localStorage.setItem("user", JSON.stringify(userData));
+    localStorage.setItem("user", JSON.stringify(normalizedUser));
     setIsLoggedIn(true);
-    setUser(userData);
+    setUser(normalizedUser);
   };
 
   const logout = () => {

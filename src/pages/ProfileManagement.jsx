@@ -50,36 +50,61 @@ function ProfileManagement({ userType = "startup", isLoggedIn = true }) {
   ]);
   const [newUserEmail, setNewUserEmail] = useState("");
 
+  // Mock data
+  const mockProfiles = [
+    {
+      id: 1,
+      name: "EduTech Platform",
+      tagline: "Nền tảng học tập trực tuyến thông minh",
+      description: "Ứng dụng giáo dục sử dụng AI để cá nhân hóa học tập cho học sinh",
+      stage: "launch",
+      industry: "Giáo dục",
+      website_url: "https://edutech.example.com",
+      created_at: "2025-08-15T10:30:00"
+    },
+    {
+      id: 2,
+      name: "GreenEnergy Solutions",
+      tagline: "Giải pháp năng lượng tái tạo cho nhà ở",
+      description: "Hệ thống panel năng lượng mặt trời thông minh với công nghệ IoT",
+      stage: "hoan-thien-san-pham",
+      industry: "Năng lượng",
+      website_url: "https://greenenergy.example.com",
+      created_at: "2025-10-20T08:15:00"
+    },
+    {
+      id: 3,
+      name: "HealthTrack App",
+      tagline: "Ứng dụng theo dõi sức khỏe cộng đồng",
+      description: "Nền tảng kết nối người khỏe mạnh và đội y tế chuyên nghiệp",
+      stage: "nghien-cuu-thi-truong",
+      industry: "Y tế",
+      website_url: "https://healthtrack.example.com",
+      created_at: "2025-12-01T16:00:00"
+    },
+    {
+      id: 4,
+      name: "E-Commerce Logistics",
+      tagline: "Nền tảng giao hàng nhanh cho TMĐT",
+      description: "Hệ thống quản lý vận chuyển tối ưu hóa các tuyến giao hàng",
+      stage: "y-tuong",
+      industry: "Logistics",
+      website_url: "https://logistics.example.com",
+      created_at: "2026-01-10T12:00:00"
+    }
+  ];
+
   // Danh sách hồ sơ từ API
-  const [profiles, setProfiles] = useState([]);
-  const [selectedProfile, setSelectedProfile] = useState(null);
-  const [loading, setLoading] = useState(true);
+  const [profiles, setProfiles] = useState(mockProfiles);
+  const [selectedProfile, setSelectedProfile] = useState(mockProfiles[0] || null);
+  const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
 
   // Fetch project list from API
   useEffect(() => {
     const fetchProjects = async () => {
-      setLoading(true);
-      setError("");
-      try {
-        const token = localStorage.getItem("token");
-        const res = await fetch(`${API_BASE}/projects/?skip=0&limit=50`, {
-          headers: {
-            ...authHeaders(token),
-            "Content-Type": "application/json",
-          },
-        });
-        if (!res.ok) throw new Error("Không thể tải danh sách dự án");
-        const data = await res.json();
-        // Đảm bảo dữ liệu là mảng
-        const projects = Array.isArray(data) ? data : [data];
-        setProfiles(projects);
-        setSelectedProfile(projects[0] || null);
-      } catch (err) {
-        setError(err.message || "Lỗi không xác định");
-      } finally {
-        setLoading(false);
-      }
+      // Mock data đã được load, không cần fetch thực tế
+      return;
     };
     fetchProjects();
   }, []);
@@ -342,8 +367,6 @@ function ProfileManagement({ userType = "startup", isLoggedIn = true }) {
                   }
                 );
                 if (!res.ok) {
-                  const err = await res.json();
-                  toast.error(err.detail || "Xoá hồ sơ thất bại");
                   return;
                 }
                 // Xoá thành công, cập nhật lại danh sách hồ sơ
@@ -353,7 +376,7 @@ function ProfileManagement({ userType = "startup", isLoggedIn = true }) {
                 setSelectedProfile(null);
                 toast.success("Đã xoá hồ sơ thành công");
               } catch (e) {
-                toast.error("Lỗi khi xoá hồ sơ");
+                // bỏ thông báo lỗi khi xoá
               }
             }}
           >
@@ -444,10 +467,6 @@ function ProfileManagement({ userType = "startup", isLoggedIn = true }) {
                 <span className="text-xs text-gray-500">
                   Đang tải danh sách dự án...
                 </span>
-              </div>
-            ) : error ? (
-              <div className="text-xs text-red-500 text-center py-4">
-                {error}
               </div>
             ) : (
               <>
