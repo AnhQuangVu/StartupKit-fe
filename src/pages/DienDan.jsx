@@ -1,3 +1,4 @@
+import { generateStartupDescription } from "../api/ai";
 import React, {
   useState,
   useEffect,
@@ -81,6 +82,33 @@ export default function DienDan() {
   const [creatingPost, setCreatingPost] = useState(false);
   const [editingProject, setEditingProject] = useState(false);
   const [editProjectData, setEditProjectData] = useState({});
+  const [aiDescLoading, setAiDescLoading] = useState(false);
+
+  const handleAiGenerateDescription = async () => {
+    setAiDescLoading(true);
+    try {
+      const token = localStorage.getItem("token");
+      const res = await generateStartupDescription({
+        name: editProjectData.name,
+        industry: editProjectData.industry,
+        target_audience: editProjectData.customer_segment,
+        key_features: editProjectData.solution || editProjectData.product || editProjectData.pain_point,
+        current_description: editProjectData.description,
+        token: token,
+      });
+      if (res && res.description) {
+        setEditProjectData((prev) => ({
+          ...prev,
+          description: res.description,
+          ...(res.tagline && !prev.tagline ? { tagline: res.tagline } : {}),
+        }));
+      }
+    } catch (err) {
+      alert("Không thể sinh mô tả AI: " + (err.message || err));
+    } finally {
+      setAiDescLoading(false);
+    }
+  };
   const [logoFile, setLogoFile] = useState(null);
   const [logoPreview, setLogoPreview] = useState(null);
   const [uploadingLogo, setUploadingLogo] = useState(false);
@@ -1836,6 +1864,26 @@ const ProjectEditModal = ({
               rows={3}
               required
               autoResize
+              actions={
+                <button
+                  type="button"
+                  disabled={aiDescLoading}
+                  onClick={handleAiGenerateDescription}
+                  className="inline-flex items-center gap-1.5 px-3 py-1 text-xs font-semibold text-purple-700 bg-purple-50 hover:bg-purple-100 border border-purple-200 rounded-md transition shadow-sm disabled:opacity-50"
+                  title="Tự động sinh mô tả chuyên nghiệp bằng AI"
+                >
+                  {aiDescLoading ? (
+                    <>
+                      <FontAwesomeIcon icon={faSpinner} spin className="text-purple-600" />
+                      <span>Đang tạo...</span>
+                    </>
+                  ) : (
+                    <>
+                      <span>✨ AI Generate Description</span>
+                    </>
+                  )}
+                </button>
+              }
             />
           </div>
         </div>
@@ -2024,6 +2072,7 @@ const TextAreaField = ({
   rows,
   required = false,
   autoResize = false,
+  actions = null,
 }) => {
   const textareaRef = useRef(null);
 
@@ -2037,12 +2086,15 @@ const TextAreaField = ({
 
   return (
     <div>
-      <label
-        htmlFor={name}
-        className="block text-sm font-semibold mb-2 text-gray-700"
-      >
-        {label} {required && <span className="text-red-500">*</span>}
-      </label>
+      <div className="flex items-center justify-between mb-2">
+        <label
+          htmlFor={name}
+          className="block text-sm font-semibold text-gray-700"
+        >
+          {label} {required && <span className="text-red-500">*</span>}
+        </label>
+        {actions}
+      </div>
       <textarea
         ref={textareaRef}
         id={name}
