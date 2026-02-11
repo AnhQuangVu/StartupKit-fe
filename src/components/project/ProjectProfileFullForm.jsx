@@ -1285,7 +1285,14 @@ export default function ProjectProfileFullForm({
         token: token,
       });
       if (res && res.description) {
-        handleChange("productValue", res.description);
+        const formatted = res.description.includes("<p>")
+          ? res.description
+          : res.description
+              .split("\n\n")
+              .filter(Boolean)
+              .map((p) => `<p>${p.trim()}</p>`)
+              .join("");
+        handleChange("productValue", formatted);
         if (res.tagline && !form.mainIdea) {
           handleChange("mainIdea", res.tagline);
         }
