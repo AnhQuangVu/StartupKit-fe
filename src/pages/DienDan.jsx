@@ -85,15 +85,26 @@ export default function DienDan() {
   const [aiDescLoading, setAiDescLoading] = useState(false);
 
   const handleAiGenerateDescription = async () => {
+    const currentName = editProjectData.name || selectedProject?.name || "";
+    const currentIndustry = editProjectData.industry || selectedProject?.industry || "";
+    const currentFeatures = editProjectData.solution || editProjectData.product || editProjectData.pain_point || selectedProject?.solution || selectedProject?.product || "";
+    const currentTarget = editProjectData.customer_segment || selectedProject?.customer_segment || "";
+    const currentDesc = editProjectData.description || selectedProject?.description || "";
+
+    if (!currentName.trim() && !currentIndustry.trim() && !currentFeatures.trim()) {
+      alert("💡 Gợi ý: Vui lòng nhập Tên dự án hoặc Ngành nghề trước để AI có thể sinh mô tả phù hợp nhất!");
+      return;
+    }
+
     setAiDescLoading(true);
     try {
       const token = localStorage.getItem("token");
       const res = await generateStartupDescription({
-        name: editProjectData.name,
-        industry: editProjectData.industry,
-        target_audience: editProjectData.customer_segment,
-        key_features: editProjectData.solution || editProjectData.product || editProjectData.pain_point,
-        current_description: editProjectData.description,
+        name: currentName,
+        industry: currentIndustry,
+        target_audience: currentTarget,
+        key_features: currentFeatures,
+        current_description: currentDesc,
         token: token,
       });
       if (res && res.description) {

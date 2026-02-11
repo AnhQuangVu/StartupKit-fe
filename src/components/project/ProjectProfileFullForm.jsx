@@ -1273,6 +1273,12 @@ export default function ProjectProfileFullForm({
   const [aiGenerating, setAiGenerating] = useState(false);
 
   const handleAiGenerateDescription = async () => {
+    const hasSeedInfo = (form.projectName || "").trim() || (form.field || "").trim() || (form.mainIdea || "").trim() || (form.productValue || "").trim();
+    if (!hasSeedInfo) {
+      alert("💡 Gợi ý: Vui lòng nhập Tên dự án hoặc Lĩnh vực / Ý tưởng chính trước để AI có thể sinh mô tả chính xác nhất!");
+      return;
+    }
+
     setAiGenerating(true);
     try {
       const token = localStorage.getItem("token");

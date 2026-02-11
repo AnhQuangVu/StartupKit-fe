@@ -22,7 +22,8 @@ export async function generateStartupDescription({
   current_description,
   token,
 }) {
-  const url = `${API_BASE}/ai/generate-description`;
+  const cleanBase = (API_BASE || "/api").replace(/\/+$/, "");
+  const url = `${cleanBase}/ai/generate-description`;
   const headers = {
     "Content-Type": "application/json",
     ...(token ? authHeaders(token) : {}),
@@ -37,23 +38,33 @@ export async function generateStartupDescription({
     current_description: current_description || undefined,
   });
 
-  const response = await fetchWithTimeout(url, {
-    method: "POST",
-    headers,
-    body,
-    timeout: 35000,
-  });
+  try {
+    const response = await fetchWithTimeout(url, {
+      method: "POST",
+      headers,
+      body,
+      timeout: 35000,
+    });
 
-  if (!response.ok) {
-    let message = `Lỗi máy chủ (${response.status})`;
-    try {
-      const errJson = await response.json();
-      message = errJson.detail || message;
-    } catch {
-      // fallback
+    if (!response.ok) {
+      let message = `Lỗi máy chủ (${response.status})`;
+      try {
+        const errJson = await response.json();
+        message = errJson.detail || message;
+      } catch {
+        // fallback
+      }
+      throw new Error(message);
     }
-    throw new Error(message);
-  }
 
-  return await response.json();
+    return await response.json();
+  } catch (err) {
+    if (err.name === "AbortError") {
+      throw new Error("Yêu cầu sinh mô tả quá thời gian chờ (35s). Vui lòng thử lại!");
+    }
+    if (err.message && err.message.includes("Failed to fetch")) {
+      throw new Error("Không thể kết nối đến máy chủ Backend. Vui lòng kiểm tra lại server hoặc kết nối mạng!");
+    }
+    throw err;
+  }
 }
