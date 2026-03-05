@@ -2,8 +2,11 @@ import type { Metadata } from "next";
 import { Inter } from "next/font/google";
 import { getDictionary } from "@/lib/getDictionary";
 import { DictionaryProvider } from "@/lib/dict-context";
+import { AuthProvider } from "@/lib/auth-context";
 import { type Locale, LOCALES } from "@/lib/i18n";
 import { notFound } from "next/navigation";
+import Navbar from "@/components/Navbar";
+import Footer from "@/components/Footer";
 import ChatWidget from "@/components/ChatWidget";
 import "@/app/globals.css";
 
@@ -23,6 +26,16 @@ export function generateStaticParams() {
     return LOCALES.map((locale) => ({ locale }));
 }
 
+/**
+ * Root Locale Layout — wraps every page with:
+ * - Inter font
+ * - DictionaryProvider (i18n context)
+ * - Navbar (with full marketplace nav + locale switcher)
+ * - Footer
+ * - ChatWidget (floating)
+ *
+ * Individual pages must NOT import Navbar or Footer.
+ */
 export default async function LocaleLayout({
     children,
     params,
@@ -39,10 +52,16 @@ export default async function LocaleLayout({
     return (
         <html lang={locale} suppressHydrationWarning>
             <body className={`${inter.variable} font-sans antialiased`}>
-                <DictionaryProvider dict={dict}>
-                    {children}
-                    <ChatWidget />
-                </DictionaryProvider>
+                <AuthProvider>
+                    <DictionaryProvider dict={dict}>
+                        <Navbar />
+                        <main className="min-h-screen">
+                            {children}
+                        </main>
+                        <Footer />
+                        <ChatWidget />
+                    </DictionaryProvider>
+                </AuthProvider>
             </body>
         </html>
     );

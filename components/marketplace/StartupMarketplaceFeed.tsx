@@ -36,7 +36,7 @@ export default function StartupMarketplaceFeed() {
                             <h3 className="text-[16px] font-bold">Mentor Name {i}</h3>
                             <p className="text-[13px] text-[#555555] mb-4">Fintech • Seed Stage</p>
                             <div className="flex items-center gap-2 text-[12px] font-semibold text-[#F4B400]">
-                                <span>★ 4.9 Score</span>
+                                <span>★ 4.9 {dict.marketplace.startup.score}</span>
                             </div>
                         </div>
                     ))}
@@ -55,8 +55,8 @@ export default function StartupMarketplaceFeed() {
                         <div key={i} className="border border-[#EAEAEA] rounded-[8px] p-6 hover:shadow-lg transition-shadow">
                             <div className="w-12 h-12 bg-[#111111] rounded-[6px] mb-4" />
                             <h3 className="text-[16px] font-bold">VC Fund {i}</h3>
-                            <p className="text-[13px] text-[#555555] mb-4">Ticket size: $100k - $500k</p>
-                            <Link href={`/${locale}/profile/VC${i}`} className="text-[13px] font-semibold underline underline-offset-2">View mandates</Link>
+                            <p className="text-[13px] text-[#555555] mb-4">{dict.marketplace.startup.ticketSize}: $100k - $500k</p>
+                            <Link href={`/${locale}/profile/VC${i}`} className="text-[13px] font-semibold underline underline-offset-2">{dict.marketplace.startup.viewMandates}</Link>
                         </div>
                     ))}
                 </div>

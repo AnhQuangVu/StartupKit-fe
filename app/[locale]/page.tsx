@@ -1,42 +1,30 @@
-import { type Locale } from "@/lib/i18n";
-import Navbar from "@/components/Navbar";
-import Footer from "@/components/Footer";
+import EcosystemMapHero from "@/components/EcosystemMapHero";
+import EcosystemStats from "@/components/EcosystemStats";
+import RoleEcosystem from "@/components/RoleEcosystem";
+import AIPitchBuilder from "@/components/AIPitchBuilder";
+import MatchingEngine from "@/components/MatchingEngine";
+import CredibilityScore from "@/components/CredibilityScore";
+import BusinessModel from "@/components/BusinessModel";
+import HowItWorks from "@/components/HowItWorks";
+import CTASection from "@/components/CTASection";
 
-// Feeds
-import GuestMarketplaceFeed from "@/components/marketplace/GuestMarketplaceFeed";
-import StartupMarketplaceFeed from "@/components/marketplace/StartupMarketplaceFeed";
-import MentorMarketplaceFeed from "@/components/marketplace/MentorMarketplaceFeed";
-import InvestorMarketplaceFeed from "@/components/marketplace/InvestorMarketplaceFeed";
-import AdminOverviewFeed from "@/components/marketplace/AdminOverviewFeed";
-
-type Role = "GUEST" | "STARTUP" | "MENTOR" | "INVESTOR" | "ADMIN";
-
-// FIXME: Replace with real session fetch soon
-async function getSession(): Promise<{ role: Role }> {
-    // Hardcoded for architectural mockup. Change to test different views.
-    return { role: "STARTUP" };
-}
-
-export default async function MarketplaceHome({
-    params,
-}: {
-    params: Promise<{ locale: string }>;
-}) {
-    const { locale } = await params;
-    const session = await getSession();
-    const role = session.role;
-
+/**
+ * LAYER 1 — Marketing Landing Page
+ * URL: /[locale]
+ * Navbar, Footer, ChatWidget are injected by app/[locale]/layout.tsx — do NOT add them here.
+ */
+export default async function LandingPage() {
     return (
-        <div className="flex min-h-screen flex-col bg-white">
-            <Navbar locale={locale as Locale} />
-            <main className="flex-1">
-                {role === "GUEST" && <GuestMarketplaceFeed />}
-                {role === "STARTUP" && <StartupMarketplaceFeed />}
-                {role === "MENTOR" && <MentorMarketplaceFeed />}
-                {role === "INVESTOR" && <InvestorMarketplaceFeed />}
-                {role === "ADMIN" && <AdminOverviewFeed />}
-            </main>
-            <Footer />
-        </div>
+        <>
+            <EcosystemMapHero />
+            <EcosystemStats />
+            <RoleEcosystem />
+            <AIPitchBuilder />
+            <MatchingEngine />
+            <CredibilityScore />
+            <BusinessModel />
+            <HowItWorks />
+            <CTASection />
+        </>
     );
 }

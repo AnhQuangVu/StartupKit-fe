@@ -6,29 +6,68 @@
             "welcomeSub": "Discover relevant mentors, track trending capital, and build your ecosystem presence.",
             "workspaceCta": "Go to Workspace",
             "recMentors": "Recommended Mentors",
-            "trendingInvestors": "Trending Investors"
+            "trendingInvestors": "Trending Investors",
+            "score": "Score",
+            "ticketSize": "Ticket size",
+            "viewMandates": "View mandates"
         },
         "mentor": {
             "welcome": "Mentor Marketplace",
             "welcomeSub": "Review trending startups shaping the market and evaluate incoming session requests.",
             "workspaceCta": "Manage Bookings",
-            "seekingMentors": "Startups Seeking Mentorship"
+            "seekingMentors": "Startups Seeking Mentorship",
+            "viewPitch": "View Pitch"
         },
         "investor": {
             "welcome": "Investor Deal Flow",
             "welcomeSub": "Browse AI-curated and scored startup profiles matching your industry mandate.",
             "workspaceCta": "Manage Active Deals",
-            "aiDeals": "AI Curated Deals"
+            "aiDeals": "AI Curated Deals",
+            "seeking": "Seeking",
+            "viewDeepDive": "View Deep Dive"
         },
         "admin": {
             "welcome": "Platform Overview",
             "welcomeSub": "System health, active disputes, and revenue tracking metrics.",
-            "workspaceCta": "Enter Admin Console"
+            "workspaceCta": "Enter Admin Console",
+            "pendingDisputes": "Pending Disputes",
+            "activeDeals": "Active Deals",
+            "newStartups": "New Startups",
+            "estRevenue": "Est. Revenue"
         }
+    },
+    "market": {
+        "startups": {
+            "label": "Startup Directory",
+            "title": "Discover Startups",
+            "sub": "Browse active startup projects seeking mentorship and investment across Vietnam.",
+            "searchPlaceholder": "Search startups…"
+        },
+        "mentors": {
+            "label": "Mentor Marketplace",
+            "title": "Find a Mentor",
+            "sub": "Book a session with experienced founders, investors and operators.",
+            "searchPlaceholder": "Search mentors…"
+        },
+        "investments": {
+            "label": "Investment Opportunities",
+            "title": "Active Deal Flow",
+            "sub": "Browse AI-scored startups actively seeking capital across Vietnam and SEA."
+        }
+    },
+    "deals": {
+        "label": "Deal Marketplace",
+        "title": "Investment Opportunities",
+        "sub": "Discover startups currently raising funding, scored and vetted by AI.",
+        "searchPlaceholder": "Search startups, founders, or industries…"
     },
     "nav": {
         "ecosystem": "Browse Ecosystem",
+        "market": "Explore",
+        "startups": "Startups",
         "mentors": "Mentors",
+        "investments": "Investments",
+        "workspace": "Workspace",
         "pricing": "Pricing",
         "login": "Login",
         "signup": "Sign Up"
@@ -286,5 +325,155 @@
             "securityNote": "StartupKit will never ask for your 2FA code via email or phone. If you're unsure, contact support.",
             "securityTitle": "Security tip:"
         }
+    },
+    "card": {
+        "viewProfile": "View Profile",
+        "viewStartup": "View Startup",
+        "viewDeal": "View Deal",
+        "bookSession": "Book Session",
+        "requestIntro": "Request Intro",
+        "requestSession": "Request Session",
+        "aiScore": "AI Score",
+        "industry": "Industry",
+        "stage": "Stage",
+        "location": "Location",
+        "teamSize": "Team",
+        "traction": "Traction",
+        "available": "Available",
+        "portfolio": "portfolio co.",
+        "ticketSize": "Ticket Size",
+        "focusAreas": "Focus Areas",
+        "sessions": "sessions",
+        "rate": "Rate"
+    },
+    "common": {
+        "backToStartups": "← Back to Startups",
+        "backToMentors": "← Back to Mentors",
+        "backToInvestors": "← Back to Investors",
+        "backToMarketplace": "← Back to Marketplace",
+        "loadMore": "Load more",
+        "reset": "Reset",
+        "resetFilters": "Reset Filters",
+        "found": "found",
+        "noResults": "No results match your filters",
+        "noResultsSub": "Try broadening your search or adjusting the filters.",
+        "connect": "Connect",
+        "follow": "Follow",
+        "save": "Save",
+        "edit": "Edit",
+        "delete": "Delete",
+        "preview": "Preview",
+        "send": "Send",
+        "cancel": "Cancel",
+        "confirm": "Confirm",
+        "saveChanges": "Save Changes",
+        "logout": "Logout",
+        "myProfile": "My Profile",
+        "settings": "Settings",
+        "roles": {
+            "startup": "Startup",
+            "mentor": "Mentor",
+            "investor": "Investor",
+            "admin": "Admin"
+        }
+    },
+    "workspace": {
+        "nav_links": {
+            "dashboard": "Dashboard",
+            "myProjects": "My Projects",
+            "mentorConns": "Mentor Connections",
+            "investorConns": "Investor Connections",
+            "messages": "Messages",
+            "settings": "Settings",
+            "sessions": "Sessions",
+            "startupReqs": "Startup Requests",
+            "myProfile": "My Profile",
+            "dealFlow": "Deal Flow",
+            "savedStartups": "Saved Startups",
+            "userMgmt": "User Management",
+            "startupApprovals": "Startup Approvals",
+            "mentorVerification": "Mentor Verification",
+            "reports": "Reports"
+        },
+        "backToMarket": "Back to Marketplace",
+        "startup": {
+            "dashboard": "Startup Dashboard",
+            "dashboardSub": "Welcome back",
+            "projects": "My Projects",
+            "projectsSub": "Manage and publish your startup pitches",
+            "mentors": "Mentor Connections",
+            "mentorsSub": "Find and connect with expert advisors",
+            "investors": "Investor Connections",
+            "investorsSub": "Track interest and connect with investors",
+            "messages": "Messages",
+            "messagesSub": "Mentor and investor conversations",
+            "settings": "Settings",
+            "settingsSub": "Manage your startup profile and information",
+            "newProject": "New Project",
+            "createProject": "Create New Project",
+            "aiRecommended": "AI Recommended",
+            "connected": "Connected",
+            "pending": "Pending Requests",
+            "interested": "Interested in You",
+            "saved": "Saved",
+            "recentActivity": "Recent Activity",
+            "profileComplete": "Profile Completeness",
+            "quickActions": "Quick Actions",
+            "findMentor": "Find a Mentor",
+            "browseInvestors": "Browse Investors",
+            "updatePitch": "Update Pitch",
+            "conversations": "Conversations",
+            "typeMessage": "Type a message…",
+            "awaitingReply": "Awaiting reply…",
+            "requestSent": "Request sent",
+            "startupInfo": "Startup Information",
+            "startupName": "Startup Name",
+            "tagline": "Tagline",
+            "description": "Description",
+            "logoAndCover": "Logo & Cover Image",
+            "startupLogo": "Startup Logo",
+            "coverImage": "Cover Image",
+            "pitchDeck": "Pitch Deck",
+            "uploadPitchDeck": "Upload Pitch Deck",
+            "teamMembers": "Team Members",
+            "fullName": "Full Name",
+            "role": "Role",
+            "background": "Background",
+            "addMember": "Add team member",
+            "saveAll": "Save All Changes"
+        },
+        "sidebar": {
+            "dashboard": "Dashboard",
+            "projects": "My Projects",
+            "mentors": "Mentor Connections",
+            "investors": "Investor Connections",
+            "messages": "Messages",
+            "settings": "Settings",
+            "sessions": "Sessions",
+            "requests": "Startup Requests",
+            "profile": "My Profile",
+            "deals": "Deal Flow",
+            "saved": "Saved Startups",
+            "users": "User Management",
+            "approvals": "Startup Approvals",
+            "verification": "Mentor Verification",
+            "reports": "Reports",
+            "sysSettings": "System Settings",
+            "backToMarket": "Back to Marketplace"
+        }
+    },
+    "filters": {
+        "allIndustries": "All Industries",
+        "allStages": "All Stages",
+        "allFocus": "All Focus Areas",
+        "search": "Search…",
+        "searchStartups": "Search startups…",
+        "searchMentors": "Search mentors…",
+        "searchInvestors": "Search investors…"
+    },
+    "lang": {
+        "label": "Language",
+        "en": "English",
+        "vi": "Tiếng Việt"
     }
 }

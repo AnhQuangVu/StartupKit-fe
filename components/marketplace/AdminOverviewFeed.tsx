@@ -23,10 +23,10 @@ export default function AdminOverviewFeed() {
 
             <div className="grid grid-cols-1 sm:grid-cols-4 gap-6">
                 {[
-                    { label: "Pending Disputes", val: "3", color: "text-red-600" },
-                    { label: "Active Deals", val: "142", color: "text-[#111111]" },
-                    { label: "New Startups", val: "+24", color: "text-[#111111]" },
-                    { label: "Est. Revenue", val: "$42k", color: "text-[#F4B400]" }
+                    { label: dict.marketplace.admin.pendingDisputes, val: "3", color: "text-red-600" },
+                    { label: dict.marketplace.admin.activeDeals, val: "142", color: "text-[#111111]" },
+                    { label: dict.marketplace.admin.newStartups, val: "+24", color: "text-[#111111]" },
+                    { label: dict.marketplace.admin.estRevenue, val: "$42k", color: "text-[#F4B400]" }
                 ].map(s => (
                     <div key={s.label} className="border border-[#EAEAEA] rounded-[8px] p-6 text-center">
                         <div className={`text-[32px] font-bold ${s.color}`}>{s.val}</div>

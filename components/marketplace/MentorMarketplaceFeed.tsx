@@ -34,7 +34,7 @@ export default function MentorMarketplaceFeed() {
                                 <span className="bg-[#EAEAEA] text-[#111111] px-2 py-1 rounded text-[11px] font-bold">Tech</span>
                             </div>
                             <p className="text-[14px] text-[#555555] mb-4 line-clamp-2">Building AI-driven agriculture bots for Southeast Asian rice farmers.</p>
-                            <Link href={`/${locale}/project/alpha${i}`} className="text-[13px] font-semibold text-[#111111] hover:text-[#F4B400] border-b border-[#111111] hover:border-[#F4B400] pb-0.5 transition-colors">View Pitch</Link>
+                            <Link href={`/${locale}/project/alpha${i}`} className="text-[13px] font-semibold text-[#111111] hover:text-[#F4B400] border-b border-[#111111] hover:border-[#F4B400] pb-0.5 transition-colors">{dict.marketplace.mentor.viewPitch}</Link>
                         </div>
                     ))}
                 </div>

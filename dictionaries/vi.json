@@ -6,29 +6,68 @@
             "welcomeSub": "Khám phá các Cố vấn phù hợp, theo dõi dòng vốn xu hướng và xây dựng mạng lưới hiện diện của bạn.",
             "workspaceCta": "Truy cập Workspace",
             "recMentors": "Cố vấn đề xuất",
-            "trendingInvestors": "Nhà đầu tư thịnh hành"
+            "trendingInvestors": "Nhà đầu tư thịnh hành",
+            "score": "Điểm",
+            "ticketSize": "Quy mô vé",
+            "viewMandates": "Xem yêu cầu"
         },
         "mentor": {
             "welcome": "Cộng đồng Cố vấn",
             "welcomeSub": "Đánh giá các startup định hình thị trường và quản lý yêu cầu từ nhà sáng lập.",
             "workspaceCta": "Quản lý Lịch hẹn",
-            "seekingMentors": "Startup đang tìm Cố vấn"
+            "seekingMentors": "Startup đang tìm Cố vấn",
+            "viewPitch": "Xem mục tiêu"
         },
         "investor": {
             "welcome": "Luồng Deal Đầu tư",
             "welcomeSub": "Duyệt hồ sơ điểm cao được AI phân tích và tự động match với khẩu vị đầu tư của bạn.",
             "workspaceCta": "Quản lý Deal",
-            "aiDeals": "Deal chọn lọc bởi AI"
+            "aiDeals": "Deal chọn lọc bởi AI",
+            "seeking": "Đang tìm",
+            "viewDeepDive": "Xem hồ sơ chi tiết"
         },
         "admin": {
             "welcome": "Tổng quan Hệ thống",
             "welcomeSub": "Theo dõi sức khỏe hệ thống, xử lý tranh chấp và doanh thu nền tảng.",
-            "workspaceCta": "Bảng điều khiển Admin"
+            "workspaceCta": "Bảng điều khiển Admin",
+            "pendingDisputes": "Tranh chấp chờ xử lý",
+            "activeDeals": "Deal đang hoạt động",
+            "newStartups": "Startup mới",
+            "estRevenue": "Doanh thu ước tính"
         }
+    },
+    "market": {
+        "startups": {
+            "label": "Danh sách Startup",
+            "title": "Khám phá Startup",
+            "sub": "Duyệt các dự án startup đang tìm kiếm cố vấn và đầu tư tại Việt Nam.",
+            "searchPlaceholder": "Tìm kiếm startup…"
+        },
+        "mentors": {
+            "label": "Cộng đồng Cố vấn",
+            "title": "Tìm Cố vấn",
+            "sub": "Book phiên làm việc với các nhà sáng lập, nhà đầu tư và chuyên gia giàu kinh nghiệm.",
+            "searchPlaceholder": "Tìm kiếm cố vấn…"
+        },
+        "investments": {
+            "label": "Cơ hội Đầu tư",
+            "title": "Luồng Deal Hiện tại",
+            "sub": "Duyệt hồ sơ được chấm điểm bởi AI, đang gọi vốn tại Việt Nam và Đông Nam Á."
+        }
+    },
+    "deals": {
+        "label": "Sàn Giao dịch",
+        "title": "Cơ hội Đầu tư",
+        "sub": "Khám phá các startup đang gọi vốn, được đánh giá và chọn lọc bởi AI.",
+        "searchPlaceholder": "Tìm kiếm startup, nhà sáng lập hoặc ngành..."
     },
     "nav": {
         "ecosystem": "Khám phá",
+        "market": "Khám phá",
+        "startups": "Startup",
         "mentors": "Cố vấn",
+        "investments": "Đầu tư",
+        "workspace": "Không gian làm việc",
         "pricing": "Bảng giá",
         "login": "Đăng nhập",
         "signup": "Đăng ký"
@@ -286,5 +325,155 @@
             "securityNote": "StartupKit sẽ không bao giờ yêu cầu mã 2FA qua email hay điện thoại. Nếu không chắc, hãy liên hệ hỗ trợ.",
             "securityTitle": "Mẹo bảo mật:"
         }
+    },
+    "card": {
+        "viewProfile": "Xem hồ sơ",
+        "viewStartup": "Xem Startup",
+        "viewDeal": "Xem hồ sơ",
+        "bookSession": "Đặt lịch",
+        "requestIntro": "Yêu cầu giới thiệu",
+        "requestSession": "Yêu cầu gặp",
+        "aiScore": "Điểm AI",
+        "industry": "Ngành",
+        "stage": "Giai đoạn",
+        "location": "Địa điểm",
+        "teamSize": "Đội ngũ",
+        "traction": "Kéo",
+        "available": "Sẵn sàng",
+        "portfolio": "công ty đang đầu tư",
+        "ticketSize": "Quy mô vé",
+        "focusAreas": "Lĩnh vực",
+        "sessions": "phiên",
+        "rate": "Giá"
+    },
+    "common": {
+        "backToStartups": "← Về danh sách Startup",
+        "backToMentors": "← Về danh sách Cố vấn",
+        "backToInvestors": "← Về danh sách Nhà đầu tư",
+        "backToMarketplace": "← Về Marketplace",
+        "loadMore": "Tải thêm",
+        "reset": "Đặt lại",
+        "resetFilters": "Xóa bộ lọc",
+        "found": "tìm thấy",
+        "noResults": "Không có kết quả phù hợp",
+        "noResultsSub": "Thử mở rộng tìm kiếm hoặc điều chỉnh bộ lọc.",
+        "connect": "Kết nối",
+        "follow": "Theo dõi",
+        "save": "Lưu",
+        "edit": "Chỉnh sửa",
+        "delete": "Xóa",
+        "preview": "Xem trước",
+        "send": "Gửi",
+        "cancel": "Hủy",
+        "confirm": "Xác nhận",
+        "saveChanges": "Lưu thay đổi",
+        "logout": "Đăng xuất",
+        "myProfile": "Hồ sơ của tôi",
+        "settings": "Cài đặt",
+        "roles": {
+            "startup": "Khởi nghiệp",
+            "mentor": "Cố vấn",
+            "investor": "Nhà đầu tư",
+            "admin": "Quản trị viên"
+        }
+    },
+    "workspace": {
+        "nav_links": {
+            "dashboard": "Bảng điều khiển",
+            "myProjects": "Dự án của tôi",
+            "mentorConns": "Kết nối Cố vấn",
+            "investorConns": "Kết nối Nhà đầu tư",
+            "messages": "Tin nhắn",
+            "settings": "Cài đặt",
+            "sessions": "Lịch hẹn",
+            "startupReqs": "Yêu cầu từ Startup",
+            "myProfile": "Hồ sơ của tôi",
+            "dealFlow": "Luồng Deal",
+            "savedStartups": "Startup đã lưu",
+            "userMgmt": "Quản lý Người dùng",
+            "startupApprovals": "Duyệt Startup",
+            "mentorVerification": "Xác thực Cố vấn",
+            "reports": "Báo cáo"
+        },
+        "backToMarket": "Trở lại Thị trường",
+        "startup": {
+            "dashboard": "Bảng điều khiển",
+            "dashboardSub": "Chào mừng trở lại",
+            "projects": "Dự án của tôi",
+            "projectsSub": "Quản lý và xuất bản hồ sơ startup",
+            "mentors": "Kết nối Cố vấn",
+            "mentorsSub": "Tìm và kết nối với cố vấn chuyên gia",
+            "investors": "Kết nối Nhà đầu tư",
+            "investorsSub": "Theo dõi quan tâm và kết nối nhà đầu tư",
+            "messages": "Tin nhắn",
+            "messagesSub": "Cuộc trò chuyện với cố vấn và nhà đầu tư",
+            "settings": "Cài đặt",
+            "settingsSub": "Quản lý hồ sơ và thông tin startup",
+            "newProject": "Dự án mới",
+            "createProject": "Tạo dự án mới",
+            "aiRecommended": "AI đề xuất",
+            "connected": "Đang kết nối",
+            "pending": "Yêu cầu đang chờ",
+            "interested": "Quan tâm đến bạn",
+            "saved": "Đã lưu",
+            "recentActivity": "Hoạt động gần đây",
+            "profileComplete": "Hoàn thiện hồ sơ",
+            "quickActions": "Thao tác nhanh",
+            "findMentor": "Tìm cố vấn",
+            "browseInvestors": "Xem nhà đầu tư",
+            "updatePitch": "Cập nhật Pitch",
+            "conversations": "Cuộc trò chuyện",
+            "typeMessage": "Nhập tin nhắn…",
+            "awaitingReply": "Đang chờ phản hồi…",
+            "requestSent": "Đã gửi yêu cầu",
+            "startupInfo": "Thông tin Startup",
+            "startupName": "Tên Startup",
+            "tagline": "Khẩu hiệu",
+            "description": "Mô tả",
+            "logoAndCover": "Logo & Ảnh bìa",
+            "startupLogo": "Logo Startup",
+            "coverImage": "Ảnh bìa",
+            "pitchDeck": "Pitch Deck",
+            "uploadPitchDeck": "Tải lên Pitch Deck",
+            "teamMembers": "Thành viên nhóm",
+            "fullName": "Họ và tên",
+            "role": "Vai trò",
+            "background": "Kinh nghiệm",
+            "addMember": "Thêm thành viên",
+            "saveAll": "Lưu tất cả thay đổi"
+        },
+        "sidebar": {
+            "dashboard": "Tổng quan",
+            "projects": "Dự án của tôi",
+            "mentors": "Kết nối Cố vấn",
+            "investors": "Kết nối Nhà đầu tư",
+            "messages": "Tin nhắn",
+            "settings": "Cài đặt",
+            "sessions": "Phiên làm việc",
+            "requests": "Yêu cầu Startup",
+            "profile": "Hồ sơ của tôi",
+            "deals": "Luồng Deal",
+            "saved": "Startup đã lưu",
+            "users": "Quản lý người dùng",
+            "approvals": "Duyệt Startup",
+            "verification": "Xác minh Cố vấn",
+            "reports": "Báo cáo",
+            "sysSettings": "Cài đặt hệ thống",
+            "backToMarket": "Về Marketplace"
+        }
+    },
+    "filters": {
+        "allIndustries": "Tất cả ngành",
+        "allStages": "Tất cả giai đoạn",
+        "allFocus": "Tất cả lĩnh vực",
+        "search": "Tìm kiếm…",
+        "searchStartups": "Tìm startup…",
+        "searchMentors": "Tìm cố vấn…",
+        "searchInvestors": "Tìm nhà đầu tư…"
+    },
+    "lang": {
+        "label": "Ngôn ngữ",
+        "en": "English",
+        "vi": "Tiếng Việt"
     }
 }

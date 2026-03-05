@@ -31,12 +31,12 @@ export default function InvestorMarketplaceFeed() {
                         <div key={i} className="border border-[#F4B400] bg-[#FFFBF0] rounded-[8px] p-6 hover:shadow-lg transition-shadow">
                             <div className="flex justify-between items-start mb-4">
                                 <h3 className="text-[18px] font-bold">Startup Beta {i}</h3>
-                                <span className="bg-[#111111] text-white px-2 py-1 rounded text-[11px] font-bold">94 Score</span>
+                                <span className="bg-[#111111] text-white px-2 py-1 rounded text-[11px] font-bold">94 {dict.marketplace.startup.score}</span>
                             </div>
                             <p className="text-[14px] text-[#555555] mb-4 line-clamp-2">Seed stage fintech revolutionizing B2B payments across SEA.</p>
                             <div className="flex justify-between items-center text-[13px] font-semibold">
-                                <span>Seeking: $800k</span>
-                                <Link href={`/${locale}/project/beta${i}`} className="text-[#111111] hover:text-[#F4B400] border-b border-[#111111] hover:border-[#F4B400] pb-0.5 transition-colors">View Deep Dive</Link>
+                                <span>{dict.marketplace.investor.seeking}: $800k</span>
+                                <Link href={`/${locale}/project/beta${i}`} className="text-[#111111] hover:text-[#F4B400] border-b border-[#111111] hover:border-[#F4B400] pb-0.5 transition-colors">{dict.marketplace.investor.viewDeepDive}</Link>
                             </div>
                         </div>
                     ))}

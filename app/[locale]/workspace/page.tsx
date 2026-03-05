@@ -3,9 +3,9 @@ import { type Locale } from "@/lib/i18n";
 
 type Role = "GUEST" | "STARTUP" | "MENTOR" | "INVESTOR" | "ADMIN";
 
-// FIXME: Replace with real auth checks
+// FIXME: Replace with real auth checks (hiện đang mock STARTUP cho dev)
 async function getSession(): Promise<{ role: Role }> {
-    return { role: "GUEST" };
+    return { role: "STARTUP" };
 }
 
 export default async function WorkspaceEntry({
