@@ -10,23 +10,23 @@ export default function StartupWorkspace() {
     const dict = useDictionary();
 
     const STATS = [
-        { label: dict.card.aiScore, value: "94", accent: true, sub: "Top 6% of startups" },
-        { label: dict.workspace.startup.profileComplete, value: "78%", accent: false, sub: "Add pitch deck to reach 90%" },
-        { label: dict.workspace.startup.mentorsSub, value: "3", accent: false, sub: "2 pending replies" },
-        { label: "Investor Views", value: "47", accent: false, sub: "This month" },
+        { label: dict.card.aiScore, value: "94", accent: true, sub: dict.workspace.startup.topPercent },
+        { label: dict.workspace.startup.profileComplete, value: "78%", accent: false, sub: dict.workspace.startup.addPitchDeckToReach },
+        { label: dict.workspace.startup.mentorsSub, value: "3", accent: false, sub: dict.workspace.startup.pendingReplies },
+        { label: dict.workspace.startup.investorViews, value: "47", accent: false, sub: dict.workspace.startup.thisMonth },
     ];
 
     const ACTIVITY = [
-        { type: "mentor", text: "Dr. An Nguyen accepted your session request", time: "2h ago", color: "#3D6B35" },
-        { type: "investor", text: "Mekong Capital viewed your pitch deck", time: "5h ago", color: "#1A3A5C" },
-        { type: "profile", text: "Your AI credibility score increased from 91→94", time: "1d ago", color: "#F4B400" },
-        { type: "mentor", text: "New mentor match: Hung Le (Fintech expert)", time: "2d ago", color: "#7B2D8B" },
-        { type: "system", text: "StartupKit featured your profile in weekly digest", time: "3d ago", color: "#888888" },
+        { type: "mentor", text: dict.workspace.startup.activity1, time: "2h ago", color: "#3D6B35" },
+        { type: "investor", text: dict.workspace.startup.activity2, time: "5h ago", color: "#1A3A5C" },
+        { type: "profile", text: dict.workspace.startup.activity3, time: "1d ago", color: "#F4B400" },
+        { type: "mentor", text: dict.workspace.startup.activity4, time: "2d ago", color: "#7B2D8B" },
+        { type: "system", text: dict.workspace.startup.activity5, time: "3d ago", color: "#888888" },
     ];
 
     const MENTORS = [
-        { name: "Dr. An Nguyen", expertise: "Product · Fintech", score: 97, seed: "drannguyen", status: "Confirmed · Mar 10" },
-        { name: "Hung Le", expertise: "Finance · SaaS", score: 95, seed: "hungle", status: "Pending reply" },
+        { name: "Dr. An Nguyen", expertise: "Product · Fintech", score: 97, seed: "drannguyen", status: dict.workspace.startup.statusConfirmed },
+        { name: "Hung Le", expertise: "Finance · SaaS", score: 95, seed: "hungle", status: dict.workspace.startup.statusPendingReply },
     ];
 
     return (
@@ -77,10 +77,10 @@ export default function StartupWorkspace() {
                         </div>
                         <div className="flex flex-col gap-2">
                             {[
-                                { task: "Add pitch deck", done: false },
-                                { task: "Upload team photos", done: false },
-                                { task: "Set AI score public", done: true },
-                                { task: "Connect bank account", done: true },
+                                { task: dict.workspace.startup.taskAddPitchDeck, done: false },
+                                { task: dict.workspace.startup.taskUploadTeamPhotos, done: false },
+                                { task: dict.workspace.startup.taskSetAiPublic, done: true },
+                                { task: dict.workspace.startup.taskConnectBank, done: true },
                             ].map(t => (
                                 <div key={t.task} className="flex items-center gap-2 text-[12.5px]">
                                     <span className={t.done ? "text-green-500" : "text-[#CCCCCC]"}>

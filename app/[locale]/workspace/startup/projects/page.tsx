@@ -6,6 +6,7 @@ import { useParams } from "next/navigation";
 import type { Locale } from "@/lib/i18n";
 import AIScoreBadge from "@/components/ui/AIScoreBadge";
 import { IconPlus, IconEdit, IconEye, IconTrash } from "@/components/icons/WorkspaceIcons";
+import { useDictionary } from "@/lib/dict-context";
 
 const PROJECTS = [
     { id: "s1", name: "AgriBot Vietnam", industry: "Agritech", stage: "Seed", score: 94, coverSeed: "agribot", status: "Published" },
@@ -14,14 +15,15 @@ const PROJECTS = [
 
 export default function StartupProjectsPage() {
     const { locale } = useParams() as { locale: Locale };
+    const dict = useDictionary();
 
     return (
         <WorkspaceLayout
-            title="My Projects"
-            subtitle="Manage and publish your startup pitches"
+            title={dict.workspace.startup.projects}
+            subtitle={dict.workspace.startup.projectsSub}
             actions={
                 <button className="flex items-center gap-1.5 bg-[#111111] text-white text-[12.5px] font-semibold px-4 py-2 rounded-[8px] hover:bg-[#F4B400] hover:text-[#111111] transition-colors">
-                    <IconPlus className="text-current" /> New Project
+                    <IconPlus className="text-current" /> {dict.workspace.startup.newProject}
                 </button>
             }
         >
@@ -55,14 +57,14 @@ export default function StartupProjectsPage() {
                         {/* Actions */}
                         <div className="border-t border-[#EAEAEA] px-5 py-3 flex items-center gap-2">
                             <button className="flex items-center gap-1 text-[12px] text-[#555555] hover:text-[#111111] transition-colors px-2 py-1 rounded hover:bg-[#F5F5F5]">
-                                <IconEdit /> Edit
+                                <IconEdit /> {dict.common.edit}
                             </button>
                             <Link href={`/${locale}/project/${p.id}`}
                                 className="flex items-center gap-1 text-[12px] text-[#555555] hover:text-[#111111] transition-colors px-2 py-1 rounded hover:bg-[#F5F5F5]">
-                                <IconEye /> Preview
+                                <IconEye /> {dict.common.preview}
                             </Link>
                             <button className="flex items-center gap-1 text-[12px] text-red-400 hover:text-red-600 transition-colors px-2 py-1 rounded hover:bg-red-50 ml-auto">
-                                <IconTrash /> Delete
+                                <IconTrash /> {dict.common.delete}
                             </button>
                         </div>
                     </div>
@@ -73,7 +75,7 @@ export default function StartupProjectsPage() {
                     <div className="w-10 h-10 rounded-full bg-[#F5F5F5] group-hover:bg-[#F4B400] flex items-center justify-center transition-colors">
                         <IconPlus className="text-[#888888] group-hover:text-[#111111]" />
                     </div>
-                    <span className="text-[13px] font-semibold text-[#888888] group-hover:text-[#111111] transition-colors">Create New Project</span>
+                    <span className="text-[13px] font-semibold text-[#888888] group-hover:text-[#111111] transition-colors">{dict.workspace.startup.createProject}</span>
                 </button>
             </div>
         </WorkspaceLayout>

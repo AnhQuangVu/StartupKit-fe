@@ -3,6 +3,7 @@
 import WorkspaceLayout from "@/components/WorkspaceLayout";
 import { useState } from "react";
 import { IconSend } from "@/components/icons/WorkspaceIcons";
+import { useDictionary } from "@/lib/dict-context";
 
 const CONVERSATIONS = [
     { id: "c1", name: "Dr. An Nguyen", role: "Mentor", seed: "drannguyen", lastMsg: "Looking forward to our session on Monday!", time: "2h", unread: 1 },
@@ -27,19 +28,20 @@ const MESSAGES_BY_CONV: Record<string, { from: "me" | "them"; text: string; time
 };
 
 export default function StartupMessagesPage() {
+    const dict = useDictionary();
     const [activeId, setActiveId] = useState("c1");
     const [draft, setDraft] = useState("");
     const active = CONVERSATIONS.find(c => c.id === activeId)!;
     const messages = MESSAGES_BY_CONV[activeId] ?? [];
 
     return (
-        <WorkspaceLayout title="Messages" subtitle="Mentor and investor conversations">
+        <WorkspaceLayout title={dict.workspace.startup.messages} subtitle={dict.workspace.startup.messagesSub}>
             <div className="bg-white border border-[#EAEAEA] rounded-[10px] overflow-hidden flex h-[calc(100vh-220px)] min-h-[500px]">
 
                 {/* Conversation list */}
                 <div className="w-[260px] border-r border-[#EAEAEA] flex flex-col shrink-0">
                     <div className="p-4 border-b border-[#EAEAEA]">
-                        <p className="text-[12px] font-bold text-[#111111] uppercase tracking-wide">Conversations</p>
+                        <p className="text-[12px] font-bold text-[#111111] uppercase tracking-wide">{dict.workspace.startup.conversations}</p>
                     </div>
                     <div className="flex-1 overflow-y-auto">
                         {CONVERSATIONS.map(c => (
@@ -99,7 +101,7 @@ export default function StartupMessagesPage() {
                     <div className="border-t border-[#EAEAEA] p-4 flex gap-3">
                         <input value={draft} onChange={e => setDraft(e.target.value)}
                             onKeyDown={e => { if (e.key === "Enter" && draft.trim()) setDraft(""); }}
-                            placeholder="Type a message…"
+                            placeholder={dict.workspace.startup.typeMessage}
                             className="flex-1 border border-[#EAEAEA] rounded-[8px] px-4 py-2.5 text-[13px] outline-none focus:border-[#111111] transition-colors" />
                         <button
                             onClick={() => setDraft("")}

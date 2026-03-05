@@ -11,6 +11,32 @@ import type { Locale } from "@/lib/i18n";
  */
 export default function DealDetail() {
     const { locale, id } = useParams() as { locale: Locale; id: string };
+    const isVi = locale === "vi";
+    const ui = {
+        back: isVi ? "Quay lại Deals" : "Back to Deals",
+        aiScore: isVi ? "Điểm AI" : "AI Score",
+        byFounder: isVi ? "bởi" : "by",
+        investNow: isVi ? "Đầu tư ngay" : "Invest Now",
+        min: isVi ? "tối thiểu" : "min",
+        followStartup: isVi ? "Theo dõi Startup" : "Follow Startup",
+        bookMentor: isVi ? "Đặt Mentor cho Startup này" : "Book Mentor for this Startup",
+        ofTarget: isVi ? "trên mục tiêu" : "of",
+        target: isVi ? "mục tiêu" : "target",
+        investorsCommitted: isVi ? "nhà đầu tư đã cam kết" : "investors committed",
+        minTicket: isVi ? "Vé tối thiểu" : "Min. ticket",
+        sections: {
+            problem: isVi ? "Vấn đề" : "Problem",
+            solution: isVi ? "Giải pháp" : "Solution",
+            market: isVi ? "Cơ hội thị trường" : "Market Opportunity",
+            traction: isVi ? "Traction" : "Traction",
+            funds: isVi ? "Sử dụng vốn" : "Use of Funds",
+            team: isVi ? "Đội ngũ" : "Team",
+        },
+        ctaTitle: isVi ? "Sẵn sàng đầu tư?" : "Ready to invest?",
+        ctaDesc: isVi ? "Vé tối thiểu" : "Minimum ticket",
+        successFee: isVi ? "phí thành công 10% khi hoàn tất vòng gọi vốn" : "10% success fee on funding close",
+        investIn: isVi ? "Đầu tư vào" : "Invest in",
+    };
 
     // Mock data — replace with API fetch by `id`
     const deal = {
@@ -47,7 +73,7 @@ export default function DealDetail() {
 
                 {/* Back */}
                 <Link href={`/${locale}/deals`} className="inline-flex items-center gap-1.5 text-[13px] text-[#888888] hover:text-[#111111] transition-colors mb-8">
-                    ← Back to Deals
+                    ← {ui.back}
                 </Link>
 
                 {/* ── Deal Header ─────────────────────────────────────── */}
@@ -65,22 +91,22 @@ export default function DealDetail() {
                             <h1 className="text-[32px] font-black text-[#111111]">{deal.name}</h1>
                             <span className="bg-[#F0F0F0] text-[#555555] text-[12px] font-bold px-3 py-1 rounded-full">{deal.stage}</span>
                             <span className="bg-[#FFFBF0] border border-[#F4B400] text-[#F4B400] text-[12px] font-bold px-3 py-1 rounded-full">
-                                AI Score {deal.score}/100
+                                {ui.aiScore} {deal.score}/100
                             </span>
                         </div>
                         <p className="text-[14px] text-[#888888] mb-4">
-                            {deal.industry} &middot; {deal.location} &middot; by {deal.founder}
+                            {deal.industry} &middot; {deal.location} &middot; {ui.byFounder} {deal.founder}
                         </p>
                         {/* Action buttons */}
                         <div className="flex flex-wrap gap-3">
                             <button className="bg-[#111111] text-white px-6 py-3 rounded-[8px] text-[14px] font-bold hover:bg-[#F4B400] hover:text-[#111111] transition-colors">
-                                Invest Now — min {deal.minTicket}
+                                {ui.investNow} — {ui.min} {deal.minTicket}
                             </button>
                             <button className="border border-[#EAEAEA] text-[#111111] px-5 py-3 rounded-[8px] text-[14px] font-semibold hover:border-[#111111] transition-colors">
-                                Follow Startup
+                                {ui.followStartup}
                             </button>
                             <Link href={`/${locale}/market/mentors`} className="border border-[#EAEAEA] text-[#111111] px-5 py-3 rounded-[8px] text-[14px] font-semibold hover:border-[#111111] transition-colors">
-                                Book Mentor for this Startup
+                                {ui.bookMentor}
                             </Link>
                         </div>
                     </div>
@@ -100,7 +126,7 @@ export default function DealDetail() {
                     <div className="flex justify-between items-center mb-2">
                         <div>
                             <span className="text-[28px] font-black text-[#111111]">{deal.raised}</span>
-                            <span className="text-[14px] text-[#888888] ml-2">of {deal.seeking} target</span>
+                            <span className="text-[14px] text-[#888888] ml-2">{ui.ofTarget} {deal.seeking} {ui.target}</span>
                         </div>
                         <span className="text-[24px] font-black text-[#F4B400]">{deal.pct}%</span>
                     </div>
@@ -108,18 +134,18 @@ export default function DealDetail() {
                         <div className="h-full bg-[#F4B400] rounded-full" style={{ width: `${deal.pct}%` }} />
                     </div>
                     <div className="flex gap-6 text-[13px] text-[#888888]">
-                        <span>{deal.investors} investors committed</span>
-                        <span>Min. ticket: {deal.minTicket}</span>
+                        <span>{deal.investors} {ui.investorsCommitted}</span>
+                        <span>{ui.minTicket}: {deal.minTicket}</span>
                     </div>
                 </div>
 
                 {/* ── Pitch Sections ──────────────────────────────────── */}
                 {[
-                    { title: "Problem", content: deal.problem },
-                    { title: "Solution", content: deal.solution },
-                    { title: "Market Opportunity", content: deal.market },
-                    { title: "Traction", content: deal.traction },
-                    { title: "Use of Funds", content: deal.use_of_funds },
+                    { title: ui.sections.problem, content: deal.problem },
+                    { title: ui.sections.solution, content: deal.solution },
+                    { title: ui.sections.market, content: deal.market },
+                    { title: ui.sections.traction, content: deal.traction },
+                    { title: ui.sections.funds, content: deal.use_of_funds },
                 ].map(sec => (
                     <div key={sec.title} className="mb-8">
                         <h2 className="text-[19px] font-bold text-[#111111] mb-3 pb-2 border-b border-[#F0F0F0]">{sec.title}</h2>
@@ -129,7 +155,7 @@ export default function DealDetail() {
 
                 {/* ── Team ────────────────────────────────────────────── */}
                 <div className="mb-10">
-                    <h2 className="text-[19px] font-bold text-[#111111] mb-4 pb-2 border-b border-[#F0F0F0]">Team</h2>
+                    <h2 className="text-[19px] font-bold text-[#111111] mb-4 pb-2 border-b border-[#F0F0F0]">{ui.sections.team}</h2>
                     <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
                         {deal.team.map(member => (
                             <div key={member.name} className="border border-[#EAEAEA] rounded-[10px] p-5 bg-white">
@@ -146,10 +172,10 @@ export default function DealDetail() {
 
                 {/* ── Bottom CTA ──────────────────────────────────────── */}
                 <div className="border border-[#F4B400] bg-[#FFFBF0] rounded-[12px] p-8 text-center">
-                    <h3 className="text-[22px] font-black text-[#111111] mb-2">Ready to invest?</h3>
-                    <p className="text-[14px] text-[#555555] mb-6">Minimum ticket: {deal.minTicket} · 10% success fee on funding close</p>
+                    <h3 className="text-[22px] font-black text-[#111111] mb-2">{ui.ctaTitle}</h3>
+                    <p className="text-[14px] text-[#555555] mb-6">{ui.ctaDesc}: {deal.minTicket} · {ui.successFee}</p>
                     <button className="bg-[#111111] text-white px-10 py-4 rounded-[8px] text-[15px] font-bold hover:bg-[#F4B400] hover:text-[#111111] transition-colors">
-                        Invest in {deal.name}
+                        {ui.investIn} {deal.name}
                     </button>
                 </div>
 

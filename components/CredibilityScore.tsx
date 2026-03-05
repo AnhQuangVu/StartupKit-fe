@@ -1,3 +1,6 @@
+"use client";
+import { useDictionary } from "@/lib/dict-context";
+
 const signals = [
     {
         label: "Mentor Reviews",
@@ -37,6 +40,13 @@ const signals = [
 ];
 
 export default function CredibilityScore() {
+    const dict = useDictionary();
+    const cr = dict.credibility;
+    const SIG_TEXT = [
+        { label: cr.sig1Label, desc: cr.sig1Desc, value: cr.sig1Val },
+        { label: cr.sig2Label, desc: cr.sig2Desc, value: cr.sig2Val },
+        { label: cr.sig3Label, desc: cr.sig3Desc, value: cr.sig3Val },
+    ];
     return (
         <section className="py-24 bg-white">
             <div className="max-w-[1200px] mx-auto px-6 md:px-12">
@@ -56,20 +66,20 @@ export default function CredibilityScore() {
                             </svg>
                             <div className="absolute inset-0 flex flex-col items-center justify-center">
                                 <span className="text-[32px] font-bold text-[#111111]">74</span>
-                                <span className="text-[12px] text-[#999999]">/ 100</span>
+                                <span className="text-[12px] text-[#999999]">{cr.gauge}</span>
                             </div>
                         </div>
 
                         <div className="text-center">
-                            <div className="text-[16px] font-semibold text-[#111111]">Credibility Score</div>
-                            <div className="text-[12px] text-[#888888] mt-0.5">Updates automatically with activity</div>
+                            <div className="text-[16px] font-semibold text-[#111111]">{cr.scoreTitle}</div>
+                            <div className="text-[12px] text-[#888888] mt-0.5">{cr.gaugeSub}</div>
                         </div>
 
                         {/* Weight bars */}
                         <div className="w-full flex flex-col gap-3">
-                            {signals.map((s) => (
+                            {signals.map((s, i) => (
                                 <div key={s.label} className="flex items-center gap-3">
-                                    <div className="text-[12px] text-[#777777] w-[90px] shrink-0">{s.value}</div>
+                                    <div className="text-[12px] text-[#777777] w-[90px] shrink-0">{SIG_TEXT[i].value}</div>
                                     <div className="flex-1 h-1.5 bg-[#EAEAEA] rounded-full overflow-hidden">
                                         <div
                                             className="h-full bg-[#F4B400] rounded-full"
@@ -85,24 +95,24 @@ export default function CredibilityScore() {
                     {/* Description */}
                     <div>
                         <p className="text-[12px] font-semibold text-[#F4B400] uppercase tracking-widest mb-3">
-                            Trust Infrastructure
+                            {cr.label}
                         </p>
                         <h2 className="text-[32px] md:text-[38px] font-bold text-[#111111] leading-[1.2] mb-4">
-                            Dynamic<br />Credibility Score
+                            {cr.title1}<br />{cr.title2}
                         </h2>
                         <p className="text-[15px] text-[#666666] leading-[1.7] mb-8">
-                            Static rankings are replaced by a live credibility system — evolving with every interaction, session, and outcome on the platform.
+                            {cr.sub}
                         </p>
 
                         <div className="flex flex-col gap-5">
-                            {signals.map((s) => (
+                            {signals.map((s, i) => (
                                 <div key={s.label} className="flex items-start gap-4">
                                     <div className="w-9 h-9 rounded-full bg-[#F7F7F7] border border-[#EAEAEA] flex items-center justify-center shrink-0">
                                         {s.icon}
                                     </div>
                                     <div>
-                                        <div className="text-[14px] font-semibold text-[#111111] mb-0.5">{s.label}</div>
-                                        <p className="text-[13px] text-[#777777] leading-[1.6]">{s.desc}</p>
+                                        <div className="text-[14px] font-semibold text-[#111111] mb-0.5">{SIG_TEXT[i].label}</div>
+                                        <p className="text-[13px] text-[#777777] leading-[1.6]">{SIG_TEXT[i].desc}</p>
                                     </div>
                                 </div>
                             ))}

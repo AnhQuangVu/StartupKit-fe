@@ -1,13 +1,7 @@
 "use client";
 
 import WorkspaceLayout from "@/components/WorkspaceLayout";
-
-const STATS = [
-    { label: "Total Users", value: "1,842", accent: false, delta: "+34 this week" },
-    { label: "Active Startups", value: "287", accent: false, delta: "+12 this month" },
-    { label: "Active Mentors", value: "94", accent: false, delta: "+5 this month" },
-    { label: "Investment Matches", value: "412", accent: true, delta: "+67 this month" },
-];
+import { useDictionary } from "@/lib/dict-context";
 
 const PENDING_APPROVALS = [
     { name: "HealthTrack VN", type: "Startup", industry: "Healthtech", submitted: "2h ago" },
@@ -24,9 +18,17 @@ const RECENT_ACTIVITY = [
 ];
 
 export default function AdminWorkspace() {
+    const dict = useDictionary();
+
+    const STATS = [
+        { label: dict.workspace.admin.totalUsers, value: "1,842", accent: false, delta: dict.workspace.admin.totalUsersDelta },
+        { label: dict.workspace.admin.activeStartups, value: "287", accent: false, delta: dict.workspace.admin.activeStartupsDelta },
+        { label: dict.workspace.admin.activeMentors, value: "94", accent: false, delta: dict.workspace.admin.activeMentorsDelta },
+        { label: dict.workspace.admin.investmentMatches, value: "412", accent: true, delta: dict.workspace.admin.investmentMatchesDelta },
+    ];
 
     return (
-        <WorkspaceLayout title="Admin Dashboard" subtitle="Platform overview and management">
+        <WorkspaceLayout title={dict.workspace.admin.dashboard} subtitle={dict.workspace.admin.dashboardSub}>
 
             {/* Stats */}
             <div className="grid grid-cols-2 lg:grid-cols-4 gap-4 mb-8">
@@ -44,8 +46,8 @@ export default function AdminWorkspace() {
                 {/* Pending approvals */}
                 <div className="bg-white border border-[#EAEAEA] rounded-[10px] p-6">
                     <div className="flex items-center justify-between mb-5">
-                        <h2 className="text-[14px] font-bold text-[#111111]">Pending Approvals</h2>
-                        <span className="text-[11px] bg-red-50 text-red-500 font-bold px-2.5 py-1 rounded-full">{PENDING_APPROVALS.length} waiting</span>
+                        <h2 className="text-[14px] font-bold text-[#111111]">{dict.workspace.admin.pendingApprovals}</h2>
+                        <span className="text-[11px] bg-red-50 text-red-500 font-bold px-2.5 py-1 rounded-full">{PENDING_APPROVALS.length} {dict.workspace.admin.waiting}</span>
                     </div>
                     <div className="flex flex-col divide-y divide-[#F5F5F5]">
                         {PENDING_APPROVALS.map(a => (
@@ -57,8 +59,8 @@ export default function AdminWorkspace() {
                                     <p className="text-[11px] text-[#888888]">{a.type} · {a.industry} · {a.submitted}</p>
                                 </div>
                                 <div className="flex gap-2 shrink-0">
-                                    <button className="text-[11px] font-semibold bg-[#111111] text-white px-3 py-1.5 rounded-[6px] hover:bg-[#F4B400] hover:text-[#111111] transition-colors">Approve</button>
-                                    <button className="text-[11px] font-semibold border border-[#EAEAEA] text-[#888888] px-3 py-1.5 rounded-[6px] hover:border-red-300 hover:text-red-500 transition-colors">Reject</button>
+                                    <button className="text-[11px] font-semibold bg-[#111111] text-white px-3 py-1.5 rounded-[6px] hover:bg-[#F4B400] hover:text-[#111111] transition-colors">{dict.workspace.admin.approve}</button>
+                                    <button className="text-[11px] font-semibold border border-[#EAEAEA] text-[#888888] px-3 py-1.5 rounded-[6px] hover:border-red-300 hover:text-red-500 transition-colors">{dict.workspace.admin.reject}</button>
                                 </div>
                             </div>
                         ))}
@@ -70,7 +72,7 @@ export default function AdminWorkspace() {
 
                     {/* Activity */}
                     <div className="bg-white border border-[#EAEAEA] rounded-[10px] p-5">
-                        <h3 className="text-[13px] font-bold text-[#111111] mb-4">Platform Activity</h3>
+                        <h3 className="text-[13px] font-bold text-[#111111] mb-4">{dict.workspace.admin.platformActivity}</h3>
                         <div className="flex flex-col gap-3">
                             {RECENT_ACTIVITY.map((a, i) => (
                                 <div key={i} className="flex items-start gap-3">
@@ -86,12 +88,12 @@ export default function AdminWorkspace() {
 
                     {/* User breakdown */}
                     <div className="bg-white border border-[#EAEAEA] rounded-[10px] p-5">
-                        <h3 className="text-[13px] font-bold text-[#111111] mb-4">User Breakdown</h3>
+                        <h3 className="text-[13px] font-bold text-[#111111] mb-4">{dict.workspace.admin.userBreakdown}</h3>
                         {[
-                            { role: "Startups", count: 287, color: "#3D6B35", pct: 62 },
-                            { role: "Mentors", count: 94, color: "#1A3A5C", pct: 20 },
-                            { role: "Investors", count: 61, color: "#7B2D8B", pct: 13 },
-                            { role: "Admins", count: 8, color: "#C05621", pct: 2 },
+                            { role: dict.workspace.admin.startups, count: 287, color: "#3D6B35", pct: 62 },
+                            { role: dict.workspace.admin.mentors, count: 94, color: "#1A3A5C", pct: 20 },
+                            { role: dict.workspace.admin.investors, count: 61, color: "#7B2D8B", pct: 13 },
+                            { role: dict.workspace.admin.admins, count: 8, color: "#C05621", pct: 2 },
                         ].map(r => (
                             <div key={r.role} className="mb-3">
                                 <div className="flex justify-between text-[12px] mb-1">
@@ -107,12 +109,12 @@ export default function AdminWorkspace() {
 
                     {/* System health */}
                     <div className="bg-[#111111] rounded-[10px] p-5">
-                        <p className="text-[12px] font-bold text-white/50 uppercase tracking-wide mb-3">System Health</p>
+                        <p className="text-[12px] font-bold text-white/50 uppercase tracking-wide mb-3">{dict.workspace.admin.systemHealth}</p>
                         {[
-                            { name: "API Response", status: "99.8%", ok: true },
-                            { name: "AI Engine", status: "Online", ok: true },
-                            { name: "Match Engine", status: "Online", ok: true },
-                            { name: "Email Service", status: "Delayed", ok: false },
+                            { name: dict.workspace.admin.apiResponse, status: "99.8%", ok: true },
+                            { name: dict.workspace.admin.aiEngine, status: dict.workspace.admin.online, ok: true },
+                            { name: dict.workspace.admin.matchEngine, status: dict.workspace.admin.online, ok: true },
+                            { name: dict.workspace.admin.emailService, status: dict.workspace.admin.delayed, ok: false },
                         ].map(s => (
                             <div key={s.name} className="flex justify-between items-center py-1.5 border-b border-white/10 last:border-0">
                                 <span className="text-[12px] text-white/70">{s.name}</span>

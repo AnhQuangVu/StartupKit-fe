@@ -1,46 +1,40 @@
-const tiers = [
-    {
-        name: "Free",
-        desc: "Explore the ecosystem, build your profile, and start connecting.",
-        features: [
-            "Create founder / mentor / investor profile",
-            "Browse verified ecosystem members",
-            "Access public credibility scores",
-            "Submit to AI pitch builder (1 profile)",
-        ],
-        cta: "Get started free",
-        href: "/register",
-        highlight: false,
-    },
-    {
-        name: "Premium",
-        desc: "Unlock full platform capabilities for serious ecosystem players.",
-        features: [
-            "Unlimited AI pitch profiles",
-            "Priority matching placement",
-            "Advanced analytics dashboard",
-            "Direct messaging with investors",
-        ],
-        cta: "Upgrade to Premium",
-        href: "/pricing",
-        highlight: true,
-    },
-];
+"use client";
+import { useDictionary } from "@/lib/dict-context";
 
 export default function BusinessModel() {
+    const dict = useDictionary();
+    const bm = dict.business;
+    const tiers = [
+        {
+            name: bm.freeName,
+            desc: bm.freeDesc,
+            features: [bm.freeF1, bm.freeF2, bm.freeF3, bm.freeF4],
+            cta: bm.freeCta,
+            href: "/register",
+            highlight: false,
+        },
+        {
+            name: bm.premName,
+            desc: bm.premDesc,
+            features: [bm.premF1, bm.premF2, bm.premF3, bm.premF4],
+            cta: bm.premCta,
+            href: "/pricing",
+            highlight: true,
+        },
+    ];
     return (
         <section className="py-24 bg-[#F7F7F7]">
             <div className="max-w-[1200px] mx-auto px-6 md:px-12">
                 {/* Header */}
                 <div className="text-center mb-14 max-w-[500px] mx-auto">
                     <p className="text-[12px] font-semibold text-[#F4B400] uppercase tracking-widest mb-3">
-                        Business Model
+                        {bm.label}
                     </p>
                     <h2 className="text-[32px] md:text-[38px] font-bold text-[#111111] leading-[1.2]">
-                        Aligned With<br />Your Success
+                        {bm.title1}<br />{bm.title2}
                     </h2>
                     <p className="text-[15px] text-[#666666] mt-4 leading-[1.7]">
-                        We only earn when you succeed. The platform is structured to align our incentives with yours.
+                        {bm.sub}
                     </p>
                 </div>
 
@@ -96,9 +90,9 @@ export default function BusinessModel() {
                         </svg>
                     </div>
                     <div>
-                        <div className="text-[14px] font-semibold text-[#111111] mb-1">10% Success Fee Model</div>
+                        <div className="text-[14px] font-semibold text-[#111111] mb-1">{bm.feeTitle}</div>
                         <p className="text-[13px] text-[#777777] leading-[1.6]">
-                            A one-time 10% fee applies only after capital is formally disbursed to the startup. No upfront cost, no hidden charges. You pay only when you raise.
+                            {bm.feeDesc}
                         </p>
                     </div>
                 </div>

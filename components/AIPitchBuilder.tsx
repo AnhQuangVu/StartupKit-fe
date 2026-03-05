@@ -1,3 +1,6 @@
+"use client";
+import { useDictionary } from "@/lib/dict-context";
+
 const steps = [
     {
         id: "01",
@@ -48,6 +51,14 @@ const steps = [
 ];
 
 export default function AIPitchBuilder() {
+    const dict = useDictionary();
+    const ai = dict.ai;
+    const STEP_TEXT: Record<string, { label: string; desc: string }> = {
+        "01": { label: ai.step1Label, desc: ai.step1Desc },
+        "02": { label: ai.step2Label, desc: ai.step2Desc },
+        "03": { label: ai.step3Label, desc: ai.step3Desc },
+        "04": { label: ai.step4Label, desc: ai.step4Desc },
+    };
     return (
         <section className="py-24 bg-white">
             <div className="max-w-[1200px] mx-auto px-6 md:px-12">
@@ -55,25 +66,24 @@ export default function AIPitchBuilder() {
                     {/* Left: sticky header */}
                     <div className="md:sticky md:top-28">
                         <p className="text-[12px] font-semibold text-[#F4B400] uppercase tracking-widest mb-3">
-                            AI Toolkit
+                            {ai.label}
                         </p>
                         <h2 className="text-[32px] md:text-[38px] font-bold text-[#111111] leading-[1.2] mb-4">
-                            AI-Powered<br />Pitch Deck Builder
+                            {ai.title1}<br />{ai.title2}
                         </h2>
                         <p className="text-[15px] text-[#666666] leading-[1.7] mb-6">
-                            Founders enter unstructured data. Our AI engine converts it into a structured, investment-ready profile that matches investor expectations — automatically.
+                            {ai.desc}
                         </p>
                         <div className="mb-6 p-4 bg-[#F7F7F7] border border-[#EAEAEA] rounded-[8px]">
                             <p className="text-[13px] text-[#555555] leading-[1.6]">
-                                <strong className="text-[#111111]">No pitch deck design needed.</strong> The system handles
-                                structure, scoring, and delivery to investors — you focus on building.
+                                {ai.note}
                             </p>
                         </div>
                         <a
                             href="/register?role=startup"
                             className="inline-flex items-center gap-2 bg-[#111111] text-white text-[14px] font-semibold px-6 py-3 rounded-[8px] hover:bg-[#F4B400] hover:text-[#111111] transition-colors"
                         >
-                            Build with AI
+                            {ai.cta}
                             <svg width="14" height="14" viewBox="0 0 14 14" fill="none">
                                 <path d="M2 7h10M7 2l5 5-5 5" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" />
                             </svg>
@@ -97,9 +107,9 @@ export default function AIPitchBuilder() {
                                 <div className="pb-8 flex-1">
                                     <div className="flex items-center gap-2 mb-1">
                                         <span className="text-[11px] font-mono text-[#CCCCCC]">{step.id}</span>
-                                        <span className="text-[15px] font-semibold text-[#111111]">{step.label}</span>
+                                        <span className="text-[15px] font-semibold text-[#111111]">{STEP_TEXT[step.id]?.label ?? step.label}</span>
                                     </div>
-                                    <p className="text-[13px] text-[#777777] leading-[1.65]">{step.desc}</p>
+                                    <p className="text-[13px] text-[#777777] leading-[1.65]">{STEP_TEXT[step.id]?.desc ?? step.desc}</p>
                                 </div>
                             </div>
                         ))}

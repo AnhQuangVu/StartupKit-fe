@@ -5,12 +5,6 @@ import Link from "next/link";
 import { useParams } from "next/navigation";
 import type { Locale } from "@/lib/i18n";
 
-const INDUSTRIES = ["All Industries", "Fintech", "Edtech", "Healthtech", "Agritech", "SaaS", "E-commerce", "Logistics"];
-const STAGES = ["All Stages", "Pre-seed", "Seed", "Series A", "Series B+"];
-const LOCATIONS = ["All Locations", "Hà Nội", "TP. Hồ Chí Minh", "Đà Nẵng", "Remote / Global"];
-const FUNDING = ["Any Size", "< $100k", "$100k – $500k", "$500k – $2M", "> $2M"];
-const SORT = ["Most Funded", "Highest AI Score", "Newest", "Ending Soon"];
-
 interface Deal {
     id: string;
     name: string;
@@ -85,6 +79,28 @@ function StartupLogo({ name, logo, color }: { name: string; logo?: string; color
 export default function DealsPage() {
     const dict = useDictionary();
     const { locale } = useParams() as { locale: Locale };
+    const isVi = locale === "vi";
+
+    const INDUSTRIES = [isVi ? "Tất cả ngành" : "All Industries", "Fintech", "Edtech", "Healthtech", "Agritech", "SaaS", "E-commerce", "Logistics"];
+    const STAGES = [isVi ? "Tất cả giai đoạn" : "All Stages", "Pre-seed", "Seed", "Series A", "Series B+"];
+    const LOCATIONS = [isVi ? "Tất cả khu vực" : "All Locations", "Hà Nội", "TP. Hồ Chí Minh", "Đà Nẵng", isVi ? "Remote / Toàn cầu" : "Remote / Global"];
+    const FUNDING = [isVi ? "Mọi quy mô" : "Any Size", "< $100k", "$100k – $500k", "$500k – $2M", "> $2M"];
+    const SORT = [isVi ? "Gọi vốn nhiều nhất" : "Most Funded", isVi ? "AI Score cao nhất" : "Highest AI Score", isVi ? "Mới nhất" : "Newest", isVi ? "Sắp kết thúc" : "Ending Soon"];
+    const ui = {
+        activeDeals: isVi ? "deal đang hoạt động" : "active deals",
+        investorsActive: isVi ? "30 nhà đầu tư hoạt động tuần này" : "30 investors active this week",
+        filterIndustry: isVi ? "Ngành" : "Industry",
+        filterStage: isVi ? "Giai đoạn" : "Stage",
+        filterLocation: isVi ? "Địa điểm" : "Location",
+        filterFunding: isVi ? "Quy mô gọi vốn" : "Funding Size",
+        filterSort: isVi ? "Sắp xếp" : "Sort by",
+        byFounder: isVi ? "bởi" : "by",
+        raisedOf: isVi ? "đã gọi trên" : "raised of",
+        committed: isVi ? "nhà đầu tư đã cam kết" : "investors committed",
+        aiScore: isVi ? "Điểm AI" : "AI Score",
+        viewDeal: isVi ? "Xem deal" : "View Deal",
+        loadMore: isVi ? "Tải thêm deal" : "Load more deals",
+    };
 
     return (
         <div className="pt-[80px] min-h-screen bg-white">
@@ -105,9 +121,9 @@ export default function DealsPage() {
                     <div className="flex items-center gap-6 mt-6">
                         <span className="flex items-center gap-2 text-[13px] text-[#555555]">
                             <span className="w-2 h-2 bg-green-500 rounded-full animate-pulse inline-block" />
-                            {DEALS.length} active deals
+                            {DEALS.length} {ui.activeDeals}
                         </span>
-                        <span className="text-[13px] text-[#555555]">30 investors active this week</span>
+                        <span className="text-[13px] text-[#555555]">{ui.investorsActive}</span>
                     </div>
                 </div>
             </div>
@@ -126,11 +142,11 @@ export default function DealsPage() {
                     {/* Filter dropdowns */}
                     <div className="flex flex-wrap gap-3">
                         {[
-                            { label: "Industry", options: INDUSTRIES },
-                            { label: "Stage", options: STAGES },
-                            { label: "Location", options: LOCATIONS },
-                            { label: "Funding Size", options: FUNDING },
-                            { label: "Sort by", options: SORT },
+                            { label: ui.filterIndustry, options: INDUSTRIES },
+                            { label: ui.filterStage, options: STAGES },
+                            { label: ui.filterLocation, options: LOCATIONS },
+                            { label: ui.filterFunding, options: FUNDING },
+                            { label: ui.filterSort, options: SORT },
                         ].map(f => (
                             <select
                                 key={f.label}
@@ -164,7 +180,7 @@ export default function DealsPage() {
                                         </div>
                                         {/* Industry · Location · Founder */}
                                         <p className="text-[13px] text-[#888888] mb-3">
-                                            {deal.industry} &middot; {deal.location} &middot; by {deal.founder}
+                                            {deal.industry} &middot; {deal.location} &middot; {ui.byFounder} {deal.founder}
                                         </p>
                                         {/* Pitch */}
                                         <p className="text-[14px] text-[#444444] leading-relaxed line-clamp-2 mb-4">
@@ -174,7 +190,7 @@ export default function DealsPage() {
                                         {/* Funding Progress */}
                                         <div className="mb-1 flex justify-between items-center">
                                             <span className="text-[13px] font-semibold text-[#111111]">
-                                                {deal.raised} <span className="text-[#888888] font-normal">raised of</span> {deal.target}
+                                                {deal.raised} <span className="text-[#888888] font-normal">{ui.raisedOf}</span> {deal.target}
                                             </span>
                                             <span className="text-[13px] font-bold text-[#F4B400]">{deal.pct}%</span>
                                         </div>
@@ -185,7 +201,7 @@ export default function DealsPage() {
                                             />
                                         </div>
                                         <p className="text-[12px] text-[#888888]">
-                                            {deal.investors} investor{deal.investors !== 1 ? "s" : ""} committed
+                                            {deal.investors} {ui.committed}
                                         </p>
                                     </div>
                                 </div>
@@ -194,7 +210,7 @@ export default function DealsPage() {
                                 <div className="flex md:flex-col items-center md:items-end justify-between md:justify-start gap-3 md:ml-4 shrink-0">
                                     {/* AI Score Badge */}
                                     <div className="flex flex-col items-center bg-[#FFFBF0] border border-[#F4B400] rounded-[8px] px-4 py-2 text-center">
-                                        <span className="text-[10px] font-bold text-[#888888] uppercase tracking-wide">AI Score</span>
+                                        <span className="text-[10px] font-bold text-[#888888] uppercase tracking-wide">{ui.aiScore}</span>
                                         <span className="text-[24px] font-black text-[#F4B400] leading-none">{deal.score}</span>
                                         <span className="text-[10px] text-[#888888]">/100</span>
                                     </div>
@@ -203,7 +219,7 @@ export default function DealsPage() {
                                         href={`/${locale}/deals/${deal.id}`}
                                         className="bg-[#111111] text-white px-5 py-2.5 rounded-[8px] text-[13px] font-semibold hover:bg-[#F4B400] hover:text-[#111111] transition-colors whitespace-nowrap"
                                     >
-                                        View Deal →
+                                        {ui.viewDeal} →
                                     </Link>
                                 </div>
 
@@ -215,7 +231,7 @@ export default function DealsPage() {
                 {/* ── Load More ───────────────────────────────────────── */}
                 <div className="flex justify-center mt-12">
                     <button className="border border-[#EAEAEA] px-8 py-3 rounded-[8px] text-[14px] font-semibold text-[#111111] hover:border-[#111111] transition-colors">
-                        Load more deals
+                        {ui.loadMore}
                     </button>
                 </div>
 

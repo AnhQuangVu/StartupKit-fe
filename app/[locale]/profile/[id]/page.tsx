@@ -68,12 +68,6 @@ const roleColors: Record<Role, string> = {
     "Investor": "#7B2D8B",
 };
 
-const roleLabels: Record<Role, string> = {
-    "Mentor": "Expert Mentor",
-    "Startup Founder": "Startup Founder",
-    "Investor": "Investor / VC",
-};
-
 /**
  * /profile/[id] — Public user profile
  * Shows founder, mentor, or investor data.
@@ -81,12 +75,39 @@ const roleLabels: Record<Role, string> = {
  */
 export default function PublicProfile() {
     const { locale, id } = useParams() as { locale: Locale; id: string };
+    const isVi = locale === "vi";
     const p = PROFILES[id] ?? FALLBACK;
     const isMentor = p.role === "Mentor";
     const isFounder = p.role === "Startup Founder";
     const isInvestor = p.role === "Investor";
     const backHref = `/${locale}/market/${isMentor ? "mentors" : isInvestor ? "investments" : "startups"}`;
-    const backLabel = isMentor ? "Back to Mentors" : isInvestor ? "Back to Investors" : "Back to Startups";
+    const backLabel = isMentor
+        ? (isVi ? "Về danh sách Cố vấn" : "Back to Mentors")
+        : isInvestor
+            ? (isVi ? "Về danh sách Nhà đầu tư" : "Back to Investors")
+            : (isVi ? "Về danh sách Startup" : "Back to Startups");
+    const ui = {
+        roleMentor: isVi ? "Cố vấn chuyên gia" : "Expert Mentor",
+        roleFounder: isVi ? "Nhà sáng lập Startup" : "Startup Founder",
+        roleInvestor: isVi ? "Nhà đầu tư / VC" : "Investor / VC",
+        statScore: isVi ? "Điểm AI" : "AI Score",
+        statSessions: isVi ? "Phiên" : "Sessions",
+        statConnections: isVi ? "Kết nối" : "Connections",
+        statMeetings: isVi ? "Cuộc gặp" : "Meetings",
+        statReviews: isVi ? "Đánh giá" : "Reviews",
+        statProjects: isVi ? "Dự án" : "Projects",
+        statPortfolio: isVi ? "Danh mục" : "Portfolio",
+        sectionProjects: isVi ? "Dự án" : "Projects",
+        sectionReviews: isVi ? "Đánh giá phiên" : "Session Reviews",
+        sectionPortfolio: isVi ? "Danh mục & Trọng tâm" : "Portfolio & Focus",
+        viewProject: isVi ? "Xem dự án" : "View project",
+        ctaMentor: isVi ? "Đặt lịch với" : "Book a session with",
+        ctaConnect: isVi ? "Kết nối với" : "Connect with",
+        ctaMentorSub: isVi ? "Nhận tư vấn chuyên sâu theo đúng giai đoạn startup của bạn." : "Get expert guidance tailored to your startup stage.",
+        ctaConnectSub: isVi ? "Liên hệ qua mạng lưới StartupKit." : "Reach out through the StartupKit network.",
+        ctaBook: isVi ? "Đặt lịch phiên" : "Book Session",
+        ctaSend: isVi ? "Gửi yêu cầu" : "Send Request",
+    };
 
     return (
         <div className="pt-[72px] min-h-screen bg-white">
@@ -121,7 +142,7 @@ export default function PublicProfile() {
                                 <h1 className="text-[28px] font-black text-white leading-tight">{p.name}</h1>
                                 <span className="text-[11px] font-bold px-2.5 py-1 rounded-full text-white"
                                     style={{ backgroundColor: roleColors[p.role] }}>
-                                    {roleLabels[p.role]}
+                                    {p.role === "Mentor" ? ui.roleMentor : p.role === "Startup Founder" ? ui.roleFounder : ui.roleInvestor}
                                 </span>
                             </div>
                             <p className="text-[13px] text-white/50 mb-3">📍 {p.location}</p>
@@ -146,9 +167,9 @@ export default function PublicProfile() {
                 {/* Stats row */}
                 <div className="grid grid-cols-3 gap-px bg-[#EAEAEA] border border-[#EAEAEA] rounded-[10px] overflow-hidden mb-10">
                     {[
-                        { label: "AI Score", value: p.score, accent: true },
-                        { label: isMentor ? "Sessions" : isInvestor ? "Connections" : "Meetings", value: isMentor ? p.sessions : p.connections, accent: false },
-                        { label: isMentor ? "Reviews" : isFounder ? "Projects" : "Portfolio", value: (p.reviews?.length ?? p.projects?.length ?? p.portfolio?.length ?? 0), accent: false },
+                        { label: ui.statScore, value: p.score, accent: true },
+                        { label: isMentor ? ui.statSessions : isInvestor ? ui.statConnections : ui.statMeetings, value: isMentor ? p.sessions : p.connections, accent: false },
+                        { label: isMentor ? ui.statReviews : isFounder ? ui.statProjects : ui.statPortfolio, value: (p.reviews?.length ?? p.projects?.length ?? p.portfolio?.length ?? 0), accent: false },
                     ].map(stat => (
                         <div key={stat.label} className="bg-white text-center py-6 px-4">
                             <div className={`text-[36px] font-black leading-none mb-1 ${stat.accent ? "text-[#F4B400]" : "text-[#111111]"}`}>
@@ -175,7 +196,7 @@ export default function PublicProfile() {
                 {/* Activity: Projects (Founders) */}
                 {p.projects && p.projects.length > 0 && (
                     <section className="mb-10">
-                        <h2 className="text-[11px] font-bold text-[#F4B400] uppercase tracking-[0.14em] mb-4">Projects</h2>
+                        <h2 className="text-[11px] font-bold text-[#F4B400] uppercase tracking-[0.14em] mb-4">{ui.sectionProjects}</h2>
                         <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                             {p.projects.map(proj => (
                                 <Link key={proj.id} href={`/${locale}/project/${proj.id}`}
@@ -185,7 +206,7 @@ export default function PublicProfile() {
                                         <span className="text-[11px] font-semibold bg-[#F5F5F5] text-[#555555] px-2.5 py-1 rounded-full">{proj.industry}</span>
                                         <span className="text-[11px] font-semibold bg-[#F5F5F5] text-[#555555] px-2.5 py-1 rounded-full">{proj.stage}</span>
                                     </div>
-                                    <span className="text-[13px] text-[#F4B400] font-semibold mt-1">View project →</span>
+                                    <span className="text-[13px] text-[#F4B400] font-semibold mt-1">{ui.viewProject} →</span>
                                 </Link>
                             ))}
                         </div>
@@ -195,7 +216,7 @@ export default function PublicProfile() {
                 {/* Reviews (Mentors) */}
                 {p.reviews && p.reviews.length > 0 && (
                     <section className="mb-10">
-                        <h2 className="text-[11px] font-bold text-[#F4B400] uppercase tracking-[0.14em] mb-4">Session Reviews</h2>
+                        <h2 className="text-[11px] font-bold text-[#F4B400] uppercase tracking-[0.14em] mb-4">{ui.sectionReviews}</h2>
                         <div className="flex flex-col gap-4">
                             {p.reviews.map(r => (
                                 <div key={r.author} className="border border-[#EAEAEA] rounded-[8px] p-5">
@@ -217,7 +238,7 @@ export default function PublicProfile() {
                 {/* Portfolio (Investors) */}
                 {p.portfolio && p.portfolio.length > 0 && (
                     <section className="mb-10">
-                        <h2 className="text-[11px] font-bold text-[#F4B400] uppercase tracking-[0.14em] mb-4">Portfolio & Focus</h2>
+                        <h2 className="text-[11px] font-bold text-[#F4B400] uppercase tracking-[0.14em] mb-4">{ui.sectionPortfolio}</h2>
                         <div className="flex flex-col gap-4">
                             {p.portfolio.map(firm => (
                                 <div key={firm.firmName} className="border border-[#EAEAEA] rounded-[8px] p-5">
@@ -236,13 +257,13 @@ export default function PublicProfile() {
                 {/* CTA */}
                 <div className="border border-[#EAEAEA] rounded-[10px] p-6 text-center">
                     <p className="text-[16px] font-bold text-[#111111] mb-1">
-                        {isMentor ? `Book a session with ${p.name.split(" ")[0]}` : `Connect with ${p.name.split(" ")[0]}`}
+                        {isMentor ? `${ui.ctaMentor} ${p.name.split(" ")[0]}` : `${ui.ctaConnect} ${p.name.split(" ")[0]}`}
                     </p>
                     <p className="text-[13px] text-[#888888] mb-5">
-                        {isMentor ? "Get expert guidance tailored to your startup stage." : "Reach out through the StartupKit network."}
+                        {isMentor ? ui.ctaMentorSub : ui.ctaConnectSub}
                     </p>
                     <button className="bg-[#111111] text-white px-8 py-3 rounded-[8px] text-[14px] font-bold hover:bg-[#F4B400] hover:text-[#111111] transition-colors">
-                        {isMentor ? "Book Session →" : "Send Request →"}
+                        {isMentor ? `${ui.ctaBook} →` : `${ui.ctaSend} →`}
                     </button>
                 </div>
 

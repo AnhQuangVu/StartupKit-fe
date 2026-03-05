@@ -2,6 +2,7 @@
 
 import WorkspaceLayout from "@/components/WorkspaceLayout";
 import AIScoreBadge from "@/components/ui/AIScoreBadge";
+import { useDictionary } from "@/lib/dict-context";
 
 const RECOMMENDED = [
     { id: "m1", name: "Dr. An Nguyen", title: "Ex-VP Product · VNPay", expertise: ["Product", "Fintech"], score: 97, seed: "drannguyen", why: "Matches your fintech product stage" },
@@ -54,18 +55,20 @@ function MentorCard({ m, cta }: { m: MentorData; cta: React.ReactNode }) {
 }
 
 export default function StartupMentorsPage() {
+    const dict = useDictionary();
+
     return (
-        <WorkspaceLayout title="Mentor Connections" subtitle="Find and connect with expert advisors">
+        <WorkspaceLayout title={dict.workspace.startup.mentors} subtitle={dict.workspace.startup.mentorsSub}>
 
             <div className="space-y-10">
                 {/* Recommended */}
                 <section>
-                    <h2 className="text-[11px] font-bold text-[#F4B400] uppercase tracking-[0.14em] mb-4">AI Recommended</h2>
+                    <h2 className="text-[11px] font-bold text-[#F4B400] uppercase tracking-[0.14em] mb-4">{dict.workspace.startup.aiRecommended}</h2>
                     <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-5">
                         {RECOMMENDED.map(m => (
                             <MentorCard key={m.id} m={m} cta={
                                 <button className="mt-auto w-full text-[12.5px] font-semibold bg-[#111111] text-white py-2 rounded-[8px] hover:bg-[#F4B400] hover:text-[#111111] transition-colors">
-                                    Request Session →
+                                    {dict.card.requestSession} →
                                 </button>
                             } />
                         ))}
@@ -74,7 +77,7 @@ export default function StartupMentorsPage() {
 
                 {/* Connected */}
                 <section>
-                    <h2 className="text-[11px] font-bold text-[#111111] uppercase tracking-[0.14em] mb-4">Connected</h2>
+                    <h2 className="text-[11px] font-bold text-[#111111] uppercase tracking-[0.14em] mb-4">{dict.workspace.startup.connected}</h2>
                     <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-5">
                         {CONNECTED.map(m => (
                             <MentorCard key={m.id} m={m} cta={
@@ -88,12 +91,12 @@ export default function StartupMentorsPage() {
 
                 {/* Pending */}
                 <section>
-                    <h2 className="text-[11px] font-bold text-[#888888] uppercase tracking-[0.14em] mb-4">Pending Requests</h2>
+                    <h2 className="text-[11px] font-bold text-[#888888] uppercase tracking-[0.14em] mb-4">{dict.workspace.startup.pending}</h2>
                     <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-5">
                         {PENDING.map(m => (
                             <MentorCard key={m.id} m={m} cta={
                                 <button className="mt-auto w-full text-[12.5px] font-semibold border border-[#EAEAEA] text-[#888888] py-2 rounded-[8px] cursor-not-allowed">
-                                    Awaiting reply…
+                                    {dict.workspace.startup.awaitingReply}
                                 </button>
                             } />
                         ))}

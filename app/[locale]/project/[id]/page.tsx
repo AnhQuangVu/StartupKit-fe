@@ -65,8 +65,37 @@ const FALLBACK = PROJECTS.s1;
  */
 export default function ProjectDetail() {
     const { locale, id } = useParams() as { locale: Locale; id: string };
+    const isVi = locale === "vi";
     const p = PROJECTS[id] ?? FALLBACK;
     const initials = p.name.split(" ").slice(0, 2).map(w => w[0]).join("").toUpperCase();
+    const ui = {
+        back: isVi ? "Duyệt Startup" : "Browse Startups",
+        by: isVi ? "bởi" : "by",
+        connectStartup: isVi ? "Kết nối với Startup" : "Connect with Startup",
+        requestIntro: isVi ? "Yêu cầu giới thiệu" : "Request Intro",
+        overview: isVi ? "Tổng quan" : "Overview",
+        vision: isVi ? "Tầm nhìn" : "Vision",
+        problemSolution: isVi ? "Vấn đề & Giải pháp" : "Problem & Solution",
+        problem: isVi ? "Vấn đề" : "Problem",
+        solution: isVi ? "Giải pháp" : "Solution",
+        marketTraction: isVi ? "Thị trường & Traction" : "Market & Traction",
+        targetMarket: isVi ? "Thị trường mục tiêu" : "Target Market",
+        traction: "Traction",
+        team: isVi ? "Đội ngũ" : "Team",
+        mentorEvals: isVi ? "Đánh giá từ Mentor" : "Mentor Evaluations",
+        aiCredibility: isVi ? "Điểm tín nhiệm AI" : "AI Credibility Score",
+        evaluatedBy: isVi ? "Được đánh giá bởi" : "Evaluated by",
+        mentor: isVi ? "mentor" : "mentor",
+        quickFacts: isVi ? "Thông tin nhanh" : "Quick Facts",
+        industry: isVi ? "Ngành" : "Industry",
+        stage: isVi ? "Giai đoạn" : "Stage",
+        location: isVi ? "Địa điểm" : "Location",
+        teamSize: isVi ? "Quy mô đội ngũ" : "Team Size",
+        founder: isVi ? "Nhà sáng lập" : "Founder",
+        interested: isVi ? "Quan tâm startup này?" : "Interested in this startup?",
+        interestedSub: isVi ? "Kết nối trực tiếp hoặc yêu cầu giới thiệu qua mạng lưới của chúng tôi." : "Connect directly or request an introduction through our network.",
+        connectNow: isVi ? "Kết nối ngay" : "Connect now",
+    };
 
     return (
         <div className="pt-[72px] min-h-screen bg-white">
@@ -110,7 +139,7 @@ export default function ProjectDetail() {
                 {/* Back */}
                 <Link href={`/${locale}/market/startups`}
                     className="text-[13px] text-[#888888] hover:text-[#111111] transition-colors mb-8 inline-flex items-center gap-1">
-                    ← Browse Startups
+                    ← {ui.back}
                 </Link>
 
                 {/* Tagline + AI Score + CTA row */}
@@ -119,15 +148,15 @@ export default function ProjectDetail() {
                         <p className="text-[18px] font-semibold text-[#111111] leading-snug mb-3">{p.tagline}</p>
                         <div className="flex flex-wrap items-center gap-3">
                             <AIScoreBadge score={p.score} />
-                            <span className="text-[12px] text-[#888888]">by {p.founder}</span>
+                            <span className="text-[12px] text-[#888888]">{ui.by} {p.founder}</span>
                         </div>
                     </div>
                     <div className="flex flex-col gap-2 shrink-0">
                         <button className="bg-[#111111] text-white px-6 py-2.5 rounded-[8px] text-[14px] font-semibold hover:bg-[#F4B400] hover:text-[#111111] transition-colors whitespace-nowrap">
-                            Connect with Startup →
+                            {ui.connectStartup} →
                         </button>
                         <button className="border border-[#EAEAEA] text-[#111111] px-6 py-2.5 rounded-[8px] text-[14px] font-semibold hover:border-[#111111] transition-colors whitespace-nowrap">
-                            Request Intro
+                            {ui.requestIntro}
                         </button>
                     </div>
                 </div>
@@ -140,24 +169,24 @@ export default function ProjectDetail() {
 
                         {/* Overview */}
                         <section>
-                            <h2 className="text-[11px] font-bold text-[#F4B400] uppercase tracking-[0.14em] mb-3">Overview</h2>
+                            <h2 className="text-[11px] font-bold text-[#F4B400] uppercase tracking-[0.14em] mb-3">{ui.overview}</h2>
                             <p className="text-[15px] text-[#444444] leading-relaxed mb-4">{p.description}</p>
                             <div className="bg-[#FFFBF0] border border-[#F4B400]/30 rounded-[8px] p-4">
-                                <p className="text-[11px] font-bold text-[#888888] uppercase tracking-wide mb-1">Vision</p>
+                                <p className="text-[11px] font-bold text-[#888888] uppercase tracking-wide mb-1">{ui.vision}</p>
                                 <p className="text-[14px] text-[#444444] italic">{p.vision}</p>
                             </div>
                         </section>
 
                         {/* Problem / Solution */}
                         <section>
-                            <h2 className="text-[11px] font-bold text-[#F4B400] uppercase tracking-[0.14em] mb-4">Problem & Solution</h2>
+                            <h2 className="text-[11px] font-bold text-[#F4B400] uppercase tracking-[0.14em] mb-4">{ui.problemSolution}</h2>
                             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                                 <div className="border border-[#EAEAEA] rounded-[8px] p-5">
-                                    <p className="text-[11px] font-bold text-[#888888] uppercase tracking-wide mb-2">Problem</p>
+                                    <p className="text-[11px] font-bold text-[#888888] uppercase tracking-wide mb-2">{ui.problem}</p>
                                     <p className="text-[14px] text-[#444444] leading-relaxed">{p.problem}</p>
                                 </div>
                                 <div className="border border-[#EAEAEA] rounded-[8px] p-5 bg-[#F9F9F9]">
-                                    <p className="text-[11px] font-bold text-[#111111] uppercase tracking-wide mb-2">Solution</p>
+                                    <p className="text-[11px] font-bold text-[#111111] uppercase tracking-wide mb-2">{ui.solution}</p>
                                     <p className="text-[14px] text-[#444444] leading-relaxed">{p.solution}</p>
                                 </div>
                             </div>
@@ -165,14 +194,14 @@ export default function ProjectDetail() {
 
                         {/* Market + Traction */}
                         <section>
-                            <h2 className="text-[11px] font-bold text-[#F4B400] uppercase tracking-[0.14em] mb-4">Market & Traction</h2>
+                            <h2 className="text-[11px] font-bold text-[#F4B400] uppercase tracking-[0.14em] mb-4">{ui.marketTraction}</h2>
                             <div className="space-y-4">
                                 <div className="border border-[#EAEAEA] rounded-[8px] p-5">
-                                    <p className="text-[11px] font-bold text-[#888888] uppercase tracking-wide mb-2">Target Market</p>
+                                    <p className="text-[11px] font-bold text-[#888888] uppercase tracking-wide mb-2">{ui.targetMarket}</p>
                                     <p className="text-[14px] text-[#444444] leading-relaxed">{p.market}</p>
                                 </div>
                                 <div className="border border-[#EAEAEA] rounded-[8px] p-5">
-                                    <p className="text-[11px] font-bold text-[#888888] uppercase tracking-wide mb-2">Traction</p>
+                                    <p className="text-[11px] font-bold text-[#888888] uppercase tracking-wide mb-2">{ui.traction}</p>
                                     <p className="text-[14px] text-[#444444] leading-relaxed">{p.traction}</p>
                                 </div>
                             </div>
@@ -180,7 +209,7 @@ export default function ProjectDetail() {
 
                         {/* Team */}
                         <section>
-                            <h2 className="text-[11px] font-bold text-[#F4B400] uppercase tracking-[0.14em] mb-4">Team</h2>
+                            <h2 className="text-[11px] font-bold text-[#F4B400] uppercase tracking-[0.14em] mb-4">{ui.team}</h2>
                             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                                 {p.team.map(member => (
                                     <div key={member.name} className="border border-[#EAEAEA] rounded-[8px] p-5 flex items-start gap-4">
@@ -202,7 +231,7 @@ export default function ProjectDetail() {
 
                         {/* Mentor Reviews */}
                         <section>
-                            <h2 className="text-[11px] font-bold text-[#F4B400] uppercase tracking-[0.14em] mb-4">Mentor Evaluations</h2>
+                            <h2 className="text-[11px] font-bold text-[#F4B400] uppercase tracking-[0.14em] mb-4">{ui.mentorEvals}</h2>
                             <div className="flex flex-col gap-4">
                                 {p.reviews.map(r => (
                                     <div key={r.mentor} className="border border-[#EAEAEA] rounded-[8px] p-5 flex gap-4">
@@ -228,7 +257,7 @@ export default function ProjectDetail() {
 
                         {/* Credibility card */}
                         <div className="border border-[#EAEAEA] rounded-[10px] p-5">
-                            <p className="text-[11px] font-bold text-[#888888] uppercase tracking-wide mb-3">AI Credibility Score</p>
+                            <p className="text-[11px] font-bold text-[#888888] uppercase tracking-wide mb-3">{ui.aiCredibility}</p>
                             <div className="flex items-baseline gap-2 mb-2">
                                 <span className="text-[48px] font-black text-[#F4B400] leading-none">{p.score}</span>
                                 <span className="text-[16px] text-[#AAAAAA]">/ 100</span>
@@ -236,18 +265,18 @@ export default function ProjectDetail() {
                             <div className="h-2 bg-[#F0F0F0] rounded-full overflow-hidden mb-3">
                                 <div className="h-full bg-[#F4B400] rounded-full" style={{ width: `${p.score}%` }} />
                             </div>
-                            <p className="text-[12px] text-[#888888]">Evaluated by {p.reviews.length} mentor{p.reviews.length !== 1 ? "s" : ""}</p>
+                            <p className="text-[12px] text-[#888888]">{ui.evaluatedBy} {p.reviews.length} {ui.mentor}{p.reviews.length !== 1 ? "s" : ""}</p>
                         </div>
 
                         {/* Quick facts */}
                         <div className="border border-[#EAEAEA] rounded-[10px] p-5 space-y-3">
-                            <p className="text-[11px] font-bold text-[#888888] uppercase tracking-wide">Quick Facts</p>
+                            <p className="text-[11px] font-bold text-[#888888] uppercase tracking-wide">{ui.quickFacts}</p>
                             {[
-                                { label: "Industry", value: p.industry },
-                                { label: "Stage", value: p.stage },
-                                { label: "Location", value: p.location },
-                                { label: "Team Size", value: p.teamSize },
-                                { label: "Founder", value: p.founder },
+                                { label: ui.industry, value: p.industry },
+                                { label: ui.stage, value: p.stage },
+                                { label: ui.location, value: p.location },
+                                { label: ui.teamSize, value: p.teamSize },
+                                { label: ui.founder, value: p.founder },
                             ].map(f => (
                                 <div key={f.label} className="flex justify-between items-center text-[13px] border-t border-[#F5F5F5] pt-2">
                                     <span className="text-[#888888] font-medium">{f.label}</span>
@@ -258,10 +287,10 @@ export default function ProjectDetail() {
 
                         {/* CTA card */}
                         <div className="bg-[#111111] rounded-[10px] p-5">
-                            <p className="text-[13px] font-bold text-white mb-1">Interested in this startup?</p>
-                            <p className="text-[12px] text-white/60 mb-4">Connect directly or request an introduction through our network.</p>
+                            <p className="text-[13px] font-bold text-white mb-1">{ui.interested}</p>
+                            <p className="text-[12px] text-white/60 mb-4">{ui.interestedSub}</p>
                             <button className="w-full bg-[#F4B400] text-[#111111] px-4 py-2.5 rounded-[8px] text-[13px] font-bold hover:bg-white transition-colors">
-                                Connect now →
+                                {ui.connectNow} →
                             </button>
                         </div>
 

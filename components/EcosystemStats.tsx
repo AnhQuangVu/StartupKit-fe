@@ -1,3 +1,6 @@
+"use client";
+import { useDictionary } from "@/lib/dict-context";
+
 const categories = [
     {
         label: "Startups",
@@ -76,16 +79,27 @@ const categories = [
 ];
 
 export default function EcosystemStats() {
+    const dict = useDictionary();
+    const s = dict.stats;
+    const LABELS: Record<string, string> = {
+        "Startups": s.startups,
+        "Investors": s.investors,
+        "Accelerators": s.accelerators,
+        "Coworking": s.coworking,
+        "Corporates": s.corporates,
+        "Universities": s.universities,
+        "Government": s.government,
+    };
     return (
         <section id="ecosystem" className="py-20 bg-white border-t border-[#EAEAEA]">
             <div className="max-w-[1200px] mx-auto px-6 md:px-12">
                 {/* Header */}
                 <div className="mb-14 max-w-[500px]">
                     <p className="text-[13px] font-semibold text-[#F4B400] uppercase tracking-widest mb-3">
-                        Ecosystem Overview
+                        {s.label}
                     </p>
                     <h2 className="text-[32px] md:text-[38px] font-bold text-[#111111] leading-[1.2]">
-                        Vietnam's Startup Ecosystem at a Glance
+                        {s.title}
                     </h2>
                 </div>
 
@@ -99,7 +113,7 @@ export default function EcosystemStats() {
                             <div className="opacity-70 group-hover:opacity-100 transition-opacity">{cat.icon}</div>
                             <div className="text-center">
                                 <div className="text-[22px] font-bold text-[#111111] leading-none mb-1">{cat.count}</div>
-                                <div className="text-[12px] text-[#888888] font-medium">{cat.label}</div>
+                                <div className="text-[12px] text-[#888888] font-medium">{LABELS[cat.label] ?? cat.label}</div>
                             </div>
                         </div>
                     ))}
@@ -108,14 +122,14 @@ export default function EcosystemStats() {
                 {/* Scale stats */}
                 <div className="mt-10 grid grid-cols-1 sm:grid-cols-3 gap-px border border-[#EAEAEA] rounded-[8px] overflow-hidden">
                     {[
-                        { n: "10,000+", l: "Startup Profiles", sub: "Infrastructure scaled for full Vietnam ecosystem" },
-                        { n: "500", l: "Concurrent Users", sub: "Optimized for peak-time simultaneous access" },
-                        { n: "100%", l: "Vietnam-Focused Network", sub: "Built specifically for Southeast Asia innovators" },
-                    ].map((s) => (
-                        <div key={s.l} className="flex flex-col gap-1 px-8 py-6 bg-white">
-                            <div className="text-[26px] font-bold text-[#111111]">{s.n}</div>
-                            <div className="text-[13px] font-semibold text-[#333333]">{s.l}</div>
-                            <div className="text-[12px] text-[#999999] leading-[1.5] mt-0.5">{s.sub}</div>
+                        { n: s.scaleProfiles, l: s.scaleProfilesLabel, sub: s.scaleProfilesSub },
+                        { n: s.scaleUsers, l: s.scaleUsersLabel, sub: s.scaleUsersSub },
+                        { n: s.scaleNetwork, l: s.scaleNetworkLabel, sub: s.scaleNetworkSub },
+                    ].map((sc) => (
+                        <div key={sc.l} className="flex flex-col gap-1 px-8 py-6 bg-white">
+                            <div className="text-[26px] font-bold text-[#111111]">{sc.n}</div>
+                            <div className="text-[13px] font-semibold text-[#333333]">{sc.l}</div>
+                            <div className="text-[12px] text-[#999999] leading-[1.5] mt-0.5">{sc.sub}</div>
                         </div>
                     ))}
                 </div>

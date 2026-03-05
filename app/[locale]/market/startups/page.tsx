@@ -6,9 +6,6 @@ import { useState } from "react";
 import type { Locale } from "@/lib/i18n";
 import StartupCard from "@/components/cards/StartupCard";
 
-const CATEGORIES = ["All Industries", "Fintech", "Edtech", "Healthtech", "Agritech", "SaaS", "E-commerce"];
-const STAGES = ["All Stages", "Pre-seed", "Seed", "Series A", "Series B"];
-
 const LOGO_COLORS: Record<string, string> = {
     s1: "#3D6B35", s2: "#C05621", s3: "#7B2D8B", s4: "#1A3A5C", s5: "#2D6A4F", s6: "#9B2335",
 };
@@ -50,22 +47,28 @@ function Skeleton() {
 export default function StartupsDiscovery() {
     const dict = useDictionary();
     const { locale } = useParams() as { locale: Locale };
+
+    const ALL_IND = dict.filters.allIndustries;
+    const ALL_STG = dict.filters.allStages;
+    const CATEGORIES = [ALL_IND, "Fintech", "Edtech", "Healthtech", "Agritech", "SaaS", "E-commerce"];
+    const STAGES = [ALL_STG, "Pre-seed", "Seed", "Series A", "Series B"];
+
     const [search, setSearch] = useState("");
-    const [industry, setIndustry] = useState("All Industries");
-    const [stage, setStage] = useState("All Stages");
+    const [industry, setIndustry] = useState(() => ALL_IND);
+    const [stage, setStage] = useState(() => ALL_STG);
     const [isLoading] = useState(false);
 
     const filtered = STARTUPS.filter(s => {
         const q = search.toLowerCase();
         return (
             (s.name.toLowerCase().includes(q) || s.description.toLowerCase().includes(q)) &&
-            (industry === "All Industries" || s.industry === industry) &&
-            (stage === "All Stages" || s.stage === stage)
+            (industry === ALL_IND || s.industry === industry) &&
+            (stage === ALL_STG || s.stage === stage)
         );
     });
 
-    const resetFilters = () => { setSearch(""); setIndustry("All Industries"); setStage("All Stages"); };
-    const hasFilters = !!(search || industry !== "All Industries" || stage !== "All Stages");
+    const resetFilters = () => { setSearch(""); setIndustry(ALL_IND); setStage(ALL_STG); };
+    const hasFilters = !!(search || industry !== ALL_IND || stage !== ALL_STG);
 
     return (
         <div className="pt-[72px] min-h-screen bg-[#F9F9F9]">

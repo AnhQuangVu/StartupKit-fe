@@ -3,13 +3,7 @@
 import WorkspaceLayout from "@/components/WorkspaceLayout";
 import AIScoreBadge from "@/components/ui/AIScoreBadge";
 import { useAuth } from "@/lib/auth-context";
-
-const STATS = [
-    { label: "AI Recommendations", value: "12", accent: true, sub: "Updated today" },
-    { label: "Saved Startups", value: "8", accent: false, sub: "3 new since last visit" },
-    { label: "Intro Requests", value: "4", accent: false, sub: "2 pending review" },
-    { label: "Portfolio Size", value: "48", accent: false, sub: "Active companies" },
-];
+import { useDictionary } from "@/lib/dict-context";
 
 const RECOMMENDED = [
     { id: "s4", name: "PayEase", industry: "Fintech", stage: "Series A", score: 97, reason: "Matches your fintech focus and $500k+ ticket", seed: "payease" },
@@ -24,9 +18,17 @@ const RECENT_DEALS = [
 
 export default function InvestorWorkspace() {
     const { user } = useAuth();
+    const dict = useDictionary();
+
+    const STATS = [
+        { label: dict.workspace.investor.aiRecs, value: "12", accent: true, sub: dict.workspace.investor.aiRecsSub },
+        { label: dict.workspace.investor.savedStartups, value: "8", accent: false, sub: dict.workspace.investor.savedStartupsSub },
+        { label: dict.workspace.investor.introRequests, value: "4", accent: false, sub: dict.workspace.investor.introRequestsSub },
+        { label: dict.workspace.investor.portfolioSize, value: "48", accent: false, sub: dict.workspace.investor.portfolioSizeSub },
+    ];
 
     return (
-        <WorkspaceLayout title="Investor Dashboard" subtitle={`Welcome back, ${user?.name?.split(" ")[0]} 👋`}>
+        <WorkspaceLayout title={dict.workspace.investor.dashboard} subtitle={`${dict.workspace.investor.dashboardSub}, ${user?.name?.split(" ")[0]} 👋`}>
 
             {/* Stats */}
             <div className="grid grid-cols-2 lg:grid-cols-4 gap-4 mb-8">
@@ -44,8 +46,8 @@ export default function InvestorWorkspace() {
                 {/* AI Recommended startups */}
                 <div className="bg-white border border-[#EAEAEA] rounded-[10px] p-6">
                     <div className="flex items-center justify-between mb-5">
-                        <h2 className="text-[14px] font-bold text-[#111111]">AI Recommended for You</h2>
-                        <span className="text-[11px] text-[#F4B400] font-semibold">Updated daily</span>
+                        <h2 className="text-[14px] font-bold text-[#111111]">{dict.workspace.investor.aiRecommendedForYou}</h2>
+                        <span className="text-[11px] text-[#F4B400] font-semibold">{dict.workspace.investor.updatedDaily}</span>
                     </div>
                     <div className="flex flex-col divide-y divide-[#F5F5F5]">
                         {RECOMMENDED.map(r => (
@@ -70,16 +72,16 @@ export default function InvestorWorkspace() {
                 {/* Right: Recent activity + portfolio summary */}
                 <div className="flex flex-col gap-5">
                     <div className="bg-white border border-[#EAEAEA] rounded-[10px] p-5">
-                        <h3 className="text-[13px] font-bold text-[#111111] mb-4">Recent Deal Activity</h3>
+                        <h3 className="text-[13px] font-bold text-[#111111] mb-4">{dict.workspace.investor.recentDealActivity}</h3>
                         <div className="flex flex-col gap-3">
                             {RECENT_DEALS.map(d => (
                                 <div key={d.name} className="flex items-center justify-between">
                                     <div>
                                         <p className="text-[13px] font-semibold text-[#111111]">{d.name}</p>
-                                        <p className="text-[11px] text-[#888888]">{d.action} · {d.time}</p>
+                                        <p className="text-[11px] text-[#888888]">{(d.action === "Viewed pitch" ? dict.workspace.investor.viewedPitch : dict.workspace.investor.requestedIntro)} · {d.time}</p>
                                     </div>
                                     <span className={`text-[10px] font-bold px-2 py-0.5 rounded-full ${d.status === "In progress" ? "bg-blue-50 text-blue-600" : "bg-[#F5F5F5] text-[#888888]"
-                                        }`}>{d.status}</span>
+                                        }`}>{d.status === "In progress" ? dict.workspace.investor.inProgress : dict.workspace.investor.watchlist}</span>
                                 </div>
                             ))}
                         </div>
@@ -87,10 +89,10 @@ export default function InvestorWorkspace() {
 
                     {/* Portfolio card */}
                     <div className="bg-[#111111] rounded-[10px] p-5">
-                        <p className="text-[12px] font-bold text-white/50 uppercase tracking-wide mb-2">Portfolio Overview</p>
+                        <p className="text-[12px] font-bold text-white/50 uppercase tracking-wide mb-2">{dict.workspace.investor.portfolioOverview}</p>
                         <p className="text-[36px] font-black text-[#F4B400] leading-none">48</p>
-                        <p className="text-[12px] text-white/60 mt-1 mb-4">Portfolio companies</p>
-                        {[{ label: "Fintech", pct: 40 }, { label: "Healthtech", pct: 25 }, { label: "Agritech", pct: 20 }, { label: "Other", pct: 15 }].map(f => (
+                        <p className="text-[12px] text-white/60 mt-1 mb-4">{dict.workspace.investor.portfolioCompanies}</p>
+                        {[{ label: "Fintech", pct: 40 }, { label: "Healthtech", pct: 25 }, { label: "Agritech", pct: 20 }, { label: dict.workspace.investor.other, pct: 15 }].map(f => (
                             <div key={f.label} className="mb-2">
                                 <div className="flex justify-between text-[11px] text-white/60 mb-1">
                                     <span>{f.label}</span><span>{f.pct}%</span>

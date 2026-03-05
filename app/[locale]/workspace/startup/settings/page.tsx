@@ -3,6 +3,7 @@
 import WorkspaceLayout from "@/components/WorkspaceLayout";
 import { useState } from "react";
 import { IconUpload, IconPlus, IconTrash } from "@/components/icons/WorkspaceIcons";
+import { useDictionary } from "@/lib/dict-context";
 
 const STAGES = ["Pre-seed", "Seed", "Series A", "Series B+"];
 const INDUSTRIES = ["Fintech", "Edtech", "Healthtech", "Agritech", "SaaS", "E-commerce", "Logistics", "Deep Tech", "Other"];
@@ -33,6 +34,7 @@ function Field({ label, children }: { label: string; children: React.ReactNode }
 const inputCls = "border border-[#EAEAEA] rounded-[8px] px-4 py-2.5 text-[13.5px] text-[#111111] outline-none focus:border-[#111111] transition-colors w-full";
 
 export default function StartupSettingsPage() {
+    const dict = useDictionary();
     const [team, setTeam] = useState(INITIAL_TEAM);
     const [stage, setStage] = useState("Seed");
     const [industry, setIndustry] = useState("Agritech");
@@ -41,26 +43,26 @@ export default function StartupSettingsPage() {
     const removeMember = (i: number) => setTeam(t => t.filter((_, idx) => idx !== i));
 
     return (
-        <WorkspaceLayout title="Settings" subtitle="Manage your startup profile and information"
+        <WorkspaceLayout title={dict.workspace.startup.settings} subtitle={dict.workspace.startup.settingsSub}
             actions={
                 <button className="bg-[#F4B400] text-[#111111] text-[12.5px] font-bold px-4 py-2 rounded-[8px] hover:bg-[#111111] hover:text-white transition-colors">
-                    Save Changes
+                    {dict.common.saveChanges}
                 </button>
             }
         >
             <div className="max-w-[760px] space-y-6">
 
                 {/* Startup info */}
-                <Section title="Startup Information">
+                <Section title={dict.workspace.startup.startupInfo}>
                     <div className="grid grid-cols-1 md:grid-cols-2 gap-5">
-                        <Field label="Startup Name">
+                        <Field label={dict.workspace.startup.startupName}>
                             <input className={inputCls} defaultValue="AgriBot Vietnam" />
                         </Field>
-                        <Field label="Tagline">
+                        <Field label={dict.workspace.startup.tagline}>
                             <input className={inputCls} defaultValue="AI-driven crop monitoring for Vietnam's rice farmers." />
                         </Field>
                     </div>
-                    <Field label="Description">
+                    <Field label={dict.workspace.startup.description}>
                         <textarea className={`${inputCls} resize-none h-24`}
                             defaultValue="AgriBot combines IoT sensors with a mobile-first AI platform to give smallholder rice farmers real-time crop monitoring and harvest timing recommendations." />
                     </Field>
@@ -91,15 +93,15 @@ export default function StartupSettingsPage() {
                 </Section>
 
                 {/* Logo + Cover */}
-                <Section title="Logo & Cover Image">
+                <Section title={dict.workspace.startup.logoAndCover}>
                     <div className="grid grid-cols-1 md:grid-cols-2 gap-5">
-                        <Field label="Startup Logo">
+                        <Field label={dict.workspace.startup.startupLogo}>
                             <div className="border-2 border-dashed border-[#EAEAEA] rounded-[8px] p-6 flex flex-col items-center gap-2 hover:border-[#F4B400] transition-colors cursor-pointer group">
                                 <IconUpload className="text-[#CCCCCC] group-hover:text-[#F4B400] transition-colors" size={24} />
                                 <span className="text-[12px] text-[#888888]">Upload logo (PNG, SVG, min 200×200)</span>
                             </div>
                         </Field>
-                        <Field label="Cover Image">
+                        <Field label={dict.workspace.startup.coverImage}>
                             <div className="border-2 border-dashed border-[#EAEAEA] rounded-[8px] p-6 flex flex-col items-center gap-2 hover:border-[#F4B400] transition-colors cursor-pointer group">
                                 <IconUpload className="text-[#CCCCCC] group-hover:text-[#F4B400] transition-colors" size={24} />
                                 <span className="text-[12px] text-[#888888]">Upload cover (16:9, min 1200×675)</span>
@@ -109,8 +111,8 @@ export default function StartupSettingsPage() {
                 </Section>
 
                 {/* Pitch deck */}
-                <Section title="Pitch Deck">
-                    <Field label="Upload Pitch Deck">
+                <Section title={dict.workspace.startup.pitchDeck}>
+                    <Field label={dict.workspace.startup.uploadPitchDeck}>
                         <div className="border-2 border-dashed border-[#EAEAEA] rounded-[8px] p-8 flex flex-col items-center gap-3 hover:border-[#F4B400] hover:bg-[#FFFBF0] transition-all cursor-pointer group">
                             <IconUpload className="text-[#CCCCCC] group-hover:text-[#F4B400] transition-colors" size={28} />
                             <div className="text-center">
@@ -122,19 +124,19 @@ export default function StartupSettingsPage() {
                 </Section>
 
                 {/* Team */}
-                <Section title="Team Members">
+                <Section title={dict.workspace.startup.teamMembers}>
                     <div className="flex flex-col gap-4">
                         {team.map((member, i) => (
                             <div key={i} className="grid grid-cols-1 md:grid-cols-3 gap-3 items-start p-4 border border-[#EAEAEA] rounded-[8px] relative">
-                                <Field label="Full Name">
+                                <Field label={dict.workspace.startup.fullName}>
                                     <input className={inputCls} value={member.name}
                                         onChange={e => setTeam(t => t.map((m, idx) => idx === i ? { ...m, name: e.target.value } : m))} />
                                 </Field>
-                                <Field label="Role">
+                                <Field label={dict.workspace.startup.role}>
                                     <input className={inputCls} value={member.role}
                                         onChange={e => setTeam(t => t.map((m, idx) => idx === i ? { ...m, role: e.target.value } : m))} />
                                 </Field>
-                                <Field label="Background">
+                                <Field label={dict.workspace.startup.background}>
                                     <div className="flex gap-2">
                                         <input className={inputCls} value={member.bg}
                                             onChange={e => setTeam(t => t.map((m, idx) => idx === i ? { ...m, bg: e.target.value } : m))} />
@@ -148,7 +150,7 @@ export default function StartupSettingsPage() {
                         ))}
                         <button onClick={addMember}
                             className="flex items-center gap-2 text-[12.5px] font-semibold text-[#888888] hover:text-[#111111] transition-colors w-fit">
-                            <IconPlus /> Add team member
+                            <IconPlus /> {dict.workspace.startup.addMember}
                         </button>
                     </div>
                 </Section>
@@ -156,7 +158,7 @@ export default function StartupSettingsPage() {
                 {/* Save */}
                 <div className="flex justify-end">
                     <button className="bg-[#F4B400] text-[#111111] text-[14px] font-bold px-8 py-3 rounded-[8px] hover:bg-[#111111] hover:text-white transition-colors">
-                        Save All Changes
+                        {dict.workspace.startup.saveAll}
                     </button>
                 </div>
             </div>

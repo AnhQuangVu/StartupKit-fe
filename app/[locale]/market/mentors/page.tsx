@@ -6,10 +6,6 @@ import { useState } from "react";
 import type { Locale } from "@/lib/i18n";
 import MentorCard from "@/components/cards/MentorCard";
 
-const EXPERTISE = ["All Expertise", "Product", "Marketing", "Finance", "Tech", "Operations", "Legal", "Go-to-Market"];
-const INDUSTRIES = ["All Industries", "Fintech", "Edtech", "Healthtech", "Agritech", "SaaS"];
-const SCORES = ["Any Score", "90+ (Top tier)", "80–89", "< 80"];
-
 const MENTORS = [
     { id: "m1", name: "Dr. An Nguyen", title: "Ex-VP Product · VNPay", expertise: ["Product", "Fintech", "Growth"], score: 97, sessions: 142, rate: "$80/hr", bio: "12 years scaling B2B fintech products across SEA. Advisor to 40+ startups.", avatarSeed: "man1mentor" },
     { id: "m2", name: "Mai Tran", title: "Growth Marketer · Edtech", expertise: ["Marketing", "Edtech", "D2C"], score: 91, sessions: 88, rate: "$60/hr", bio: "Led 0-to-1M user acquisition campaigns for 3 edtech startups across Vietnam.", avatarSeed: "woman1mentor" },
@@ -33,27 +29,35 @@ function Skeleton() {
 export default function MentorMarketPage() {
     const dict = useDictionary();
     const { locale } = useParams() as { locale: Locale };
+
+    const ALL_EXP = dict.filters.allExpertise;
+    const ALL_IND = dict.filters.allIndustries;
+    const ANY_SCR = dict.filters.anyScore;
+    const EXPERTISE = [ALL_EXP, "Product", "Marketing", "Finance", "Tech", "Operations", "Legal", "Go-to-Market"];
+    const INDUSTRIES = [ALL_IND, "Fintech", "Edtech", "Healthtech", "Agritech", "SaaS"];
+    const SCORES = [ANY_SCR, dict.filters.scoreTop, dict.filters.scoreMid, dict.filters.scoreLow];
+
     const [search, setSearch] = useState("");
-    const [expertise, setExpertise] = useState("All Expertise");
-    const [industryF, setIndustryF] = useState("All Industries");
-    const [scoreFilter, setScoreF] = useState("Any Score");
+    const [expertise, setExpertise] = useState(() => ALL_EXP);
+    const [industryF, setIndustryF] = useState(() => ALL_IND);
+    const [scoreFilter, setScoreF] = useState(() => ANY_SCR);
     const [isLoading] = useState(false);
 
     const filtered = MENTORS.filter(m => {
         const q = search.toLowerCase();
         return (
             (m.name.toLowerCase().includes(q) || m.bio.toLowerCase().includes(q) || m.expertise.some(e => e.toLowerCase().includes(q))) &&
-            (expertise === "All Expertise" || m.expertise.includes(expertise)) &&
-            (industryF === "All Industries" || m.expertise.some(e => e === industryF)) &&
-            (scoreFilter === "Any Score"
-                || (scoreFilter === "90+ (Top tier)" && m.score >= 90)
-                || (scoreFilter === "80–89" && m.score >= 80 && m.score < 90)
-                || (scoreFilter === "< 80" && m.score < 80))
+            (expertise === ALL_EXP || m.expertise.includes(expertise)) &&
+            (industryF === ALL_IND || m.expertise.some(e => e === industryF)) &&
+            (scoreFilter === ANY_SCR
+                || (scoreFilter === dict.filters.scoreTop && m.score >= 90)
+                || (scoreFilter === dict.filters.scoreMid && m.score >= 80 && m.score < 90)
+                || (scoreFilter === dict.filters.scoreLow && m.score < 80))
         );
     });
 
-    const resetFilters = () => { setSearch(""); setExpertise("All Expertise"); setIndustryF("All Industries"); setScoreF("Any Score"); };
-    const hasFilters = !!(search || expertise !== "All Expertise" || industryF !== "All Industries" || scoreFilter !== "Any Score");
+    const resetFilters = () => { setSearch(""); setExpertise(ALL_EXP); setIndustryF(ALL_IND); setScoreF(ANY_SCR); };
+    const hasFilters = !!(search || expertise !== ALL_EXP || industryF !== ALL_IND || scoreFilter !== ANY_SCR);
 
     return (
         <div className="pt-[72px] min-h-screen bg-[#F9F9F9]">
@@ -69,7 +73,7 @@ export default function MentorMarketPage() {
                 <div className="bg-white border border-[#EAEAEA] rounded-[10px] p-5 mb-8">
                     <div className="flex flex-col gap-3">
                         <input type="text" value={search} onChange={e => setSearch(e.target.value)}
-                            placeholder={dict.market?.mentors?.searchPlaceholder ?? "Search mentors, expertise…"}
+                            placeholder={dict.market.mentors.searchPlaceholder}
                             className="w-full border border-[#EAEAEA] rounded-[8px] px-4 py-2.5 text-[14px] outline-none focus:border-[#111111] transition-colors" />
                         <div className="flex flex-wrap gap-2">
                             {[{ value: expertise, onChange: setExpertise, opts: EXPERTISE }, { value: industryF, onChange: setIndustryF, opts: INDUSTRIES }, { value: scoreFilter, onChange: setScoreF, opts: SCORES }].map((f, i) => (

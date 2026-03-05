@@ -1,3 +1,6 @@
+"use client";
+import { useDictionary } from "@/lib/dict-context";
+
 const nodes = [
     {
         label: "Startup",
@@ -37,19 +40,31 @@ const rules = [
 ];
 
 export default function MatchingEngine() {
+    const dict = useDictionary();
+    const mt = dict.matching;
+    const NODE_TEXT = [
+        { label: mt.node1Label, sub: mt.node1Sub },
+        { label: mt.node2Label, sub: mt.node2Sub },
+        { label: mt.node3Label, sub: mt.node3Sub },
+    ];
+    const RULE_TEXT = [
+        { label: mt.rule1Label, desc: mt.rule1Desc },
+        { label: mt.rule2Label, desc: mt.rule2Desc },
+        { label: mt.rule3Label, desc: mt.rule3Desc },
+    ];
     return (
         <section className="py-24 bg-[#F7F7F7]">
             <div className="max-w-[1200px] mx-auto px-6 md:px-12">
                 {/* Header */}
                 <div className="mb-14 max-w-[520px]">
                     <p className="text-[12px] font-semibold text-[#F4B400] uppercase tracking-widest mb-3">
-                        Matching Engine
+                        {mt.label}
                     </p>
                     <h2 className="text-[32px] md:text-[38px] font-bold text-[#111111] leading-[1.2]">
-                        Intelligent Matching,<br />Not Manual Approval
+                        {mt.title1}<br />{mt.title2}
                     </h2>
                     <p className="text-[15px] text-[#666666] mt-4 leading-[1.7]">
-                        The algorithm does the heavy lifting. Connections are made based on data — not personal preference or admin bottlenecks.
+                        {mt.sub}
                     </p>
                 </div>
 
@@ -74,9 +89,9 @@ export default function MatchingEngine() {
                                     </div>
                                     <div>
                                         <div className={`text-[14px] font-semibold ${node.center ? "text-[#111111]" : "text-[#333333]"}`}>
-                                            {node.label}
+                                            {NODE_TEXT[i].label}
                                         </div>
-                                        <div className="text-[11px] text-[#999999] mt-0.5">{node.sub}</div>
+                                        <div className="text-[11px] text-[#999999] mt-0.5">{NODE_TEXT[i].sub}</div>
                                     </div>
                                 </div>
                                 {/* Connector */}
@@ -100,8 +115,8 @@ export default function MatchingEngine() {
                                     {i + 1}
                                 </div>
                                 <div>
-                                    <div className="text-[15px] font-semibold text-[#111111] mb-1">{r.label}</div>
-                                    <p className="text-[13px] text-[#777777] leading-[1.65]">{r.desc}</p>
+                                    <div className="text-[15px] font-semibold text-[#111111] mb-1">{RULE_TEXT[i].label}</div>
+                                    <p className="text-[13px] text-[#777777] leading-[1.65]">{RULE_TEXT[i].desc}</p>
                                 </div>
                             </div>
                         ))}
@@ -109,7 +124,7 @@ export default function MatchingEngine() {
                         {/* Admin note */}
                         <div className="mt-2 p-4 bg-white border border-[#EAEAEA] rounded-[8px]">
                             <p className="text-[12px] text-[#888888] leading-[1.6]">
-                                <strong className="text-[#555555]">Admin role:</strong> Monitoring, dispute resolution, manual override only. The algorithm is the primary driver of connections.
+                                {mt.adminNote}
                             </p>
                         </div>
                     </div>

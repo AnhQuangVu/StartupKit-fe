@@ -1,6 +1,7 @@
 "use client";
 
 import WorkspaceLayout from "@/components/WorkspaceLayout";
+import { useDictionary } from "@/lib/dict-context";
 
 const RECOMMENDED = [
     { id: "i1", firmName: "Mekong Capital", focus: ["Fintech", "Consumer"], stages: ["Seed", "Series A"], ticket: "$500k–$3M", portfolio: 48, seed: "mekong", why: "Matched to your Fintech profile" },
@@ -53,13 +54,15 @@ function InvestorCard({ inv, badge, cta }: {
 }
 
 export default function StartupInvestorsPage() {
+    const dict = useDictionary();
+
     return (
-        <WorkspaceLayout title="Investor Connections" subtitle="Track interest and connect with investors">
+        <WorkspaceLayout title={dict.workspace.startup.investors} subtitle={dict.workspace.startup.investorsSub}>
             <div className="space-y-10">
 
                 {/* Recommended */}
                 <section>
-                    <h2 className="text-[11px] font-bold text-[#F4B400] uppercase tracking-[0.14em] mb-4">AI Recommended</h2>
+                    <h2 className="text-[11px] font-bold text-[#F4B400] uppercase tracking-[0.14em] mb-4">{dict.workspace.startup.aiRecommended}</h2>
                     <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-5">
                         {RECOMMENDED.map(inv => (
                             <InvestorCard key={inv.id} inv={inv} cta={
@@ -73,7 +76,7 @@ export default function StartupInvestorsPage() {
 
                 {/* Interested */}
                 <section>
-                    <h2 className="text-[11px] font-bold text-[#111111] uppercase tracking-[0.14em] mb-4">Interested in You</h2>
+                    <h2 className="text-[11px] font-bold text-[#111111] uppercase tracking-[0.14em] mb-4">{dict.workspace.startup.interested}</h2>
                     <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-5">
                         {INTERESTED.map(inv => (
                             <InvestorCard key={inv.id} inv={inv}
@@ -90,7 +93,7 @@ export default function StartupInvestorsPage() {
 
                 {/* Saved */}
                 <section>
-                    <h2 className="text-[11px] font-bold text-[#888888] uppercase tracking-[0.14em] mb-4">Saved</h2>
+                    <h2 className="text-[11px] font-bold text-[#888888] uppercase tracking-[0.14em] mb-4">{dict.workspace.startup.saved}</h2>
                     <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-5">
                         {SAVED.map(inv => (
                             <InvestorCard key={inv.id} inv={inv} cta={

@@ -6,9 +6,6 @@ import { useState } from "react";
 import type { Locale } from "@/lib/i18n";
 import InvestorCard from "@/components/cards/InvestorCard";
 
-const FOCUS_AREAS = ["All Focus", "Fintech", "Edtech", "Healthtech", "Agritech", "SaaS", "Deep Tech"];
-const STAGE_PREFS = ["All Stages", "Pre-seed", "Seed", "Series A", "Series B+"];
-
 const INVESTORS = [
     { id: "i1", firmName: "Mekong Capital", focus: ["Fintech", "Consumer"], stages: ["Seed", "Series A"], ticketMin: "$500k", ticketMax: "$3M", portfolio: 48, avatarSeed: "mekong" },
     { id: "i2", firmName: "Do Ventures", focus: ["SaaS", "Edtech", "Deep Tech"], stages: ["Pre-seed", "Seed"], ticketMin: "$100k", ticketMax: "$1M", portfolio: 31, avatarSeed: "doventures" },
@@ -36,22 +33,28 @@ function Skeleton() {
 export default function InvestorDirectory() {
     const dict = useDictionary();
     const { locale } = useParams() as { locale: Locale };
+
+    const ALL_FOC = dict.filters.allFocus;
+    const ALL_STG = dict.filters.allStages;
+    const FOCUS_AREAS = [ALL_FOC, "Fintech", "Edtech", "Healthtech", "Agritech", "SaaS", "Deep Tech"];
+    const STAGE_PREFS = [ALL_STG, "Pre-seed", "Seed", "Series A", "Series B+"];
+
     const [search, setSearch] = useState("");
-    const [focus, setFocus] = useState("All Focus");
-    const [stage, setStage] = useState("All Stages");
+    const [focus, setFocus] = useState(() => ALL_FOC);
+    const [stage, setStage] = useState(() => ALL_STG);
     const [isLoading] = useState(false);
 
     const filtered = INVESTORS.filter(inv => {
         const q = search.toLowerCase();
         return (
             (inv.firmName.toLowerCase().includes(q) || inv.focus.some(f => f.toLowerCase().includes(q))) &&
-            (focus === "All Focus" || inv.focus.includes(focus)) &&
-            (stage === "All Stages" || inv.stages.includes(stage))
+            (focus === ALL_FOC || inv.focus.includes(focus)) &&
+            (stage === ALL_STG || inv.stages.includes(stage))
         );
     });
 
-    const resetFilters = () => { setSearch(""); setFocus("All Focus"); setStage("All Stages"); };
-    const hasFilters = !!(search || focus !== "All Focus" || stage !== "All Stages");
+    const resetFilters = () => { setSearch(""); setFocus(ALL_FOC); setStage(ALL_STG); };
+    const hasFilters = !!(search || focus !== ALL_FOC || stage !== ALL_STG);
 
     return (
         <div className="pt-[72px] min-h-screen bg-[#F9F9F9]">

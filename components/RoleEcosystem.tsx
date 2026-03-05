@@ -1,3 +1,6 @@
+"use client";
+import { useDictionary } from "@/lib/dict-context";
+
 const roles = [
     {
         id: "startup",
@@ -56,19 +59,27 @@ const roles = [
 ];
 
 export default function RoleEcosystem() {
+    const dict = useDictionary();
+    const r = dict.roles;
+    type RoleId = "startup" | "mentor" | "investor";
+    const T: Record<RoleId, { label: string; tagline: string; features: string[]; cta: string }> = {
+        startup: { label: r.startup.label, tagline: r.startup.tagline, features: [r.startup.f1, r.startup.f2, r.startup.f3], cta: r.startup.cta },
+        mentor:  { label: r.mentor.label,  tagline: r.mentor.tagline,  features: [r.mentor.f1,  r.mentor.f2,  r.mentor.f3],  cta: r.mentor.cta  },
+        investor:{ label: r.investor.label, tagline: r.investor.tagline, features: [r.investor.f1, r.investor.f2, r.investor.f3], cta: r.investor.cta },
+    };
     return (
         <section className="py-24 bg-[#F7F7F7]">
             <div className="max-w-[1200px] mx-auto px-6 md:px-12">
                 {/* Header */}
                 <div className="text-center mb-14 max-w-[520px] mx-auto">
                     <p className="text-[12px] font-semibold text-[#F4B400] uppercase tracking-widest mb-3">
-                        Platform Roles
+                        {r.label}
                     </p>
                     <h2 className="text-[32px] md:text-[38px] font-bold text-[#111111] leading-[1.2]">
-                        Three Core Roles.<br />One Ecosystem.
+                        {r.title1}<br />{r.title2}
                     </h2>
                     <p className="text-[15px] text-[#666666] mt-4 leading-[1.7]">
-                        Every role is purpose-built with specific tools, access levels, and incentives aligned to the platform's business logic.
+                        {r.sub}
                     </p>
                 </div>
 
@@ -84,9 +95,9 @@ export default function RoleEcosystem() {
                                 <div>
                                     {role.icon}
                                     <div className="mt-3">
-                                        <div className="text-[18px] font-bold text-[#111111]">{role.label}</div>
+                                        <div className="text-[18px] font-bold text-[#111111]">{T[role.id as RoleId].label}</div>
                                         <div className="text-[12px] text-[#F4B400] font-semibold tracking-wide mt-0.5">
-                                            {role.tagline}
+                                            {T[role.id as RoleId].tagline}
                                         </div>
                                     </div>
                                 </div>
@@ -97,7 +108,7 @@ export default function RoleEcosystem() {
 
                             {/* Features */}
                             <ul className="flex flex-col gap-2.5">
-                                {role.features.map((f) => (
+                                {T[role.id as RoleId].features.map((f) => (
                                     <li key={f} className="flex items-start gap-2.5 text-[14px] text-[#555555] leading-[1.55]">
                                         <span className="mt-1.5 w-1.5 h-1.5 rounded-full bg-[#BBBBBB] shrink-0" />
                                         {f}
@@ -110,7 +121,7 @@ export default function RoleEcosystem() {
                                 href={role.cta.href}
                                 className="mt-auto inline-flex items-center gap-2 text-[13px] font-semibold text-[#111111] border-b border-[#EAEAEA] pb-0.5 w-fit hover:border-[#F4B400] hover:text-[#F4B400] transition-colors"
                             >
-                                {role.cta.label}
+                                {T[role.id as RoleId].cta}
                                 <svg width="12" height="12" viewBox="0 0 12 12" fill="none">
                                     <path d="M2 6h8M6 2l4 4-4 4" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" />
                                 </svg>

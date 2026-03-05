@@ -2,13 +2,7 @@
 
 import WorkspaceLayout from "@/components/WorkspaceLayout";
 import { useAuth } from "@/lib/auth-context";
-
-const STATS = [
-    { label: "AI Score", value: "97", accent: true, sub: "Top 3% of mentors" },
-    { label: "Sessions Done", value: "142", accent: false, sub: "+8 this month" },
-    { label: "Pending Requests", value: "5", accent: false, sub: "3 need reply" },
-    { label: "Avg Rating", value: "4.9", accent: false, sub: "From 142 sessions" },
-];
+import { useDictionary } from "@/lib/dict-context";
 
 const SESSIONS = [
     { startup: "AgriBot Vietnam", topic: "Product roadmap review", date: "Mar 10, 10:00", status: "Confirmed" },
@@ -23,9 +17,17 @@ const REQUESTS = [
 
 export default function MentorWorkspace() {
     const { user } = useAuth();
+    const dict = useDictionary();
+
+    const STATS = [
+        { label: dict.card.aiScore, value: "97", accent: true, sub: dict.workspace.mentor.aiTop },
+        { label: dict.workspace.mentor.sessionsDone, value: "142", accent: false, sub: dict.workspace.mentor.sessionsDoneSub },
+        { label: dict.workspace.mentor.pendingRequests, value: "5", accent: false, sub: dict.workspace.mentor.pendingRequestsSub },
+        { label: dict.workspace.mentor.avgRating, value: "4.9", accent: false, sub: dict.workspace.mentor.avgRatingSub },
+    ];
 
     return (
-        <WorkspaceLayout title="Mentor Dashboard" subtitle={`Welcome back, ${user?.name?.split(" ")[0]} 👋`}>
+        <WorkspaceLayout title={dict.workspace.mentor.dashboard} subtitle={`${dict.workspace.mentor.dashboardSub}, ${user?.name?.split(" ")[0]} 👋`}>
 
             {/* Stats */}
             <div className="grid grid-cols-2 lg:grid-cols-4 gap-4 mb-8">
@@ -42,7 +44,7 @@ export default function MentorWorkspace() {
 
                 {/* Upcoming sessions */}
                 <div className="bg-white border border-[#EAEAEA] rounded-[10px] p-6">
-                    <h2 className="text-[14px] font-bold text-[#111111] mb-5">Upcoming Sessions</h2>
+                    <h2 className="text-[14px] font-bold text-[#111111] mb-5">{dict.workspace.mentor.upcomingSessions}</h2>
                     <div className="flex flex-col divide-y divide-[#F5F5F5]">
                         {SESSIONS.map(s => (
                             <div key={s.startup} className="py-4 flex items-center gap-4">
@@ -55,7 +57,7 @@ export default function MentorWorkspace() {
                                     <p className="text-[12px] text-[#555555] font-medium mt-0.5">📅 {s.date}</p>
                                 </div>
                                 <span className={`text-[11px] font-bold px-2.5 py-1 rounded-full ${s.status === "Confirmed" ? "bg-green-50 text-green-600" : "bg-amber-50 text-amber-600"
-                                    }`}>{s.status}</span>
+                                    }`}>{s.status === "Confirmed" ? dict.workspace.mentor.confirmed : dict.workspace.mentor.pending}</span>
                             </div>
                         ))}
                     </div>
@@ -63,7 +65,7 @@ export default function MentorWorkspace() {
 
                 {/* Startup Requests */}
                 <div className="bg-white border border-[#EAEAEA] rounded-[10px] p-5">
-                    <h2 className="text-[14px] font-bold text-[#111111] mb-4">New Requests</h2>
+                    <h2 className="text-[14px] font-bold text-[#111111] mb-4">{dict.workspace.mentor.newRequests}</h2>
                     <div className="flex flex-col gap-4">
                         {REQUESTS.map(r => (
                             <div key={r.startup} className="border border-[#EAEAEA] rounded-[8px] p-4">
@@ -74,8 +76,8 @@ export default function MentorWorkspace() {
                                 <span className="text-[10px] font-bold bg-[#F5F5F5] text-[#555555] px-2 py-0.5 rounded-full">{r.industry}</span>
                                 <p className="text-[12px] text-[#666666] mt-2 line-clamp-2">{r.message}</p>
                                 <div className="flex gap-2 mt-3">
-                                    <button className="flex-1 text-[11.5px] font-semibold bg-[#111111] text-white py-1.5 rounded-[6px] hover:bg-[#F4B400] hover:text-[#111111] transition-colors">Accept</button>
-                                    <button className="flex-1 text-[11.5px] font-semibold border border-[#EAEAEA] text-[#888888] py-1.5 rounded-[6px] hover:border-[#999] transition-colors">Decline</button>
+                                    <button className="flex-1 text-[11.5px] font-semibold bg-[#111111] text-white py-1.5 rounded-[6px] hover:bg-[#F4B400] hover:text-[#111111] transition-colors">{dict.workspace.mentor.accept}</button>
+                                    <button className="flex-1 text-[11.5px] font-semibold border border-[#EAEAEA] text-[#888888] py-1.5 rounded-[6px] hover:border-[#999] transition-colors">{dict.workspace.mentor.decline}</button>
                                 </div>
                             </div>
                         ))}
