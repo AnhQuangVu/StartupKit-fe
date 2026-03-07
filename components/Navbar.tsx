@@ -43,7 +43,14 @@ export default function Navbar() {
         { label: dict.nav.investments ?? "Đầu tư", href: `${base}/market/investments` },
     ];
 
-    const isActive = (href: string) => pathname?.startsWith(href) && href !== base;
+    const isActive = (href: string) => {
+        if (href === `${base}/market`) {
+            // "Khám phá" tab only active on exact /market, not on sub-routes
+            return pathname === href;
+        }
+        // For other tabs, use startsWith to include nested routes
+        return pathname?.startsWith(href);
+    };
 
     const handleLogout = () => {
         logout();

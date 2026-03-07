@@ -23,7 +23,7 @@ export default async function WorkspaceEntry({
 
     switch (role) {
         case "STARTUP":
-            redirect(`/${locale}/workspace/startup`);
+            redirect(`/${locale}/workspace/projects`);
         case "MENTOR":
             redirect(`/${locale}/workspace/mentor`);
         case "INVESTOR":

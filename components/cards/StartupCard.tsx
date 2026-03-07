@@ -4,6 +4,7 @@ import { useDictionary } from "@/lib/dict-context";
 interface StartupCardProps {
     id: string;
     name: string;
+    tagline: string;
     description: string;
     industry: string;
     stage: string;
@@ -13,6 +14,9 @@ interface StartupCardProps {
     traction?: string;
     logoColor: string;
     locale: string;
+    coverImage?: string;
+    founderName?: string;
+    founderAvatar?: string;
 }
 
 /** Inline SVG icons — stroke currentColor, 14×14. Colors: black / gold / white only. */
@@ -63,13 +67,14 @@ const STAGE_COLORS: Record<string, string> = {
 };
 
 /**
- * StartupCard — AngelList / Crunchbase deal-flow style.
- * Single logo top-left. NO cover image. NO stacked avatars. NO crowdfunding.
- * Layout: [Logo | Name + Industry · Stage · Location] → Description → Info tags → CTA
+ * StartupCard — Storytelling-focused design with cover image.
+ * Layout: Cover Image (with logo overlay) → Founder + Name → Tagline → Meta → AI Score → CTA
+ * Inspired by Product Hunt + AngelList but more visual storytelling.
  */
 export default function StartupCard({
-    id, name, description, industry, stage, score,
+    id, name, tagline, description, industry, stage, score,
     location, teamSize, traction, logoColor, locale,
+    coverImage, founderName, founderAvatar,
 }: StartupCardProps) {
     const dict = useDictionary();
     const initials = name.split(" ").slice(0, 2).map(w => w[0]).join("").toUpperCase();
@@ -77,96 +82,129 @@ export default function StartupCard({
 
     return (
         <article className="
-            bg-white border border-[#EAEAEA] rounded-[10px]
+            group
+            bg-white border border-[#EAEAEA] rounded-[12px]
+            overflow-hidden
             flex flex-col h-full
-            hover:shadow-[0_4px_24px_rgba(0,0,0,0.08)] hover:-translate-y-0.5
-            transition-all duration-200
+            hover:shadow-[0_8px_32px_rgba(0,0,0,0.12)] hover:-translate-y-1
+            hover:border-[#F4B400]
+            transition-all duration-300
         ">
-            {/* ── TOP ROW: Logo + Name + Meta ──────────── */}
-            <div className="flex items-start gap-4 p-5 pb-4">
-                {/* Logo block — single, square, initials */}
+            {/* ── COVER IMAGE SECTION ──────────────── */}
+            <div className="relative w-full bg-gradient-to-br from-[#F5F5F5] to-[#E8E8E8]" style={{ paddingTop: '56.25%' }}>
+                {/* Cover image */}
+                {coverImage ? (
+                    <div className="absolute inset-0">
+                        {/* eslint-disable-next-line @next/next/no-img-element */}
+                        <img
+                            src={coverImage}
+                            alt={`${name} cover`}
+                            className="w-full h-full object-cover"
+                        />
+                        {/* Gradient overlay for better logo visibility */}
+                        <div className="absolute inset-0 bg-gradient-to-t from-black/60 via-black/20 to-transparent" />
+                    </div>
+                ) : (
+                    /* Fallback pattern if no cover image */
+                    <div className="absolute inset-0 flex items-center justify-center">
+                        <div className="text-[80px] opacity-10">{initials}</div>
+                    </div>
+                )}
+
+                {/* Logo overlaid at bottom-left */}
                 <div
-                    className="w-12 h-12 rounded-[8px] flex items-center justify-center text-white text-[13px] font-black shrink-0 shadow-sm"
+                    className="absolute bottom-4 left-4 w-16 h-16 rounded-[10px] flex items-center justify-center text-white text-[16px] font-black shadow-lg border-2 border-white"
                     style={{ backgroundColor: logoColor }}
                     aria-label={`${name} logo`}
                 >
                     {initials}
                 </div>
 
-                {/* Name + quick meta */}
-                <div className="flex-1 min-w-0">
-                    <h3 className="text-[15px] font-bold text-[#111111] leading-tight truncate">
-                        {name}
-                    </h3>
-                    {/* Industry · Stage · Location in one compact row */}
-                    <div className="flex flex-wrap items-center gap-1.5 mt-1.5">
-                        <span className="text-[11px] font-semibold text-[#555555]">{industry}</span>
-                        <span className="text-[#CCCCCC]">·</span>
-                        <span
-                            className="text-[11px] font-bold px-2 py-0.5 rounded-full border"
-                            style={{
-                                color: stageColor,
-                                backgroundColor: `${stageColor}10`,
-                                borderColor: `${stageColor}30`,
-                            }}
-                        >
-                            {stage}
-                        </span>
-                        <span className="text-[#CCCCCC]">·</span>
-                        <span className="flex items-center gap-0.5 text-[11px] text-[#888888]">
-                            <IconLocation /> {location}
-                        </span>
-                    </div>
-                </div>
-            </div>
-
-            {/* Divider */}
-            <div className="border-t border-[#F5F5F5] mx-5" />
-
-            {/* ── DESCRIPTION ───────────────────────── */}
-            <div className="px-5 py-4 flex-1">
-                <p className="text-[13px] text-[#555555] leading-relaxed line-clamp-2">
-                    {description}
-                </p>
-            </div>
-
-            {/* ── INFO TAGS ROW ─────────────────────── */}
-            <div className="px-5 pb-4 flex flex-wrap gap-2">
-                {/* AI Score — gold accent */}
-                <div className="flex items-center gap-1 bg-[#FFFBF0] border border-[#F4B400]/30 text-[#B88A00] px-2.5 py-1 rounded-full">
+                {/* AI Score badge at top-right */}
+                <div className="absolute top-4 right-4 flex items-center gap-1.5 bg-white/95 backdrop-blur-sm px-3 py-1.5 rounded-full shadow-lg">
                     <IconAI />
-                    <span className="text-[11px] font-bold">AI {score}</span>
+                    <span className="text-[12px] font-bold text-[#111111]">{score}</span>
                 </div>
+            </div>
 
-                {/* Team size */}
-                <div className="flex items-center gap-1 bg-[#F5F5F5] text-[#555555] px-2.5 py-1 rounded-full">
-                    <IconTeam />
-                    <span className="text-[11px] font-semibold">{teamSize}</span>
-                </div>
-
-                {/* Traction if provided */}
-                {traction && (
-                    <div className="flex items-center gap-1 bg-[#F5F5F5] text-[#555555] px-2.5 py-1 rounded-full">
-                        <IconTraction />
-                        <span className="text-[11px] font-semibold">{traction}</span>
+            {/* ── CONTENT SECTION ───────────────────── */}
+            <div className="flex flex-col flex-1 p-5">
+                {/* Founder info */}
+                {founderName && (
+                    <div className="flex items-center gap-2 mb-3">
+                        {founderAvatar ? (
+                            /* eslint-disable-next-line @next/next/no-img-element */
+                            <img
+                                src={founderAvatar}
+                                alt={founderName}
+                                className="w-6 h-6 rounded-full object-cover"
+                            />
+                        ) : (
+                            <div className="w-6 h-6 rounded-full bg-[#E8E8E8] flex items-center justify-center text-[10px] font-bold text-[#888888]">
+                                {founderName.charAt(0)}
+                            </div>
+                        )}
+                        <span className="text-[11px] text-[#888888] font-medium">{founderName}</span>
                     </div>
                 )}
-            </div>
 
-            {/* ── BOTTOM CTA ────────────────────────── */}
-            <div className="border-t border-[#F5F5F5] px-5 py-4">
+                {/* Startup name */}
+                <h3 className="text-[18px] font-bold text-[#111111] leading-tight mb-2">
+                    {name}
+                </h3>
+
+                {/* Tagline */}
+                <p className="text-[13px] text-[#555555] leading-relaxed mb-4 line-clamp-2">
+                    {tagline}
+                </p>
+
+                {/* Meta info row */}
+                <div className="flex flex-wrap items-center gap-2 mb-4">
+                    <span
+                        className="text-[11px] font-bold px-2.5 py-1 rounded-full border"
+                        style={{
+                            color: stageColor,
+                            backgroundColor: `${stageColor}10`,
+                            borderColor: `${stageColor}30`,
+                        }}
+                    >
+                        {stage}
+                    </span>
+                    <span className="text-[11px] font-semibold text-[#555555] bg-[#F5F5F5] px-2.5 py-1 rounded-full">
+                        {industry}
+                    </span>
+                    <span className="flex items-center gap-1 text-[11px] text-[#888888]">
+                        <IconLocation /> {location}
+                    </span>
+                </div>
+
+                {/* Traction highlight */}
+                {traction && (
+                    <div className="flex items-center gap-2 mb-4 p-3 bg-[#F9F9F9] rounded-[8px] border border-[#EAEAEA]">
+                        <IconTraction />
+                        <span className="text-[12px] font-semibold text-[#111111]">{traction}</span>
+                    </div>
+                )}
+
+                {/* Spacer */}
+                <div className="flex-1" />
+
+                {/* CTA Button */}
                 <Link
                     href={`/${locale}/project/${id}`}
                     className="
-                        w-full flex items-center justify-center gap-1.5
-                        text-[13px] font-semibold
+                        w-full flex items-center justify-center gap-2
+                        text-[13px] font-bold
                         bg-[#111111] text-white
-                        py-2.5 rounded-[8px]
-                        hover:bg-[#F4B400] hover:text-[#111111]
-                        transition-colors
+                        px-5 py-3 rounded-[8px]
+                        group-hover:bg-[#F4B400] group-hover:text-[#111111]
+                        transition-all duration-300
                     "
                 >
-                    {dict.card.viewProfile} →
+                    {dict.card.viewProfile}
+                    <svg width="14" height="14" viewBox="0 0 14 14" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                        <path d="M2 7h10M9 3l4 4-4 4" />
+                    </svg>
                 </Link>
             </div>
         </article>

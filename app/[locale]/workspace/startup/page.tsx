@@ -119,7 +119,7 @@ export default function StartupWorkspace() {
                             {[
                                 { label: dict.workspace.startup.findMentor, href: "/market/mentors" },
                                 { label: dict.workspace.startup.browseInvestors, href: "/market/investments" },
-                                { label: dict.workspace.startup.updatePitch, href: "/workspace/startup/projects" },
+                                { label: dict.workspace.startup.updatePitch, href: "/workspace/projects" },
                             ].map(a => (
                                 <button key={a.label}
                                     className="text-left text-[12.5px] text-white/70 hover:text-[#F4B400] transition-colors py-1">

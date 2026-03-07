@@ -66,7 +66,7 @@ export default function WorkspaceLayout({ children, title, subtitle, actions }: 
     const locale = (params?.locale as Locale) ?? "vi";
     const role = user?.role ?? "STARTUP";
     const roleLower = role.toLowerCase();
-    const base = `/${locale}/workspace/${roleLower}`;
+    const base = role === "STARTUP" ? `/${locale}/workspace` : `/${locale}/workspace/${roleLower}`;
     const navItems = SIDEBAR_NAV[role] ?? SIDEBAR_NAV.STARTUP;
 
     // Active: exact match for dashboard, startsWith for sub-pages

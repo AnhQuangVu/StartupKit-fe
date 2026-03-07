@@ -1,16 +1,24 @@
 "use client";
 
+import { useState, useEffect } from "react";
+import { usePathname } from "next/navigation";
 import { useDictionary } from "@/lib/dict-context";
 
 export default function ChatWidget() {
+    const pathname = usePathname();
     const dict = useDictionary();
     const c = dict.chat;
     const [open, setOpen] = useState(false);
     const [mounted, setMounted] = useState(false);
 
+    const isProjectCreateFlow =
+        pathname?.includes("/workspace/startup/projects/create") ||
+        pathname?.includes("/workspace/projects/create");
+
     // Avoid hydration mismatch
     useEffect(() => setMounted(true), []);
     if (!mounted) return null;
+    if (isProjectCreateFlow) return null;
 
     return (
         <>
@@ -90,9 +98,6 @@ export default function ChatWidget() {
         </>
     );
 }
-
-// Add missing React imports at top — this file needs useState/useEffect
-import { useState, useEffect } from "react";
 
 function ChatIcon({ className, size = 20 }: { className?: string; size?: number }) {
     return (
