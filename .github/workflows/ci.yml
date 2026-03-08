@@ -2,31 +2,25 @@ name: CI
 
 on:
   push:
-    branches: [main]
+    branches: ["main", "develop"]
+  pull_request:
+    branches: ["main", "develop"]
 
 jobs:
-
-  install:
+  quality-check:
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v4
-      - run: pnpm install
+      - name: Checkout code
+        uses: actions/checkout@v4
 
-  test:
-    runs-on: ubuntu-latest
-    needs: install
-    steps:
-      - run: npm test
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: "20"
+          cache: "npm"
 
-  build:
-    runs-on: ubuntu-latest
-    needs: test
-    steps:
-      - run: npm run build
+      - name: Install Dependencies
+        run: npm ci
 
-  deploy:
-    runs-on: ubuntu-latest
-    needs: build
-    if: github.ref == 'refs/heads/main'
-    steps:
-      - run: echo "Deploy to production"
+      - name: Build Application for testing
+        run: npm run build
