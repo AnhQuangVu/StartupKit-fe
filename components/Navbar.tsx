@@ -21,10 +21,6 @@ export default function Navbar() {
     const locale = (params?.locale as Locale) ?? "vi";
     const base = `/${locale}`;
 
-    // Hide on auth pages
-    const isAuthPage = pathname?.includes("/login") || pathname?.includes("/register") || pathname?.includes("/2fa");
-    if (isAuthPage) return null;
-
     // Close dropdown on outside click
     useEffect(() => {
         function handler(e: MouseEvent) {
@@ -35,6 +31,10 @@ export default function Navbar() {
         document.addEventListener("mousedown", handler);
         return () => document.removeEventListener("mousedown", handler);
     }, []);
+
+    // Hide on auth pages
+    const isAuthPage = pathname?.includes("/login") || pathname?.includes("/register") || pathname?.includes("/2fa");
+    if (isAuthPage) return null;
 
     const navItems = [
         { label: dict.nav.market ?? "Khám phá", href: `${base}/market` },
