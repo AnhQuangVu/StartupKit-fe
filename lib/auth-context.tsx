@@ -1,6 +1,6 @@
 "use client";
 
-import { createContext, useContext, useState, type ReactNode } from "react";
+import { createContext, useContext, useEffect, useState, type ReactNode } from "react";
 
 export type UserRole = "GUEST" | "STARTUP" | "MENTOR" | "INVESTOR" | "ADMIN";
 
@@ -27,8 +27,27 @@ const MOCK_USERS: Record<UserRole, AuthUser | null> = {
     ADMIN: { id: "a1", name: "StartupKit Admin", email: "admin@startupkit.vn", role: "ADMIN", avatarSeed: "admin" },
 };
 
+const ROLE_COOKIE_KEY = "startupkit_role";
+
+const parseRoleFromCookie = (): UserRole | null => {
+    if (typeof document === "undefined") return null;
+    const roleCookie = document.cookie
+        .split("; ")
+        .find((item) => item.startsWith(`${ROLE_COOKIE_KEY}=`))
+        ?.split("=")[1];
+
+    if (!roleCookie) return null;
+    const value = decodeURIComponent(roleCookie) as UserRole;
+    return ["GUEST", "STARTUP", "MENTOR", "INVESTOR", "ADMIN"].includes(value) ? value : null;
+};
+
+const setRoleCookie = (role: UserRole) => {
+    if (typeof document === "undefined") return;
+    document.cookie = `${ROLE_COOKIE_KEY}=${encodeURIComponent(role)}; path=/; max-age=2592000; SameSite=Lax`;
+};
+
 const AuthContext = createContext<AuthContextValue>({
-    user: MOCK_USERS.STARTUP,
+    user: MOCK_USERS.MENTOR,
     isAuthenticated: true,
     login: () => { },
     logout: () => { },
@@ -36,14 +55,31 @@ const AuthContext = createContext<AuthContextValue>({
 
 /**
  * AuthProvider — wraps the app.
- * Dev: defaults to STARTUP role mock.
+ * Dev: defaults to MENTOR role mock.
  * Production: replace with real session fetch.
  */
 export function AuthProvider({ children }: { children: ReactNode }) {
-    const [user, setUser] = useState<AuthUser | null>(MOCK_USERS.STARTUP);
+    const [user, setUser] = useState<AuthUser | null>(() => {
+        if (typeof window === "undefined") return MOCK_USERS.MENTOR;
+        const fromCookie = parseRoleFromCookie();
+        if (fromCookie && MOCK_USERS[fromCookie]) return MOCK_USERS[fromCookie];
+        return MOCK_USERS.MENTOR;
+    });
 
-    const login = (role: UserRole) => setUser(MOCK_USERS[role] ?? null);
-    const logout = () => setUser(null);
+    useEffect(() => {
+        if (user?.role) {
+            setRoleCookie(user.role);
+        }
+    }, [user]);
+
+    const login = (role: UserRole) => {
+        setRoleCookie(role);
+        setUser(MOCK_USERS[role] ?? null);
+    };
+    const logout = () => {
+        setRoleCookie("GUEST");
+        setUser(null);
+    };
 
     return (
         <AuthContext.Provider value={{ user, isAuthenticated: user !== null, login, logout }}>
