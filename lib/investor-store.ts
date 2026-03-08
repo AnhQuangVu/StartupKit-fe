@@ -129,10 +129,13 @@ export function saveInvestorProfile(profile: InvestorProfile) {
   window.localStorage.setItem(INVESTOR_PROFILE_STORAGE_KEY, JSON.stringify(profile));
 }
 
+let messageIdCounter = 0;
+let conversationIdCounter = 0;
+
 export function createConversationId(): string {
-  return `conv-${Date.now()}`;
+  return `conv-${Date.now()}-${conversationIdCounter++}`;
 }
 
 export function createMessageId(): string {
-  return `msg-${Date.now()}`;
+  return `msg-${Date.now()}-${messageIdCounter++}`;
 }

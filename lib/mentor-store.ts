@@ -128,7 +128,7 @@ export function acceptMentorRequest(requestId: string): MentorSession | null {
 
   // Convert request to session
   const session: MentorSession = {
-    id: `sess-${Date.now()}`,
+    id: createSessionId(),
     founderId: request.founderId,
     founderName: request.founderName,
     startupName: request.startupName,
@@ -213,14 +213,18 @@ export function saveMentorProfile(profile: MentorProfile) {
   window.localStorage.setItem(MENTOR_PROFILE_STORAGE_KEY, JSON.stringify(profile));
 }
 
+let conversationIdCounter = 0;
+let messageIdCounter = 0;
+let sessionIdCounter = 0;
+
 export function createConversationId(): string {
-  return `conv-${Date.now()}`;
+  return `conv-${Date.now()}-${conversationIdCounter++}`;
 }
 
 export function createMessageId(): string {
-  return `msg-${Date.now()}`;
+  return `msg-${Date.now()}-${messageIdCounter++}`;
 }
 
 export function createSessionId(): string {
-  return `sess-${Date.now()}`;
+  return `sess-${Date.now()}-${sessionIdCounter++}`;
 }

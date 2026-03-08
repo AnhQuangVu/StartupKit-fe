@@ -125,7 +125,9 @@ export const emptyProjectSections = {
   },
 };
 
-export const createProjectId = () => `p-${Date.now()}`;
+let projectIdCounter = 0;
+
+export const createProjectId = () => `p-${Date.now()}-${projectIdCounter++}`;
 
 export function loadFounderProjects(): FounderProject[] {
   if (typeof window === "undefined") return [];
