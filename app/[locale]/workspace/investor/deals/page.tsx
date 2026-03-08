@@ -2,16 +2,20 @@
 
 import { useState, useEffect } from "react";
 import { useParams } from "next/navigation";
+import Link from "next/link";
 import WorkspaceLayout from "@/components/WorkspaceLayout";
 import { useDictionary } from "@/lib/dict-context";
 import { loadFounderProjects, type FounderProject } from "@/lib/project-store";
 import type { Locale } from "@/lib/i18n";
 import AIScoreBadge from "@/components/ui/AIScoreBadge";
 import { loadSavedDeals, saveSavedDeal, unsaveSavedDeal, isSavedDeal } from "@/lib/investor-store";
+import { useAuth } from "@/lib/auth-context";
+import { findDeal, getInvestorRequests } from "@/lib/investment-store";
 
 export default function InvestorDealsPage() {
     const dict = useDictionary();
     const params = useParams();
+    const { user } = useAuth();
     const locale = (params?.locale as Locale) ?? "vi";
 
     const [deals, setDeals] = useState<FounderProject[]>([]);
@@ -53,8 +57,7 @@ export default function InvestorDealsPage() {
                 description: "Mobile app + IoT sensors for soil monitoring and crop disease detection",
                 techStack: "React Native, Python, AWS",
                 demoLink: "https://demo.agribot.vn",
-                screenshots: "",
-                financials: ""
+                screenshots: ""
             },
             market: {
                 targetMarket: "Rice & vegetable farming in Vietnam",
@@ -108,8 +111,7 @@ export default function InvestorDealsPage() {
                 description: "Web + mobile app for peer-to-peer and merchant payments",
                 techStack: "Vue.js, Go, Solana blockchain",
                 demoLink: "https://beta.payease.asia",
-                screenshots: "",
-                financials: ""
+                screenshots: ""
             },
             market: {
                 targetMarket: "Migrant workers & SMEs in SEA",
@@ -163,8 +165,7 @@ export default function InvestorDealsPage() {
                 description: "Mobile app with AI risk assessment engine and telehealth integration",
                 techStack: "Flutter, TensorFlow, PostgreSQL",
                 demoLink: "https://healthscore.vn/demo",
-                screenshots: "",
-                financials: ""
+                screenshots: ""
             },
             market: {
                 targetMarket: "Corporate wellness programs in Vietnam",
@@ -252,12 +253,26 @@ export default function InvestorDealsPage() {
 
     const industries = Array.from(new Set(deals.map(d => d.basicInfo.industry)));
     const stages = Array.from(new Set(deals.map(d => d.funding.fundingStage)));
+    const investorRequests = user?.id ? getInvestorRequests(user.id) : [];
+    const pendingCount = investorRequests.filter((item) => item.status === "pending").length;
+    const activeDealsCount = user?.id ? deals.filter((deal) => !!findDeal(deal.id, user.id)).length : 0;
 
     return (
         <WorkspaceLayout
             title={dict.workspace.investor.dealFlow}
             subtitle={dict.workspace.investor.dealFlowSub}
         >
+            <div className="mb-4 grid grid-cols-1 md:grid-cols-2 gap-4">
+                <div className="bg-white border border-[#EAEAEA] rounded-xl p-4">
+                    <p className="text-[11px] font-bold text-[#888888] uppercase">Pending requests</p>
+                    <p className="text-[24px] font-black text-[#111111]">{pendingCount}</p>
+                </div>
+                <div className="bg-white border border-[#EAEAEA] rounded-xl p-4">
+                    <p className="text-[11px] font-bold text-[#888888] uppercase">Active deals</p>
+                    <p className="text-[24px] font-black text-[#111111]">{activeDealsCount}</p>
+                </div>
+            </div>
+
             {/* Filters */}
             <div className="mb-8 bg-white rounded-xl border border-[#EAEAEA] p-6">
                 <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-5 gap-4">
@@ -356,6 +371,10 @@ export default function InvestorDealsPage() {
             ) : (
                 <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
                     {filteredDeals.map(deal => (
+                        (() => {
+                            const request = investorRequests.find((item) => item.startup_id === deal.id);
+                            const activeDeal = user?.id ? findDeal(deal.id, user.id) : undefined;
+                            return (
                         <div
                             key={deal.id}
                             className="bg-white border border-[#EAEAEA] rounded-xl overflow-hidden hover:shadow-md transition"
@@ -385,6 +404,17 @@ export default function InvestorDealsPage() {
                                     <span className="text-[11px] font-bold bg-blue-50 text-blue-600 px-2.5 py-1 rounded-full">
                                         {deal.funding.fundingStage}
                                     </span>
+                                    {request ? (
+                                        <span className={`text-[11px] font-bold px-2.5 py-1 rounded-full ${
+                                            request.status === "pending"
+                                                ? "bg-amber-50 text-amber-700"
+                                                : request.status === "accepted"
+                                                    ? "bg-green-50 text-green-700"
+                                                    : "bg-red-50 text-red-700"
+                                        }`}>
+                                            Request: {request.status}
+                                        </span>
+                                    ) : null}
                                 </div>
 
                                 {/* Metrics */}
@@ -420,9 +450,12 @@ export default function InvestorDealsPage() {
 
                             {/* Actions */}
                             <div className="p-5 border-t border-[#EAEAEA] flex gap-2">
-                                <button className="flex-1 px-3 py-2 bg-[#111111] text-white font-semibold text-sm rounded-lg hover:bg-[#333333] transition">
+                                <Link
+                                    href={`/${locale}/startup/${deal.slug}`}
+                                    className="flex-1 px-3 py-2 bg-[#111111] text-white font-semibold text-sm rounded-lg hover:bg-[#333333] transition text-center"
+                                >
                                     {dict.workspace.investor.viewStartup}
-                                </button>
+                                </Link>
                                 <button
                                     onClick={() => handleSaveDeal(deal.id)}
                                     className={`flex-1 px-3 py-2 font-semibold text-sm rounded-lg transition ${
@@ -433,11 +466,24 @@ export default function InvestorDealsPage() {
                                 >
                                     {savedDealIds.has(deal.id) ? "✓" : dict.workspace.investor.saveDeal}
                                 </button>
-                                <button className="flex-1 px-3 py-2 border border-[#EAEAEA] text-[#111111] font-semibold text-sm rounded-lg hover:bg-[#F5F5F5] transition">
+                                <Link
+                                    href={`/${locale}/workspace/messages`}
+                                    className="flex-1 px-3 py-2 border border-[#EAEAEA] text-[#111111] font-semibold text-sm rounded-lg hover:bg-[#F5F5F5] transition text-center"
+                                >
                                     {dict.workspace.investor.messageFounder}
-                                </button>
+                                </Link>
+                                {activeDeal ? (
+                                    <Link
+                                        href={`/${locale}/workspace/deal-room/${activeDeal.id}`}
+                                        className="flex-1 px-3 py-2 border border-[#111111] text-[#111111] font-semibold text-sm rounded-lg hover:bg-[#F5F5F5] transition text-center"
+                                    >
+                                        View Deal Room
+                                    </Link>
+                                ) : null}
                             </div>
                         </div>
+                            );
+                        })()
                     ))}
                 </div>
             )}

@@ -15,35 +15,40 @@ type NavDict = Record<string, NavItem[]>;
 
 const SIDEBAR_NAV: NavDict = {
     STARTUP: [
-        { labelKey: "dashboard", href: "", Icon: IconGrid },
         { labelKey: "myProjects", href: "projects", Icon: IconRocket },
-        { labelKey: "mentorConns", href: "mentors", Icon: IconUsers },
+        { labelKey: "analytics", href: "analytics", Icon: IconBarChart },
         { labelKey: "investorConns", href: "investors", Icon: IconBriefcase },
+        { labelKey: "mentorConns", href: "mentors", Icon: IconUsers },
         { labelKey: "messages", href: "messages", Icon: IconMessage },
+        { labelKey: "notifications", href: `/${"[locale]"}/workspace/notifications`, Icon: IconBell },
         { labelKey: "settings", href: "settings", Icon: IconSettings },
     ],
     MENTOR: [
-        { labelKey: "dashboard", href: "", Icon: IconGrid },
         { labelKey: "sessions", href: "sessions", Icon: IconCalendar },
         { labelKey: "startupReqs", href: "requests", Icon: IconInbox },
         { labelKey: "messages", href: "messages", Icon: IconMessage },
+        { labelKey: "notifications", href: `/${"[locale]"}/workspace/notifications`, Icon: IconBell },
         { labelKey: "myProfile", href: "profile", Icon: IconUser },
         { labelKey: "settings", href: "settings", Icon: IconSettings },
     ],
     INVESTOR: [
-        { labelKey: "dashboard", href: "", Icon: IconGrid },
         { labelKey: "dealFlow", href: "deals", Icon: IconBarChart },
         { labelKey: "savedStartups", href: "saved", Icon: IconStar },
         { labelKey: "messages", href: "messages", Icon: IconMessage },
+        { labelKey: "notifications", href: `/${"[locale]"}/workspace/notifications`, Icon: IconBell },
         { labelKey: "myProfile", href: "profile", Icon: IconUser },
         { labelKey: "settings", href: "settings", Icon: IconSettings },
     ],
     ADMIN: [
-        { labelKey: "dashboard", href: "", Icon: IconGrid },
+        { labelKey: "dashboard", href: "dashboard", Icon: IconGrid },
         { labelKey: "userMgmt", href: "users", Icon: IconUsers },
-        { labelKey: "startupApprovals", href: "approvals", Icon: IconRocket },
-        { labelKey: "mentorVerification", href: "mentors", Icon: IconShield },
+        { labelKey: "adminProjects", href: "projects", Icon: IconRocket },
+        { labelKey: "adminInvestors", href: "investors", Icon: IconBriefcase },
+        { labelKey: "adminMentors", href: "mentors", Icon: IconShield },
         { labelKey: "reports", href: "reports", Icon: IconBarChart },
+        { labelKey: "moderation", href: "moderation", Icon: IconShield },
+        { labelKey: "payments", href: "payments", Icon: IconStar },
+        { labelKey: "analytics", href: "analytics", Icon: IconBarChart },
         { labelKey: "settings", href: "settings", Icon: IconSettings },
     ],
 };
@@ -66,7 +71,7 @@ export default function WorkspaceLayout({ children, title, subtitle, actions }: 
     const locale = (params?.locale as Locale) ?? "vi";
     const role = user?.role ?? "STARTUP";
     const roleLower = role.toLowerCase();
-    const base = role === "STARTUP" ? `/${locale}/workspace` : `/${locale}/workspace/${roleLower}`;
+    const base = role === "STARTUP" ? `/${locale}/workspace/startup` : `/${locale}/workspace/${roleLower}`;
     const navItems = SIDEBAR_NAV[role] ?? SIDEBAR_NAV.STARTUP;
 
     // Active: exact match for dashboard, startsWith for sub-pages
@@ -107,9 +112,16 @@ export default function WorkspaceLayout({ children, title, subtitle, actions }: 
                 {/* Nav items */}
                 <nav className="flex-1 overflow-y-auto py-2">
                     {navItems.map(({ labelKey, href, Icon }) => {
-                        const active = isActive(href);
+                        const resolvedHref = href.includes("[locale]")
+                            ? href.replace("[locale]", locale)
+                            : href.startsWith("/")
+                                ? `/${locale}${href}`
+                                : (href === "" ? base : `${base}/${href}`);
+                        const active = href.startsWith("/") || href.includes("[locale]")
+                            ? pathname === resolvedHref || pathname?.startsWith(`${resolvedHref}/`)
+                            : isActive(href);
                         return (
-                            <Link key={href} href={href === "" ? base : `${base}/${href}`}
+                            <Link key={`${labelKey}-${href}`} href={resolvedHref}
                                 onClick={() => setSidebarOpen(false)}
                                 className={`
                                     flex items-center gap-3 px-5 py-[10px] text-[13px] font-medium transition-all

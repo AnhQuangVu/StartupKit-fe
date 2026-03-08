@@ -6,10 +6,14 @@ import { useParams } from "next/navigation";
 import { Card, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { useDictionary } from "@/lib/dict-context";
+import { useAuth } from "@/lib/auth-context";
+import { createInvestmentRequest } from "@/lib/investment-store";
+import { createNotification } from "@/lib/notification-store";
 
 const LANDING_PROJECTS_STORAGE_KEY = "startupkit_founder_projects";
 
 type LandingProject = {
+  id?: string;
   slug: string;
   startupName: string;
   tagline?: string;
@@ -61,6 +65,7 @@ type LandingProject = {
 
 const FALLBACK_DATA: Record<string, LandingProject> = {
   "agribot-ai": {
+    id: "s1",
     slug: "agribot-ai",
     startupName: "AgriBot AI",
     tagline: "AI crop intelligence for smallholder farmers",
@@ -86,9 +91,14 @@ export default function StartupLandingPage() {
   const params = useParams() as { locale: string; slug: string };
   const locale = params.locale;
   const slug = params.slug;
+  const { user } = useAuth();
   const dict = useDictionary();
   const L = dict.workspace.startup.createForm.landingPage;
   const [project, setProject] = useState<LandingProject | null>(null);
+  const [showRequestModal, setShowRequestModal] = useState(false);
+  const [message, setMessage] = useState("");
+  const [amountRange, setAmountRange] = useState("");
+  const [notes, setNotes] = useState("");
 
   useEffect(() => {
     const raw = window.localStorage.getItem(LANDING_PROJECTS_STORAGE_KEY);
@@ -125,8 +135,41 @@ export default function StartupLandingPage() {
   const contactHref = useMemo(() => {
     if (founderLinkedin) return founderLinkedin;
     if (founderEmail) return `mailto:${founderEmail}`;
-    return `/${locale}/workspace/projects`;
+    return `/${locale}/workspace/startup/projects`;
   }, [founderEmail, founderLinkedin, locale]);
+
+  const handleRequestInvestment = () => {
+    if (!project || user?.role !== "INVESTOR") return;
+    const trimmedMessage = message.trim();
+    const trimmedAmount = amountRange.trim();
+    if (!trimmedMessage || !trimmedAmount) return;
+
+    const request = createInvestmentRequest({
+      startup_id: project.id || project.slug,
+      startup_slug: project.slug,
+      startup_name: startupName,
+      investor_id: user.id,
+      investor_name: user.name,
+      message: trimmedMessage,
+      amount_range: trimmedAmount,
+      notes: notes.trim(),
+    });
+
+    createNotification({
+      recipient_role: "STARTUP",
+      type: "deal_interest",
+      title: "An investor is interested in your startup.",
+      description: `${user.name} requested investment in ${startupName}.`,
+      link: `/${locale}/workspace/notifications`,
+      avatar: user.avatarSeed,
+    });
+
+    setShowRequestModal(false);
+    setMessage("");
+    setAmountRange("");
+    setNotes("");
+    window.alert(`Investment request submitted (${request.id}).`);
+  };
 
   if (!project) {
     return (
@@ -155,6 +198,14 @@ export default function StartupLandingPage() {
             <a href={contactHref} target="_blank" rel="noreferrer">
               <Button className="bg-[#FFD600] hover:bg-[#FFD600]/90 text-black font-semibold">{L.cta}</Button>
             </a>
+            {user?.role === "INVESTOR" ? (
+              <Button
+                onClick={() => setShowRequestModal(true)}
+                className="bg-white text-[#111111] hover:bg-[#F5F5F5]"
+              >
+                Request Investment
+              </Button>
+            ) : null}
             {website ? (
               <a href={website} target="_blank" rel="noreferrer">
                 <Button variant="outline" className="border-white text-white hover:bg-white hover:text-black">Website</Button>
@@ -247,6 +298,60 @@ export default function StartupLandingPage() {
           </CardContent>
         </Card>
       </main>
+
+      {showRequestModal ? (
+        <div className="fixed inset-0 bg-black/50 z-50 flex items-center justify-center p-4">
+          <div className="w-full max-w-lg bg-white rounded-xl border border-[#EAEAEA] p-6">
+            <h3 className="text-[18px] font-bold text-[#111111] mb-1">Request Investment</h3>
+            <p className="text-[12px] text-[#666666] mb-4">Send your interest and amount range to the founder.</p>
+
+            <div className="space-y-3">
+              <div>
+                <label className="text-[12px] font-semibold text-[#555555]">Investor message</label>
+                <textarea
+                  value={message}
+                  onChange={(e) => setMessage(e.target.value)}
+                  className="w-full mt-1 min-h-[96px] border border-[#EAEAEA] rounded-lg px-3 py-2 text-sm"
+                  placeholder="Tell the founder why you're interested..."
+                />
+              </div>
+              <div>
+                <label className="text-[12px] font-semibold text-[#555555]">Estimated investment amount</label>
+                <input
+                  value={amountRange}
+                  onChange={(e) => setAmountRange(e.target.value)}
+                  className="w-full mt-1 border border-[#EAEAEA] rounded-lg px-3 py-2 text-sm"
+                  placeholder="$100,000 - $300,000"
+                />
+              </div>
+              <div>
+                <label className="text-[12px] font-semibold text-[#555555]">Optional note</label>
+                <textarea
+                  value={notes}
+                  onChange={(e) => setNotes(e.target.value)}
+                  className="w-full mt-1 min-h-[72px] border border-[#EAEAEA] rounded-lg px-3 py-2 text-sm"
+                  placeholder="Due diligence focus, timeline, or meeting preference"
+                />
+              </div>
+            </div>
+
+            <div className="mt-5 flex justify-end gap-2">
+              <button
+                onClick={() => setShowRequestModal(false)}
+                className="px-4 py-2 border border-[#EAEAEA] rounded-lg text-sm text-[#111111]"
+              >
+                Cancel
+              </button>
+              <button
+                onClick={handleRequestInvestment}
+                className="px-4 py-2 bg-[#111111] text-white rounded-lg text-sm"
+              >
+                Submit Request
+              </button>
+            </div>
+          </div>
+        </div>
+      ) : null}
     </div>
   );
 }

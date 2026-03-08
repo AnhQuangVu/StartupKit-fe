@@ -3,9 +3,9 @@ import { type Locale } from "@/lib/i18n";
 
 type Role = "GUEST" | "STARTUP" | "MENTOR" | "INVESTOR" | "ADMIN";
 
-// FIXME: Replace with real auth checks (hiện đang mock STARTUP cho dev)
+// FIXME: Replace with real auth checks (hiện đang mock MENTOR cho dev)
 async function getSession(): Promise<{ role: Role }> {
-    return { role: "STARTUP" };
+    return { role: "MENTOR" };
 }
 
 export default async function WorkspaceEntry({
@@ -23,7 +23,7 @@ export default async function WorkspaceEntry({
 
     switch (role) {
         case "STARTUP":
-            redirect(`/${locale}/workspace/projects`);
+            redirect(`/${locale}/workspace/startup/projects`);
         case "MENTOR":
             redirect(`/${locale}/workspace/mentor`);
         case "INVESTOR":

@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { Suspense, useEffect, useState } from "react";
 import { useDictionary } from "@/lib/dict-context";
 import { useParams, usePathname, useRouter, useSearchParams } from "next/navigation";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
@@ -191,7 +191,7 @@ const FALLBACK_EDIT_PROJECTS: Record<string, { status: ProjectStatus; formData: 
   },
 };
 
-export default function CreateProjectPage() {
+function CreateProjectPageContent() {
   const dict = useDictionary();
   const router = useRouter();
   const pathname = usePathname();
@@ -766,5 +766,13 @@ export default function CreateProjectPage() {
         </div>
       </div>
     </div>
+  );
+}
+
+export default function CreateProjectPage() {
+  return (
+    <Suspense fallback={<div className="min-h-screen bg-[#F8F8F8]" />}>
+      <CreateProjectPageContent />
+    </Suspense>
   );
 }
