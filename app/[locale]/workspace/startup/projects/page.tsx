@@ -110,7 +110,7 @@ export default function StartupProjectsPage() {
             subtitle={dict.workspace.startup.projectsSub}
             actions={
                 <Link
-                    href={`/${locale}/workspace/projects/create/template`}
+                    href={`/${locale}/workspace/startup/projects/create/template`}
                     className="inline-flex items-center gap-1.5 bg-[#111111] text-white text-[12.5px] font-semibold px-4 py-2 rounded-[8px] hover:bg-[#F4B400] hover:text-[#111111] transition-colors"
                 >
                     <IconPlus className="text-current" /> {dict.workspace.startup.newProject}
@@ -187,7 +187,7 @@ export default function StartupProjectsPage() {
 
                 {/* Create new card */}
                 <Link
-                    href={`/${locale}/workspace/projects/create/template`}
+                    href={`/${locale}/workspace/startup/projects/create/template`}
                     className="border-2 border-dashed border-[#EAEAEA] rounded-[10px] p-8 flex flex-col items-center justify-center gap-3 hover:border-[#F4B400] hover:bg-[#FFFBF0] transition-all group w-full h-full"
                 >
                     <div className="w-10 h-10 rounded-full bg-[#F5F5F5] group-hover:bg-[#F4B400] flex items-center justify-center transition-colors">
