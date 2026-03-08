@@ -1,3 +1,5 @@
+"use client"
+
 import GuestMarketplaceFeed from "@/components/marketplace/GuestMarketplaceFeed";
 import StartupMarketplaceFeed from "@/components/marketplace/StartupMarketplaceFeed";
 import MentorMarketplaceFeed from "@/components/marketplace/MentorMarketplaceFeed";

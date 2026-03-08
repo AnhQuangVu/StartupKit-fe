@@ -1,3 +1,4 @@
+"use client"
 import EcosystemMapHero from "@/components/EcosystemMapHero";
 import EcosystemStats from "@/components/EcosystemStats";
 import RoleEcosystem from "@/components/RoleEcosystem";
