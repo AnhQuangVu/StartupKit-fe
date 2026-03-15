@@ -14,7 +14,7 @@ import CTASection from "@/components/CTASection";
  * URL: /[locale]
  * Navbar, Footer, ChatWidget are injected by app/[locale]/layout.tsx — do NOT add them here.
  */
-export default async function LandingPage() {
+export default function LandingPage() {
     return (
         <>
             <EcosystemMapHero />
