@@ -5,7 +5,7 @@ import { useParams, useRouter } from "next/navigation";
 import type { Locale } from "@/lib/i18n";
 
 export default function DevRolePage() {
-    const { user, login } = useAuth();
+    const { user, login, logout } = useAuth();
     const params = useParams();
     const router = useRouter();
     const locale = (params?.locale as Locale) ?? "vi";
@@ -20,6 +20,11 @@ export default function DevRolePage() {
     const handleRoleSwitch = (role: string) => {
         login(role as any);
         router.push(`/${locale}/workspace`);
+    };
+
+    const handleLogout = () => {
+        logout();
+        router.push(`/${locale}`);
     };
 
     return (
@@ -65,6 +70,13 @@ export default function DevRolePage() {
                         </button>
                     ))}
                 </div>
+
+                <button
+                    onClick={handleLogout}
+                    className="w-full mt-4 p-4 rounded-xl font-semibold text-gray-700 bg-gray-100 hover:bg-gray-200 transition-all duration-200 hover:scale-105"
+                >
+                    Guest (Chưa đăng nhập)
+                </button>
 
                 <div className="mt-8 pt-6 border-t border-gray-200">
                     <h3 className="text-xs font-semibold text-gray-700 mb-3">Role Access:</h3>
