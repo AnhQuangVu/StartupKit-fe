@@ -74,8 +74,8 @@
     },
     "hero": {
         "powered": "Được vận hành bởi StartupKit",
-        "title1": "Hệ sinh thái",
-        "title2": "Khởi nghiệp Việt Nam",
+        "title1": "Phóng ý tưởng",
+        "title2": "Hướng tương lai",
         "ai": "Kết nối AI giữa Startup, Mentor và Nhà đầu tư trên toàn Việt Nam.",
         "sub": "Kết nối nhà sáng lập, cố vấn và nhà đầu tư tại Đông Nam Á.",
         "cta1": "Khám phá hệ sinh thái",
@@ -84,7 +84,7 @@
     },
     "stats": {
         "label": "Tổng quan hệ sinh thái",
-        "title": "Hệ sinh thái Khởi nghiệp Việt Nam",
+        "title": "Hướng tới Hệ sinh thái Khởi nghiệp Việt Nam đạt",
         "startups": "Startup",
         "investors": "Nhà đầu tư",
         "accelerators": "Vườn ươm",

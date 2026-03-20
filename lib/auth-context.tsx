@@ -1,6 +1,6 @@
 "use client";
 
-import { createContext, useContext, useEffect, useState, type ReactNode } from "react";
+import { createContext, useContext, useState, type ReactNode } from "react";
 
 export type UserRole = "GUEST" | "STARTUP" | "MENTOR" | "INVESTOR" | "ADMIN";
 
@@ -29,17 +29,6 @@ const MOCK_USERS: Record<UserRole, AuthUser | null> = {
 
 const ROLE_COOKIE_KEY = "startupkit_role";
 
-const parseRoleFromCookie = (): UserRole | null => {
-    if (typeof document === "undefined") return null;
-    const roleCookie = document.cookie
-        .split("; ")
-        .find((item) => item.startsWith(`${ROLE_COOKIE_KEY}=`))
-        ?.split("=")[1];
-
-    if (!roleCookie) return null;
-    const value = decodeURIComponent(roleCookie) as UserRole;
-    return ["GUEST", "STARTUP", "MENTOR", "INVESTOR", "ADMIN"].includes(value) ? value : null;
-};
 
 const setRoleCookie = (role: UserRole) => {
     if (typeof document === "undefined") return;
@@ -47,37 +36,19 @@ const setRoleCookie = (role: UserRole) => {
 };
 
 const AuthContext = createContext<AuthContextValue>({
-    user: MOCK_USERS.MENTOR,
-    isAuthenticated: true,
+    user: null,
+    isAuthenticated: false,
     login: () => { },
     logout: () => { },
 });
 
 /**
  * AuthProvider — wraps the app.
- * Dev: defaults to MENTOR role mock.
- * Production: replace with real session fetch.
+ * Always starts as GUEST. Use /dev-role to switch roles during development.
+ * Cookie is written on login/logout for middleware route protection only.
  */
 export function AuthProvider({ children }: { children: ReactNode }) {
-    // Always start with GUEST on both server and client to avoid hydration mismatch
-    const [user, setUser] = useState<AuthUser | null>(MOCK_USERS.GUEST);
-    const [isHydrated, setIsHydrated] = useState(false);
-
-    // Read from cookie only after client-side hydration
-    useEffect(() => {
-        const fromCookie = parseRoleFromCookie();
-        if (fromCookie) {
-            setUser(MOCK_USERS[fromCookie] ?? null);
-        }
-        setIsHydrated(true);
-    }, []);
-
-    // Sync user role to cookie when it changes (but only after hydration)
-    useEffect(() => {
-        if (isHydrated && user?.role) {
-            setRoleCookie(user.role);
-        }
-    }, [user, isHydrated]);
+    const [user, setUser] = useState<AuthUser | null>(null);
 
     const login = (role: UserRole) => {
         setRoleCookie(role);

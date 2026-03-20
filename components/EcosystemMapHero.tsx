@@ -10,6 +10,8 @@ const GEO_FALLBACK_URL = "https://unpkg.com/world-atlas@2/countries-110m.json"; 
 const VIETNAM_ID = "704";
 const HANOI: [number, number] = [105.8412, 21.0245];
 const HCMC: [number, number] = [106.6602, 10.7769];
+const HOANGSA: [number, number] = [112.3, 16.5];   // Paracel Islands
+const TRUONGSA: [number, number] = [114.3, 10.0];  // Spratly Islands
 
 type MapState =
     | { status: "loading" }
@@ -130,8 +132,8 @@ export default function EcosystemMapHero() {
                 {mapState.status === "ready" && (
                     <ComposableMap
                         projection="geoNaturalEarth1"
-                        projectionConfig={{ rotate: [-108, -12, 0], scale: 170 }}
-                        style={{ width: "100%", height: "100%" }}
+                        projectionConfig={{ rotate: [-107, -12, 0], scale: 500 }}
+                        style={{ width: "100%", height: "100%", transform: "translateY(-14%)" }}
                     >
                         <Geographies geography={mapState.geoData as object}>
                             {({ geographies }) =>
@@ -169,14 +171,22 @@ export default function EcosystemMapHero() {
                         <Marker coordinates={HCMC}>
                             <circle r={3.5} fill="#F4B400" stroke="#FFFFFF" strokeWidth={1} />
                         </Marker>
+
+                        <Marker coordinates={HOANGSA}>
+                            <circle r={2.5} fill="#F4B400" stroke="#FFFFFF" strokeWidth={1} />
+                        </Marker>
+
+                        <Marker coordinates={TRUONGSA}>
+                            <circle r={2.5} fill="#F4B400" stroke="#FFFFFF" strokeWidth={1} />
+                        </Marker>
                     </ComposableMap>
                 )}
             </div>
 
-            {/* Layer 2: White panel behind text */}
+            {/* Layer 2: Gradient fade from map to text */}
             <div
                 className="absolute bottom-0 left-0 right-0 z-10"
-                style={{ height: "46%", backgroundColor: "rgba(255,255,255,0.72)" }}
+                style={{ height: "60%", background: "linear-gradient(to bottom, transparent 0%, rgba(255,255,255,0.6) 25%, rgba(255,255,255,0.92) 55%, white 80%)" }}
             />
 
             {/* Layer 3: Vietnam badge (desktop) */}

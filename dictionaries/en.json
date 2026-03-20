@@ -74,8 +74,8 @@
     },
     "hero": {
         "powered": "Powered by StartupKit",
-        "title1": "Vietnam Startup",
-        "title2": "Ecosystem",
+        "title1": "Launch Your Ideas",
+        "title2": "Toward the Future",
         "ai": "AI-driven matching between Startups, Mentors and Investors across Vietnam.",
         "sub": "Connecting founders, mentors, and investors across Southeast Asia.",
         "cta1": "Explore Ecosystem",
@@ -84,7 +84,7 @@
     },
     "stats": {
         "label": "Ecosystem Overview",
-        "title": "Vietnam's Startup Ecosystem at a Glance",
+        "title": "Toward Vietnam's Startup Ecosystem",
         "startups": "Startups",
         "investors": "Investors",
         "accelerators": "Accelerators",
