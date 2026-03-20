@@ -59,15 +59,15 @@ const AuthContext = createContext<AuthContextValue>({
  * Production: replace with real session fetch.
  */
 export function AuthProvider({ children }: { children: ReactNode }) {
-    // Always start with MENTOR on both server and client to avoid hydration mismatch
-    const [user, setUser] = useState<AuthUser | null>(MOCK_USERS.MENTOR);
+    // Always start with GUEST on both server and client to avoid hydration mismatch
+    const [user, setUser] = useState<AuthUser | null>(MOCK_USERS.GUEST);
     const [isHydrated, setIsHydrated] = useState(false);
 
     // Read from cookie only after client-side hydration
     useEffect(() => {
         const fromCookie = parseRoleFromCookie();
-        if (fromCookie && MOCK_USERS[fromCookie]) {
-            setUser(MOCK_USERS[fromCookie]);
+        if (fromCookie) {
+            setUser(MOCK_USERS[fromCookie] ?? null);
         }
         setIsHydrated(true);
     }, []);
