@@ -1,487 +1,449 @@
 "use client";
 
 import { useState } from "react";
-import { useDictionary } from "@/lib/dict-context";
 import Link from "next/link";
+import { useDictionary } from "@/lib/dict-context";
 
-type TabMode = "all" | "startups" | "investors" | "mentors";
+type SectorFilter = "all" | "fintech" | "ai" | "climate";
+
+interface FeaturedDeal {
+    id: string;
+    name: string;
+    sector: string;
+    sectorLabel: string;
+    stage: string;
+    tagline: string;
+    targetAmount: string;
+    committedAmount: string;
+    percentFilled: number;
+    sciScore: number;
+    mrr: string;
+    momGrowth: string;
+    runway: string;
+    coInvestors: string[];
+    location: string;
+}
+
+const FEATURED_DEALS: Record<SectorFilter, FeaturedDeal> = {
+    all: {
+        id: "finflow",
+        name: "FinFlow Treasury",
+        sector: "fintech",
+        sectorLabel: "B2B FinTech",
+        stage: "Seed Round",
+        tagline: "Hạ tầng quản trị thanh toán đa tiền tệ và tối ưu dòng tiền B2B cho doanh nghiệp xuất khẩu.",
+        targetAmount: "$1,000,000",
+        committedAmount: "$680,000",
+        percentFilled: 68,
+        sciScore: 94,
+        mrr: "$48,500",
+        momGrowth: "+24% MoM",
+        runway: "18 tháng",
+        coInvestors: ["Nextrans", "500 Global", "Do Ventures"],
+        location: "TP. Hồ Chí Minh"
+    },
+    fintech: {
+        id: "finflow",
+        name: "FinFlow Treasury",
+        sector: "fintech",
+        sectorLabel: "B2B FinTech",
+        stage: "Seed Round",
+        tagline: "Hạ tầng quản trị thanh toán đa tiền tệ và tối ưu dòng tiền B2B cho doanh nghiệp xuất khẩu.",
+        targetAmount: "$1,000,000",
+        committedAmount: "$680,000",
+        percentFilled: 68,
+        sciScore: 94,
+        mrr: "$48,500",
+        momGrowth: "+24% MoM",
+        runway: "18 tháng",
+        coInvestors: ["Nextrans", "500 Global", "Do Ventures"],
+        location: "TP. Hồ Chí Minh"
+    },
+    ai: {
+        id: "vinai-flow",
+        name: "OmniAI Platform",
+        sector: "ai",
+        sectorLabel: "Enterprise AI SaaS",
+        stage: "Pre-Series A",
+        tagline: "Giải pháp AI tự động hóa chuỗi cung ứng và phân tích tài liệu hợp đồng thời gian thực.",
+        targetAmount: "$1,500,000",
+        committedAmount: "$1,120,000",
+        percentFilled: 75,
+        sciScore: 96,
+        mrr: "$78,000",
+        momGrowth: "+31% MoM",
+        runway: "22 tháng",
+        coInvestors: ["Golden Gate", "CyberAgent", "VNG Syndicate"],
+        location: "Hà Nội"
+    },
+    climate: {
+        id: "agrigreen",
+        name: "AgriCarbon Nexus",
+        sector: "climate",
+        sectorLabel: "ClimateTech / AgriTech",
+        stage: "Seed Round",
+        tagline: "Sàn giao dịch tín chỉ carbon nông nghiệp và giám sát phát thải chuỗi cung ứng xuất khẩu.",
+        targetAmount: "$750,000",
+        committedAmount: "$480,000",
+        percentFilled: 64,
+        sciScore: 90,
+        mrr: "$28,000",
+        momGrowth: "+19% MoM",
+        runway: "16 tháng",
+        coInvestors: ["Reapra", "Touchstone Partners", "Angel Network"],
+        location: "Đà Nẵng"
+    }
+};
 
 export default function EcosystemMapHero() {
     const dict = useDictionary();
-    const h = dict.hero;
-    const [activeTab, setActiveTab] = useState<TabMode>("all");
-    const [hoveredNode, setHoveredNode] = useState<string | null>(null);
+    const [selectedSector, setSelectedSector] = useState<SectorFilter>("all");
+    const [searchQuery, setSearchQuery] = useState("");
+    const [savedNotification, setSavedNotification] = useState(false);
+
+    const activeDeal = FEATURED_DEALS[selectedSector] || FEATURED_DEALS.all;
+
+    const handleSaveDeal = () => {
+        setSavedNotification(true);
+        setTimeout(() => setSavedNotification(false), 2400);
+    };
 
     return (
-        <section
-            className="relative w-full bg-[#FFFFFF] overflow-hidden border-b-2 border-[#111111] pt-[72px]"
-            style={{ minHeight: "720px" }}
-        >
-            {/* 3D Isometric Background Grid with animated depth */}
-            <div className="absolute inset-0 iso-grid-bg opacity-70 pointer-events-none" />
+        <section className="relative w-full bg-[#FFFFFF] border-b border-[#EAEAEA] overflow-hidden pt-8 pb-16 lg:pt-14 lg:pb-24">
+            {/* Subtle background ambient dot grid */}
+            <div className="absolute inset-0 fintech-grid-bg opacity-70 pointer-events-none" />
 
-            {/* Floating 3D Geometric Polyhedrons in Background */}
-            <div className="absolute top-20 left-8 iso-float pointer-events-none opacity-40 hidden xl:block">
-                <svg width="72" height="72" viewBox="0 0 72 72" fill="none">
-                    <polygon points="36,6 66,22 36,38 6,22" fill="#FFFFFF" stroke="#111111" strokeWidth="1.5" />
-                    <polygon points="6,22 36,38 36,64 6,48" fill="#F4B400" stroke="#111111" strokeWidth="1.5" />
-                    <polygon points="36,38 66,22 66,48 36,64" fill="#D99B00" stroke="#111111" strokeWidth="1.5" />
-                </svg>
-            </div>
-
-            <div className="absolute bottom-28 left-1/3 iso-float-reverse pointer-events-none opacity-30 hidden xl:block">
-                <svg width="56" height="56" viewBox="0 0 56 56" fill="none">
-                    <polygon points="28,5 50,18 28,31 6,18" fill="#F4B400" stroke="#111111" strokeWidth="1.2" />
-                    <polygon points="6,18 28,31 28,50 6,37" fill="#111111" stroke="#111111" strokeWidth="1.2" />
-                    <polygon points="28,31 50,18 50,37 28,50" fill="#333333" stroke="#111111" strokeWidth="1.2" />
-                </svg>
-            </div>
-
-            <div className="absolute top-28 right-12 iso-float-delay pointer-events-none opacity-40 hidden xl:block">
-                <svg width="80" height="80" viewBox="0 0 80 80" fill="none">
-                    <polygon points="40,8 72,25 40,42 8,25" fill="#FFFFFF" stroke="#111111" strokeWidth="1.6" />
-                    <polygon points="8,25 40,42 40,70 8,53" fill="#EAEAEA" stroke="#111111" strokeWidth="1.6" />
-                    <polygon points="40,42 72,25 72,53 40,70" fill="#CCCCCC" stroke="#111111" strokeWidth="1.6" />
-                </svg>
-            </div>
-
-            {/* Radial Gold Ambient Spotlight with Dynamic Breathing Glow */}
+            {/* Subtle warm atmospheric glow */}
             <div
-                className="absolute top-1/4 left-1/2 w-[840px] h-[520px] pointer-events-none rounded-full iso-ambient-glow"
+                className="absolute top-1/4 left-1/2 -translate-x-1/2 w-[900px] h-[500px] pointer-events-none rounded-full"
                 style={{
-                    background: "radial-gradient(circle, rgba(244, 180, 0, 0.22) 0%, rgba(244, 180, 0, 0.06) 50%, transparent 70%)",
+                    background: "radial-gradient(circle, rgba(244, 180, 0, 0.12) 0%, rgba(244, 180, 0, 0.02) 50%, transparent 75%)",
                 }}
             />
 
-            <div className="relative max-w-[1280px] mx-auto px-6 md:px-12 py-12 md:py-18">
+            <div className="relative max-w-[1280px] mx-auto px-6 md:px-12">
                 
-                {/* Main 2-Column Split: Content & Big 3D Isometric Platform */}
-                <div className="grid grid-cols-1 lg:grid-cols-12 gap-12 items-center mb-10">
+                {/* 2-Column Split: Value Proposition & Interactive Venture Terminal */}
+                <div className="grid grid-cols-1 lg:grid-cols-12 gap-12 lg:gap-14 items-center mb-16">
                     
-                    {/* Left Column: Hero Typography & Actions */}
-                    <div className="lg:col-span-5 flex flex-col items-start z-10">
-                        {/* Institutional Venture Badge */}
-                        <div className="inline-flex items-center gap-2.5 bg-[#111111] text-white rounded-[8px] px-3.5 py-1.5 mb-6 shadow-sm border border-[#222222]">
+                    {/* Left Column: Heading, Search & Value Prop */}
+                    <div className="lg:col-span-6 flex flex-col items-start z-10">
+                        
+                        {/* Institutional Network Badge */}
+                        <div className="inline-flex items-center gap-2.5 bg-[#F8F9FA] border border-[#E5E7EB] rounded-full px-3.5 py-1.5 mb-6 shadow-xs">
                             <span className="w-2 h-2 rounded-full bg-[#F4B400] animate-pulse" />
-                            <span className="text-[12px] font-semibold tracking-wide uppercase">{h.badge}</span>
-                            <span className="text-[11px] text-[#F4B400] font-medium pl-2.5 border-l border-[#333333]">VENTURE NETWORK</span>
+                            <span className="text-[12px] font-semibold text-[#1F2937] tracking-wide">
+                                VIETNAM & SEA VENTURE NETWORK
+                            </span>
+                            <span className="text-[11px] text-[#D97706] font-bold bg-[#FEF3C7] px-2 py-0.5 rounded-full">
+                                500+ DEALS
+                            </span>
                         </div>
 
-                        <p className="text-[13px] font-extrabold text-[#D99B00] uppercase tracking-[0.22em] mb-3">
-                            {h.powered}
+                        {/* Hero Headline */}
+                        <h1 className="text-[38px] sm:text-[48px] lg:text-[54px] font-black text-[#111827] leading-[1.12] tracking-tight mb-5">
+                            Kết nối Dòng vốn
+                            <br />
+                            <span className="text-[#111827] relative inline-block">
+                                & Cố vấn Thể chế
+                                <span className="absolute bottom-1.5 left-0 right-0 h-[6px] bg-[#F4B400]/40 -z-10 rounded-sm" />
+                            </span>
+                            <br />
+                            <span className="text-[#4B5563] text-[32px] sm:text-[42px] lg:text-[46px] font-bold">
+                                cho Khởi nghiệp.
+                            </span>
+                        </h1>
+
+                        {/* Subtitle */}
+                        <p className="text-[16px] text-[#4B5563] leading-[1.7] mb-8 max-w-[540px]">
+                            Hạ tầng kết nối trực tiếp Nhà sáng lập xuất sắc, Cố vấn thực chiến và Mạng lưới Quỹ đầu tư mạo hiểm. Chuẩn hóa hồ sơ gọi vốn, thẩm định minh bạch, cam kết <strong className="text-[#111827]">Zero Upfront (10% Phí thành công)</strong>.
                         </p>
 
-                        <div className="relative mb-5">
-                            <span className="hidden lg:block absolute -left-6 top-2 bottom-2 w-[5px] rounded-full bg-[#F4B400]" />
-                            <h1 className="text-[40px] sm:text-[50px] lg:text-[56px] font-black text-[#111111] leading-[1.1] tracking-tight">
-                                {h.title1}
-                                <br />
-                                <span className="relative inline-block text-[#111111]">
-                                    {h.title2}
-                                    <span className="absolute bottom-1.5 left-0 right-0 h-[8px] bg-[#F4B400]/45 -z-10 rounded-sm" />
-                                </span>
-                            </h1>
-                        </div>
-
-                        <div className="w-[72px] h-[4px] bg-[#F4B400] rounded-full mb-6" />
-
-                        <p className="text-[15px] font-bold text-[#111111] mb-2 leading-relaxed">
-                            {h.ai}
-                        </p>
-
-                        <p className="text-[15px] text-[#666666] leading-[1.7] mb-8 max-w-[480px]">
-                            {h.sub}
-                        </p>
-
-                        {/* Interactive Filter Pills */}
-                        <div className="flex flex-wrap gap-1.5 mb-8 bg-[#F7F7F7] p-1.5 rounded-[10px] border border-[#EAEAEA]">
-                            {(["all", "startups", "investors", "mentors"] as TabMode[]).map((tab) => (
-                                <button
-                                    key={tab}
-                                    onClick={() => setActiveTab(tab)}
-                                    className={`text-[13px] font-semibold px-4 py-2 rounded-[7px] transition-all capitalize ${
-                                        activeTab === tab
-                                            ? "bg-[#111111] text-white shadow-sm"
-                                            : "text-[#555555] hover:text-[#111111] hover:bg-white"
-                                    }`}
+                        {/* Interactive Search & Filter Bar */}
+                        <div className="w-full max-w-[540px] bg-white border border-[#D1D5DB] rounded-[12px] p-2 shadow-sm mb-6 focus-within:border-[#111827] focus-within:ring-2 focus-within:ring-[#111827]/10 transition-all">
+                            <div className="flex items-center gap-2 px-2 pb-2 border-b border-[#F3F4F6]">
+                                <svg width="18" height="18" viewBox="0 0 20 20" fill="none" className="text-[#9CA3AF]">
+                                    <path d="M9 17A8 8 0 1 0 9 1a8 8 0 0 0 0 16zM18 18l-4.35-4.35" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
+                                </svg>
+                                <input
+                                    type="text"
+                                    value={searchQuery}
+                                    onChange={(e) => setSearchQuery(e.target.value)}
+                                    placeholder="Tìm kiếm startup, ngành, vòng gọi vốn, hoặc quỹ VC..."
+                                    className="w-full text-[14px] text-[#111827] placeholder-[#9CA3AF] outline-none bg-transparent"
+                                />
+                                <Link
+                                    href={`/market/startups${searchQuery ? `?q=${encodeURIComponent(searchQuery)}` : ""}`}
+                                    className="shrink-0 bg-[#111827] hover:bg-[#1F2937] text-white text-[12.5px] font-semibold px-3.5 py-1.5 rounded-[8px] transition-colors"
                                 >
-                                    {tab === "all" ? "Toàn cảnh hệ sinh thái" : tab}
-                                </button>
-                            ))}
+                                    Khám phá
+                                </Link>
+                            </div>
+
+                            {/* Sector Filter Chips */}
+                            <div className="flex flex-wrap items-center gap-1.5 pt-2 px-1">
+                                <span className="text-[11.5px] font-medium text-[#6B7280] mr-1">Lĩnh vực:</span>
+                                {[
+                                    { key: "all", label: "Tất cả" },
+                                    { key: "fintech", label: "FinTech" },
+                                    { key: "ai", label: "AI & SaaS" },
+                                    { key: "climate", label: "ClimateTech" },
+                                ].map((tab) => (
+                                    <button
+                                        key={tab.key}
+                                        onClick={() => setSelectedSector(tab.key as SectorFilter)}
+                                        className={`text-[12px] font-medium px-2.5 py-1 rounded-[6px] transition-all ${
+                                            selectedSector === tab.key
+                                                ? "bg-[#111827] text-white font-semibold shadow-xs"
+                                                : "bg-[#F3F4F6] text-[#4B5563] hover:bg-[#E5E7EB] hover:text-[#111827]"
+                                        }`}
+                                    >
+                                        {tab.label}
+                                    </button>
+                                ))}
+                            </div>
                         </div>
 
-                        {/* Clean Institutional Action Buttons */}
-                        <div className="flex flex-col sm:flex-row gap-3.5 w-full sm:w-auto">
-                            <a
-                                href="#ecosystem"
-                                className="inline-flex items-center justify-center gap-2.5 bg-[#111111] hover:bg-[#222222] text-white text-[15px] font-semibold px-7 py-3.5 rounded-[8px] transition-all shadow-sm hover:shadow"
+                        {/* Action Buttons */}
+                        <div className="flex flex-col sm:flex-row gap-3.5 w-full sm:w-auto mb-6">
+                            <Link
+                                href="/market/investments"
+                                className="inline-flex items-center justify-center gap-2 bg-[#111827] hover:bg-[#1F2937] text-white text-[15px] font-semibold px-7 py-3.5 rounded-[10px] shadow-sm hover:shadow transition-all"
                             >
-                                {h.cta1}
-                                <span className="flex items-center justify-center w-5 h-5 rounded-full bg-[#F4B400] text-[#111111]">
-                                    <svg width="10" height="10" viewBox="0 0 10 10" fill="none">
-                                        <path
-                                            d="M2 5h6M5.5 2.5L8 5l-2.5 2.5"
-                                            stroke="currentColor"
-                                            strokeWidth="2"
-                                            strokeLinecap="round"
-                                            strokeLinejoin="round"
-                                        />
-                                    </svg>
-                                </span>
-                            </a>
+                                Khám phá Luồng Deal (Dealflow)
+                                <svg width="15" height="15" viewBox="0 0 16 16" fill="none">
+                                    <path d="M3 8h10M9 4l4 4-4 4" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
+                                </svg>
+                            </Link>
 
                             <Link
-                                href="/register"
-                                className="inline-flex items-center justify-center gap-2 bg-white hover:bg-[#F9F9F9] border border-[#CCCCCC] hover:border-[#111111] text-[#111111] text-[15px] font-semibold px-7 py-3.5 rounded-[8px] transition-all shadow-sm"
+                                href="/register?role=startup"
+                                className="inline-flex items-center justify-center gap-2 bg-white hover:bg-[#F9FAFB] border border-[#D1D5DB] hover:border-[#111827] text-[#111827] text-[15px] font-semibold px-7 py-3.5 rounded-[10px] shadow-xs transition-all"
                             >
-                                {h.cta2}
+                                Tạo Hồ sơ Gọi vốn (Miễn phí)
                             </Link>
                         </div>
+
+                        {/* Trust Micro-Bullets */}
+                        <div className="flex flex-wrap items-center gap-y-2 gap-x-5 text-[12.5px] text-[#4B5563]">
+                            <span className="flex items-center gap-1.5 font-medium">
+                                <svg width="14" height="14" viewBox="0 0 16 16" fill="none" className="text-emerald-600">
+                                    <path d="M13.3 4.3L6 11.6 2.7 8.3" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
+                                </svg>
+                                10% Phí thành công khi giải ngân
+                            </span>
+                            <span className="flex items-center gap-1.5 font-medium">
+                                <svg width="14" height="14" viewBox="0 0 16 16" fill="none" className="text-emerald-600">
+                                    <path d="M13.3 4.3L6 11.6 2.7 8.3" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
+                                </svg>
+                                Virtual Deal Room bảo mật
+                            </span>
+                        </div>
+
                     </div>
 
-                    {/* Right Column: Grand 3D Isometric Platform (Prominent & Spacious) */}
-                    <div className="lg:col-span-7 relative flex items-center justify-center">
-                        <div className="relative w-full max-w-[680px] aspect-[16/11] flex items-center justify-center">
+                    {/* Right Column: Interactive Venture Terminal (Real Product Mockup) */}
+                    <div className="lg:col-span-6 relative">
+                        
+                        {/* Terminal Outer Frame */}
+                        <div className="relative bg-white border border-[#E5E7EB] rounded-[18px] shadow-xl overflow-hidden transition-all">
                             
-                            {/* Grand 3D Isometric Ecosystem SVG */}
-                            <svg
-                                viewBox="0 0 680 460"
-                                className="w-full h-full drop-shadow-2xl select-none"
-                                fill="none"
-                                xmlns="http://www.w3.org/2000/svg"
-                            >
-                                <defs>
-                                    <linearGradient id="grandIsoTop" x1="0%" y1="0%" x2="100%" y2="100%">
-                                        <stop offset="0%" stopColor="#FFFFFF" />
-                                        <stop offset="50%" stopColor="#FAFAF9" />
-                                        <stop offset="100%" stopColor="#F4F4F2" />
-                                    </linearGradient>
-
-                                    <linearGradient id="grandFrontLeft" x1="0%" y1="0%" x2="0%" y2="100%">
-                                        <stop offset="0%" stopColor="#E5E5E5" />
-                                        <stop offset="100%" stopColor="#CCCCCC" />
-                                    </linearGradient>
-
-                                    <linearGradient id="grandFrontRight" x1="0%" y1="0%" x2="0%" y2="100%">
-                                        <stop offset="0%" stopColor="#D5D5D5" />
-                                        <stop offset="100%" stopColor="#BBBBBB" />
-                                    </linearGradient>
-
-                                    <linearGradient id="goldBeam" x1="0%" y1="0%" x2="0%" y2="100%">
-                                        <stop offset="0%" stopColor="#F4B400" stopOpacity="0.9" />
-                                        <stop offset="100%" stopColor="#F4B400" stopOpacity="0.1" />
-                                    </linearGradient>
-                                </defs>
-
-                                {/* Drop shadow of 3D platform */}
-                                <polygon
-                                    points="340,420 640,250 340,100 40,250"
-                                    fill="#000000"
-                                    fillOpacity="0.08"
-                                    transform="translate(0, 24)"
-                                />
-
-                                {/* 3D Pedestal Left Face */}
-                                <polygon
-                                    points="40,250 340,420 340,455 40,285"
-                                    fill="url(#grandFrontLeft)"
-                                    stroke="#111111"
-                                    strokeWidth="1.8"
-                                />
-
-                                {/* 3D Pedestal Right Face */}
-                                <polygon
-                                    points="340,420 640,250 640,285 340,455"
-                                    fill="url(#grandFrontRight)"
-                                    stroke="#111111"
-                                    strokeWidth="1.8"
-                                />
-
-                                {/* 3D Platform Top Face */}
-                                <polygon
-                                    points="340,80 640,250 340,420 40,250"
-                                    fill="url(#grandIsoTop)"
-                                    stroke="#111111"
-                                    strokeWidth="2.5"
-                                />
-
-                                {/* Isometric Diamond Coordinates Grid */}
-                                <line x1="140" y1="195" x2="440" y2="365" stroke="#EAEAEA" strokeWidth="1.5" strokeDasharray="4 4" />
-                                <line x1="240" y1="140" x2="540" y2="310" stroke="#EAEAEA" strokeWidth="1.5" strokeDasharray="4 4" />
-                                <line x1="540" y1="195" x2="240" y2="365" stroke="#EAEAEA" strokeWidth="1.5" strokeDasharray="4 4" />
-                                <line x1="440" y1="140" x2="140" y2="310" stroke="#EAEAEA" strokeWidth="1.5" strokeDasharray="4 4" />
-
-                                {/* Main Gold Energy Spine */}
-                                <line x1="340" y1="80" x2="340" y2="420" stroke="#F4B400" strokeWidth="2" strokeOpacity="0.4" strokeDasharray="6 6" />
-
-                                {/* Glowing Gold Data Arteries */}
-                                <path
-                                    d="M210 200 L340 270 L470 200 M340 270 L340 375"
-                                    stroke="#F4B400"
-                                    strokeWidth="3.5"
-                                    strokeLinecap="round"
-                                    strokeLinejoin="round"
-                                />
-
-                                {/* Flowing Data Particles */}
-                                <circle cx="275" cy="235" r="4" fill="#111111">
-                                    <animate attributeName="opacity" values="0.2;1;0.2" dur="2s" repeatCount="indefinite" />
-                                </circle>
-                                <circle cx="405" cy="235" r="4" fill="#111111">
-                                    <animate attributeName="opacity" values="0.2;1;0.2" dur="2s" begin="0.6s" repeatCount="indefinite" />
-                                </circle>
-                                <circle cx="340" cy="325" r="4.5" fill="#F4B400">
-                                    <animate attributeName="opacity" values="0.2;1;0.2" dur="2s" begin="1.2s" repeatCount="indefinite" />
-                                </circle>
-
-                                {/* Stylized Vietnam Economic S-Curve in 2.5D Elevation */}
-                                <g transform="translate(10, 0)">
-                                    {/* Thick 3D Relief Shadow */}
-                                    <path
-                                        d="M 300 160 
-                                           C 325 175, 335 195, 330 220 
-                                           C 325 245, 345 270, 360 295 
-                                           C 370 315, 365 340, 345 360
-                                           C 325 375, 305 380, 285 370"
-                                        stroke="#000000"
-                                        strokeOpacity="0.1"
-                                        strokeWidth="10"
-                                        strokeLinecap="round"
-                                        fill="none"
-                                        transform="translate(0, 4)"
-                                    />
-
-                                    {/* Vietnam 2.5D Ribbon */}
-                                    <path
-                                        d="M 300 160 
-                                           C 325 175, 335 195, 330 220 
-                                           C 325 245, 345 270, 360 295 
-                                           C 370 315, 365 340, 345 360
-                                           C 325 375, 305 380, 285 370"
-                                        stroke="#111111"
-                                        strokeWidth="8"
-                                        strokeLinecap="round"
-                                        fill="none"
-                                    />
-                                    <path
-                                        d="M 300 160 
-                                           C 325 175, 335 195, 330 220 
-                                           C 325 245, 345 270, 360 295 
-                                           C 370 315, 365 340, 345 360
-                                           C 325 375, 305 380, 285 370"
-                                        stroke="#F4B400"
-                                        strokeWidth="4"
-                                        strokeLinecap="round"
-                                        fill="none"
-                                    />
-
-                                    {/* 1. Hà Nội Node */}
-                                    <g
-                                        className="cursor-pointer transition-transform"
-                                        onMouseEnter={() => setHoveredNode("hanoi")}
-                                        onMouseLeave={() => setHoveredNode(null)}
-                                    >
-                                        <circle cx="300" cy="160" r="14" stroke="#F4B400" strokeWidth="2" fill="none">
-                                            <animate attributeName="r" values="8;24;8" dur="2.4s" repeatCount="indefinite" />
-                                            <animate attributeName="stroke-opacity" values="0.9;0;0.9" dur="2.4s" repeatCount="indefinite" />
-                                        </circle>
-                                        <circle cx="300" cy="160" r="7" fill="#111111" stroke="#FFFFFF" strokeWidth="2" />
-                                        <circle cx="300" cy="160" r="3.5" fill="#F4B400" />
-                                        <text x="300" y="138" textAnchor="middle" fill="#111111" fontSize="13" fontWeight="900">
-                                            HÀ NỘI
-                                        </text>
-                                    </g>
-
-                                    {/* 2. Đà Nẵng Node */}
-                                    <g
-                                        className="cursor-pointer transition-transform"
-                                        onMouseEnter={() => setHoveredNode("danang")}
-                                        onMouseLeave={() => setHoveredNode(null)}
-                                    >
-                                        <circle cx="340" cy="235" r="6" fill="#111111" stroke="#FFFFFF" strokeWidth="2" />
-                                        <circle cx="340" cy="235" r="3" fill="#F4B400" />
-                                        <text x="372" y="240" textAnchor="start" fill="#222222" fontSize="12" fontWeight="800">
-                                            ĐÀ NẴNG
-                                        </text>
-                                    </g>
-
-                                    {/* 3. TP. Hồ Chí Minh Node */}
-                                    <g
-                                        className="cursor-pointer transition-transform"
-                                        onMouseEnter={() => setHoveredNode("hcmc")}
-                                        onMouseLeave={() => setHoveredNode(null)}
-                                    >
-                                        <circle cx="330" cy="350" r="16" stroke="#F4B400" strokeWidth="2" fill="none">
-                                            <animate attributeName="r" values="9;28;9" dur="2.2s" repeatCount="indefinite" />
-                                            <animate attributeName="stroke-opacity" values="0.9;0;0.9" dur="2.2s" repeatCount="indefinite" />
-                                        </circle>
-                                        <circle cx="330" cy="350" r="8" fill="#111111" stroke="#FFFFFF" strokeWidth="2" />
-                                        <circle cx="330" cy="350" r="4" fill="#F4B400" />
-                                        <text x="330" y="380" textAnchor="middle" fill="#111111" fontSize="13" fontWeight="900">
-                                            TP. HỒ CHÍ MINH
-                                        </text>
-                                    </g>
-
-                                    {/* 4. Hoàng Sa & Trường Sa with prominent sovereignty labels */}
-                                    <g>
-                                        <circle cx="430" cy="205" r="4.5" fill="#F4B400" stroke="#FFFFFF" strokeWidth="1.5" />
-                                        <circle cx="430" cy="205" r="10" stroke="#F4B400" strokeWidth="1.5" strokeDasharray="3 3" fill="none" />
-                                        <text x="445" y="210" textAnchor="start" fill="#444444" fontSize="11" fontWeight="700">
-                                            QĐ. Hoàng Sa
-                                        </text>
-
-                                        <circle cx="460" cy="315" r="4.5" fill="#F4B400" stroke="#FFFFFF" strokeWidth="1.5" />
-                                        <circle cx="460" cy="315" r="10" stroke="#F4B400" strokeWidth="1.5" strokeDasharray="3 3" fill="none" />
-                                        <text x="475" y="320" textAnchor="start" fill="#444444" fontSize="11" fontWeight="700">
-                                            QĐ. Trường Sa
-                                        </text>
-                                    </g>
-                                </g>
-
-                                {/* 3D Floating Central AI Core Crystal */}
-                                <g transform="translate(340, 250)" className="iso-float">
-                                    <ellipse cx="0" cy="32" rx="36" ry="15" fill="#000000" fillOpacity="0.14" />
-                                    {/* 3D Polyhedron facets */}
-                                    <polygon points="0,-45 30,-8 -30,-8" fill="#F4B400" stroke="#FFFFFF" strokeWidth="1.5" />
-                                    <polygon points="0,-45 30,-8 0,0" fill="#E59B00" stroke="#FFFFFF" strokeWidth="1" />
-                                    <polygon points="0,-45 -30,-8 0,0" fill="#FFC933" stroke="#FFFFFF" strokeWidth="1" />
-                                    <polygon points="0,32 30,-8 0,0" fill="#CC8A00" stroke="#FFFFFF" strokeWidth="1" />
-                                    <polygon points="0,32 -30,-8 0,0" fill="#B37700" stroke="#FFFFFF" strokeWidth="1" />
-
-                                    {/* Orbiting Tech Ring */}
-                                    <ellipse cx="0" cy="0" rx="46" ry="18" stroke="#F4B400" strokeWidth="1.8" strokeDasharray="5 5" fill="none">
-                                        <animateTransform
-                                            attributeName="transform"
-                                            type="rotate"
-                                            from="0"
-                                            to="360"
-                                            dur="16s"
-                                            repeatCount="indefinite"
-                                        />
-                                    </ellipse>
-                                </g>
-                            </svg>
-
-                            {/* Interactive Spatial Telemetry HUD (Top-Right) */}
-                            <div className="absolute top-3 right-3 sm:top-5 sm:right-5 z-20 flex flex-col items-end gap-2 pointer-events-none">
-                                <div className="bg-[#111111]/90 backdrop-blur-md text-white text-[11px] font-mono font-bold px-3 py-1.5 rounded-[6px] border border-[#F4B400]/40 shadow-lg flex items-center gap-2">
-                                    <span className="w-2 h-2 rounded-full bg-[#F4B400] animate-pulse" />
-                                    <span>SYSTEM ONLINE</span>
-                                    <span className="text-[#666666]">|</span>
-                                    <span className="text-[#F4B400] uppercase">{activeTab === "all" ? "PANORAMIC" : activeTab}</span>
-                                </div>
-                                {hoveredNode && (
-                                    <div className="bg-[#111111] text-white text-[12px] font-bold px-3.5 py-1.5 rounded-[6px] border-2 border-[#F4B400] shadow-xl animate-fade-in flex items-center gap-2 pointer-events-auto">
-                                        <span className="text-[#F4B400]">📍</span>
-                                        <span>
-                                            {hoveredNode === "hanoi" && "Hà Nội • Trung tâm Đổi mới Sáng tạo & AI"}
-                                            {hoveredNode === "danang" && "Đà Nẵng • Vườn ươm & Công nghệ Cao"}
-                                            {hoveredNode === "hcmc" && "TP. Hồ Chí Minh • Đầu tàu Vốn & Startups"}
-                                        </span>
-                                    </div>
-                                )}
-                            </div>
-                        </div>
-                    </div>
-                </div>
-
-                {/* Institutional Venture Modules Grid */}
-                <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mt-6">
-                    
-                    {/* Module 1: STARTUP PIPELINE */}
-                    <div
-                        onClick={() => setActiveTab(activeTab === "startups" ? "all" : "startups")}
-                        className={`rounded-[12px] p-6 border transition-all duration-300 flex flex-col justify-between cursor-pointer ${
-                            activeTab === "startups"
-                                ? "bg-[#FFFDF5] border-[#F4B400] shadow-md ring-2 ring-[#F4B400]/20"
-                                : "bg-white border-[#EAEAEA] hover:border-[#111111] shadow-sm hover:shadow"
-                        }`}
-                    >
-                        <div>
-                            <div className="flex items-center justify-between mb-3">
-                                <span className={`text-[11px] font-semibold tracking-wide px-2.5 py-1 rounded-[6px] ${
-                                    activeTab === "startups" ? "bg-[#F4B400] text-[#111111]" : "bg-[#F5F5F5] text-[#333333]"
-                                }`}>
-                                    FOUNDER PIPELINE {activeTab === "startups" && "• ĐANG XEM"}
-                                </span>
-                                <span className="w-2 h-2 rounded-full bg-[#F4B400]" />
-                            </div>
-                            <div className="text-[28px] font-black text-[#111111] leading-none mb-2">
-                                +500 Startups
-                            </div>
-                            <p className="text-[13.5px] text-[#666666] leading-relaxed">
-                                Giai đoạn từ Pre-Seed đến Series A trên toàn Việt Nam và Đông Nam Á.
-                            </p>
-                        </div>
-                        <div className="mt-5 pt-4 border-t border-[#F0F0F0] flex items-center justify-between text-[12px]">
-                            <span className="text-[#777777] font-medium">Hồ sơ Thẩm định & Deal Room</span>
-                            <span className="font-semibold text-[#D99B00]">Chuẩn hóa</span>
-                        </div>
-                    </div>
-
-                    {/* Module 2: CAPITAL VAULT */}
-                    <div
-                        onClick={() => setActiveTab(activeTab === "investors" ? "all" : "investors")}
-                        className={`text-white rounded-[12px] p-6 border transition-all duration-300 flex flex-col justify-between cursor-pointer ${
-                            activeTab === "investors"
-                                ? "bg-[#1A1A1A] border-[#F4B400] shadow-md ring-2 ring-[#F4B400]/30"
-                                : "bg-[#111111] border-[#222222] hover:border-[#F4B400] shadow-sm hover:shadow"
-                        }`}
-                    >
-                        <div>
-                            <div className="flex items-center justify-between mb-3">
+                            {/* Window Topbar */}
+                            <div className="bg-[#F9FAFB] border-b border-[#E5E7EB] px-5 py-3.5 flex items-center justify-between">
                                 <div className="flex items-center gap-2">
-                                    <span className="w-2 h-2 rounded-full bg-[#F4B400] animate-pulse" />
-                                    <span className="text-[11px] font-semibold text-[#F4B400] tracking-wide">
-                                        CAPITAL NETWORK {activeTab === "investors" && "• ĐANG XEM"}
+                                    <span className="w-3 h-3 rounded-full bg-[#EF4444]/80" />
+                                    <span className="w-3 h-3 rounded-full bg-[#F59E0B]/80" />
+                                    <span className="w-3 h-3 rounded-full bg-[#10B981]/80" />
+                                    <span className="text-[12px] font-mono font-medium text-[#6B7280] ml-2">
+                                        startupkit.vn/dealroom/{activeDeal.id}
                                     </span>
                                 </div>
-                                <span className="text-[11px] text-[#888888]">80+ VCs & Angels</span>
+                                <div className="flex items-center gap-2">
+                                    <span className="inline-flex items-center gap-1.5 text-[11px] font-semibold text-emerald-700 bg-emerald-50 border border-emerald-200 px-2.5 py-0.5 rounded-full">
+                                        <span className="w-1.5 h-1.5 rounded-full bg-emerald-500 animate-pulse" />
+                                        LIVE DEAL
+                                    </span>
+                                </div>
                             </div>
-                            <div className="text-[32px] font-black text-[#F4B400] leading-none mb-2">
-                                $18.5M+
+
+                            {/* Deal Spotlight Body */}
+                            <div className="p-6 md:p-7">
+                                
+                                {/* Deal Title & Verification */}
+                                <div className="flex items-start justify-between gap-4 mb-4">
+                                    <div className="flex items-center gap-3.5">
+                                        <div className="w-12 h-12 rounded-[12px] bg-[#111827] text-white flex items-center justify-center font-black text-[18px] shadow-sm">
+                                            {activeDeal.name.slice(0, 2).toUpperCase()}
+                                        </div>
+                                        <div>
+                                            <div className="flex items-center gap-2">
+                                                <h3 className="text-[19px] font-bold text-[#111827]">
+                                                    {activeDeal.name}
+                                                </h3>
+                                                <span className="text-[11px] font-semibold bg-[#FEF3C7] text-[#92400E] border border-[#FDE68A] px-2 py-0.5 rounded-[4px]">
+                                                    {activeDeal.stage}
+                                                </span>
+                                            </div>
+                                            <p className="text-[12.5px] text-[#6B7280]">
+                                                {activeDeal.sectorLabel} • {activeDeal.location}
+                                            </p>
+                                        </div>
+                                    </div>
+
+                                    {/* Startup Credibility Index (SCI) Badge */}
+                                    <div className="flex flex-col items-end">
+                                        <div className="flex items-center gap-1.5 bg-[#F8F9FA] border border-[#E5E7EB] px-3 py-1 rounded-[8px]">
+                                            <span className="text-[10px] font-bold text-[#6B7280]">SCI SCORE</span>
+                                            <span className="text-[15px] font-black text-[#111827]">{activeDeal.sciScore}</span>
+                                            <span className="text-[10px] text-[#9CA3AF]">/100</span>
+                                        </div>
+                                        <span className="text-[10px] font-semibold text-emerald-600 mt-1">
+                                            ✓ Verified Audit
+                                        </span>
+                                    </div>
+                                </div>
+
+                                {/* One-line Pitch */}
+                                <p className="text-[13.5px] text-[#4B5563] leading-relaxed mb-6 bg-[#F9FAFB] p-3 rounded-[8px] border border-[#F3F4F6]">
+                                    "{activeDeal.tagline}"
+                                </p>
+
+                                {/* Live Funding Progress Bar */}
+                                <div className="mb-6">
+                                    <div className="flex items-center justify-between text-[13px] mb-2 font-medium">
+                                        <span className="text-[#374151]">
+                                            Đã cam kết: <strong className="text-[#111827] font-bold">{activeDeal.committedAmount}</strong>
+                                        </span>
+                                        <span className="text-[#6B7280]">
+                                            Mục tiêu: <strong className="text-[#111827]">{activeDeal.targetAmount}</strong> ({activeDeal.percentFilled}%)
+                                        </span>
+                                    </div>
+                                    <div className="w-full h-2.5 bg-[#F3F4F6] rounded-full overflow-hidden border border-[#E5E7EB]">
+                                        <div
+                                            className="h-full bg-[#F4B400] rounded-full transition-all duration-700"
+                                            style={{ width: `${activeDeal.percentFilled}%` }}
+                                        />
+                                    </div>
+                                </div>
+
+                                {/* Key Traction Metrics Grid */}
+                                <div className="grid grid-cols-3 gap-3 mb-6">
+                                    <div className="bg-[#FFFFFF] border border-[#E5E7EB] p-3 rounded-[10px] text-center">
+                                        <span className="text-[11px] text-[#6B7280] font-medium block">MRR HIỆN TẠI</span>
+                                        <span className="text-[15px] font-black text-[#111827] block mt-0.5">{activeDeal.mrr}</span>
+                                    </div>
+                                    <div className="bg-[#FFFFFF] border border-[#E5E7EB] p-3 rounded-[10px] text-center">
+                                        <span className="text-[11px] text-[#6B7280] font-medium block">TĂNG TRƯỞNG</span>
+                                        <span className="text-[15px] font-black text-emerald-600 block mt-0.5">{activeDeal.momGrowth}</span>
+                                    </div>
+                                    <div className="bg-[#FFFFFF] border border-[#E5E7EB] p-3 rounded-[10px] text-center">
+                                        <span className="text-[11px] text-[#6B7280] font-medium block">RUNWAY</span>
+                                        <span className="text-[15px] font-black text-[#111827] block mt-0.5">{activeDeal.runway}</span>
+                                    </div>
+                                </div>
+
+                                {/* Backed by & Co-Investors */}
+                                <div className="flex items-center justify-between pt-4 border-t border-[#F3F4F6] mb-5">
+                                    <div className="flex items-center gap-2">
+                                        <span className="text-[11.5px] font-semibold text-[#6B7280]">Đồng đầu tư:</span>
+                                        <div className="flex items-center gap-1.5">
+                                            {activeDeal.coInvestors.map((investor) => (
+                                                <span
+                                                    key={investor}
+                                                    className="text-[11px] font-semibold bg-[#F3F4F6] text-[#374151] px-2 py-0.5 rounded-[4px] border border-[#E5E7EB]"
+                                                >
+                                                    {investor}
+                                                </span>
+                                            ))}
+                                        </div>
+                                    </div>
+                                </div>
+
+                                {/* Deal Action Footer */}
+                                <div className="flex items-center gap-3">
+                                    <Link
+                                        href="/market/investments"
+                                        className="flex-1 inline-flex items-center justify-center gap-2 bg-[#111827] hover:bg-[#1F2937] text-white text-[13.5px] font-semibold py-2.5 px-4 rounded-[8px] transition-all shadow-xs"
+                                    >
+                                        Xem Virtual Deal Room
+                                        <svg width="14" height="14" viewBox="0 0 16 16" fill="none">
+                                            <path d="M3 8h10M9 4l4 4-4 4" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
+                                        </svg>
+                                    </Link>
+                                    <button
+                                        onClick={handleSaveDeal}
+                                        className="inline-flex items-center justify-center gap-1.5 bg-white hover:bg-[#F9FAFB] border border-[#D1D5DB] text-[#374151] text-[13px] font-medium py-2.5 px-3.5 rounded-[8px] transition-colors"
+                                    >
+                                        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+                                            <path d="M19 21l-7-5-7 5V5a2 2 0 0 1 2-2h10a2 2 0 0 1 2 2z"/>
+                                        </svg>
+                                        {savedNotification ? "Đã lưu ✓" : "Lưu Deal"}
+                                    </button>
+                                </div>
+
                             </div>
-                            <p className="text-[13.5px] text-[#CCCCCC] leading-relaxed">
-                                Mạng lưới quỹ đầu tư mạo hiểm và thiên thần công khai khẩu vị đầu tư.
-                            </p>
+
+                            {/* Live activity ticker */}
+                            <div className="bg-[#F9FAFB] border-t border-[#E5E7EB] px-5 py-2.5 flex items-center justify-between text-[11.5px] text-[#6B7280]">
+                                <span className="flex items-center gap-2">
+                                    <span className="w-1.5 h-1.5 rounded-full bg-emerald-500" />
+                                    <span>Quỹ <strong>Nextrans</strong> vừa xem hồ sơ của {activeDeal.name}</span>
+                                </span>
+                                <span className="font-mono text-[#9CA3AF]">2 phút trước</span>
+                            </div>
+
                         </div>
-                        <div className="mt-5 pt-4 border-t border-[#222222] flex items-center justify-between text-[12px]">
-                            <span className="text-[#888888]">Luận điểm đầu tư</span>
-                            <span className="font-semibold text-white">Deal Room Xác minh</span>
-                        </div>
+
                     </div>
 
-                    {/* Module 3: THESIS MATCHING ENGINE */}
-                    <div
-                        onClick={() => setActiveTab(activeTab === "mentors" ? "all" : "mentors")}
-                        className={`rounded-[12px] p-6 border transition-all duration-300 flex flex-col justify-between cursor-pointer ${
-                            activeTab === "mentors"
-                                ? "bg-[#FFFDF5] border-[#F4B400] shadow-md ring-2 ring-[#F4B400]/20"
-                                : "bg-white border-[#EAEAEA] hover:border-[#111111] shadow-sm hover:shadow"
-                        }`}
-                    >
-                        <div>
-                            <div className="flex items-center justify-between mb-3">
-                                <span className={`text-[11px] font-semibold tracking-wide px-2.5 py-1 rounded-[6px] ${
-                                    activeTab === "mentors"
-                                        ? "bg-[#F4B400] text-[#111111]"
-                                        : "bg-[#F5F5F5] text-[#333333]"
-                                }`}>
-                                    MATCHING ENGINE {activeTab === "mentors" && "• ĐANG XEM"}
-                                </span>
-                                <span className="w-2 h-2 rounded-full bg-[#111111]" />
-                            </div>
-                            <div className="text-[28px] font-black text-[#111111] leading-none mb-2">
-                                98.2%
-                            </div>
-                            <p className="text-[13.5px] text-[#666666] leading-relaxed">
-                                Độ khớp mục tiêu giữa năng lực nhà sáng lập và khẩu vị của Cố vấn / Quỹ đầu tư.
-                            </p>
+                </div>
+
+                {/* 3 High-Trust Metric Bento Cards at Bottom of Hero */}
+                <div className="grid grid-cols-1 md:grid-cols-3 gap-6 pt-4 border-t border-[#F3F4F6]">
+                    
+                    <div className="bg-white border border-[#E5E7EB] rounded-[14px] p-6 shadow-xs hover:border-[#111827] hover:shadow-sm transition-all">
+                        <div className="flex items-center justify-between mb-2">
+                            <span className="text-[12px] font-semibold text-[#6B7280] tracking-wide uppercase">
+                                THẨM ĐỊNH NGUỒN DEAL
+                            </span>
+                            <span className="w-2 h-2 rounded-full bg-[#F4B400]" />
                         </div>
-                        <div className="mt-5 pt-4 border-t border-[#F0F0F0] flex items-center justify-between text-[12px]">
-                            <span className="text-[#777777] font-medium">Sàng lọc đa chiều</span>
-                            <span className="font-semibold text-[#111111]">Tự động & Bảo mật</span>
+                        <div className="text-[32px] font-black text-[#111827] leading-none mb-2">
+                            +500 Startups
                         </div>
+                        <p className="text-[13.5px] text-[#4B5563] leading-relaxed">
+                            Hồ sơ Pre-Seed đến Series A tại Việt Nam được chuẩn hóa đầy đủ số liệu tài chính sống.
+                        </p>
+                    </div>
+
+                    <div className="bg-white border border-[#E5E7EB] rounded-[14px] p-6 shadow-xs hover:border-[#111827] hover:shadow-sm transition-all">
+                        <div className="flex items-center justify-between mb-2">
+                            <span className="text-[12px] font-semibold text-[#6B7280] tracking-wide uppercase">
+                                THANH KHOẢN VỐN ĐẦU TƯ
+                            </span>
+                            <span className="w-2 h-2 rounded-full bg-emerald-500" />
+                        </div>
+                        <div className="text-[32px] font-black text-[#111827] leading-none mb-2">
+                            $18.5M+
+                        </div>
+                        <p className="text-[13.5px] text-[#4B5563] leading-relaxed">
+                            Quy mô vốn mở vòng từ hơn 80+ quỹ đầu tư mạo hiểm và nhà đầu tư thiên thần công khai khẩu vị.
+                        </p>
+                    </div>
+
+                    <div className="bg-white border border-[#E5E7EB] rounded-[14px] p-6 shadow-xs hover:border-[#111827] hover:shadow-sm transition-all">
+                        <div className="flex items-center justify-between mb-2">
+                            <span className="text-[12px] font-semibold text-[#6B7280] tracking-wide uppercase">
+                                CHUẨN XÁC THEO LUẬN ĐIỂM
+                            </span>
+                            <span className="w-2 h-2 rounded-full bg-[#111827]" />
+                        </div>
+                        <div className="text-[32px] font-black text-[#111827] leading-none mb-2">
+                            98.2%
+                        </div>
+                        <p className="text-[13.5px] text-[#4B5563] leading-relaxed">
+                            Khớp lệnh tự động giữa năng lực đội ngũ sáng lập với khẩu vị giải ngân của nhà đầu tư.
+                        </p>
                     </div>
 
                 </div>

@@ -2,6 +2,14 @@
 
 import { useDictionary } from "@/lib/dict-context";
 import Link from "next/link";
+import { 
+    CheckCircle2, 
+    Sparkles, 
+    ArrowRight, 
+    Coins, 
+    ShieldCheck, 
+    Zap 
+} from "lucide-react";
 
 export default function BusinessModel() {
     const dict = useDictionary();
@@ -16,6 +24,8 @@ export default function BusinessModel() {
             href: "/register",
             highlight: false,
             badge: "TIER 01: STANDARD MEMBERSHIP",
+            price: "Miễn Phí",
+            priceSub: "Khởi tạo hồ sơ & tham gia hệ sinh thái",
         },
         {
             name: bm.premName,
@@ -25,103 +35,101 @@ export default function BusinessModel() {
             href: "/register?plan=pro",
             highlight: true,
             badge: "TIER 02: VENTURE PRO & INSTITUTIONAL",
+            price: "10% Thành Công",
+            priceSub: "Zero upfront fee • Chỉ trả khi giải ngân thành công",
         },
     ];
 
     return (
-        <section id="pricing" className="relative py-28 bg-[#FAFAFA] border-t border-[#EAEAEA] overflow-hidden iso-scanline">
-            {/* Background isometric grid */}
-            <div className="absolute inset-0 iso-grid-bg opacity-35 pointer-events-none" />
+        <section id="pricing" className="relative py-28 bg-[#FAFAFA] border-t border-gray-200/80 overflow-hidden fintech-grid-bg">
+            {/* Ambient Lighting */}
+            <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[720px] h-[480px] bg-radial from-amber-400/8 via-amber-200/4 to-transparent rounded-full blur-3xl pointer-events-none" />
 
-            {/* Ambient Breathing Gold Halo */}
-            <div
-                className="absolute top-1/2 left-1/2 w-[700px] h-[500px] pointer-events-none rounded-full iso-ambient-glow"
-                style={{
-                    background: "radial-gradient(circle, rgba(244, 180, 0, 0.15) 0%, transparent 70%)",
-                }}
-            />
-
-            {/* Floating Isometric 3D Geometric Accents */}
-            <div className="absolute top-16 left-12 iso-float pointer-events-none opacity-25 hidden xl:block">
-                <svg width="72" height="72" viewBox="0 0 72 72" fill="none">
-                    <polygon points="36,6 66,22 36,38 6,22" fill="#FFFFFF" stroke="#111111" strokeWidth="1.6" />
-                    <polygon points="6,22 36,38 36,64 6,48" fill="#F4B400" stroke="#111111" strokeWidth="1.6" />
-                    <polygon points="36,38 66,22 66,48 36,64" fill="#D99B00" stroke="#111111" strokeWidth="1.6" />
-                </svg>
-            </div>
-
-            <div className="absolute bottom-20 right-16 iso-float-reverse pointer-events-none opacity-20 hidden xl:block">
-                <svg width="64" height="64" viewBox="0 0 64 64" fill="none">
-                    <polygon points="32,7 58,21 32,36 6,21" fill="#FFFFFF" stroke="#111111" strokeWidth="1.6" />
-                    <polygon points="6,21 32,36 32,58 6,43" fill="#111111" stroke="#111111" strokeWidth="1.6" />
-                    <polygon points="32,36 58,21 58,43 32,58" fill="#EAEAEA" stroke="#111111" strokeWidth="1.6" />
-                </svg>
-            </div>
-
-            <div className="relative max-w-[1240px] mx-auto px-6 md:px-12">
+            <div className="relative max-w-7xl mx-auto px-6 lg:px-8">
                 {/* Header */}
-                <div className="text-center mb-18 max-w-[540px] mx-auto">
-                    <div className="inline-flex items-center gap-2 px-3 py-1 bg-white border border-[#EAEAEA] rounded-[6px] mb-3 text-[12px] font-semibold text-[#D99B00] uppercase tracking-wider shadow-sm">
-                        <span className="w-1.5 h-1.5 rounded-full bg-[#F4B400]" />
+                <div className="text-center mb-18 max-w-2xl mx-auto">
+                    <div className="inline-flex items-center gap-2 px-3.5 py-1 bg-white border border-gray-200 rounded-full mb-4 text-xs font-semibold text-amber-700 shadow-sm">
+                        <span className="w-2 h-2 rounded-full bg-amber-500" />
                         {bm.label}
+                        <span className="text-gray-300">|</span>
+                        <span className="text-gray-500 font-normal">MINH BẠCH & ĐỒNG HÀNH</span>
                     </div>
-                    <h2 className="text-[32px] md:text-[42px] font-extrabold text-[#111111] leading-[1.18] tracking-tight">
+
+                    <h2 className="text-3xl sm:text-4xl lg:text-5xl font-extrabold text-[#111827] tracking-tight leading-[1.15]">
                         {bm.title1}
                         <br />
-                        <span className="relative inline-block text-[#111111]">
+                        <span className="relative inline-block text-[#111827]">
                             {bm.title2}
-                            <span className="absolute bottom-1 left-0 right-0 h-[5px] bg-[#F4B400]/40 -z-10 rounded-sm" />
+                            <span className="absolute bottom-1.5 left-0 right-0 h-2 bg-amber-300/40 -z-10 rounded-sm" />
                         </span>
                     </h2>
-                    <p className="text-[15px] text-[#666666] mt-4 leading-relaxed">
+
+                    <p className="text-base text-gray-600 mt-4 leading-relaxed">
                         {bm.sub}
                     </p>
                 </div>
 
                 {/* 2 Institutional Pricing Tiers */}
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-8 max-w-[900px] mx-auto mb-14">
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-8 max-w-4xl mx-auto mb-14">
                     {tiers.map((tier) => (
                         <div
                             key={tier.name}
-                            className={`rounded-[14px] p-8 md:p-10 border transition-all duration-300 flex flex-col justify-between ${
+                            className={`rounded-2xl p-8 md:p-9 border transition-all duration-300 flex flex-col justify-between ${
                                 tier.highlight
-                                    ? "bg-[#111111] border-[#F4B400] text-white shadow-lg"
-                                    : "bg-white border-[#EAEAEA] text-[#111111] shadow-sm hover:border-[#CCCCCC] hover:shadow-md"
+                                    ? "bg-[#111827] border-amber-500/40 text-white shadow-[0_16px_40px_rgba(0,0,0,0.14)] relative overflow-hidden"
+                                    : "bg-white border-gray-200/90 text-[#111827] shadow-sm hover:border-gray-300 hover:shadow-md"
                             }`}
                         >
+                            {tier.highlight && (
+                                <div className="absolute top-0 right-0 w-36 h-36 bg-amber-500/10 rounded-full blur-2xl pointer-events-none" />
+                            )}
+
                             <div>
-                                <div className="flex items-center justify-between mb-4">
-                                    <span className={`text-[10.5px] font-bold px-2.5 py-1 rounded-[4px] ${
-                                        tier.highlight ? "bg-[#222222] text-[#F4B400]" : "bg-[#F5F5F5] text-[#333333]"
+                                <div className="flex items-center justify-between mb-5">
+                                    <span className={`text-[10.5px] font-mono font-bold px-2.5 py-1 rounded-md ${
+                                        tier.highlight ? "bg-amber-500/15 text-amber-400 border border-amber-500/20" : "bg-gray-100 text-gray-700"
                                     }`}>
                                         {tier.badge}
                                     </span>
-                                    <div className="w-2.5 h-2.5 rounded-full bg-[#F4B400]" />
+                                    {tier.highlight ? (
+                                        <Sparkles className="w-4 h-4 text-amber-400" />
+                                    ) : (
+                                        <div className="w-2.5 h-2.5 rounded-full bg-gray-300" />
+                                    )}
                                 </div>
 
-                                <div className={`text-[26px] font-black uppercase tracking-tight mb-2 ${
-                                    tier.highlight ? "text-[#F4B400]" : "text-[#111111]"
+                                <div className={`text-2xl font-black uppercase tracking-tight mb-2 ${
+                                    tier.highlight ? "text-amber-400" : "text-[#111827]"
                                 }`}>
                                     {tier.name}
                                 </div>
 
-                                <p className={`text-[14px] leading-relaxed mb-6 ${
-                                    tier.highlight ? "text-[#AAAAAA]" : "text-[#666666]"
+                                <div className="mb-4">
+                                    <div className={`text-3xl font-black font-mono tracking-tight ${
+                                        tier.highlight ? "text-white" : "text-[#111827]"
+                                    }`}>
+                                        {tier.price}
+                                    </div>
+                                    <div className={`text-xs mt-0.5 ${
+                                        tier.highlight ? "text-gray-400" : "text-gray-500"
+                                    }`}>
+                                        {tier.priceSub}
+                                    </div>
+                                </div>
+
+                                <p className={`text-xs leading-relaxed mb-6 ${
+                                    tier.highlight ? "text-gray-300" : "text-gray-600"
                                 }`}>
                                     {tier.desc}
                                 </p>
 
-                                <div className="pt-6 border-t border-dashed border-[#EAEAEA]/30 flex flex-col gap-3.5">
+                                <div className="pt-6 border-t border-gray-200/40 flex flex-col gap-3">
                                     {tier.features.map((f) => (
-                                        <div key={f} className="flex items-start gap-3 text-[14px]">
-                                            <div className="mt-1 shrink-0">
-                                                <svg width="14" height="14" viewBox="0 0 14 14" fill="none">
-                                                    <polygon points="7,2 12,5 7,8 2,5" fill="#F4B400" />
-                                                    <polygon points="2,5 7,8 7,12 2,9" fill={tier.highlight ? "#FFFFFF" : "#111111"} />
-                                                    <polygon points="7,8 12,5 12,9 7,12" fill={tier.highlight ? "#DDDDDD" : "#333333"} />
-                                                </svg>
-                                            </div>
-                                            <span className={tier.highlight ? "text-[#E0E0E0]" : "text-[#444444]"}>
+                                        <div key={f} className="flex items-start gap-2.5 text-xs">
+                                            <CheckCircle2 className={`w-4 h-4 shrink-0 mt-0.5 ${
+                                                tier.highlight ? "text-amber-400" : "text-emerald-600"
+                                            }`} />
+                                            <span className={tier.highlight ? "text-gray-200" : "text-gray-700"}>
                                                 {f}
                                             </span>
                                         </div>
@@ -129,19 +137,17 @@ export default function BusinessModel() {
                                 </div>
                             </div>
 
-                            <div className="mt-10 pt-4">
+                            <div className="mt-8 pt-4">
                                 <Link
                                     href={tier.href}
-                                    className={`w-full inline-flex items-center justify-center gap-2 text-[15px] font-semibold py-3.5 px-6 rounded-[8px] transition-all shadow-sm ${
+                                    className={`w-full inline-flex items-center justify-center gap-2 text-sm font-bold py-3.5 px-6 rounded-xl transition-all ${
                                         tier.highlight
-                                            ? "bg-[#F4B400] text-[#111111] hover:bg-[#FFC933] hover:shadow-md"
-                                            : "bg-[#111111] text-white hover:bg-[#222222] hover:shadow"
+                                            ? "bg-amber-500 text-gray-950 hover:bg-amber-400 shadow-sm hover:shadow-md"
+                                            : "bg-[#111827] text-white hover:bg-gray-800 shadow-sm"
                                     }`}
                                 >
                                     {tier.cta}
-                                    <svg width="14" height="14" viewBox="0 0 14 14" fill="none">
-                                        <path d="M3 7h8M7 3l4 4-4 4" stroke="currentColor" strokeWidth="1.6" strokeLinecap="round" strokeLinejoin="round" />
-                                    </svg>
+                                    <ArrowRight className="w-4 h-4" />
                                 </Link>
                             </div>
                         </div>
@@ -149,22 +155,18 @@ export default function BusinessModel() {
                 </div>
 
                 {/* Success fee note */}
-                <div className="max-w-[700px] mx-auto p-6 bg-white border border-[#EAEAEA] rounded-[12px] flex items-start gap-5 shadow-sm">
-                    <div className="w-11 h-11 rounded-[8px] bg-[#FFF8E1] border border-[#F4B400]/40 flex items-center justify-center shrink-0">
-                        <svg width="24" height="24" viewBox="0 0 24 24" fill="none">
-                            <polygon points="12,3 21,8 12,13 3,8" fill="#F4B400" />
-                            <polygon points="3,8 12,13 12,20 3,15" fill="#111111" />
-                            <polygon points="12,13 21,8 21,15 12,20" fill="#333333" />
-                        </svg>
+                <div className="max-w-3xl mx-auto p-6 bg-white border border-gray-200/90 rounded-2xl flex items-start gap-4 shadow-sm">
+                    <div className="w-10 h-10 rounded-xl bg-amber-50 border border-amber-200/60 flex items-center justify-center shrink-0 text-amber-700">
+                        <Coins className="w-5 h-5" />
                     </div>
                     <div>
                         <div className="flex items-center gap-2 mb-1">
-                            <span className="text-[15px] font-bold text-[#111111]">{bm.feeTitle}</span>
-                            <span className="text-[10px] font-bold px-2 py-0.5 rounded bg-[#FFF8E1] border border-[#F4B400]/40 text-[#B37700]">
-                                ZERO UPFRONT
+                            <span className="text-sm font-bold text-gray-900">{bm.feeTitle}</span>
+                            <span className="text-[10px] font-bold px-2 py-0.5 rounded bg-emerald-50 text-emerald-700 border border-emerald-200/60">
+                                ZERO UPFRONT COST
                             </span>
                         </div>
-                        <p className="text-[13.5px] text-[#666666] leading-relaxed">
+                        <p className="text-xs text-gray-600 leading-relaxed">
                             {bm.feeDesc}
                         </p>
                     </div>

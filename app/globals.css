@@ -161,77 +161,84 @@
     transition: transform 0.5s cubic-bezier(0.2, 0.8, 0.2, 1);
   }
 
+  /* Modern Institutional Venture Elevation System */
   .iso-card-3d {
     position: relative;
-    transition: all 0.3s cubic-bezier(0.2, 0.8, 0.2, 1);
+    transition: all 0.25s cubic-bezier(0.16, 1, 0.3, 1);
     box-shadow: 
-      -4px 6px 0px #111111,
-      -8px 12px 0px rgba(244, 180, 0, 0.3),
-      -12px 20px 28px rgba(0, 0, 0, 0.07);
+      0 1px 3px rgba(0, 0, 0, 0.04),
+      0 4px 16px rgba(0, 0, 0, 0.03);
   }
 
   .iso-card-3d:hover {
-    transform: translate(3px, -5px) scale(1.01);
+    transform: translateY(-2px);
     box-shadow: 
-      -6px 10px 0px #111111,
-      -12px 16px 0px rgba(244, 180, 0, 0.45),
-      -18px 28px 36px rgba(0, 0, 0, 0.12);
+      0 12px 30px rgba(0, 0, 0, 0.07),
+      0 4px 8px rgba(0, 0, 0, 0.03);
   }
 
   .iso-card-dark {
     position: relative;
-    transition: all 0.3s cubic-bezier(0.2, 0.8, 0.2, 1);
+    transition: all 0.25s cubic-bezier(0.16, 1, 0.3, 1);
     box-shadow: 
-      -4px 6px 0px #F4B400,
-      -8px 14px 24px rgba(0, 0, 0, 0.5);
+      0 4px 20px rgba(0, 0, 0, 0.25),
+      inset 0 1px 0 rgba(255, 255, 255, 0.08);
   }
 
   .iso-card-dark:hover {
-    transform: translate(3px, -5px) scale(1.01);
+    transform: translateY(-2px);
     box-shadow: 
-      -6px 10px 0px #F4B400,
-      -12px 20px 32px rgba(0, 0, 0, 0.65);
+      0 12px 36px rgba(0, 0, 0, 0.35),
+      inset 0 1px 0 rgba(255, 255, 255, 0.15);
   }
 
   .iso-btn {
     position: relative;
-    transition: all 0.18s cubic-bezier(0.2, 0.8, 0.2, 1);
-    box-shadow: -3px 4px 0px #111111;
+    transition: all 0.2s cubic-bezier(0.16, 1, 0.3, 1);
+    box-shadow: 0 1px 2px rgba(0, 0, 0, 0.06);
   }
 
   .iso-btn:hover {
-    transform: translate(2px, -3px);
-    box-shadow: -5px 7px 0px #111111;
+    transform: translateY(-1px);
+    box-shadow: 0 4px 14px rgba(0, 0, 0, 0.14);
   }
 
   .iso-btn:active {
-    transform: translate(-1px, 2px);
-    box-shadow: -1px 2px 0px #111111;
+    transform: translateY(1px);
+    box-shadow: 0 1px 2px rgba(0, 0, 0, 0.06);
   }
 
   .iso-btn-gold {
     position: relative;
-    transition: all 0.18s cubic-bezier(0.2, 0.8, 0.2, 1);
-    box-shadow: -3px 4px 0px #996515;
+    transition: all 0.2s cubic-bezier(0.16, 1, 0.3, 1);
+    box-shadow: 0 2px 8px rgba(244, 180, 0, 0.25);
   }
 
   .iso-btn-gold:hover {
-    transform: translate(2px, -3px);
-    box-shadow: -5px 7px 0px #996515;
+    transform: translateY(-1px);
+    box-shadow: 0 6px 18px rgba(244, 180, 0, 0.38);
   }
 
   .iso-btn-gold:active {
-    transform: translate(-1px, 2px);
-    box-shadow: -1px 2px 0px #996515;
+    transform: translateY(1px);
+    box-shadow: 0 2px 6px rgba(244, 180, 0, 0.2);
   }
 
-  /* 3D Isometric Background Grids with Depth */
+  /* Modern Subtle Dot Grid (Stripe / Linear / AngelList inspired) */
+  .fintech-grid-bg {
+    background-image: radial-gradient(#E2E8F0 1.2px, transparent 1.2px);
+    background-size: 24px 24px;
+  }
+
+  .fintech-grid-dark {
+    background-image: radial-gradient(rgba(255, 255, 255, 0.12) 1.2px, transparent 1.2px);
+    background-size: 24px 24px;
+  }
+
+  /* Background Grids with Depth */
   .iso-grid-bg {
-    background-image: 
-      linear-gradient(30deg, #EAEAEA 1px, transparent 1px),
-      linear-gradient(150deg, #EAEAEA 1px, transparent 1px),
-      linear-gradient(90deg, #F0F0F0 1px, transparent 1px);
-    background-size: 56px 97px;
+    background-image: radial-gradient(#E2E8F0 1.2px, transparent 1.2px);
+    background-size: 24px 24px;
   }
 
   .iso-grid-gold {
