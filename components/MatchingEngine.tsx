@@ -1,133 +1,166 @@
 "use client";
+
 import { useDictionary } from "@/lib/dict-context";
-
-const nodes = [
-    {
-        label: "Startup",
-        sub: "Industry + Stage + Need",
-        icon: (
-            <svg width="20" height="20" viewBox="0 0 20 20" fill="none">
-                <path d="M10 2 L17 7 V13 L10 18 L3 13 V7 Z" stroke="#111111" strokeWidth="1.4" strokeLinejoin="round" fill="none" />
-            </svg>
-        ),
-    },
-    {
-        label: "AI Matching Engine",
-        sub: "Score • Filter • Rank",
-        icon: (
-            <svg width="20" height="20" viewBox="0 0 20 20" fill="none">
-                <circle cx="10" cy="10" r="4" stroke="#F4B400" strokeWidth="1.4" fill="none" />
-                <path d="M10 1v3M10 16v3M1 10h3M16 10h3" stroke="#F4B400" strokeWidth="1.2" strokeLinecap="round" />
-            </svg>
-        ),
-        center: true,
-    },
-    {
-        label: "Mentor / Investor",
-        sub: "Industry + Stage + Capacity",
-        icon: (
-            <svg width="20" height="20" viewBox="0 0 20 20" fill="none">
-                <path d="M3 15 L7 9 L11 12 L16 5 L20 8" stroke="#111111" strokeWidth="1.4" strokeLinecap="round" strokeLinejoin="round" />
-            </svg>
-        ),
-    },
-];
-
-const rules = [
-    { label: "Auto-match by industry", desc: "Startup sector compared against mentor and investor domain expertise." },
-    { label: "Auto-match by funding stage", desc: "Seed, Series A, B — each stage matched to appropriate investor profiles." },
-    { label: "Admin intervenes only in disputes", desc: "The engine runs autonomously. Admin oversight reserved for escalations only." },
-];
 
 export default function MatchingEngine() {
     const dict = useDictionary();
     const mt = dict.matching;
+
     const NODE_TEXT = [
-        { label: mt.node1Label, sub: mt.node1Sub },
-        { label: mt.node2Label, sub: mt.node2Sub },
-        { label: mt.node3Label, sub: mt.node3Sub },
+        { label: mt.node1Label, sub: mt.node1Sub, role: "SOURCE_NODE" },
+        { label: mt.node2Label, sub: mt.node2Sub, role: "AI_CORE", center: true },
+        { label: mt.node3Label, sub: mt.node3Sub, role: "TARGET_NODE" },
     ];
+
     const RULE_TEXT = [
-        { label: mt.rule1Label, desc: mt.rule1Desc },
-        { label: mt.rule2Label, desc: mt.rule2Desc },
-        { label: mt.rule3Label, desc: mt.rule3Desc },
+        { label: mt.rule1Label, desc: mt.rule1Desc, code: "RULE_01", tag: "SECTOR_FIT" },
+        { label: mt.rule2Label, desc: mt.rule2Desc, code: "RULE_02", tag: "STAGE_FIT" },
+        { label: mt.rule3Label, desc: mt.rule3Desc, code: "RULE_03", tag: "AUTONOMOUS" },
     ];
+
     return (
-        <section className="py-24 bg-[#F7F7F7]">
-            <div className="max-w-[1200px] mx-auto px-6 md:px-12">
+        <section className="relative py-28 bg-[#FFFFFF] border-t border-[#EAEAEA] overflow-hidden">
+            {/* Isometric background grid */}
+            <div className="absolute inset-0 iso-grid-bg opacity-30 pointer-events-none" />
+
+            <div className="relative max-w-[1240px] mx-auto px-6 md:px-12">
                 {/* Header */}
-                <div className="mb-14 max-w-[520px]">
-                    <p className="text-[12px] font-semibold text-[#F4B400] uppercase tracking-widest mb-3">
+                <div className="mb-18 max-w-[560px]">
+                    <div className="inline-flex items-center gap-2 px-3 py-1 bg-[#F7F7F7] border border-[#EAEAEA] rounded-[6px] mb-3 text-[12px] font-bold text-[#D99B00] uppercase tracking-wider iso-btn">
+                        <span className="w-1.5 h-1.5 rounded-full bg-[#F4B400]" />
                         {mt.label}
-                    </p>
-                    <h2 className="text-[32px] md:text-[38px] font-bold text-[#111111] leading-[1.2]">
-                        {mt.title1}<br />{mt.title2}
+                    </div>
+                    <h2 className="text-[32px] md:text-[42px] font-extrabold text-[#111111] leading-[1.18] tracking-tight">
+                        {mt.title1}
+                        <br />
+                        <span className="relative inline-block text-[#111111]">
+                            {mt.title2}
+                            <span className="absolute bottom-1 left-0 right-0 h-[5px] bg-[#F4B400]/40 -z-10 rounded-sm" />
+                        </span>
                     </h2>
-                    <p className="text-[15px] text-[#666666] mt-4 leading-[1.7]">
+                    <p className="text-[15px] text-[#666666] mt-4 leading-relaxed">
                         {mt.sub}
                     </p>
                 </div>
 
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-12 items-start">
-                    {/* Node diagram */}
-                    <div className="bg-white border border-[#EAEAEA] rounded-[8px] p-8 flex flex-col items-center gap-0">
-                        {nodes.map((node, i) => (
-                            <div key={node.label} className="flex flex-col items-center w-full">
-                                {/* Node card */}
-                                <div
-                                    className={`flex items-center gap-4 px-5 py-4 rounded-[8px] w-full max-w-[280px] border transition-colors
-                    ${node.center
-                                            ? "border-[#F4B400] bg-[#FFFBF0]"
-                                            : "border-[#EAEAEA] bg-white"
-                                        }`}
-                                >
-                                    <div
-                                        className={`w-9 h-9 rounded-full flex items-center justify-center shrink-0 ${node.center ? "bg-[#F4B400]/10" : "bg-[#F7F7F7]"
-                                            }`}
-                                    >
-                                        {node.icon}
-                                    </div>
-                                    <div>
-                                        <div className={`text-[14px] font-semibold ${node.center ? "text-[#111111]" : "text-[#333333]"}`}>
-                                            {NODE_TEXT[i].label}
-                                        </div>
-                                        <div className="text-[11px] text-[#999999] mt-0.5">{NODE_TEXT[i].sub}</div>
-                                    </div>
-                                </div>
-                                {/* Connector */}
-                                {i < nodes.length - 1 && (
-                                    <div className="flex flex-col items-center gap-0.5 py-2">
-                                        <div className="w-px h-3 bg-[#DDDDDD]" />
-                                        <svg width="10" height="6" viewBox="0 0 10 6" fill="none">
-                                            <path d="M1 1L5 5L9 1" stroke="#DDDDDD" strokeWidth="1.2" strokeLinecap="round" strokeLinejoin="round" />
+                <div className="grid grid-cols-1 lg:grid-cols-12 gap-12 items-center">
+                    
+                    {/* Left: Isometric 3D Network Diagram Stage */}
+                    <div className="lg:col-span-6 bg-[#FAFAFA] border-2 border-[#111111] rounded-[14px] p-8 iso-card-3d relative overflow-hidden">
+                        
+                        <div className="flex items-center justify-between mb-8 pb-3 border-b border-[#EAEAEA]">
+                            <div className="flex items-center gap-2">
+                                <span className="w-2.5 h-2.5 rounded-full bg-[#111111]" />
+                                <span className="text-[12px] font-mono font-bold text-[#111111] uppercase">ISO MATCH MATRIX</span>
+                            </div>
+                            <span className="text-[11px] font-mono text-[#D99B00] font-bold">100% AUTONOMOUS</span>
+                        </div>
+
+                        {/* Interactive Isometric Node Pipeline */}
+                        <div className="flex flex-col items-center gap-0 my-4 relative">
+                            
+                            {/* Node 1: Startup Source */}
+                            <div className="w-full max-w-[320px] bg-white border-2 border-[#111111] rounded-[10px] p-4 iso-card-3d flex items-center justify-between z-10">
+                                <div className="flex items-center gap-3.5">
+                                    <div className="w-9 h-9 rounded-[6px] bg-[#111111] text-white flex items-center justify-center shrink-0">
+                                        <svg width="20" height="20" viewBox="0 0 20 20" fill="none">
+                                            <polygon points="10,2 17,6 10,10 3,6" fill="#F4B400" />
+                                            <polygon points="3,6 10,10 10,16 3,12" fill="#FFFFFF" fillOpacity="0.8" />
+                                            <polygon points="10,10 17,6 17,12 10,16" fill="#FFFFFF" fillOpacity="0.5" />
                                         </svg>
                                     </div>
-                                )}
-                            </div>
-                        ))}
-                    </div>
-
-                    {/* Rules */}
-                    <div className="flex flex-col gap-5">
-                        {rules.map((r, i) => (
-                            <div key={r.label} className="flex items-start gap-4">
-                                <div className="w-8 h-8 rounded-full bg-white border border-[#EAEAEA] flex items-center justify-center shrink-0 text-[12px] font-bold text-[#CCCCCC]">
-                                    {i + 1}
+                                    <div>
+                                        <div className="text-[14px] font-bold text-[#111111]">{NODE_TEXT[0].label}</div>
+                                        <div className="text-[11px] text-[#666666]">{NODE_TEXT[0].sub}</div>
+                                    </div>
                                 </div>
-                                <div>
-                                    <div className="text-[15px] font-semibold text-[#111111] mb-1">{RULE_TEXT[i].label}</div>
-                                    <p className="text-[13px] text-[#777777] leading-[1.65]">{RULE_TEXT[i].desc}</p>
+                                <span className="text-[10px] font-mono font-bold px-1.5 py-0.5 rounded bg-[#F7F7F7] text-[#888888]">IN</span>
+                            </div>
+
+                            {/* Connecting Isometric Circuit Track 1 */}
+                            <div className="h-10 w-full flex flex-col items-center justify-center relative">
+                                <div className="w-[3px] h-full bg-[#F4B400] relative">
+                                    <div className="w-2.5 h-2.5 rounded-full bg-[#111111] absolute left-1/2 -translate-x-1/2 animate-bounce" />
                                 </div>
                             </div>
-                        ))}
 
-                        {/* Admin note */}
-                        <div className="mt-2 p-4 bg-white border border-[#EAEAEA] rounded-[8px]">
-                            <p className="text-[12px] text-[#888888] leading-[1.6]">
-                                {mt.adminNote}
-                            </p>
+                            {/* Node 2: Central AI Engine (Hero Cube) */}
+                            <div className="w-full max-w-[340px] bg-[#111111] text-white border-2 border-[#F4B400] rounded-[10px] p-4.5 iso-card-dark flex items-center justify-between z-20">
+                                <div className="flex items-center gap-3.5">
+                                    <div className="w-10 h-10 rounded-[6px] bg-[#222222] border border-[#F4B400] flex items-center justify-center shrink-0">
+                                        <svg width="24" height="24" viewBox="0 0 24 24" fill="none">
+                                            <polygon points="12,2 21,7 12,12 3,7" fill="#F4B400" />
+                                            <polygon points="3,7 12,12 12,19 3,14" fill="#E59B00" />
+                                            <polygon points="12,12 21,7 21,14 12,19" fill="#FFC933" />
+                                        </svg>
+                                    </div>
+                                    <div>
+                                        <div className="text-[15px] font-extrabold text-[#F4B400] leading-none mb-1">{NODE_TEXT[1].label}</div>
+                                        <div className="text-[11px] text-[#CCCCCC]">{NODE_TEXT[1].sub}</div>
+                                    </div>
+                                </div>
+                                <span className="text-[10px] font-mono font-bold px-2 py-0.5 rounded bg-[#F4B400] text-[#111111]">AI CORE</span>
+                            </div>
+
+                            {/* Connecting Isometric Circuit Track 2 */}
+                            <div className="h-10 w-full flex flex-col items-center justify-center relative">
+                                <div className="w-[3px] h-full bg-[#F4B400] relative">
+                                    <div className="w-2.5 h-2.5 rounded-full bg-[#111111] absolute left-1/2 -translate-x-1/2 animate-bounce" style={{ animationDelay: "0.5s" }} />
+                                </div>
+                            </div>
+
+                            {/* Node 3: Investor & Mentor Pipeline */}
+                            <div className="w-full max-w-[320px] bg-white border-2 border-[#111111] rounded-[10px] p-4 iso-card-3d flex items-center justify-between z-10">
+                                <div className="flex items-center gap-3.5">
+                                    <div className="w-9 h-9 rounded-[6px] bg-[#F4B400] text-[#111111] flex items-center justify-center shrink-0">
+                                        <svg width="20" height="20" viewBox="0 0 20 20" fill="none">
+                                            <polygon points="10,2 17,6 10,10 3,6" fill="#111111" />
+                                            <polygon points="3,6 10,10 10,16 3,12" fill="#333333" />
+                                            <polygon points="10,10 17,6 17,12 10,16" fill="#555555" />
+                                        </svg>
+                                    </div>
+                                    <div>
+                                        <div className="text-[14px] font-bold text-[#111111]">{NODE_TEXT[2].label}</div>
+                                        <div className="text-[11px] text-[#666666]">{NODE_TEXT[2].sub}</div>
+                                    </div>
+                                </div>
+                                <span className="text-[10px] font-mono font-bold px-1.5 py-0.5 rounded bg-[#F7F7F7] text-[#888888]">OUT</span>
+                            </div>
+
                         </div>
                     </div>
+
+                    {/* Right: Isometric Engine Rules */}
+                    <div className="lg:col-span-6 flex flex-col gap-5">
+                        <div className="text-[11px] font-mono font-bold uppercase text-[#888888] tracking-widest mb-1">
+                            ENGINE LOGIC SPECIFICATIONS
+                        </div>
+
+                        {RULE_TEXT.map((rule, idx) => (
+                            <div
+                                key={rule.code}
+                                className="bg-white border-2 border-[#111111] rounded-[10px] p-6 iso-card-3d hover:translate-x-1 transition-all"
+                            >
+                                <div className="flex items-center justify-between mb-3">
+                                    <span className="text-[11px] font-mono font-bold px-2 py-0.5 rounded-[4px] bg-[#111111] text-white">
+                                        {rule.code}
+                                    </span>
+                                    <span className="text-[10px] font-mono font-bold px-2 py-0.5 rounded-[4px] bg-[#F4B400]/20 text-[#B37700]">
+                                        {rule.tag}
+                                    </span>
+                                </div>
+
+                                <h3 className="text-[17px] font-extrabold text-[#111111] mb-1.5">
+                                    {rule.label}
+                                </h3>
+
+                                <p className="text-[14px] text-[#666666] leading-relaxed">
+                                    {rule.desc}
+                                </p>
+                            </div>
+                        ))}
+                    </div>
+
                 </div>
             </div>
         </section>

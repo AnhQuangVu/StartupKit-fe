@@ -1,83 +1,114 @@
 "use client";
-import { useDictionary } from "@/lib/dict-context";
 
-const steps = [
-    {
-        number: "01",
-        title: "Build Your Profile",
-        description:
-            "Create a founder profile that showcases your vision, team, and traction. Tell your story in minutes.",
-        icon: (
-            <svg width="32" height="32" viewBox="0 0 32 32" fill="none">
-                <rect x="5" y="5" width="22" height="22" rx="4" stroke="#111111" strokeWidth="1.5" fill="none" />
-                <path d="M10 16 L22 16 M10 11 L18 11 M10 21 L16 21" stroke="#111111" strokeWidth="1.5" strokeLinecap="round" />
-            </svg>
-        ),
-    },
-    {
-        number: "02",
-        title: "Connect with Mentors",
-        description:
-            "Get matched with experienced mentors from Vietnam and globally who align with your industry and stage.",
-        icon: (
-            <svg width="32" height="32" viewBox="0 0 32 32" fill="none">
-                <circle cx="11" cy="13" r="5" stroke="#111111" strokeWidth="1.5" fill="none" />
-                <circle cx="23" cy="13" r="4" stroke="#111111" strokeWidth="1.5" fill="none" />
-                <path d="M4 26 C4 22 7 20 11 20 C15 20 18 22 18 26" stroke="#111111" strokeWidth="1.5" strokeLinecap="round" fill="none" />
-                <path d="M23 20 C26 20 28 22 28 24" stroke="#111111" strokeWidth="1.2" strokeLinecap="round" fill="none" strokeOpacity="0.5" />
-            </svg>
-        ),
-    },
-    {
-        number: "03",
-        title: "Raise Capital",
-        description:
-            "Pitch to a curated network of investors with AI-powered matching to find the right funding partner for your vision.",
-        icon: (
-            <svg width="32" height="32" viewBox="0 0 32 32" fill="none">
-                <path d="M6 24 L10 17 L15 20 L21 12 L27 16" stroke="#111111" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" />
-                <circle cx="27" cy="12" r="3" stroke="#F4B400" strokeWidth="1.5" fill="none" />
-                <path d="M6 28 L27 28" stroke="#111111" strokeWidth="1" strokeLinecap="round" strokeOpacity="0.3" />
-            </svg>
-        ),
-    },
-];
+import { useDictionary } from "@/lib/dict-context";
 
 export default function HowItWorks() {
     const dict = useDictionary();
     const hw = dict.how;
-    const STEP_TEXT = [
-        { title: hw.step1Title, desc: hw.step1Desc },
-        { title: hw.step2Title, desc: hw.step2Desc },
-        { title: hw.step3Title, desc: hw.step3Desc },
+
+    const steps = [
+        {
+            number: "01",
+            level: "LEVEL 01: FOUNDATION",
+            title: hw.step1Title,
+            description: hw.step1Desc,
+            artwork: (
+                <svg viewBox="0 0 80 60" className="w-full h-14" fill="none" xmlns="http://www.w3.org/2000/svg">
+                    <polygon points="40,8 68,22 40,36 12,22" fill="#FFFFFF" stroke="#111111" strokeWidth="1.6" />
+                    <polygon points="12,22 40,36 40,46 12,32" fill="#F7F7F7" stroke="#111111" strokeWidth="1.6" />
+                    <polygon points="40,36 68,22 68,32 40,46" fill="#EAEAEA" stroke="#111111" strokeWidth="1.6" />
+                    <rect x="32" y="18" width="16" height="4" fill="#111111" rx="1" />
+                    <circle cx="26" cy="20" r="2" fill="#F4B400" />
+                </svg>
+            ),
+        },
+        {
+            number: "02",
+            level: "LEVEL 02: SYNERGY",
+            title: hw.step2Title,
+            description: hw.step2Desc,
+            artwork: (
+                <svg viewBox="0 0 80 60" className="w-full h-14" fill="none" xmlns="http://www.w3.org/2000/svg">
+                    <polygon points="40,8 68,22 40,36 12,22" fill="#FFFFFF" stroke="#111111" strokeWidth="1.6" />
+                    <polygon points="12,22 40,36 40,46 12,32" fill="#F7F7F7" stroke="#111111" strokeWidth="1.6" />
+                    <polygon points="40,36 68,22 68,32 40,46" fill="#EAEAEA" stroke="#111111" strokeWidth="1.6" />
+                    <circle cx="32" cy="20" r="3" fill="#111111" />
+                    <circle cx="48" cy="20" r="3" fill="#F4B400" />
+                    <line x1="35" y1="20" x2="45" y2="20" stroke="#111111" strokeWidth="1.4" strokeDasharray="2 2" />
+                </svg>
+            ),
+        },
+        {
+            number: "03",
+            level: "LEVEL 03: ELEVATION",
+            title: hw.step3Title,
+            description: hw.step3Desc,
+            artwork: (
+                <svg viewBox="0 0 80 60" className="w-full h-14" fill="none" xmlns="http://www.w3.org/2000/svg">
+                    <polygon points="40,8 68,22 40,36 12,22" fill="#FFFDF5" stroke="#111111" strokeWidth="1.6" />
+                    <polygon points="12,22 40,36 40,46 12,32" fill="#F4B400" stroke="#111111" strokeWidth="1.6" />
+                    <polygon points="40,36 68,22 68,32 40,46" fill="#D99B00" stroke="#111111" strokeWidth="1.6" />
+                    <path d="M30 24 L38 16 L44 20 L52 12" stroke="#111111" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" />
+                    <circle cx="52" cy="12" r="2.5" fill="#111111" />
+                </svg>
+            ),
+        },
     ];
+
     return (
-        <section className="py-24 bg-[#F7F7F7]">
-            <div className="max-w-[1200px] mx-auto px-6 md:px-12">
+        <section className="relative py-28 bg-[#FFFFFF] border-t border-[#EAEAEA] overflow-hidden">
+            {/* Isometric grid */}
+            <div className="absolute inset-0 iso-grid-bg opacity-30 pointer-events-none" />
+
+            <div className="relative max-w-[1240px] mx-auto px-6 md:px-12">
                 {/* Header */}
-                <div className="text-center mx-auto max-w-[480px] mb-16">
-                    <p className="text-[13px] font-semibold text-[#F4B400] uppercase tracking-widest mb-3">
+                <div className="text-center mx-auto max-w-[520px] mb-20">
+                    <div className="inline-flex items-center gap-2 px-3 py-1 bg-[#F7F7F7] border border-[#EAEAEA] rounded-[6px] mb-3 text-[12px] font-bold text-[#D99B00] uppercase tracking-wider iso-btn">
+                        <span className="w-1.5 h-1.5 rounded-full bg-[#F4B400]" />
                         {hw.label}
-                    </p>
-                    <h2 className="text-[32px] md:text-[38px] font-bold text-[#111111] leading-[1.2]">
+                    </div>
+                    <h2 className="text-[32px] md:text-[42px] font-extrabold text-[#111111] leading-[1.18] tracking-tight">
                         {hw.title}
                     </h2>
                 </div>
 
-                {/* 3-col grid */}
-                <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-                    {steps.map((s, i) => (
+                {/* 3-Column Stepped Isometric Progression */}
+                <div className="grid grid-cols-1 md:grid-cols-3 gap-8 items-stretch">
+                    {steps.map((s, idx) => (
                         <div
                             key={s.number}
-                            className="bg-white border border-[#EAEAEA] rounded-[8px] p-8 flex flex-col gap-5 hover:border-[#111111] transition-colors"
+                            className={`border-2 border-[#111111] rounded-[12px] p-8 flex flex-col justify-between iso-card-3d group transition-all duration-300 ${
+                                idx === 2 ? "bg-[#FFFDF5] border-[#111111]" : "bg-white"
+                            }`}
                         >
-                            <div className="flex items-start justify-between">
-                                {s.icon}
-                                <span className="text-[13px] font-mono font-semibold text-[#CCCCCC]">{s.number}</span>
-                            </div>
                             <div>
-                                <h3 className="text-[18px] font-semibold text-[#111111] mb-2">{STEP_TEXT[i].title}</h3>
-                                <p className="text-[14px] text-[#666666] leading-[1.65]">{STEP_TEXT[i].desc}</p>
+                                <div className="flex items-center justify-between mb-4">
+                                    <span className="text-[10px] font-mono font-bold px-2 py-0.5 rounded bg-[#111111] text-white">
+                                        {s.level}
+                                    </span>
+                                    <span className="text-[20px] font-mono font-black text-[#D99B00]">
+                                        #{s.number}
+                                    </span>
+                                </div>
+
+                                {/* Custom Isometric Step Illustration */}
+                                <div className="my-5 p-3 bg-white border border-[#EAEAEA] rounded-[8px] flex items-center justify-center transition-transform group-hover:scale-105 duration-300">
+                                    {s.artwork}
+                                </div>
+
+                                <h3 className="text-[20px] font-extrabold text-[#111111] mb-2.5">
+                                    {s.title}
+                                </h3>
+                                <p className="text-[14px] text-[#666666] leading-relaxed">
+                                    {s.description}
+                                </p>
+                            </div>
+
+                            <div className="mt-8 pt-4 border-t border-[#F0F0F0] flex items-center justify-between text-[11px] font-mono text-[#888888]">
+                                <span>STAGE 0{idx + 1}/03</span>
+                                <span className="font-semibold text-[#111111] group-hover:text-[#D99B00] transition-colors">
+                                    PHASE CLEAR →
+                                </span>
                             </div>
                         </div>
                     ))}

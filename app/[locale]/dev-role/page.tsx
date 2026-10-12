@@ -3,9 +3,10 @@
 import { useAuth } from "@/lib/auth-context";
 import { useParams, useRouter } from "next/navigation";
 import type { Locale } from "@/lib/i18n";
+import type { UserRole } from "@/lib/auth-context";
 
 export default function DevRolePage() {
-    const { user, login, logout } = useAuth();
+    const { user, switchRole, logout } = useAuth();
     const params = useParams();
     const router = useRouter();
     const locale = (params?.locale as Locale) ?? "vi";
@@ -18,7 +19,8 @@ export default function DevRolePage() {
     ];
 
     const handleRoleSwitch = (role: string) => {
-        login(role as any);
+        const nextRole = role as UserRole;
+        switchRole(nextRole);
         router.push(`/${locale}/workspace`);
     };
 

@@ -76,7 +76,13 @@ export function proxy(request: NextRequest) {
             return NextResponse.next();
         }
 
-        const role = normalizeRole(request.cookies.get(ROLE_COOKIE_KEY)?.value) ?? "MENTOR";
+        const role = normalizeRole(request.cookies.get(ROLE_COOKIE_KEY)?.value);
+        if (!role) {
+            const url = request.nextUrl.clone();
+            url.pathname = `/${locale}/login`;
+            return NextResponse.redirect(url);
+        }
+
         if (!isAllowedWorkspacePath(role, pathWithoutLocale)) {
             const url = request.nextUrl.clone();
             url.pathname = `/${locale}${HOME_BY_ROLE[role]}`;

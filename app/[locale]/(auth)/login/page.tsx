@@ -3,18 +3,15 @@
 import { useState } from "react";
 import Image from "next/image";
 import Link from "next/link";
-import { useParams } from "next/navigation";
+import { useParams, useRouter } from "next/navigation";
 import { useDictionary } from "@/lib/dict-context";
 import OAuthButtons from "@/components/auth/OAuthButtons";
-
-type AccountStatus = "active" | "suspended" | "inactive" | null;
-const STATUS_MESSAGES: Record<string, AccountStatus> = {
-    "suspended@test.com": "suspended",
-    "inactive@test.com": "inactive",
-};
+import { useAuth } from "@/lib/auth-context";
 
 export default function LoginPage() {
     const { locale } = useParams<{ locale: string }>();
+    const router = useRouter();
+    const { login } = useAuth();
     const dict = useDictionary();
     const d = dict.auth.login;
 
@@ -23,7 +20,6 @@ export default function LoginPage() {
     const [showPw, setShowPw] = useState(false);
     const [errors, setErrors] = useState<Record<string, string>>({});
     const [loading, setLoading] = useState(false);
-    const [status, setStatus] = useState<AccountStatus>(null);
 
     const validate = () => {
         const e: Record<string, string> = {};
@@ -38,11 +34,26 @@ export default function LoginPage() {
         e.preventDefault();
         if (!validate()) return;
         setLoading(true);
-        await new Promise((r) => setTimeout(r, 800));
-        const accountStatus = STATUS_MESSAGES[email] ?? "active";
-        setStatus(accountStatus);
-        if (accountStatus === "active") window.location.href = `/${locale}/dashboard`;
-        setLoading(false);
+        try {
+            const user = await login(email, password);
+            const rolePath = user.role === "STARTUP"
+                ? "/workspace/startup"
+                : user.role === "INVESTOR"
+                    ? "/workspace/investor"
+                    : user.role === "MENTOR"
+                        ? "/workspace/mentor"
+                        : user.role === "ADMIN"
+                            ? "/workspace/admin"
+                            : "/workspace";
+            router.push(`/${locale}${rolePath}`);
+        } catch (error) {
+            setErrors((prev) => ({
+                ...prev,
+                form: error instanceof Error ? error.message : "Login failed. Please try again.",
+            }));
+        } finally {
+            setLoading(false);
+        }
     };
 
     return (
@@ -53,19 +64,6 @@ export default function LoginPage() {
 
             <h1 className="text-[26px] font-bold text-[#111111] mb-1">{d.title}</h1>
             <p className="text-[14px] text-[#888888] mb-8">{d.sub}</p>
-
-            {status === "suspended" && (
-                <div className="mb-6 flex items-start gap-3 bg-red-50 border border-red-200 rounded-[8px] px-4 py-3">
-                    <svg width="16" height="16" viewBox="0 0 16 16" fill="none" className="mt-0.5 shrink-0"><circle cx="8" cy="8" r="7" stroke="#EF4444" strokeWidth="1.4" /><path d="M8 5v4M8 11h.01" stroke="#EF4444" strokeWidth="1.4" strokeLinecap="round" /></svg>
-                    <div><p className="text-[13px] font-semibold text-red-700">{d.suspended}</p><p className="text-[12px] text-red-600 mt-0.5">{d.suspendedMsg}</p></div>
-                </div>
-            )}
-            {status === "inactive" && (
-                <div className="mb-6 flex items-start gap-3 bg-amber-50 border border-amber-200 rounded-[8px] px-4 py-3">
-                    <svg width="16" height="16" viewBox="0 0 16 16" fill="none" className="mt-0.5 shrink-0"><path d="M8 2L14 13H2L8 2Z" stroke="#D97706" strokeWidth="1.4" strokeLinejoin="round" /><path d="M8 7v3M8 11.5h.01" stroke="#D97706" strokeWidth="1.4" strokeLinecap="round" /></svg>
-                    <div><p className="text-[13px] font-semibold text-amber-700">{d.inactive}</p><p className="text-[12px] text-amber-600 mt-0.5">{d.inactiveMsg}</p></div>
-                </div>
-            )}
 
             <OAuthButtons action="login" />
 
@@ -104,6 +102,7 @@ export default function LoginPage() {
                     className="w-full bg-[#111111] text-white text-[15px] font-semibold py-3 rounded-[8px] hover:bg-[#F4B400] hover:text-[#111111] transition-colors disabled:opacity-60 mt-1">
                     {loading ? d.loading : d.submit}
                 </button>
+                {errors.form && <p className="text-[12px] text-red-500">{errors.form}</p>}
             </form>
 
             <p className="text-center text-[13px] text-[#888888] mt-6">

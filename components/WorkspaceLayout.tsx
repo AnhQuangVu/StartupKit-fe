@@ -1,8 +1,8 @@
 "use client";
 
 import Link from "next/link";
-import { usePathname, useParams } from "next/navigation";
-import { useState } from "react";
+import { usePathname, useParams, useRouter } from "next/navigation";
+import { useEffect, useState } from "react";
 import { useAuth } from "@/lib/auth-context";
 import type { Locale } from "@/lib/i18n";
 import {
@@ -65,11 +65,31 @@ import { useDictionary } from "@/lib/dict-context";
 export default function WorkspaceLayout({ children, title, subtitle, actions }: WorkspaceLayoutProps) {
     const dict = useDictionary();
     const [sidebarOpen, setSidebarOpen] = useState(false);
-    const { user } = useAuth();
+    const { user, isAuthenticated, isLoading } = useAuth();
+    const router = useRouter();
     const params = useParams();
     const pathname = usePathname();
     const locale = (params?.locale as Locale) ?? "vi";
-    const role = user?.role ?? "STARTUP";
+    const role = user?.role;
+
+    useEffect(() => {
+        if (isLoading || isAuthenticated) return;
+        router.replace(`/${locale}/login`);
+    }, [isAuthenticated, isLoading, locale, router]);
+
+    if (isLoading) {
+        return (
+            <div className="pt-[72px] min-h-screen bg-[#F7F7F7] p-6 md:p-8">
+                <div className="h-14 bg-white border border-[#EAEAEA] rounded-[10px] animate-pulse mb-6" />
+                <div className="h-[420px] bg-white border border-[#EAEAEA] rounded-[10px] animate-pulse" />
+            </div>
+        );
+    }
+
+    if (!isAuthenticated || !role || role === "GUEST") {
+        return null;
+    }
+
     const roleLower = role.toLowerCase();
     const base = role === "STARTUP" ? `/${locale}/workspace/startup` : `/${locale}/workspace/${roleLower}`;
     const navItems = SIDEBAR_NAV[role] ?? SIDEBAR_NAV.STARTUP;

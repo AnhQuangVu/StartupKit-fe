@@ -3,10 +3,11 @@
 import { useState } from "react";
 import Image from "next/image";
 import Link from "next/link";
-import { useParams } from "next/navigation";
+import { useParams, useRouter } from "next/navigation";
 import { useDictionary } from "@/lib/dict-context";
 import OAuthButtons from "@/components/auth/OAuthButtons";
 import RoleSelector from "@/components/auth/RoleSelector";
+import { useAuth } from "@/lib/auth-context";
 
 type Role = "startup" | "mentor" | "investor";
 
@@ -17,6 +18,8 @@ interface FormState {
 
 export default function RegisterPage() {
     const { locale } = useParams<{ locale: string }>();
+    const router = useRouter();
+    const { register } = useAuth();
     const dict = useDictionary();
     const d = dict.auth.register;
 
@@ -25,6 +28,7 @@ export default function RegisterPage() {
     const [errors, setErrors] = useState<Partial<Record<keyof FormState, string>>>({});
     const [loading, setLoading] = useState(false);
     const [step, setStep] = useState<1 | 2>(1);
+    const [submitError, setSubmitError] = useState("");
 
     const set = (key: keyof FormState, value: string | boolean) =>
         setForm((prev) => ({ ...prev, [key]: value }));
@@ -127,7 +131,34 @@ export default function RegisterPage() {
                     </form>
                 </>
             ) : (
-                <form onSubmit={async (e) => { e.preventDefault(); if (!validateStep2()) return; setLoading(true); await new Promise(r => setTimeout(r, 900)); window.location.href = `/${locale}/onboarding`; setLoading(false); }} noValidate className="flex flex-col gap-6">
+                <form onSubmit={async (e) => {
+                    e.preventDefault();
+                    if (!validateStep2() || !form.role) return;
+                    setSubmitError("");
+                    setLoading(true);
+
+                    try {
+                        const roleMap = {
+                            startup: "STARTUP",
+                            mentor: "MENTOR",
+                            investor: "INVESTOR",
+                        } as const;
+
+                        await register({
+                            fullName: form.fullName.trim(),
+                            email: form.email.trim(),
+                            password: form.password,
+                            confirmPassword: form.confirmPassword,
+                            userType: roleMap[form.role],
+                        });
+
+                        router.push(`/${locale}/login`);
+                    } catch (error) {
+                        setSubmitError(error instanceof Error ? error.message : "Registration failed. Please try again.");
+                    } finally {
+                        setLoading(false);
+                    }
+                }} noValidate className="flex flex-col gap-6">
                     <RoleSelector value={form.role} onChange={(r) => set("role", r)} error={errors.role} />
                     {form.role === "investor" && (
                         <div className="flex items-start gap-3 bg-[#FFFBF0] border border-[#F4B400]/40 rounded-[8px] px-4 py-3">
@@ -153,6 +184,7 @@ export default function RegisterPage() {
                         <button type="button" onClick={() => setStep(1)} className="flex-1 border border-[#EAEAEA] text-[#111111] text-[15px] font-semibold py-3 rounded-[8px] hover:border-[#111111] transition-colors">{d.back}</button>
                         <button type="submit" disabled={loading} className="flex-1 bg-[#111111] text-white text-[15px] font-semibold py-3 rounded-[8px] hover:bg-[#F4B400] hover:text-[#111111] transition-colors disabled:opacity-60">{loading ? d.loading : d.submit}</button>
                     </div>
+                    {submitError ? <p className="text-[12px] text-red-500">{submitError}</p> : null}
                 </form>
             )}
 

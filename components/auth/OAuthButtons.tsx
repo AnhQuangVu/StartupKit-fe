@@ -1,5 +1,7 @@
 "use client";
 
+import { authApi } from "@/lib/api";
+
 interface OAuthButtonsProps {
     action: "login" | "register";
 }
@@ -8,7 +10,12 @@ export default function OAuthButtons({ action }: OAuthButtonsProps) {
     const label = action === "login" ? "Continue" : "Sign up";
 
     const handleOAuth = (provider: "google" | "linkedin") => {
-        // TODO: integrate OAuth provider SDK
+        if (provider === "google") {
+            window.location.href = authApi.getGoogleOAuthAuthorizeUrl();
+            return;
+        }
+
+        // TODO: integrate LinkedIn OAuth redirect endpoint when backend is ready.
         console.log(`OAuth with ${provider}`);
     };
 

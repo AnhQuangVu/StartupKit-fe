@@ -1,9 +1,12 @@
 "use client";
+
 import { useDictionary } from "@/lib/dict-context";
+import Link from "next/link";
 
 export default function BusinessModel() {
     const dict = useDictionary();
     const bm = dict.business;
+
     const tiers = [
         {
             name: bm.freeName,
@@ -12,6 +15,7 @@ export default function BusinessModel() {
             cta: bm.freeCta,
             href: "/register",
             highlight: false,
+            badge: "TIER 01: OPEN ACCESS",
         },
         {
             name: bm.premName,
@@ -20,78 +24,122 @@ export default function BusinessModel() {
             cta: bm.premCta,
             href: "/pricing",
             highlight: true,
+            badge: "TIER 02: ADVANCED ISO ENGINE",
         },
     ];
+
     return (
-        <section className="py-24 bg-[#F7F7F7]">
-            <div className="max-w-[1200px] mx-auto px-6 md:px-12">
+        <section className="relative py-28 bg-[#FAFAFA] border-t border-[#EAEAEA] overflow-hidden">
+            {/* Background isometric grid */}
+            <div className="absolute inset-0 iso-grid-bg opacity-35 pointer-events-none" />
+
+            <div className="relative max-w-[1240px] mx-auto px-6 md:px-12">
                 {/* Header */}
-                <div className="text-center mb-14 max-w-[500px] mx-auto">
-                    <p className="text-[12px] font-semibold text-[#F4B400] uppercase tracking-widest mb-3">
+                <div className="text-center mb-18 max-w-[540px] mx-auto">
+                    <div className="inline-flex items-center gap-2 px-3 py-1 bg-white border border-[#EAEAEA] rounded-[6px] mb-3 text-[12px] font-bold text-[#D99B00] uppercase tracking-wider iso-btn">
+                        <span className="w-1.5 h-1.5 rounded-full bg-[#F4B400]" />
                         {bm.label}
-                    </p>
-                    <h2 className="text-[32px] md:text-[38px] font-bold text-[#111111] leading-[1.2]">
-                        {bm.title1}<br />{bm.title2}
+                    </div>
+                    <h2 className="text-[32px] md:text-[42px] font-extrabold text-[#111111] leading-[1.18] tracking-tight">
+                        {bm.title1}
+                        <br />
+                        <span className="relative inline-block text-[#111111]">
+                            {bm.title2}
+                            <span className="absolute bottom-1 left-0 right-0 h-[5px] bg-[#F4B400]/40 -z-10 rounded-sm" />
+                        </span>
                     </h2>
-                    <p className="text-[15px] text-[#666666] mt-4 leading-[1.7]">
+                    <p className="text-[15px] text-[#666666] mt-4 leading-relaxed">
                         {bm.sub}
                     </p>
                 </div>
 
-                {/* Tiers */}
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-6 max-w-[800px] mx-auto mb-12">
+                {/* 2 Isometric Pricing Tiers */}
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-8 max-w-[900px] mx-auto mb-14">
                     {tiers.map((tier) => (
                         <div
                             key={tier.name}
-                            className={`rounded-[8px] p-8 border flex flex-col gap-6 ${tier.highlight
-                                    ? "bg-[#111111] border-[#111111] text-white"
-                                    : "bg-white border-[#EAEAEA] text-[#111111]"
-                                }`}
+                            className={`rounded-[14px] p-8 md:p-10 border-2 flex flex-col justify-between ${
+                                tier.highlight
+                                    ? "bg-[#111111] border-[#F4B400] text-white iso-card-dark"
+                                    : "bg-white border-[#111111] text-[#111111] iso-card-3d"
+                            }`}
                         >
                             <div>
-                                <div className={`text-[13px] font-semibold uppercase tracking-widest mb-1 ${tier.highlight ? "text-[#F4B400]" : "text-[#999999]"}`}>
+                                <div className="flex items-center justify-between mb-4">
+                                    <span className={`text-[10px] font-mono font-bold px-2 py-0.5 rounded-[4px] ${
+                                        tier.highlight ? "bg-[#222222] text-[#F4B400]" : "bg-[#F7F7F7] text-[#111111]"
+                                    }`}>
+                                        {tier.badge}
+                                    </span>
+                                    <div className="w-2.5 h-2.5 rounded-full bg-[#F4B400]" />
+                                </div>
+
+                                <div className={`text-[26px] font-black uppercase tracking-tight mb-2 ${
+                                    tier.highlight ? "text-[#F4B400]" : "text-[#111111]"
+                                }`}>
                                     {tier.name}
                                 </div>
-                                <p className={`text-[14px] leading-[1.6] ${tier.highlight ? "text-[#AAAAAA]" : "text-[#666666]"}`}>
+
+                                <p className={`text-[14px] leading-relaxed mb-6 ${
+                                    tier.highlight ? "text-[#AAAAAA]" : "text-[#666666]"
+                                }`}>
                                     {tier.desc}
                                 </p>
+
+                                <div className="pt-6 border-t border-dashed border-[#EAEAEA]/40 flex flex-col gap-3.5">
+                                    {tier.features.map((f) => (
+                                        <div key={f} className="flex items-start gap-3 text-[14px]">
+                                            <div className="mt-1 shrink-0">
+                                                <svg width="14" height="14" viewBox="0 0 14 14" fill="none">
+                                                    <polygon points="7,2 12,5 7,8 2,5" fill="#F4B400" />
+                                                    <polygon points="2,5 7,8 7,12 2,9" fill={tier.highlight ? "#FFFFFF" : "#111111"} />
+                                                    <polygon points="7,8 12,5 12,9 7,12" fill={tier.highlight ? "#DDDDDD" : "#333333"} />
+                                                </svg>
+                                            </div>
+                                            <span className={tier.highlight ? "text-[#E0E0E0]" : "text-[#444444]"}>
+                                                {f}
+                                            </span>
+                                        </div>
+                                    ))}
+                                </div>
                             </div>
 
-                            <ul className="flex flex-col gap-2.5">
-                                {tier.features.map((f) => (
-                                    <li key={f} className="flex items-start gap-2.5 text-[13px] leading-[1.55]">
-                                        <svg width="14" height="14" viewBox="0 0 14 14" fill="none" className="mt-0.5 shrink-0">
-                                            <path d="M2.5 7L6 10.5L11.5 4" stroke={tier.highlight ? "#F4B400" : "#111111"} strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" />
-                                        </svg>
-                                        <span className={tier.highlight ? "text-[#CCCCCC]" : "text-[#555555]"}>{f}</span>
-                                    </li>
-                                ))}
-                            </ul>
-
-                            <a
-                                href={tier.href}
-                                className={`inline-flex items-center justify-center gap-2 text-[14px] font-semibold py-2.5 px-5 rounded-[8px] transition-colors mt-auto ${tier.highlight
-                                        ? "bg-[#F4B400] text-[#111111] hover:bg-white hover:text-[#111111]"
-                                        : "border border-[#EAEAEA] text-[#111111] hover:border-[#111111]"
+                            <div className="mt-10 pt-4">
+                                <Link
+                                    href={tier.href}
+                                    className={`w-full inline-flex items-center justify-center gap-2 text-[15px] font-bold py-3.5 px-6 rounded-[8px] transition-all ${
+                                        tier.highlight
+                                            ? "bg-[#F4B400] text-[#111111] iso-btn-gold hover:bg-[#FFC933]"
+                                            : "bg-[#111111] text-white iso-btn hover:bg-[#F4B400] hover:text-[#111111]"
                                     }`}
-                            >
-                                {tier.cta}
-                            </a>
+                                >
+                                    {tier.cta}
+                                    <svg width="14" height="14" viewBox="0 0 14 14" fill="none">
+                                        <path d="M3 7h8M7 3l4 4-4 4" stroke="currentColor" strokeWidth="1.6" strokeLinecap="round" strokeLinejoin="round" />
+                                    </svg>
+                                </Link>
+                            </div>
                         </div>
                     ))}
                 </div>
 
-                {/* Success fee note */}
-                <div className="max-w-[620px] mx-auto p-6 bg-white border border-[#EAEAEA] rounded-[8px] flex items-start gap-4">
-                    <div className="w-9 h-9 rounded-full bg-[#F4B400]/10 border border-[#F4B400]/30 flex items-center justify-center shrink-0">
-                        <svg width="18" height="18" viewBox="0 0 18 18" fill="none">
-                            <circle cx="9" cy="9" r="7" stroke="#F4B400" strokeWidth="1.4" fill="none" />
-                            <path d="M9 6v4M9 12h.01" stroke="#F4B400" strokeWidth="1.4" strokeLinecap="round" />
+                {/* Success fee note as an Isometric Protocol Strip */}
+                <div className="max-w-[700px] mx-auto p-6 bg-white border-2 border-[#111111] rounded-[12px] flex items-start gap-5 iso-card-3d">
+                    <div className="w-11 h-11 rounded-[8px] bg-[#FFF8E1] border border-[#F4B400] flex items-center justify-center shrink-0">
+                        <svg width="24" height="24" viewBox="0 0 24 24" fill="none">
+                            <polygon points="12,3 21,8 12,13 3,8" fill="#F4B400" />
+                            <polygon points="3,8 12,13 12,20 3,15" fill="#111111" />
+                            <polygon points="12,13 21,8 21,15 12,20" fill="#333333" />
                         </svg>
                     </div>
                     <div>
-                        <div className="text-[14px] font-semibold text-[#111111] mb-1">{bm.feeTitle}</div>
-                        <p className="text-[13px] text-[#777777] leading-[1.6]">
+                        <div className="flex items-center gap-2 mb-1">
+                            <span className="text-[15px] font-bold text-[#111111]">{bm.feeTitle}</span>
+                            <span className="text-[10px] font-mono font-bold px-1.5 py-0.5 rounded bg-[#F4B400] text-[#111111]">
+                                ZERO UPFRONT
+                            </span>
+                        </div>
+                        <p className="text-[13px] text-[#666666] leading-relaxed">
                             {bm.feeDesc}
                         </p>
                     </div>

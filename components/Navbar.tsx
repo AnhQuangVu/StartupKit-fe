@@ -154,7 +154,7 @@ export default function Navbar() {
                                 {dict.nav.login}
                             </Link>
                             <Link href={`${base}/register`}
-                                className="text-[13.5px] font-semibold bg-[#111111] text-white px-4 py-2 rounded-[8px] hover:bg-[#F4B400] hover:text-[#111111] transition-colors whitespace-nowrap">
+                                className="text-[13.5px] font-semibold bg-[#111111] text-white px-4 py-2 rounded-[8px] iso-btn hover:bg-[#F4B400] hover:text-[#111111] transition-all whitespace-nowrap">
                                 {dict.nav.signup}
                             </Link>
                         </>

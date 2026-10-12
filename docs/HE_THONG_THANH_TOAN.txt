@@ -1,0 +1,630 @@
+╔════════════════════════════════════════════════════════════════════════════════╗
+║                    HỆ THỐNG THANH TOÁN STARTUPKIT                              ║
+║                                                                                ║
+║ Trạng thái: 🔴 CHƯA TRIỂN KHAI                                                  ║
+║ Độ ưu tiên: QUAN TRỌNG - CẦN THIẾT CHO MVP                                       ║
+║ Ngày tạo: 23/03/2025                                                           ║
+╚════════════════════════════════════════════════════════════════════════════════╝
+
+═════════════════════════════════════════════════════════════════════════════════
+TÓM TẮT ĐIỀU HÀNH
+═════════════════════════════════════════════════════════════════════════════════
+
+Schema database hiện tại HOÀN TOÀN THIẾU cơ sở hạ tầng thanh toán:
+  ❌ Không theo dõi thanh toán
+  ❌ Không quản lý subscription
+  ❌ Không lịch sử giao dịch
+  ❌ Không hệ thống thanh toán mentor
+  ❌ Không hỗ trợ hoá đơn
+
+Tác động: KHÔNG THỂ KIẾM TIỀN, KHÔNG THỂ TÍNH PHÍ NGƯỜI DÙNG, KHÔNG THỂ TRẢ TIỀN CHO MENTOR.
+
+═════════════════════════════════════════════════════════════════════════════════
+MỤC LỤC
+═════════════════════════════════════════════════════════════════════════════════
+
+1. Mô hình kinh doanh
+2. Schema database
+3. Quy trình dữ liệu ví dụ
+4. Lộ trình triển khai
+5. Phân tích rủi ro
+
+═════════════════════════════════════════════════════════════════════════════════
+1. MÔ HÌNH KINH DOANH
+═════════════════════════════════════════════════════════════════════════════════
+
+CÁC LUỒNG DOANH THU:
+
+┌───────────────────────────────────────────────────────────────────────────┐
+│                    LUỒNG DOANH THU STARTUPKIT                              │
+├───────────────────────────────────────────────────────────────────────────┤
+
+1. SUBSCRIPTION (Mô hình SaaS)
+   ├─ Đối tượng: Founder & Nhà đầu tư
+   ├─ Free Tier: Người dùng GUEST (limited)
+   ├─ Starter: $10/tháng (5 dự án, tính năng cơ bản)
+   ├─ Business: $50/tháng (dự án không giới hạn, hỗ trợ ưu tiên)
+   └─ Enterprise: Giá tùy chỉnh (API access, custom)
+
+2. COMMISSION MENTOR (Dựa trên sử dụng)
+   ├─ Giao dịch: Founder đặt lịch với mentor
+   ├─ Founder trả: $X (hourly_rate của mentor × thời lượng)
+   ├─ Platform lấy: 20-30% giao dịch
+   ├─ Mentor nhận: 70-80% net (thanh toán hàng tuần/tháng)
+   └─ Ví dụ: Session $50 → Platform $10, Mentor $40
+
+3. TÍNH NĂNG PREMIUM (Deal room)
+   ├─ Deal room cơ bản: Miễn phí (trong subscription)
+   ├─ Phân tích nâng cao: +$20/tháng
+   ├─ Lưu trữ tài liệu mở rộng: +$10/tháng
+   └─ Thông báo nhà đầu tư ưu tiên: +$5/tháng
+
+4. API ACCESS (Cho tích hợp)
+   ├─ Miễn phí: 1.000 API calls/tháng
+   ├─ Growth: 10.000 calls/tháng - $50/tháng
+   └─ Enterprise: Không giới hạn - Giá tùy chỉnh
+
+└───────────────────────────────────────────────────────────────────────────┘
+
+BẢNG GIÁ CHI TIẾT:
+
+┌────────────┬──────────┬───────────┬────────────┬──────────────┐
+│ Tính năng  │ Miễn phí │ Starter   │ Business   │ Enterprise   │
+├────────────┼──────────┼───────────┼────────────┼──────────────┤
+│ Giá/tháng  │ $0       │ $10       │ $50        │ Tùy chỉnh    │
+│ Dự án tối đa│ 1        │ 5         │ ∞          │ ∞            │
+│ Tin nhắn   │ 50/tháng │ 500/tháng │ ∞          │ ∞            │
+│ Session    │ 2/tháng  │ 20/tháng  │ ∞          │ ∞            │
+│ Thành viên │ 1        │ 5         │ ∞          │ ∞            │
+│ API calls  │ 100/ngày │ 1.000/ngày│ 10.000/ngày│ Tùy chỉnh    │
+│ Hỗ trợ     │ Cộng đồng│ Email     │ Ưu tiên    │ Dedicated    │
+│ Phân tích   │ Cơ bản   │ Tiêu chuẩn│ Nâng cao   │ Tùy chỉnh    │
+└────────────┴──────────┴───────────┴────────────┴──────────────┘
+
+═════════════════════════════════════════════════════════════════════════════════
+2. SCHEMA DATABASE
+═════════════════════════════════════════════════════════════════════════════════
+
+CẦN TẠO 6 BẢNG MỚI:
+
+──────────────────────────────────────────────────────────────────────────────
+2.1 BẢNG: subscription_plans (Danh mục sản phẩm)
+──────────────────────────────────────────────────────────────────────────────
+
+Mục đích: Lưu thông tin các gói subscription (Free, Starter, Business)
+Dữ liệu:
+  - id: UUID (khóa chính)
+  - name: Tên gói (ví dụ: "Starter")
+  - tier: Loại gói (FREE, STARTER, BUSINESS, ENTERPRISE)
+  - monthly_price: Giá tháng ($)
+  - annual_price: Giá năm ($)
+  - features: JSON chứa các quy hạn (max_projects, api_calls, v.v.)
+  - stripe_product_id: ID sản phẩm trên Stripe
+  - is_active: Gói này có hoạt động không?
+  - created_at: Ngày tạo
+  - updated_at: Ngày cập nhật
+
+Ví dụ JSON features:
+{
+  "max_projects": 5,
+  "max_messages_per_month": 500,
+  "max_sessions_per_month": 20,
+  "team_members": 5,
+  "api_calls_per_day": 1000,
+  "priority_support": false,
+  "advanced_analytics": false
+}
+
+──────────────────────────────────────────────────────────────────────────────
+2.2 BẢNG: user_subscriptions (Subscription đang hoạt động)
+──────────────────────────────────────────────────────────────────────────────
+
+Mục đích: Theo dõi subscription hiện tại của mỗi người dùng
+Dữ liệu chính:
+  - id: UUID
+  - user_id: Người dùng (UNIQUE - 1 user chỉ có 1 subscription)
+  - plan_id: FK tới subscription_plans
+  - status: Trạng thái (ACTIVE, CANCELLED, PAUSED, PAST_DUE)
+  - current_period_start: Bắt đầu chu kỳ hiện tại
+  - current_period_end: Kết thúc chu kỳ
+  - stripe_subscription_id: ID subscription trên Stripe
+  - stripe_customer_id: ID khách hàng trên Stripe
+  - last_payment_status: Kết quả thanh toán lần cuối (SUCCEEDED, FAILED)
+  - last_payment_at: Lần thanh toán cuối
+  - created_at, updated_at, cancelled_at: Audit
+
+Ví dụ sử dụng:
+  - Người dùng mới: Tự động gán FREE tier
+  - Upgrade: UPDATE plan_id, gọi Stripe API
+  - Hết hạn: Auto-charge nếu payment_method tồn tại
+  - Thanh toán thất bại: Cập nhật status → PAST_DUE, gửi email
+
+──────────────────────────────────────────────────────────────────────────────
+2.3 BẢNG: transactions (Tất cả luồng tiền)
+──────────────────────────────────────────────────────────────────────────────
+
+Mục đích: Ghi lại MỌI giao dịch tiền (subscriptions, mentor sessions, refunds)
+Dữ liệu chính:
+  - id: UUID
+  - user_id: Người dùng bị tính phí
+  - related_user_id: Người liên quan (ví dụ: mentor nhận tiền)
+  - type: Loại giao dịch
+    * SUBSCRIPTION - Charge hàng tháng
+    * MENTOR_SESSION - Founder đặt lịch với mentor
+    * DEAL_FEE - Commission trên deal
+    * REFUND - Hoàn tiền
+    * ADJUSTMENT - Điều chỉnh thủ công
+  - amount_cents: Số tiền (cần lưu dưới dạng xu để tránh lỗi float)
+    * Ví dụ: $25.50 = 2550 cents
+  - currency: Loại tiền (USD)
+  - platform_fee_cents: Platform lấy bao nhiêu
+  - provider_payout_cents: Mentor/provider nhận bao nhiêu
+  - status: Trạng thái (PENDING, COMPLETED, FAILED, REFUNDED)
+  - subscription_id: FK tới user_subscriptions (nếu là charge subscription)
+  - mentor_session_id: FK tới mentor_sessions (nếu là payment session)
+  - deal_id: FK tới deals (nếu là deal commission)
+  - stripe_charge_id: ID thanh toán trên Stripe
+  - stripe_invoice_id: ID hoá đơn trên Stripe
+  - created_at, updated_at: Audit
+
+Ví dụ:
+  // Founder đặt lịch mentor (30 phút, $50/giờ = $25)
+  {
+    user_id: 'startup-123',
+    related_user_id: 'mentor-456',
+    type: 'MENTOR_SESSION',
+    amount_cents: 2500,  // $25
+    platform_fee_cents: 500,  // 20%
+    provider_payout_cents: 2000,  // 80%
+    mentor_session_id: 'sess-789',
+    status: 'COMPLETED'
+  }
+
+──────────────────────────────────────────────────────────────────────────────
+2.4 BẢNG: mentor_session_payments (Thanh toán mentor)
+──────────────────────────────────────────────────────────────────────────────
+
+Mục đích: Theo dõi khi nào mentor được thanh toán
+Dữ liệu chính:
+  - session_id: UUID (FK tới mentor_sessions, là PRIMARY KEY)
+  - mentor_user_id: Mentor tiếp nhận tiền
+  - session_rate_cents: Tổng tiền từ session
+    * Tính: hourly_rate × (duration_minutes / 60) = session_rate
+    * Ví dụ: $50 × (30/60) = $25 = 2500 cents
+  - platform_fee_percent: Phần trăm lấy (20%)
+  - platform_fee_cents: Tính toán từ session_rate_cents × 20% = 500
+  - mentor_payout_cents: Mentor nhận = 2500 - 500 = 2000
+  - status: Trạng thái thanh toán
+    * PENDING: Chờ đợi
+    * SCHEDULED: Đã vào batch tuần này
+    * PAID: Đã chuyển tiền
+    * FAILED: Lỗi, sẽ thử lại
+  - paid_at: Ngày thanh toán thực tế
+  - stripe_payout_id: ID payout trên Stripe
+  - created_at, updated_at
+
+Ví dụ quy trình:
+  1. Session hoàn thành → Tạo record với status=PENDING
+  2. Sau 3 ngày (hoặc vào thứ Sáu) → Batch script chuyển tiền
+  3. Stripe API xử lý → stripe_payout_id = 'po_12345'
+  4. Update status=PAID, paid_at=NOW()
+  5. Mentor nhận tiền trong 1-2 ngày làm việc
+
+──────────────────────────────────────────────────────────────────────────────
+2.5 BẢNG: invoices (Hoá đơn)
+──────────────────────────────────────────────────────────────────────────────
+
+Mục đích: Tạo hoá đơn hàng tháng cho người dùng (kế toán/kiểm toán)
+Dữ liệu chính:
+  - id: UUID
+  - invoice_number: Số hoá đơn duy nhất (ví dụ: INV-2025-03-00001)
+  - user_id: Người dùng
+  - billing_period_start: Ngày bắt đầu kỳ tính
+  - billing_period_end: Ngày kết thúc kỳ tính
+  - subtotal_cents: Tổng trước thuế
+  - tax_cents: Thuế
+  - total_cents: Tổng cộng (subtotal + tax)
+  - status: Trạng thái
+    * DRAFT: Đang soạn
+    * SENT: Đã gửi email cho user
+    * PAID: Đã thanh toán
+    * OVERDUE: Quá hạn
+    * CANCELLED: Huỷ
+  - due_date: Ngày hết hạn
+  - stripe_invoice_id: ID hoá đơn trên Stripe
+  - created_at, updated_at, sent_at, paid_at
+
+Ví dụ:
+  {
+    invoice_number: 'INV-2025-03-00001',
+    user_id: 'startup-123',
+    billing_period_start: '2025-03-01',
+    billing_period_end: '2025-03-31',
+    subtotal_cents: 10500,  // $105
+    tax_cents: 800,         // $8 (VAT)
+    total_cents: 11300,     // $113
+    status: 'SENT',
+    due_date: '2025-04-07'
+  }
+
+──────────────────────────────────────────────────────────────────────────────
+2.6 BẢNG: payment_methods (Lưu trữ thẻ)
+──────────────────────────────────────────────────────────────────────────────
+
+Mục đích: Lưu thông tin thanh toán (thẻ tín dụng)
+Dữ liệu chính:
+  - id: UUID
+  - user_id: Chủ thẻ
+  - stripe_payment_method_id: ID thẻ trên Stripe (ĐỌC TỪ STRIPE, KHÔNG LƯU TRỰC TIẾP)
+  - card_last_four: 4 chữ số cuối (ví dụ: 4242)
+  - card_brand: Loại thẻ (VISA, MASTERCARD, AMEX)
+  - card_exp_month: Tháng hết hạn
+  - card_exp_year: Năm hết hạn
+  - is_default: Thẻ mặc định
+  - is_active: Thẻ còn hoạt động
+  - created_at, updated_at
+
+QUAN TRỌNG: KHÔNG bao giờ lưu số thẻ đầy đủ, chỉ lưu ID Stripe!
+
+═════════════════════════════════════════════════════════════════════════════════
+3. QUY TRÌNH DỮ LIỆU (VÍ DỤ CHI TIẾT)
+═════════════════════════════════════════════════════════════════════════════════
+
+QUY TRÌNH 1: FOUNDER NÂNG CẤP TỪNG GỒ MÀU SANG BUSINESS ($50/THÁNG)
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+Ngày 1: Founder đăng ký
+├─ user_id: 'startup-abc123'
+├─ role_code: STARTUP
+└─ Mặc định: Gán FREE tier subscription
+
+Ngày 1.5: Người dùng muốn upgrade lên BUSINESS ($50/tháng)
+├─ 1. Lưu phương thức thanh toán
+│  └─ INSERT payment_methods (stripe_payment_method_id: 'pm_xxx')
+│
+├─ 2. Gọi Stripe tạo subscription
+│  ├─ Stripe.subscriptions.create({
+│  │   customer: 'cus_xxx',
+│  │   price: 'price_business_monthly',  ← ID Stripe plan
+│  │   payment_method: 'pm_xxx'
+│  │ })
+│  └─ Trả về: stripe_subscription_id = 'sub_123abc'
+│
+├─ 3. Tạo record trong user_subscriptions
+│  └─ INSERT user_subscriptions (
+│       user_id: 'startup-abc123',
+│       plan_id: (SELECT id FROM subscription_plans WHERE tier='BUSINESS'),
+│       status: 'ACTIVE',
+│       current_period_start: '2025-03-23',
+│       current_period_end: '2025-04-23',  ← 1 tháng sau
+│       stripe_subscription_id: 'sub_123abc'
+│     )
+│
+└─ 4. Stripe tự động lấy tiền và gửi webhook: invoice.payment_succeeded
+   └─ 4a. INSERT transactions (
+          user_id: 'startup-abc123',
+          type: 'SUBSCRIPTION',
+          amount_cents: 5000,  ← $50
+          status: 'COMPLETED',
+          stripe_charge_id: 'ch_xxx'
+        )
+      4b. Tạo hoá đơn
+          INSERT invoices (
+            invoice_number: 'INV-2025-03-00001',
+            user_id: 'startup-abc123',
+            billing_period_start: '2025-03-23',
+            billing_period_end: '2025-04-23',
+            subtotal_cents: 5000,
+            total_cents: 5000,
+            status: 'PAID'
+          )
+
+Kết quả: Founder có subscription ACTIVE dành cho BUSINESS
+         Thanh toán tự động lặp lại mỗi tháng
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+QUY TRÌNH 2: FOUNDER ĐẶT HỸ MENTOR VÀ THANH TOÁN
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+Ngày 1: Founder đặt lịch với mentor (30 phút, mentor's hourly_rate = $50)
+├─ Tính toán: session_rate = $50 × (30/60) = $25
+│
+├─ 1. TẠO GIAO DỊCH (charge founder)
+│  └─ INSERT transactions (
+│       user_id: 'startup-abc123',  ← Founder bị trừ tiền
+│       type: 'MENTOR_SESSION',
+│       amount_cents: 2500,  ← $25
+│       related_user_id: 'mentor-xyz789',  ← Mentor sẽ nhận
+│       mentor_session_id: 'sess-123',
+│       platform_fee_cents: 500,  ← Platform lấy 20%
+│       provider_payout_cents: 2000,  ← Mentor sẽ nhận 80%
+│       status: 'PENDING'
+│     )
+│
+├─ 2. TẠO PAYOUT RECORD CHO MENTOR
+│  └─ INSERT mentor_session_payments (
+│       session_id: 'sess-123',
+│       mentor_user_id: 'mentor-xyz789',
+│       session_rate_cents: 2500,
+│       platform_fee_percent: 20,
+│       platform_fee_cents: 500,
+│       mentor_payout_cents: 2000,
+│       status: 'PENDING'  ← Chờ thanh toán hàng tuần
+│     )
+│
+├─ 3. STRIPE LẤY TIỀN TỪ FOUNDER
+│  └─ Stripe.charges.create({
+│       customer: 'cus_startup_xxx',
+│       amount: 2500,
+│       description: 'Mentor session: Growth Marketing (30 min) with John Doe'
+│     })
+│
+└─ 4. WEBHOOK: charge.succeeded
+   └─ UPDATE transactions SET status='COMPLETED' WHERE stripe_charge_id='ch_xxx'
+      UPDATE mentor_session_payments SET status='SCHEDULED'
+
+Ngày 7 (Thứ Sáu 5 PM): BATCH THANH TOÁN HÀNG TUẦN CHO MENTOR
+├─ 1. Query tất cả payout chưa thanh toán cũ hơn 3 ngày
+│  └─ SELECT mentor_user_id, SUM(mentor_payout_cents)
+│       FROM mentor_session_payments
+│       WHERE status='PENDING' AND created_at < NOW() - INTERVAL '3 days'
+│       GROUP BY mentor_user_id
+│
+├─ 2. Với mỗi mentor, tạo payout trên Stripe Connect:
+│  ├─ mentor-xyz789 sẽ nhận: $2000
+│  ├─ Gọi: Stripe.payouts.create({
+│  │   connected_account: 'acct_mentor_xyz789',  ← Tài khoản Stripe của mentor
+│  │   amount: 2000,
+│  │   currency: 'USD'
+│  │ })
+│  └─ Trả về: payout_id = 'po_1234567890'
+│
+├─ 3. UPDATE records:
+│  └─ UPDATE mentor_session_payments
+│       SET status='PAID',
+│           stripe_payout_id='po_1234567890',
+│           paid_at=NOW()
+│       WHERE mentor_user_id='mentor-xyz789'
+│             AND status='PENDING'
+│
+└─ Mentor nhận $2000 trong 1-2 ngày làm việc
+   Platform giữ $500 (commission 20%)
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+QUY TRÌNH 3: TẠIO HÓA ĐƠN HÀNG THÁNG
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+Ngày 1 tháng sau: Job tự động tạo hoá đơn chạy
+
+Với mỗi user_id có subscription ACTIVE:
+├─ 1. LẤY TẤT CẢ GIAO DỊCH THÁNG NÀY
+│  └─ SELECT * FROM transactions
+│       WHERE user_id='user-123'
+│       AND created_at BETWEEN '2025-03-01' AND '2025-03-31'
+│
+├─ 2. TÍNH TOÁN TỔNG:
+│  ├─ subscription_charge = 5000 (từ plan)
+│  ├─ mentor_sessions = 2500 + 1500 + ... (sum)
+│  ├─ add_ons = 0 (không có tính năng nâng cao)
+│  ├─ subtotal = 5000 + 2500 + 0 = 7500
+│  ├─ discount = 0 (không có promo)
+│  ├─ tax_rate = 10% (VAT Việt Nam)
+│  ├─ tax = 7500 × 10% = 750
+│  └─ total = 7500 + 750 = 8250
+│
+├─ 3. TẠO HOÁI ĐƠN
+│  └─ INSERT invoices (
+│       invoice_number: 'INV-2025-04-00001',
+│       user_id: 'user-123',
+│       billing_period_start: '2025-03-01',
+│       billing_period_end: '2025-03-31',
+│       subtotal_cents: 750000,
+│       tax_cents: 75000,
+│       total_cents: 825000,
+│       status: 'DRAFT',
+│       due_date: '2025-04-15'
+│     )
+│
+├─ 4. GỬI EMAIL
+│  └─ Gửi email: "Hoá đơn tháng 3 của bạn đã sẵn sàng"
+│       Link: https://startupkit.com/invoices/inv-123
+│
+├─ 5. CẬP NHẬT TRẠNG THÁI
+│  └─ UPDATE invoices SET status='SENT' WHERE id='inv-123'
+│
+└─ User có thể tải xuống PDF hoặc thanh toán trực tuyến
+
+Nếu thanh toán thất bại:
+├─ Thử lại 3 lần trong 5 ngày
+├─ Nếu tất cả thất bại → status='PAST_DUE'
+├─ Gửi email: "Thanh toán thất bại. Vui lòng cập nhật phương thức thanh toán."
+├─ Giới hạn API access
+└─ Sau 30 ngày → Huỷ subscription (status='CANCELLED')
+
+═════════════════════════════════════════════════════════════════════════════════
+4. LỘ TRÌNH TRIỂN KHAI
+═════════════════════════════════════════════════════════════════════════════════
+
+PHASE 1: DATABASE & BACKEND (Tuần 1-2)
+─────────────────────────────────────
+
+[ ] Tạo 6 bảng SQL trong PostgreSQL
+[ ] Thêm Stripe secrets vào environment variables
+[ ] Initialize Stripe SDK (Backend Node.js)
+[ ] Tạo API endpoints:
+    [ ] POST /billing/subscribe - Tạo subscription
+    [ ] POST /billing/payment-methods - Thêm thẻ
+    [ ] DELETE /billing/payment-methods/:id - Xoá thẻ
+    [ ] GET /billing/invoices - Danh sách hoá đơn
+    [ ] GET /billing/invoices/:id/pdf - Tải PDF
+
+PHASE 2: WEBHOOKS & TỰ ĐỘNG HÓA (Tuần 2-3)
+──────────────────────────────────────────
+
+[ ] Setup Stripe webhook endpoint: POST /webhooks/stripe
+[ ] Xử lý các event:
+    [ ] invoice.payment_succeeded - Ghi transaction + hoá đơn
+    [ ] invoice.payment_failed - Thử lại logic
+    [ ] customer.subscription.updated - Plan changes
+    [ ] customer.subscription.deleted - Huỷ subscription
+[ ] Triển khai retry logic cho thanh toán thất bại
+[ ] Setup cron job thanh toán hàng tuần cho mentor
+
+PHASE 3: GIAO DIỆN NGƯỜI DÙNG (Tuần 3-4)
+─────────────────────────────────────────
+
+[ ] Trang quản lý subscription
+    [ ] Hiển thị gói hiện tại
+    [ ] Nút upgrade/downgrade
+    [ ] Quản lý phương thức thanh toán
+[ ] Trang lịch sử hoá đơn
+    [ ] Danh sách hoá đơn với trạng thái
+    [ ] Tải xuống PDF
+    [ ] Tái gửi email
+[ ] Dashboard billing cho admin
+    [ ] Biểu đồ doanh thu
+    [ ] Cảnh báo thanh toán thất bại
+    [ ] Trạng thái payout
+
+PHASE 4: KIỂM THỬ & TUÂN THỦ (Tuần 4)
+──────────────────────────────────────
+
+[ ] Kiểm thử Stripe test mode
+[ ] Kiểm toán PCI compliance
+[ ] Xác thực tính toán thuế
+[ ] Xác thực độ chính xác tính toán payout
+[ ] Kiểm thử hoàn tiền
+
+═════════════════════════════════════════════════════════════════════════════════
+5. PHÂN TÍCH RỦI RO
+═════════════════════════════════════════════════════════════════════════════════
+
+RỦI RO QUAN TRỌNG (🔴 CRITICAL)
+────────────────────────────────
+
+1. XỬ LÝ THANH TOÁN THẤT BẠI IM LẶNG
+   Tác động: Mất doanh thu, mentor không nhận tiền
+   Khắc phục: Log chi tiết, alert khi lỗi, reconciliation nightly
+
+2. TRỪ TIỀN CỦA NGƯỜI DÙNG 2 LẦN
+   Tác động: Churn cao, mất tín tiền, chargebacks
+   Khắc phục: Idempotency keys, kiểm tra transaction trước charge
+
+3. WEBHOOK STRIPE KHÔNG DELIVER
+   Tác impact: Trạng thái không đồng bộ
+   Khắc phục: Job reconciliation hàng đêm
+
+4. TÍNH THUẾ SAI
+   Tác động: Vi phạm pháp luật, phạt tiền
+   Khắc phục: Dùng thư viện thuế xác minh, audit trail
+
+5. MENTOR PAYOUT SNAFU
+   Tác động: Tranh chấp pháp lý, mất tin tưởng
+   Khắc phục: Manual review trước batch payout, email xác nhận
+
+RỦI RO VỪA (🟡 MEDIUM)
+─────────────────────
+
+1. Thẻ hết hạn trong chu kỳ billing → Stripe tự update
+2. Lỗi đồng thời ghi transaction → Dùng LOCK + transaction scope
+3. Message_reads table bloat → Aggregate vào table riêng
+
+RỦI RO NHỎ (🟢 LOW)
+──────────────────
+
+1. Số hoá đơn trùng lặp → Dùng UUID + sequence
+2. Lỗi múi giờ → Lưu tất cả dưới UTC
+
+═════════════════════════════════════════════════════════════════════════════════
+CÁC DỊCH VỤ NGOÀI CẦN THIẾT
+═════════════════════════════════════════════════════════════════════════════════
+
+STRIPE ACCOUNT SETUP
+────────────────────
+
+1. Tài khoản Stripe
+   [ ] Tạo account Stripe
+   [ ] Thêm sản phẩm (Free, Starter, Business, Enterprise)
+   [ ] Tạo mức giá (monthly & annual)
+   [ ] Setup Stripe Connect cho mentor payouts
+   [ ] Thêm webhook endpoint
+   [ ] Lấy API keys (public + secret)
+
+2. Cấu hình Stripe
+   [ ] Bật SCA (3D Secure) cho EU compliance
+   [ ] Đặt quy tắc retry mặc định (3 lần thử)
+   [ ] Webhook signing secret
+   [ ] Test mode: sk_test_xxx
+
+TÍNH TOÁN THUẾ
+──────────────
+
+[ ] Stripe Tax API setup (VAT/GST)
+[ ] Tỷ lệ thuế bán hàng Mỹ (nếu cần)
+[ ] Tỷ lệ VAT Việt Nam: 10%
+
+═════════════════════════════════════════════════════════════════════════════════
+CHỈ TIÊU THÀNH CÔNG
+═════════════════════════════════════════════════════════════════════════════════
+
+┌──────────────────┬───────────┬──────────┐
+│ Chỉ tiêu         │ Mục tiêu  │ Thời hạn │
+├──────────────────┼───────────┼──────────┤
+│ Tỷ lệ signup lên │ 20% signup│ Tháng 2  │
+│ gói trả phí      │           │          │
+│ Thanh toán thành │ >98%      │ Ngày 1   │
+│ công             │           │          │
+│ Mentor hài lòng  │ >95% kịp  │ Tuần 1   │
+│ thanh toán       │ thời      │          │
+│ Phục hồi thanh   │ >70%      │ Tuần 2   │
+│ toán thất bại    │ retry     │          │
+│ MRR (doanh thu   │ $5.000+   │ Tháng 3  │
+│ định kỳ hàng     │           │          │
+│ tháng)           │           │          │
+└──────────────────┴───────────┴──────────┘
+
+═════════════════════════════════════════════════════════════════════════════════
+CÂU HỎI CHO TEAM PRODUCT/TÀI CHÍNH
+═════════════════════════════════════════════════════════════════════════════════
+
+1. ĐỊNH GIÁ: Những mức giá này có chắc chắn không hay still TBD?
+2. PLATFORM FEE: 20% cho mentor có được không hay cần khác?
+3. THỜI GIAN TRIAL: Nên cho trial 14 ngày miễn phí cho signup mới?
+4. MÃ GIẢM GIÁ: Hỗ trợ promo codes? Program affiliate?
+5. HOÁI ĐƠN: Tự động tạo hay cần phê duyệt thủ công?
+6. THUẾ: Ai xử lý thu thuế? (Stripe Tax API recommend)
+7. HOÀN TIỀN: Chính sách hoàn tiền nếu user cancel giữa tháng?
+8. QUỐC TẾ: Hỗ trợ nhiều loại tiền ngoài USD?
+
+═════════════════════════════════════════════════════════════════════════════════
+PHỤ LỤC: SQL MIGRATION
+═════════════════════════════════════════════════════════════════════════════════
+
+File: migrations/001_billing_system.sql
+
+Lưu file này và chạy:
+  pg_dump startupkit_db > backup_2025-03-23.sql
+  psql startupkit_db < migrations/001_billing_system.sql
+  psql startupkit_db -c "\dt" | grep subscription_plans
+
+Deploy steps:
+  1. Backup database
+  2. Chạy migration
+  3. Kiểm tra bảng được tạo
+  4. Deploy backend code
+  5. Cấu hình Stripe keys
+  6. Start webhook server
+
+═════════════════════════════════════════════════════════════════════════════════
+THÔNG TIN CUỐI CÙNG
+═════════════════════════════════════════════════════════════════════════════════
+
+Cập nhật: 23/03/2025
+Chuẩn bị bởi: Claude Code
+Trạng thái: Sẵn sàng triển khai (chờ phê duyệt)
+
+KHÔNG CÓ HỆ THỐNG THANH TOÁN = KHÔNG THỂ LAUNCH!
+
+═════════════════════════════════════════════════════════════════════════════════

@@ -148,6 +148,118 @@
   .animate-fade-in {
     animation: fadeIn 0.7s ease-out both;
   }
+
+  /* Isometric Design System Utilities */
+  .iso-stage {
+    perspective: 1200px;
+    transform-style: preserve-3d;
+  }
+
+  .iso-plate {
+    transform: rotateX(55deg) rotateY(0deg) rotateZ(-30deg);
+    transform-style: preserve-3d;
+    transition: transform 0.5s cubic-bezier(0.2, 0.8, 0.2, 1);
+  }
+
+  .iso-card-3d {
+    position: relative;
+    transition: all 0.25s cubic-bezier(0.2, 0.8, 0.2, 1);
+    box-shadow: 
+      -2px 3px 0px #111111,
+      -4px 6px 0px rgba(244, 180, 0, 0.25),
+      -6px 12px 20px rgba(0, 0, 0, 0.05);
+  }
+
+  .iso-card-3d:hover {
+    transform: translate(2px, -3px);
+    box-shadow: 
+      -4px 6px 0px #111111,
+      -8px 10px 0px rgba(244, 180, 0, 0.35),
+      -12px 18px 24px rgba(0, 0, 0, 0.08);
+  }
+
+  .iso-card-dark {
+    position: relative;
+    transition: all 0.25s cubic-bezier(0.2, 0.8, 0.2, 1);
+    box-shadow: 
+      -3px 4px 0px #F4B400,
+      -6px 8px 16px rgba(0, 0, 0, 0.4);
+  }
+
+  .iso-card-dark:hover {
+    transform: translate(2px, -3px);
+    box-shadow: 
+      -5px 7px 0px #F4B400,
+      -10px 14px 22px rgba(0, 0, 0, 0.5);
+  }
+
+  .iso-btn {
+    position: relative;
+    transition: all 0.15s ease-out;
+    box-shadow: -2px 3px 0px #111111;
+  }
+
+  .iso-btn:hover {
+    transform: translate(1px, -2px);
+    box-shadow: -3px 5px 0px #111111;
+  }
+
+  .iso-btn:active {
+    transform: translate(-1px, 2px);
+    box-shadow: -1px 1px 0px #111111;
+  }
+
+  .iso-btn-gold {
+    position: relative;
+    transition: all 0.15s ease-out;
+    box-shadow: -2px 3px 0px #B8860B;
+  }
+
+  .iso-btn-gold:hover {
+    transform: translate(1px, -2px);
+    box-shadow: -3px 5px 0px #996515;
+  }
+
+  .iso-btn-gold:active {
+    transform: translate(-1px, 2px);
+    box-shadow: -1px 1px 0px #996515;
+  }
+
+  .iso-grid-bg {
+    background-image: 
+      linear-gradient(30deg, #F0F0F0 1px, transparent 1px),
+      linear-gradient(150deg, #F0F0F0 1px, transparent 1px),
+      linear-gradient(90deg, #F5F5F5 1px, transparent 1px);
+    background-size: 40px 69.28px;
+  }
+
+  .iso-grid-gold {
+    background-image: 
+      linear-gradient(30deg, rgba(244, 180, 0, 0.12) 1px, transparent 1px),
+      linear-gradient(150deg, rgba(244, 180, 0, 0.12) 1px, transparent 1px),
+      linear-gradient(90deg, rgba(244, 180, 0, 0.08) 1px, transparent 1px);
+    background-size: 36px 62.35px;
+  }
+
+  .iso-grid-dark {
+    background-image: 
+      linear-gradient(30deg, rgba(255, 255, 255, 0.06) 1px, transparent 1px),
+      linear-gradient(150deg, rgba(255, 255, 255, 0.06) 1px, transparent 1px),
+      linear-gradient(90deg, rgba(244, 180, 0, 0.05) 1px, transparent 1px);
+    background-size: 40px 69.28px;
+  }
+
+  .iso-float {
+    animation: isoFloat 4s ease-in-out infinite;
+  }
+
+  .iso-float-delay {
+    animation: isoFloat 4.5s ease-in-out 1.5s infinite;
+  }
+
+  .iso-pulse {
+    animation: isoPulse 2.5s cubic-bezier(0.4, 0, 0.6, 1) infinite;
+  }
 }
 
 @keyframes fadeIn {
@@ -158,5 +270,25 @@
   to {
     opacity: 1;
     transform: translateY(0);
+  }
+}
+
+@keyframes isoFloat {
+  0%, 100% {
+    transform: translateY(0px);
+  }
+  50% {
+    transform: translateY(-8px);
+  }
+}
+
+@keyframes isoPulse {
+  0%, 100% {
+    opacity: 1;
+    transform: scale(1);
+  }
+  50% {
+    opacity: 0.6;
+    transform: scale(1.08);
   }
 }
