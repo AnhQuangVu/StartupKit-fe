@@ -14,395 +14,438 @@ export default function EcosystemMapHero() {
 
     return (
         <section
-            className="relative w-full bg-[#FFFFFF] overflow-hidden border-b border-[#EAEAEA] pt-[72px]"
-            style={{ minHeight: "680px" }}
+            className="relative w-full bg-[#FFFFFF] overflow-hidden border-b-2 border-[#111111] pt-[72px]"
+            style={{ minHeight: "720px" }}
         >
-            {/* Isometric background grid overlay */}
-            <div className="absolute inset-0 iso-grid-bg opacity-60 pointer-events-none" />
+            {/* 3D Isometric Background Grid with animated depth */}
+            <div className="absolute inset-0 iso-grid-bg opacity-70 pointer-events-none" />
 
-            {/* Subtle radial ambient spotlight in Vietnam Gold */}
+            {/* Floating 3D Geometric Polyhedrons in Background */}
+            <div className="absolute top-20 left-8 iso-float pointer-events-none opacity-40 hidden xl:block">
+                <svg width="72" height="72" viewBox="0 0 72 72" fill="none">
+                    <polygon points="36,6 66,22 36,38 6,22" fill="#FFFFFF" stroke="#111111" strokeWidth="1.5" />
+                    <polygon points="6,22 36,38 36,64 6,48" fill="#F4B400" stroke="#111111" strokeWidth="1.5" />
+                    <polygon points="36,38 66,22 66,48 36,64" fill="#D99B00" stroke="#111111" strokeWidth="1.5" />
+                </svg>
+            </div>
+
+            <div className="absolute bottom-28 left-1/3 iso-float-reverse pointer-events-none opacity-30 hidden xl:block">
+                <svg width="56" height="56" viewBox="0 0 56 56" fill="none">
+                    <polygon points="28,5 50,18 28,31 6,18" fill="#F4B400" stroke="#111111" strokeWidth="1.2" />
+                    <polygon points="6,18 28,31 28,50 6,37" fill="#111111" stroke="#111111" strokeWidth="1.2" />
+                    <polygon points="28,31 50,18 50,37 28,50" fill="#333333" stroke="#111111" strokeWidth="1.2" />
+                </svg>
+            </div>
+
+            <div className="absolute top-28 right-12 iso-float-delay pointer-events-none opacity-40 hidden xl:block">
+                <svg width="80" height="80" viewBox="0 0 80 80" fill="none">
+                    <polygon points="40,8 72,25 40,42 8,25" fill="#FFFFFF" stroke="#111111" strokeWidth="1.6" />
+                    <polygon points="8,25 40,42 40,70 8,53" fill="#EAEAEA" stroke="#111111" strokeWidth="1.6" />
+                    <polygon points="40,42 72,25 72,53 40,70" fill="#CCCCCC" stroke="#111111" strokeWidth="1.6" />
+                </svg>
+            </div>
+
+            {/* Radial Gold Ambient Spotlight */}
             <div
-                className="absolute top-1/4 left-1/2 -translate-x-1/2 w-[720px] h-[480px] pointer-events-none rounded-full"
+                className="absolute top-1/4 left-1/2 -translate-x-1/2 w-[840px] h-[520px] pointer-events-none rounded-full"
                 style={{
-                    background: "radial-gradient(circle, rgba(244, 180, 0, 0.12) 0%, rgba(244, 180, 0, 0.03) 45%, transparent 70%)",
+                    background: "radial-gradient(circle, rgba(244, 180, 0, 0.16) 0%, rgba(244, 180, 0, 0.04) 50%, transparent 70%)",
                 }}
             />
 
-            <div className="relative max-w-[1240px] mx-auto px-6 md:px-12 py-12 md:py-20 grid grid-cols-1 lg:grid-cols-12 gap-12 items-center">
+            <div className="relative max-w-[1280px] mx-auto px-6 md:px-12 py-12 md:py-18">
                 
-                {/* Left Column: Hero Text & CTAs */}
-                <div className="lg:col-span-5 flex flex-col items-start z-10">
-                    {/* Isometric Tag Badge */}
-                    <div className="inline-flex items-center gap-2 bg-[#111111] text-white rounded-[6px] px-3.5 py-1.5 mb-6 iso-btn shadow-sm">
-                        <span className="w-2 h-2 rounded-full bg-[#F4B400] animate-pulse" />
-                        <span className="text-[12px] font-semibold tracking-wide uppercase">{h.badge}</span>
-                        <span className="text-[10px] text-[#888888] font-mono pl-1 border-l border-[#333333]">3D ISO GRID</span>
-                    </div>
+                {/* Main 2-Column Split: Content & Big 3D Isometric Platform */}
+                <div className="grid grid-cols-1 lg:grid-cols-12 gap-12 items-center mb-10">
+                    
+                    {/* Left Column: Hero Typography & Actions */}
+                    <div className="lg:col-span-5 flex flex-col items-start z-10">
+                        {/* 3D Isometric Tag Badge */}
+                        <div className="inline-flex items-center gap-2.5 bg-[#111111] text-white rounded-[8px] px-4 py-2 mb-6 iso-btn shadow-md">
+                            <span className="w-2.5 h-2.5 rounded-full bg-[#F4B400] animate-pulse" />
+                            <span className="text-[12px] font-mono font-bold tracking-wider uppercase">{h.badge}</span>
+                            <span className="text-[11px] text-[#F4B400] font-mono pl-2 border-l border-[#333333]">3D ISO ECOSYSTEM</span>
+                        </div>
 
-                    <p className="text-[12px] font-bold text-[#D99B00] uppercase tracking-[0.2em] mb-3">
-                        {h.powered}
-                    </p>
+                        <p className="text-[13px] font-extrabold text-[#D99B00] uppercase tracking-[0.22em] mb-3">
+                            {h.powered}
+                        </p>
 
-                    <div className="relative mb-4">
-                        <span className="hidden lg:block absolute -left-5 top-2 bottom-2 w-[4px] rounded-full bg-[#F4B400]" />
-                        <h1 className="text-[38px] sm:text-[46px] lg:text-[54px] font-extrabold text-[#111111] leading-[1.12] tracking-tight">
-                            {h.title1}
-                            <br />
-                            <span className="relative inline-block text-[#111111]">
-                                {h.title2}
-                                <span className="absolute bottom-1 left-0 right-0 h-[6px] bg-[#F4B400]/40 -z-10 rounded-sm" />
-                            </span>
-                        </h1>
-                    </div>
+                        <div className="relative mb-5">
+                            <span className="hidden lg:block absolute -left-6 top-2 bottom-2 w-[5px] rounded-full bg-[#F4B400]" />
+                            <h1 className="text-[40px] sm:text-[50px] lg:text-[56px] font-black text-[#111111] leading-[1.1] tracking-tight">
+                                {h.title1}
+                                <br />
+                                <span className="relative inline-block text-[#111111]">
+                                    {h.title2}
+                                    <span className="absolute bottom-1.5 left-0 right-0 h-[8px] bg-[#F4B400]/45 -z-10 rounded-sm" />
+                                </span>
+                            </h1>
+                        </div>
 
-                    <div className="w-[64px] h-[3px] bg-[#F4B400] rounded-full mb-5" />
+                        <div className="w-[72px] h-[4px] bg-[#F4B400] rounded-full mb-6" />
 
-                    <p className="text-[14px] font-semibold text-[#111111] mb-2 leading-relaxed">
-                        {h.ai}
-                    </p>
+                        <p className="text-[15px] font-bold text-[#111111] mb-2 leading-relaxed">
+                            {h.ai}
+                        </p>
 
-                    <p className="text-[15px] text-[#666666] leading-[1.7] mb-8 max-w-[480px]">
-                        {h.sub}
-                    </p>
+                        <p className="text-[15px] text-[#666666] leading-[1.7] mb-8 max-w-[480px]">
+                            {h.sub}
+                        </p>
 
-                    {/* Interactive isometric tab toggles */}
-                    <div className="flex flex-wrap gap-2 mb-8 bg-[#F7F7F7] p-1.5 rounded-[8px] border border-[#EAEAEA]">
-                        {(["all", "startups", "investors", "mentors"] as TabMode[]).map((tab) => (
-                            <button
-                                key={tab}
-                                onClick={() => setActiveTab(tab)}
-                                className={`text-[12px] font-semibold px-3.5 py-1.5 rounded-[6px] transition-all capitalize ${
-                                    activeTab === tab
-                                        ? "bg-[#111111] text-white shadow-sm"
-                                        : "text-[#666666] hover:text-[#111111] hover:bg-white"
-                                }`}
+                        {/* Interactive Isometric Filter Buttons */}
+                        <div className="flex flex-wrap gap-2 mb-8 bg-[#F7F7F7] p-2 rounded-[10px] border-2 border-[#111111] iso-card-3d">
+                            {(["all", "startups", "investors", "mentors"] as TabMode[]).map((tab) => (
+                                <button
+                                    key={tab}
+                                    onClick={() => setActiveTab(tab)}
+                                    className={`text-[13px] font-bold px-4 py-2 rounded-[6px] transition-all capitalize ${
+                                        activeTab === tab
+                                            ? "bg-[#111111] text-white shadow-md scale-105"
+                                            : "text-[#555555] hover:text-[#111111] hover:bg-white"
+                                    }`}
+                                >
+                                    {tab === "all" ? "Toàn cảnh hệ sinh thái" : tab}
+                                </button>
+                            ))}
+                        </div>
+
+                        {/* Action buttons with strong 3D depth */}
+                        <div className="flex flex-col sm:flex-row gap-4 w-full sm:w-auto">
+                            <a
+                                href="#ecosystem"
+                                className="inline-flex items-center justify-center gap-2.5 bg-[#111111] text-white text-[15px] font-bold px-8 py-4 rounded-[10px] iso-btn hover:bg-[#F4B400] hover:text-[#111111] transition-all shadow-md"
                             >
-                                {tab === "all" ? "Toàn cảnh" : tab}
-                            </button>
-                        ))}
+                                {h.cta1}
+                                <span className="flex items-center justify-center w-5 h-5 rounded-full bg-[#F4B400] text-[#111111]">
+                                    <svg width="10" height="10" viewBox="0 0 10 10" fill="none">
+                                        <path
+                                            d="M2 5h6M5.5 2.5L8 5l-2.5 2.5"
+                                            stroke="currentColor"
+                                            strokeWidth="2"
+                                            strokeLinecap="round"
+                                            strokeLinejoin="round"
+                                        />
+                                    </svg>
+                                </span>
+                            </a>
+
+                            <Link
+                                href="/register"
+                                className="inline-flex items-center justify-center gap-2 bg-white border-2 border-[#111111] text-[#111111] text-[15px] font-bold px-8 py-4 rounded-[10px] iso-btn hover:bg-[#F7F7F7] transition-all shadow-md"
+                            >
+                                {h.cta2}
+                            </Link>
+                        </div>
                     </div>
 
-                    {/* Action buttons */}
-                    <div className="flex flex-col sm:flex-row gap-3.5 w-full sm:w-auto">
-                        <a
-                            href="#ecosystem"
-                            className="inline-flex items-center justify-center gap-2.5 bg-[#111111] text-white text-[15px] font-semibold px-7 py-3.5 rounded-[8px] iso-btn hover:bg-[#F4B400] hover:text-[#111111] transition-all"
-                        >
-                            {h.cta1}
-                            <span className="flex items-center justify-center w-5 h-5 rounded-full bg-[#F4B400] text-[#111111]">
-                                <svg width="10" height="10" viewBox="0 0 10 10" fill="none">
-                                    <path
-                                        d="M2 5h6M5.5 2.5L8 5l-2.5 2.5"
-                                        stroke="currentColor"
-                                        strokeWidth="1.5"
-                                        strokeLinecap="round"
-                                        strokeLinejoin="round"
-                                    />
-                                </svg>
-                            </span>
-                        </a>
+                    {/* Right Column: Grand 3D Isometric Platform (Prominent & Spacious) */}
+                    <div className="lg:col-span-7 relative flex items-center justify-center">
+                        <div className="relative w-full max-w-[680px] aspect-[16/11] flex items-center justify-center">
+                            
+                            {/* Grand 3D Isometric Ecosystem SVG */}
+                            <svg
+                                viewBox="0 0 680 460"
+                                className="w-full h-full drop-shadow-2xl select-none"
+                                fill="none"
+                                xmlns="http://www.w3.org/2000/svg"
+                            >
+                                <defs>
+                                    <linearGradient id="grandIsoTop" x1="0%" y1="0%" x2="100%" y2="100%">
+                                        <stop offset="0%" stopColor="#FFFFFF" />
+                                        <stop offset="50%" stopColor="#FAFAF9" />
+                                        <stop offset="100%" stopColor="#F4F4F2" />
+                                    </linearGradient>
 
-                        <Link
-                            href="/register"
-                            className="inline-flex items-center justify-center gap-2 bg-white border-2 border-[#111111] text-[#111111] text-[15px] font-semibold px-7 py-3.5 rounded-[8px] iso-btn hover:bg-[#F7F7F7] transition-all"
-                        >
-                            {h.cta2}
-                        </Link>
+                                    <linearGradient id="grandFrontLeft" x1="0%" y1="0%" x2="0%" y2="100%">
+                                        <stop offset="0%" stopColor="#E5E5E5" />
+                                        <stop offset="100%" stopColor="#CCCCCC" />
+                                    </linearGradient>
+
+                                    <linearGradient id="grandFrontRight" x1="0%" y1="0%" x2="0%" y2="100%">
+                                        <stop offset="0%" stopColor="#D5D5D5" />
+                                        <stop offset="100%" stopColor="#BBBBBB" />
+                                    </linearGradient>
+
+                                    <linearGradient id="goldBeam" x1="0%" y1="0%" x2="0%" y2="100%">
+                                        <stop offset="0%" stopColor="#F4B400" stopOpacity="0.9" />
+                                        <stop offset="100%" stopColor="#F4B400" stopOpacity="0.1" />
+                                    </linearGradient>
+                                </defs>
+
+                                {/* Drop shadow of 3D platform */}
+                                <polygon
+                                    points="340,420 640,250 340,100 40,250"
+                                    fill="#000000"
+                                    fillOpacity="0.08"
+                                    transform="translate(0, 24)"
+                                />
+
+                                {/* 3D Pedestal Left Face */}
+                                <polygon
+                                    points="40,250 340,420 340,455 40,285"
+                                    fill="url(#grandFrontLeft)"
+                                    stroke="#111111"
+                                    strokeWidth="1.8"
+                                />
+
+                                {/* 3D Pedestal Right Face */}
+                                <polygon
+                                    points="340,420 640,250 640,285 340,455"
+                                    fill="url(#grandFrontRight)"
+                                    stroke="#111111"
+                                    strokeWidth="1.8"
+                                />
+
+                                {/* 3D Platform Top Face */}
+                                <polygon
+                                    points="340,80 640,250 340,420 40,250"
+                                    fill="url(#grandIsoTop)"
+                                    stroke="#111111"
+                                    strokeWidth="2.5"
+                                />
+
+                                {/* Isometric Diamond Coordinates Grid */}
+                                <line x1="140" y1="195" x2="440" y2="365" stroke="#EAEAEA" strokeWidth="1.5" strokeDasharray="4 4" />
+                                <line x1="240" y1="140" x2="540" y2="310" stroke="#EAEAEA" strokeWidth="1.5" strokeDasharray="4 4" />
+                                <line x1="540" y1="195" x2="240" y2="365" stroke="#EAEAEA" strokeWidth="1.5" strokeDasharray="4 4" />
+                                <line x1="440" y1="140" x2="140" y2="310" stroke="#EAEAEA" strokeWidth="1.5" strokeDasharray="4 4" />
+
+                                {/* Main Gold Energy Spine */}
+                                <line x1="340" y1="80" x2="340" y2="420" stroke="#F4B400" strokeWidth="2" strokeOpacity="0.4" strokeDasharray="6 6" />
+
+                                {/* Glowing Gold Data Arteries */}
+                                <path
+                                    d="M210 200 L340 270 L470 200 M340 270 L340 375"
+                                    stroke="#F4B400"
+                                    strokeWidth="3.5"
+                                    strokeLinecap="round"
+                                    strokeLinejoin="round"
+                                />
+
+                                {/* Flowing Data Particles */}
+                                <circle cx="275" cy="235" r="4" fill="#111111">
+                                    <animate attributeName="opacity" values="0.2;1;0.2" dur="2s" repeatCount="indefinite" />
+                                </circle>
+                                <circle cx="405" cy="235" r="4" fill="#111111">
+                                    <animate attributeName="opacity" values="0.2;1;0.2" dur="2s" begin="0.6s" repeatCount="indefinite" />
+                                </circle>
+                                <circle cx="340" cy="325" r="4.5" fill="#F4B400">
+                                    <animate attributeName="opacity" values="0.2;1;0.2" dur="2s" begin="1.2s" repeatCount="indefinite" />
+                                </circle>
+
+                                {/* Stylized Vietnam Economic S-Curve in 2.5D Elevation */}
+                                <g transform="translate(10, 0)">
+                                    {/* Thick 3D Relief Shadow */}
+                                    <path
+                                        d="M 300 160 
+                                           C 325 175, 335 195, 330 220 
+                                           C 325 245, 345 270, 360 295 
+                                           C 370 315, 365 340, 345 360
+                                           C 325 375, 305 380, 285 370"
+                                        stroke="#000000"
+                                        strokeOpacity="0.1"
+                                        strokeWidth="10"
+                                        strokeLinecap="round"
+                                        fill="none"
+                                        transform="translate(0, 4)"
+                                    />
+
+                                    {/* Vietnam 2.5D Ribbon */}
+                                    <path
+                                        d="M 300 160 
+                                           C 325 175, 335 195, 330 220 
+                                           C 325 245, 345 270, 360 295 
+                                           C 370 315, 365 340, 345 360
+                                           C 325 375, 305 380, 285 370"
+                                        stroke="#111111"
+                                        strokeWidth="8"
+                                        strokeLinecap="round"
+                                        fill="none"
+                                    />
+                                    <path
+                                        d="M 300 160 
+                                           C 325 175, 335 195, 330 220 
+                                           C 325 245, 345 270, 360 295 
+                                           C 370 315, 365 340, 345 360
+                                           C 325 375, 305 380, 285 370"
+                                        stroke="#F4B400"
+                                        strokeWidth="4"
+                                        strokeLinecap="round"
+                                        fill="none"
+                                    />
+
+                                    {/* 1. Hà Nội Node */}
+                                    <g
+                                        className="cursor-pointer transition-transform"
+                                        onMouseEnter={() => setHoveredNode("hanoi")}
+                                        onMouseLeave={() => setHoveredNode(null)}
+                                    >
+                                        <circle cx="300" cy="160" r="14" stroke="#F4B400" strokeWidth="2" fill="none">
+                                            <animate attributeName="r" values="8;24;8" dur="2.4s" repeatCount="indefinite" />
+                                            <animate attributeName="stroke-opacity" values="0.9;0;0.9" dur="2.4s" repeatCount="indefinite" />
+                                        </circle>
+                                        <circle cx="300" cy="160" r="7" fill="#111111" stroke="#FFFFFF" strokeWidth="2" />
+                                        <circle cx="300" cy="160" r="3.5" fill="#F4B400" />
+                                        <text x="300" y="138" textAnchor="middle" fill="#111111" fontSize="13" fontWeight="900">
+                                            HÀ NỘI
+                                        </text>
+                                    </g>
+
+                                    {/* 2. Đà Nẵng Node */}
+                                    <g
+                                        className="cursor-pointer transition-transform"
+                                        onMouseEnter={() => setHoveredNode("danang")}
+                                        onMouseLeave={() => setHoveredNode(null)}
+                                    >
+                                        <circle cx="340" cy="235" r="6" fill="#111111" stroke="#FFFFFF" strokeWidth="2" />
+                                        <circle cx="340" cy="235" r="3" fill="#F4B400" />
+                                        <text x="372" y="240" textAnchor="start" fill="#222222" fontSize="12" fontWeight="800">
+                                            ĐÀ NẴNG
+                                        </text>
+                                    </g>
+
+                                    {/* 3. TP. Hồ Chí Minh Node */}
+                                    <g
+                                        className="cursor-pointer transition-transform"
+                                        onMouseEnter={() => setHoveredNode("hcmc")}
+                                        onMouseLeave={() => setHoveredNode(null)}
+                                    >
+                                        <circle cx="330" cy="350" r="16" stroke="#F4B400" strokeWidth="2" fill="none">
+                                            <animate attributeName="r" values="9;28;9" dur="2.2s" repeatCount="indefinite" />
+                                            <animate attributeName="stroke-opacity" values="0.9;0;0.9" dur="2.2s" repeatCount="indefinite" />
+                                        </circle>
+                                        <circle cx="330" cy="350" r="8" fill="#111111" stroke="#FFFFFF" strokeWidth="2" />
+                                        <circle cx="330" cy="350" r="4" fill="#F4B400" />
+                                        <text x="330" y="380" textAnchor="middle" fill="#111111" fontSize="13" fontWeight="900">
+                                            TP. HỒ CHÍ MINH
+                                        </text>
+                                    </g>
+
+                                    {/* 4. Hoàng Sa & Trường Sa with prominent sovereignty labels */}
+                                    <g>
+                                        <circle cx="430" cy="205" r="4.5" fill="#F4B400" stroke="#FFFFFF" strokeWidth="1.5" />
+                                        <circle cx="430" cy="205" r="10" stroke="#F4B400" strokeWidth="1.5" strokeDasharray="3 3" fill="none" />
+                                        <text x="445" y="210" textAnchor="start" fill="#444444" fontSize="11" fontWeight="700">
+                                            QĐ. Hoàng Sa
+                                        </text>
+
+                                        <circle cx="460" cy="315" r="4.5" fill="#F4B400" stroke="#FFFFFF" strokeWidth="1.5" />
+                                        <circle cx="460" cy="315" r="10" stroke="#F4B400" strokeWidth="1.5" strokeDasharray="3 3" fill="none" />
+                                        <text x="475" y="320" textAnchor="start" fill="#444444" fontSize="11" fontWeight="700">
+                                            QĐ. Trường Sa
+                                        </text>
+                                    </g>
+                                </g>
+
+                                {/* 3D Floating Central AI Core Crystal */}
+                                <g transform="translate(340, 250)" className="iso-float">
+                                    <ellipse cx="0" cy="32" rx="36" ry="15" fill="#000000" fillOpacity="0.14" />
+                                    {/* 3D Polyhedron facets */}
+                                    <polygon points="0,-45 30,-8 -30,-8" fill="#F4B400" stroke="#FFFFFF" strokeWidth="1.5" />
+                                    <polygon points="0,-45 30,-8 0,0" fill="#E59B00" stroke="#FFFFFF" strokeWidth="1" />
+                                    <polygon points="0,-45 -30,-8 0,0" fill="#FFC933" stroke="#FFFFFF" strokeWidth="1" />
+                                    <polygon points="0,32 30,-8 0,0" fill="#CC8A00" stroke="#FFFFFF" strokeWidth="1" />
+                                    <polygon points="0,32 -30,-8 0,0" fill="#B37700" stroke="#FFFFFF" strokeWidth="1" />
+
+                                    {/* Orbiting Tech Ring */}
+                                    <ellipse cx="0" cy="0" rx="46" ry="18" stroke="#F4B400" strokeWidth="1.8" strokeDasharray="5 5" fill="none">
+                                        <animateTransform
+                                            attributeName="transform"
+                                            type="rotate"
+                                            from="0"
+                                            to="360"
+                                            dur="16s"
+                                            repeatCount="indefinite"
+                                        />
+                                    </ellipse>
+                                </g>
+                            </svg>
+
+                            {/* Node Tooltip */}
+                            {hoveredNode && (
+                                <div className="absolute bottom-6 left-6 bg-[#111111] text-white text-[12px] font-bold px-4 py-2 rounded-[8px] border-2 border-[#F4B400] z-30 shadow-xl animate-fade-in">
+                                    {hoveredNode === "hanoi" && "Hà Nội • Trung tâm Đổi mới Sáng tạo & AI Quốc gia"}
+                                    {hoveredNode === "danang" && "Đà Nẵng • Vườn ươm & Công nghệ Cao Miền Trung"}
+                                    {hoveredNode === "hcmc" && "TP. Hồ Chí Minh • Đầu tàu Vốn & Hệ sinh thái Startups"}
+                                </div>
+                            )}
+                        </div>
                     </div>
                 </div>
 
-                {/* Right Column: 3D Isometric Ecosystem Stage */}
-                <div className="lg:col-span-7 relative flex items-center justify-center min-h-[460px] md:min-h-[540px]">
+                {/* Prominent, Spacious 3D Isometric Modules Grid (No Overlapping, Generous Dimensions) */}
+                <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mt-6">
                     
-                    {/* Isometric 3D Stage Container */}
-                    <div className="relative w-full max-w-[620px] aspect-[4/3] flex items-center justify-center">
-
-                        {/* Isometric Base Grid SVG */}
-                        <svg
-                            viewBox="0 0 640 480"
-                            className="w-full h-full drop-shadow-2xl select-none"
-                            fill="none"
-                            xmlns="http://www.w3.org/2000/svg"
-                        >
-                            <defs>
-                                {/* Isometric Platform Gradients */}
-                                <linearGradient id="isoTopGrad" x1="0%" y1="0%" x2="100%" y2="100%">
-                                    <stop offset="0%" stopColor="#FFFFFF" />
-                                    <stop offset="100%" stopColor="#F9F9F8" />
-                                </linearGradient>
-
-                                <linearGradient id="isoFrontLeft" x1="0%" y1="0%" x2="0%" y2="100%">
-                                    <stop offset="0%" stopColor="#EAEAEA" />
-                                    <stop offset="100%" stopColor="#D5D5D5" />
-                                </linearGradient>
-
-                                <linearGradient id="isoFrontRight" x1="0%" y1="0%" x2="0%" y2="100%">
-                                    <stop offset="0%" stopColor="#DDDDDD" />
-                                    <stop offset="100%" stopColor="#C4C4C4" />
-                                </linearGradient>
-
-                                <linearGradient id="goldPulse" x1="0%" y1="0%" x2="100%" y2="100%">
-                                    <stop offset="0%" stopColor="#F4B400" />
-                                    <stop offset="100%" stopColor="#E59B00" />
-                                </linearGradient>
-
-                                <filter id="glowGold" x="-20%" y="-20%" width="140%" height="140%">
-                                    <feGaussianBlur stdDeviation="6" result="blur" />
-                                    <feComposite in="SourceGraphic" in2="blur" operator="over" />
-                                </filter>
-                            </defs>
-
-                            {/* Drop shadow of platform */}
-                            <polygon
-                                points="320,440 590,290 320,160 50,290"
-                                fill="#000000"
-                                fillOpacity="0.06"
-                                transform="translate(0, 18)"
-                            />
-
-                            {/* Isometric Pedestal: Left Face */}
-                            <polygon
-                                points="50,290 320,440 320,465 50,315"
-                                fill="url(#isoFrontLeft)"
-                                stroke="#CCCCCC"
-                                strokeWidth="1"
-                            />
-
-                            {/* Isometric Pedestal: Right Face */}
-                            <polygon
-                                points="320,440 590,290 590,315 320,465"
-                                fill="url(#isoFrontRight)"
-                                stroke="#B8B8B8"
-                                strokeWidth="1"
-                            />
-
-                            {/* Isometric Platform Top Face (Diamond Grid) */}
-                            <polygon
-                                points="320,140 590,290 320,440 50,290"
-                                fill="url(#isoTopGrad)"
-                                stroke="#111111"
-                                strokeWidth="2"
-                            />
-
-                            {/* Isometric Grid Lines on Platform Top */}
-                            {/* Axis 1 (Top-Right to Bottom-Left) */}
-                            <line x1="140" y1="240" x2="410" y2="390" stroke="#EAEAEA" strokeWidth="1" strokeDasharray="3 3" />
-                            <line x1="230" y1="190" x2="500" y2="340" stroke="#EAEAEA" strokeWidth="1" strokeDasharray="3 3" />
-                            <line x1="320" y1="140" x2="320" y2="440" stroke="#F4B400" strokeWidth="1" strokeOpacity="0.3" strokeDasharray="4 4" />
-
-                            {/* Axis 2 (Top-Left to Bottom-Right) */}
-                            <line x1="500" y1="240" x2="230" y2="390" stroke="#EAEAEA" strokeWidth="1" strokeDasharray="3 3" />
-                            <line x1="410" y1="190" x2="140" y2="340" stroke="#EAEAEA" strokeWidth="1" strokeDasharray="3 3" />
-
-                            {/* Isometric Circuit Data Highway in Gold */}
-                            <path
-                                d="M220 230 L320 280 L420 230 M320 280 L320 370"
-                                stroke="#F4B400"
-                                strokeWidth="2.5"
-                                strokeLinecap="round"
-                                strokeLinejoin="round"
-                            />
-
-                            {/* Animated pulses along the circuit path */}
-                            <circle cx="270" cy="255" r="3" fill="#111111">
-                                <animate attributeName="opacity" values="0.2;1;0.2" dur="2s" repeatCount="indefinite" />
-                            </circle>
-                            <circle cx="370" cy="255" r="3" fill="#111111">
-                                <animate attributeName="opacity" values="0.2;1;0.2" dur="2s" begin="0.5s" repeatCount="indefinite" />
-                            </circle>
-                            <circle cx="320" cy="325" r="3" fill="#F4B400">
-                                <animate attributeName="opacity" values="0.2;1;0.2" dur="2s" begin="1s" repeatCount="indefinite" />
-                            </circle>
-
-                            {/* Stylized Isometric Vietnam Backbone (S-curve in 2.5D projection) */}
-                            <g transform="translate(10, -5)">
-                                {/* Vietnam geographical ribbon/contour */}
-                                <path
-                                    d="M 285 200 
-                                       C 305 210, 315 225, 312 245 
-                                       C 310 265, 325 285, 335 305 
-                                       C 342 320, 338 340, 320 355
-                                       C 305 365, 290 370, 275 360"
-                                    stroke="#111111"
-                                    strokeWidth="6"
-                                    strokeLinecap="round"
-                                    fill="none"
-                                />
-                                <path
-                                    d="M 285 200 
-                                       C 305 210, 315 225, 312 245 
-                                       C 310 265, 325 285, 335 305 
-                                       C 342 320, 338 340, 320 355
-                                       C 305 365, 290 370, 275 360"
-                                    stroke="#F4B400"
-                                    strokeWidth="3"
-                                    strokeLinecap="round"
-                                    fill="none"
-                                />
-
-                                {/* 1. Hanoi Node (North Hub) */}
-                                <g
-                                    className="cursor-pointer transition-transform"
-                                    onMouseEnter={() => setHoveredNode("hanoi")}
-                                    onMouseLeave={() => setHoveredNode(null)}
-                                >
-                                    {/* Pulse ring */}
-                                    <circle cx="285" cy="200" r="10" stroke="#F4B400" strokeWidth="1.5" fill="none">
-                                        <animate attributeName="r" values="6;18;6" dur="2.4s" repeatCount="indefinite" />
-                                        <animate attributeName="stroke-opacity" values="0.9;0;0.9" dur="2.4s" repeatCount="indefinite" />
-                                    </circle>
-                                    {/* Isometric Hub Pin */}
-                                    <circle cx="285" cy="200" r="5" fill="#111111" stroke="#FFFFFF" strokeWidth="1.5" />
-                                    <circle cx="285" cy="200" r="2.5" fill="#F4B400" />
-                                    {/* Label Pin */}
-                                    <text x="285" y="180" textAnchor="middle" fill="#111111" fontSize="10" fontWeight="bold">
-                                        HÀ NỘI
-                                    </text>
-                                </g>
-
-                                {/* 2. Da Nang Node (Central Hub) */}
-                                <g
-                                    className="cursor-pointer transition-transform"
-                                    onMouseEnter={() => setHoveredNode("danang")}
-                                    onMouseLeave={() => setHoveredNode(null)}
-                                >
-                                    <circle cx="318" cy="255" r="4.5" fill="#111111" stroke="#FFFFFF" strokeWidth="1.5" />
-                                    <circle cx="318" cy="255" r="2" fill="#F4B400" />
-                                    <text x="345" y="258" textAnchor="start" fill="#444444" fontSize="9" fontWeight="bold">
-                                        ĐÀ NẴNG
-                                    </text>
-                                </g>
-
-                                {/* 3. Ho Chi Minh City Node (South Engine) */}
-                                <g
-                                    className="cursor-pointer transition-transform"
-                                    onMouseEnter={() => setHoveredNode("hcmc")}
-                                    onMouseLeave={() => setHoveredNode(null)}
-                                >
-                                    <circle cx="310" cy="350" r="11" stroke="#F4B400" strokeWidth="1.5" fill="none">
-                                        <animate attributeName="r" values="7;20;7" dur="2.1s" repeatCount="indefinite" />
-                                        <animate attributeName="stroke-opacity" values="0.9;0;0.9" dur="2.1s" repeatCount="indefinite" />
-                                    </circle>
-                                    <circle cx="310" cy="350" r="5.5" fill="#111111" stroke="#FFFFFF" strokeWidth="1.5" />
-                                    <circle cx="310" cy="350" r="3" fill="#F4B400" />
-                                    <text x="310" y="375" textAnchor="middle" fill="#111111" fontSize="10" fontWeight="bold">
-                                        TP. HỒ CHÍ MINH
-                                    </text>
-                                </g>
-
-                                {/* 4. Islands: Hoàng Sa & Trường Sa with maritime sovereignty markers */}
-                                <g>
-                                    {/* Hoàng Sa */}
-                                    <circle cx="390" cy="235" r="3.5" fill="#F4B400" stroke="#FFFFFF" strokeWidth="1" />
-                                    <circle cx="390" cy="235" r="7" stroke="#F4B400" strokeWidth="1" strokeDasharray="2 2" fill="none" />
-                                    <text x="402" y="238" textAnchor="start" fill="#666666" fontSize="8" fontWeight="600">
-                                        QĐ. Hoàng Sa
-                                    </text>
-
-                                    {/* Trường Sa */}
-                                    <circle cx="415" cy="320" r="3.5" fill="#F4B400" stroke="#FFFFFF" strokeWidth="1" />
-                                    <circle cx="415" cy="320" r="7" stroke="#F4B400" strokeWidth="1" strokeDasharray="2 2" fill="none" />
-                                    <text x="427" y="323" textAnchor="start" fill="#666666" fontSize="8" fontWeight="600">
-                                        QĐ. Trường Sa
-                                    </text>
-                                </g>
-                            </g>
-
-                            {/* 3D Isometric Central AI Core (Floating Diamond/Polyhedron) */}
-                            <g transform="translate(320, 260)" className="iso-float">
-                                {/* Core shadow */}
-                                <ellipse cx="0" cy="25" rx="28" ry="12" fill="#000000" fillOpacity="0.12" />
-
-                                {/* Upper pyramid */}
-                                <polygon points="0,-35 22,-5 -22,-5" fill="#F4B400" stroke="#FFFFFF" strokeWidth="1" />
-                                <polygon points="0,-35 22,-5 0,0" fill="#E59B00" stroke="#FFFFFF" strokeWidth="0.8" />
-                                <polygon points="0,-35 -22,-5 0,0" fill="#FFC933" stroke="#FFFFFF" strokeWidth="0.8" />
-
-                                {/* Lower pyramid */}
-                                <polygon points="0,25 22,-5 0,0" fill="#CC8A00" stroke="#FFFFFF" strokeWidth="0.8" />
-                                <polygon points="0,25 -22,-5 0,0" fill="#B37700" stroke="#FFFFFF" strokeWidth="0.8" />
-
-                                {/* Glowing aura ring */}
-                                <ellipse cx="0" cy="0" rx="36" ry="14" stroke="#F4B400" strokeWidth="1.5" strokeDasharray="4 4" fill="none">
-                                    <animateTransform
-                                        attributeName="transform"
-                                        type="rotate"
-                                        from="0"
-                                        to="360"
-                                        dur="12s"
-                                        repeatCount="indefinite"
-                                    />
-                                </ellipse>
-                            </g>
-                        </svg>
-
-                        {/* Floating Isometric Card 1: STARTUP TOWER (Top-Left) */}
-                        <div
-                            className={`absolute top-4 left-0 sm:left-4 bg-white border-2 border-[#111111] rounded-[8px] p-3.5 iso-card-3d max-w-[200px] z-20 transition-all ${
-                                activeTab === "all" || activeTab === "startups" ? "opacity-100 scale-100" : "opacity-40 scale-95"
-                            }`}
-                        >
-                            <div className="flex items-center justify-between mb-2">
-                                <span className="w-2.5 h-2.5 rounded-[2px] bg-[#F4B400] shadow-sm inline-block" />
-                                <span className="text-[10px] font-mono font-bold px-1.5 py-0.5 bg-[#111111] text-white rounded-[3px]">
-                                    +500 LIVE
+                    {/* Big Module 1: STARTUP ENGINE */}
+                    <div className="bg-white border-2 border-[#111111] rounded-[14px] p-6 iso-card-3d flex flex-col justify-between">
+                        <div>
+                            <div className="flex items-center justify-between mb-3">
+                                <span className="text-[11px] font-mono font-bold px-2.5 py-1 bg-[#111111] text-white rounded-[4px]">
+                                    FOUNDER PIPELINE
                                 </span>
+                                <span className="w-2.5 h-2.5 rounded-full bg-[#F4B400]" />
                             </div>
-                            <div className="text-[13px] font-bold text-[#111111] leading-tight">Startup Hub</div>
-                            <div className="text-[11px] text-[#666666] mt-0.5">Seed to Series A</div>
-                            <div className="mt-2 pt-2 border-t border-[#EAEAEA] flex items-center justify-between text-[10px]">
-                                <span className="text-[#888888]">AI Deal Room</span>
-                                <span className="font-semibold text-[#D99B00]">100% Free</span>
+                            <div className="text-[28px] font-black text-[#111111] leading-none mb-1">
+                                +500 Startups
                             </div>
-                        </div>
-
-                        {/* Floating Isometric Card 2: INVESTOR VAULT (Top-Right) */}
-                        <div
-                            className={`absolute top-10 right-0 sm:right-4 bg-[#111111] text-white border-2 border-[#F4B400] rounded-[8px] p-3.5 iso-card-dark max-w-[210px] z-20 transition-all ${
-                                activeTab === "all" || activeTab === "investors" ? "opacity-100 scale-100" : "opacity-40 scale-95"
-                            }`}
-                        >
-                            <div className="flex items-center justify-between mb-2">
-                                <div className="flex items-center gap-1.5">
-                                    <span className="w-2 h-2 rounded-full bg-[#F4B400] animate-ping" />
-                                    <span className="text-[10px] font-mono text-[#F4B400] font-bold">CAPITAL FLOW</span>
-                                </div>
-                                <span className="text-[10px] text-[#AAAAAA]">80+ VCs</span>
-                            </div>
-                            <div className="text-[16px] font-extrabold text-[#F4B400] leading-none">$18.5M+</div>
-                            <div className="text-[11px] text-[#CCCCCC] mt-1">Verified Investor Network</div>
-                            <div className="mt-2 pt-2 border-t border-[#222222] flex items-center justify-between text-[10px] text-[#888888]">
-                                <span>Deal Filter</span>
-                                <span className="text-[#FFFFFF] font-semibold">Active Match</span>
-                            </div>
-                        </div>
-
-                        {/* Floating Isometric Card 3: AI MATCHING ENGINE (Bottom-Right) */}
-                        <div
-                            className={`absolute bottom-6 right-2 sm:right-10 bg-white border border-[#EAEAEA] rounded-[8px] p-3 iso-card-3d max-w-[190px] z-20 transition-all ${
-                                activeTab === "all" || activeTab === "mentors" ? "opacity-100 scale-100" : "opacity-40 scale-95"
-                            }`}
-                        >
-                            <div className="flex items-center gap-2 mb-1">
-                                <span className="w-2 h-2 rounded-full bg-[#111111]" />
-                                <span className="text-[11px] font-bold text-[#111111]">AI Precision</span>
-                            </div>
-                            <div className="text-[18px] font-extrabold text-[#111111]">98.2%</div>
-                            <p className="text-[10px] text-[#777777] leading-snug mt-0.5">
-                                Khớp dữ liệu tự động theo vòng gọi vốn & ngành
+                            <p className="text-[13px] text-[#666666] leading-relaxed">
+                                Giai đoạn từ Seed đến Series A trên toàn Việt Nam và Đông Nam Á.
                             </p>
                         </div>
-
-                        {/* Interactive Node Tooltip */}
-                        {hoveredNode && (
-                            <div className="absolute bottom-4 left-4 bg-[#111111] text-white text-[11px] font-semibold px-3 py-1.5 rounded-[6px] border border-[#F4B400] z-30 shadow-lg animate-fade-in">
-                                {hoveredNode === "hanoi" && "Hà Nội • Trung tâm R&D & Trí tuệ Nhân tạo"}
-                                {hoveredNode === "danang" && "Đà Nẵng • Cửa ngõ Công nghệ Cao Miền Trung"}
-                                {hoveredNode === "hcmc" && "TP. Hồ Chí Minh • Đầu tàu Tài chính & Khởi nghiệp"}
-                            </div>
-                        )}
+                        <div className="mt-4 pt-4 border-t border-[#F0F0F0] flex items-center justify-between text-[12px]">
+                            <span className="text-[#888888] font-medium">Hồ sơ đầu tư AI</span>
+                            <span className="font-bold text-[#D99B00]">100% Miễn phí</span>
+                        </div>
                     </div>
+
+                    {/* Big Module 2: CAPITAL VAULT (High Contrast) */}
+                    <div className="bg-[#111111] text-white border-2 border-[#F4B400] rounded-[14px] p-6 iso-card-dark flex flex-col justify-between">
+                        <div>
+                            <div className="flex items-center justify-between mb-3">
+                                <div className="flex items-center gap-2">
+                                    <span className="w-2 h-2 rounded-full bg-[#F4B400] animate-ping" />
+                                    <span className="text-[11px] font-mono text-[#F4B400] font-bold">CAPITAL FLOW</span>
+                                </div>
+                                <span className="text-[11px] text-[#AAAAAA] font-mono">80+ VCs & Angels</span>
+                            </div>
+                            <div className="text-[32px] font-black text-[#F4B400] leading-none mb-1">
+                                $18.5M+
+                            </div>
+                            <p className="text-[13px] text-[#CCCCCC] leading-relaxed">
+                                Mạng lưới quỹ đầu tư mạo hiểm và thiên thần công khai khẩu vị đầu tư.
+                            </p>
+                        </div>
+                        <div className="mt-4 pt-4 border-t border-[#222222] flex items-center justify-between text-[12px]">
+                            <span className="text-[#888888]">Lọc Deal tự động</span>
+                            <span className="font-bold text-white">Deal Room Xác minh</span>
+                        </div>
+                    </div>
+
+                    {/* Big Module 3: AI MATCHING CORE */}
+                    <div className="bg-white border-2 border-[#111111] rounded-[14px] p-6 iso-card-3d flex flex-col justify-between">
+                        <div>
+                            <div className="flex items-center justify-between mb-3">
+                                <span className="text-[11px] font-mono font-bold px-2.5 py-1 bg-[#FFF8E1] border border-[#F4B400] text-[#B37700] rounded-[4px]">
+                                    MATCHING ENGINE
+                                </span>
+                                <span className="w-2.5 h-2.5 rounded-full bg-[#111111]" />
+                            </div>
+                            <div className="text-[28px] font-black text-[#111111] leading-none mb-1">
+                                98.2%
+                            </div>
+                            <p className="text-[13px] text-[#666666] leading-relaxed">
+                                Độ khớp mục tiêu giữa năng lực nhà sáng lập và chuyên môn của Cố vấn / Nhà đầu tư.
+                            </p>
+                        </div>
+                        <div className="mt-4 pt-4 border-t border-[#F0F0F0] flex items-center justify-between text-[12px]">
+                            <span className="text-[#888888]">Xử lý thuật toán</span>
+                            <span className="font-bold text-[#111111]">Tự động hóa hoàn toàn</span>
+                        </div>
+                    </div>
+
                 </div>
+
             </div>
         </section>
     );

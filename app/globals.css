@@ -149,7 +149,7 @@
     animation: fadeIn 0.7s ease-out both;
   }
 
-  /* Isometric Design System Utilities */
+  /* Isometric & 3D Spatial Design System Utilities */
   .iso-stage {
     perspective: 1200px;
     transform-style: preserve-3d;
@@ -163,109 +163,119 @@
 
   .iso-card-3d {
     position: relative;
-    transition: all 0.25s cubic-bezier(0.2, 0.8, 0.2, 1);
+    transition: all 0.3s cubic-bezier(0.2, 0.8, 0.2, 1);
     box-shadow: 
-      -2px 3px 0px #111111,
-      -4px 6px 0px rgba(244, 180, 0, 0.25),
-      -6px 12px 20px rgba(0, 0, 0, 0.05);
+      -4px 6px 0px #111111,
+      -8px 12px 0px rgba(244, 180, 0, 0.3),
+      -12px 20px 28px rgba(0, 0, 0, 0.07);
   }
 
   .iso-card-3d:hover {
-    transform: translate(2px, -3px);
+    transform: translate(3px, -5px) scale(1.01);
     box-shadow: 
-      -4px 6px 0px #111111,
-      -8px 10px 0px rgba(244, 180, 0, 0.35),
-      -12px 18px 24px rgba(0, 0, 0, 0.08);
+      -6px 10px 0px #111111,
+      -12px 16px 0px rgba(244, 180, 0, 0.45),
+      -18px 28px 36px rgba(0, 0, 0, 0.12);
   }
 
   .iso-card-dark {
     position: relative;
-    transition: all 0.25s cubic-bezier(0.2, 0.8, 0.2, 1);
+    transition: all 0.3s cubic-bezier(0.2, 0.8, 0.2, 1);
     box-shadow: 
-      -3px 4px 0px #F4B400,
-      -6px 8px 16px rgba(0, 0, 0, 0.4);
+      -4px 6px 0px #F4B400,
+      -8px 14px 24px rgba(0, 0, 0, 0.5);
   }
 
   .iso-card-dark:hover {
-    transform: translate(2px, -3px);
+    transform: translate(3px, -5px) scale(1.01);
     box-shadow: 
-      -5px 7px 0px #F4B400,
-      -10px 14px 22px rgba(0, 0, 0, 0.5);
+      -6px 10px 0px #F4B400,
+      -12px 20px 32px rgba(0, 0, 0, 0.65);
   }
 
   .iso-btn {
     position: relative;
-    transition: all 0.15s ease-out;
-    box-shadow: -2px 3px 0px #111111;
+    transition: all 0.18s cubic-bezier(0.2, 0.8, 0.2, 1);
+    box-shadow: -3px 4px 0px #111111;
   }
 
   .iso-btn:hover {
-    transform: translate(1px, -2px);
-    box-shadow: -3px 5px 0px #111111;
+    transform: translate(2px, -3px);
+    box-shadow: -5px 7px 0px #111111;
   }
 
   .iso-btn:active {
     transform: translate(-1px, 2px);
-    box-shadow: -1px 1px 0px #111111;
+    box-shadow: -1px 2px 0px #111111;
   }
 
   .iso-btn-gold {
     position: relative;
-    transition: all 0.15s ease-out;
-    box-shadow: -2px 3px 0px #B8860B;
+    transition: all 0.18s cubic-bezier(0.2, 0.8, 0.2, 1);
+    box-shadow: -3px 4px 0px #996515;
   }
 
   .iso-btn-gold:hover {
-    transform: translate(1px, -2px);
-    box-shadow: -3px 5px 0px #996515;
+    transform: translate(2px, -3px);
+    box-shadow: -5px 7px 0px #996515;
   }
 
   .iso-btn-gold:active {
     transform: translate(-1px, 2px);
-    box-shadow: -1px 1px 0px #996515;
+    box-shadow: -1px 2px 0px #996515;
   }
 
+  /* 3D Isometric Background Grids with Depth */
   .iso-grid-bg {
     background-image: 
-      linear-gradient(30deg, #F0F0F0 1px, transparent 1px),
-      linear-gradient(150deg, #F0F0F0 1px, transparent 1px),
-      linear-gradient(90deg, #F5F5F5 1px, transparent 1px);
-    background-size: 40px 69.28px;
+      linear-gradient(30deg, #EAEAEA 1px, transparent 1px),
+      linear-gradient(150deg, #EAEAEA 1px, transparent 1px),
+      linear-gradient(90deg, #F0F0F0 1px, transparent 1px);
+    background-size: 56px 97px;
   }
 
   .iso-grid-gold {
     background-image: 
-      linear-gradient(30deg, rgba(244, 180, 0, 0.12) 1px, transparent 1px),
-      linear-gradient(150deg, rgba(244, 180, 0, 0.12) 1px, transparent 1px),
-      linear-gradient(90deg, rgba(244, 180, 0, 0.08) 1px, transparent 1px);
-    background-size: 36px 62.35px;
+      linear-gradient(30deg, rgba(244, 180, 0, 0.18) 1.5px, transparent 1.5px),
+      linear-gradient(150deg, rgba(244, 180, 0, 0.18) 1.5px, transparent 1.5px),
+      linear-gradient(90deg, rgba(244, 180, 0, 0.12) 1.5px, transparent 1.5px);
+    background-size: 48px 83.13px;
   }
 
   .iso-grid-dark {
     background-image: 
-      linear-gradient(30deg, rgba(255, 255, 255, 0.06) 1px, transparent 1px),
-      linear-gradient(150deg, rgba(255, 255, 255, 0.06) 1px, transparent 1px),
-      linear-gradient(90deg, rgba(244, 180, 0, 0.05) 1px, transparent 1px);
-    background-size: 40px 69.28px;
+      linear-gradient(30deg, rgba(255, 255, 255, 0.08) 1.5px, transparent 1.5px),
+      linear-gradient(150deg, rgba(255, 255, 255, 0.08) 1.5px, transparent 1.5px),
+      linear-gradient(90deg, rgba(244, 180, 0, 0.08) 1.5px, transparent 1.5px);
+    background-size: 56px 97px;
   }
 
+  /* Dynamic 3D Spatial Animations */
   .iso-float {
-    animation: isoFloat 4s ease-in-out infinite;
+    animation: isoFloat 5s ease-in-out infinite;
+  }
+
+  .iso-float-reverse {
+    animation: isoFloatReverse 6s ease-in-out infinite;
   }
 
   .iso-float-delay {
-    animation: isoFloat 4.5s ease-in-out 1.5s infinite;
+    animation: isoFloat 5.5s ease-in-out 1.8s infinite;
   }
 
   .iso-pulse {
-    animation: isoPulse 2.5s cubic-bezier(0.4, 0, 0.6, 1) infinite;
+    animation: isoPulse 3s cubic-bezier(0.4, 0, 0.6, 1) infinite;
+  }
+
+  .iso-rotate-slow {
+    animation: isoRotateSlow 24s linear infinite;
   }
 }
 
 @keyframes fadeIn {
   from {
     opacity: 0;
-    transform: translateY(12px);
+    transform: translateY(14px);
   }
   to {
     opacity: 1;
@@ -275,10 +285,19 @@
 
 @keyframes isoFloat {
   0%, 100% {
-    transform: translateY(0px);
+    transform: translateY(0px) rotate(0deg);
   }
   50% {
-    transform: translateY(-8px);
+    transform: translateY(-12px) rotate(1.5deg);
+  }
+}
+
+@keyframes isoFloatReverse {
+  0%, 100% {
+    transform: translateY(0px) rotate(0deg);
+  }
+  50% {
+    transform: translateY(10px) rotate(-1.5deg);
   }
 }
 
@@ -288,7 +307,16 @@
     transform: scale(1);
   }
   50% {
-    opacity: 0.6;
-    transform: scale(1.08);
+    opacity: 0.65;
+    transform: scale(1.06);
+  }
+}
+
+@keyframes isoRotateSlow {
+  from {
+    transform: rotate(0deg);
+  }
+  to {
+    transform: rotate(360deg);
   }
 }
