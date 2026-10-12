@@ -56,9 +56,26 @@ export default function HowItWorks() {
     ];
 
     return (
-        <section className="relative py-28 bg-[#FFFFFF] border-t border-[#EAEAEA] overflow-hidden">
+        <section className="relative py-28 bg-[#FFFFFF] border-t border-[#EAEAEA] overflow-hidden iso-scanline">
             {/* Isometric grid */}
             <div className="absolute inset-0 iso-grid-bg opacity-30 pointer-events-none" />
+
+            {/* Ambient Breathing Gold Halo */}
+            <div
+                className="absolute top-1/2 left-1/3 w-[680px] h-[450px] pointer-events-none rounded-full iso-ambient-glow"
+                style={{
+                    background: "radial-gradient(circle, rgba(244, 180, 0, 0.12) 0%, transparent 70%)",
+                }}
+            />
+
+            {/* Floating Isometric 3D Geometric Accents */}
+            <div className="absolute top-14 right-16 iso-float pointer-events-none opacity-20 hidden xl:block">
+                <svg width="84" height="84" viewBox="0 0 84 84" fill="none">
+                    <polygon points="42,8 74,26 42,44 10,26" fill="#F4B400" stroke="#111111" strokeWidth="1.8" />
+                    <polygon points="10,26 42,44 42,74 10,56" fill="#111111" stroke="#111111" strokeWidth="1.8" />
+                    <polygon points="42,44 74,26 74,56 42,74" fill="#333333" stroke="#111111" strokeWidth="1.8" />
+                </svg>
+            </div>
 
             <div className="relative max-w-[1240px] mx-auto px-6 md:px-12">
                 {/* Header */}

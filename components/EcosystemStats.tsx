@@ -125,9 +125,17 @@ export default function EcosystemStats() {
     };
 
     return (
-        <section id="ecosystem" className="relative py-28 bg-[#FAFAFA] border-t-2 border-[#111111] overflow-hidden">
+        <section id="ecosystem" className="relative py-28 bg-[#FAFAFA] border-t-2 border-[#111111] overflow-hidden iso-scanline">
             {/* 3D Isometric Background Patterns */}
             <div className="absolute inset-0 iso-grid-bg opacity-50 pointer-events-none" />
+
+            {/* Ambient Breathing Gold Halo */}
+            <div
+                className="absolute top-1/2 left-1/4 w-[600px] h-[400px] pointer-events-none rounded-full iso-ambient-glow"
+                style={{
+                    background: "radial-gradient(circle, rgba(244, 180, 0, 0.12) 0%, transparent 70%)",
+                }}
+            />
 
             {/* Ambient 3D floating shapes in background */}
             <div className="absolute top-12 right-16 iso-float pointer-events-none opacity-25 hidden xl:block">
@@ -135,6 +143,14 @@ export default function EcosystemStats() {
                     <polygon points="48,10 88,32 48,54 8,32" fill="#FFFFFF" stroke="#111111" strokeWidth="2" />
                     <polygon points="8,32 48,54 48,84 8,62" fill="#F4B400" stroke="#111111" strokeWidth="2" />
                     <polygon points="48,54 88,32 88,62 48,84" fill="#111111" stroke="#111111" strokeWidth="2" />
+                </svg>
+            </div>
+
+            <div className="absolute bottom-16 left-12 iso-float-reverse pointer-events-none opacity-20 hidden xl:block">
+                <svg width="72" height="72" viewBox="0 0 72 72" fill="none">
+                    <polygon points="36,8 64,24 36,40 8,24" fill="#F7F7F7" stroke="#111111" strokeWidth="1.8" />
+                    <polygon points="8,24 36,40 36,64 8,48" fill="#111111" stroke="#111111" strokeWidth="1.8" />
+                    <polygon points="36,40 64,24 64,48 36,64" fill="#EAEAEA" stroke="#111111" strokeWidth="1.8" />
                 </svg>
             </div>
 

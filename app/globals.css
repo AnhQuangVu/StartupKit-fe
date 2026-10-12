@@ -270,6 +270,58 @@
   .iso-rotate-slow {
     animation: isoRotateSlow 24s linear infinite;
   }
+
+  /* Rich Ambient Background Animations */
+  .iso-ambient-glow {
+    animation: isoAmbientGlow 8s ease-in-out infinite;
+  }
+
+  .iso-ambient-glow-dark {
+    animation: isoAmbientGlowDark 7s ease-in-out infinite;
+  }
+
+  .iso-scanline {
+    position: relative;
+    overflow: hidden;
+  }
+
+  .iso-scanline::after {
+    content: '';
+    position: absolute;
+    top: -100%;
+    left: -50%;
+    width: 200%;
+    height: 60%;
+    background: linear-gradient(
+      180deg,
+      transparent 0%,
+      rgba(244, 180, 0, 0.05) 50%,
+      rgba(244, 180, 0, 0.15) 80%,
+      transparent 100%
+    );
+    transform: rotate(30deg);
+    animation: isoScanline 10s cubic-bezier(0.4, 0, 0.2, 1) infinite;
+    pointer-events: none;
+  }
+
+  .iso-pulse-stream {
+    background: linear-gradient(
+      180deg,
+      rgba(244, 180, 0, 0.2) 0%,
+      #F4B400 50%,
+      rgba(244, 180, 0, 0.2) 100%
+    );
+    background-size: 100% 200%;
+    animation: isoPulseStream 2.2s linear infinite;
+  }
+
+  .iso-particle-drift {
+    animation: isoParticleDrift 12s ease-in-out infinite alternate;
+  }
+
+  .iso-beacon-ping {
+    animation: isoBeaconPing 2.5s cubic-bezier(0, 0, 0.2, 1) infinite;
+  }
 }
 
 @keyframes fadeIn {
@@ -320,3 +372,71 @@
     transform: rotate(360deg);
   }
 }
+
+@keyframes isoAmbientGlow {
+  0%, 100% {
+    transform: translate(-50%, -50%) scale(1);
+    opacity: 0.65;
+  }
+  50% {
+    transform: translate(-50%, -50%) scale(1.15);
+    opacity: 0.95;
+  }
+}
+
+@keyframes isoAmbientGlowDark {
+  0%, 100% {
+    transform: translate(-50%, -50%) scale(1);
+    opacity: 0.5;
+  }
+  50% {
+    transform: translate(-50%, -50%) scale(1.2);
+    opacity: 0.85;
+  }
+}
+
+@keyframes isoScanline {
+  0% {
+    top: -120%;
+  }
+  100% {
+    top: 220%;
+  }
+}
+
+@keyframes isoPulseStream {
+  0% {
+    background-position: 0% 0%;
+  }
+  100% {
+    background-position: 0% 200%;
+  }
+}
+
+@keyframes isoParticleDrift {
+  0% {
+    transform: translate(0, 0) scale(1);
+  }
+  50% {
+    transform: translate(14px, -18px) scale(1.08);
+  }
+  100% {
+    transform: translate(-10px, 12px) scale(0.95);
+  }
+}
+
+@keyframes isoBeaconPing {
+  0% {
+    transform: scale(0.9);
+    opacity: 0.8;
+  }
+  70% {
+    transform: scale(2.2);
+    opacity: 0;
+  }
+  100% {
+    transform: scale(2.2);
+    opacity: 0;
+  }
+}
+

@@ -8,15 +8,15 @@ export default function CTASection() {
     const cta = dict.cta;
 
     return (
-        <section className="relative py-32 bg-[#111111] overflow-hidden border-t-2 border-[#111111]">
+        <section className="relative py-32 bg-[#111111] overflow-hidden border-t-2 border-[#111111] iso-scanline">
             {/* Isometric dark grid background */}
             <div className="absolute inset-0 iso-grid-dark opacity-35 pointer-events-none" />
 
-            {/* Glowing gold isometric spotlight */}
+            {/* Glowing gold isometric spotlight with Breathing Dark Glow */}
             <div
-                className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[600px] h-[350px] pointer-events-none rounded-full"
+                className="absolute top-1/2 left-1/2 w-[700px] h-[450px] pointer-events-none rounded-full iso-ambient-glow-dark"
                 style={{
-                    background: "radial-gradient(circle, rgba(244, 180, 0, 0.15) 0%, transparent 70%)",
+                    background: "radial-gradient(circle, rgba(244, 180, 0, 0.22) 0%, rgba(244, 180, 0, 0.05) 50%, transparent 70%)",
                 }}
             />
 

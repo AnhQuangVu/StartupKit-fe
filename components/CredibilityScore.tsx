@@ -1,5 +1,6 @@
 "use client";
 
+import { useState } from "react";
 import { useDictionary } from "@/lib/dict-context";
 
 const signals = [
@@ -46,6 +47,7 @@ const signals = [
 export default function CredibilityScore() {
     const dict = useDictionary();
     const cr = dict.credibility;
+    const [selectedSignal, setSelectedSignal] = useState<number | null>(null);
 
     const SIG_TEXT = [
         { label: cr.sig1Label, desc: cr.sig1Desc, value: cr.sig1Val },
@@ -54,9 +56,26 @@ export default function CredibilityScore() {
     ];
 
     return (
-        <section className="relative py-28 bg-[#FAFAFA] border-t border-[#EAEAEA] overflow-hidden">
+        <section className="relative py-28 bg-[#FAFAFA] border-t border-[#EAEAEA] overflow-hidden iso-scanline">
             {/* Background isometric grid */}
             <div className="absolute inset-0 iso-grid-bg opacity-35 pointer-events-none" />
+
+            {/* Ambient Breathing Gold Halo */}
+            <div
+                className="absolute top-1/2 left-1/4 w-[650px] h-[450px] pointer-events-none rounded-full iso-ambient-glow"
+                style={{
+                    background: "radial-gradient(circle, rgba(244, 180, 0, 0.13) 0%, transparent 70%)",
+                }}
+            />
+
+            {/* Floating Isometric 3D Geometric Polyhedron */}
+            <div className="absolute top-14 right-14 iso-float pointer-events-none opacity-25 hidden xl:block">
+                <svg width="76" height="76" viewBox="0 0 76 76" fill="none">
+                    <polygon points="38,8 68,25 38,42 8,25" fill="#FFFFFF" stroke="#111111" strokeWidth="1.6" />
+                    <polygon points="8,25 38,42 38,66 8,49" fill="#F4B400" stroke="#111111" strokeWidth="1.6" />
+                    <polygon points="38,42 68,25 68,49 38,66" fill="#111111" stroke="#111111" strokeWidth="1.6" />
+                </svg>
+            </div>
 
             <div className="relative max-w-[1240px] mx-auto px-6 md:px-12">
                 <div className="grid grid-cols-1 lg:grid-cols-12 gap-16 items-center">
@@ -68,7 +87,7 @@ export default function CredibilityScore() {
                                 ISO REPUTATION INDEX
                             </span>
                             <span className="text-[10px] font-mono font-bold px-2 py-0.5 rounded bg-[#F4B400] text-[#111111]">
-                                VERIFIED
+                                {selectedSignal !== null ? `SIGNAL 0${selectedSignal + 1} FOCUS` : "VERIFIED AUDIT"}
                             </span>
                         </div>
 
@@ -142,32 +161,44 @@ export default function CredibilityScore() {
                             {cr.sub}
                         </p>
 
-                        {/* 3 Isometric Signal Cards */}
+                        {/* 3 Isometric Signal Cards (Interactive) */}
                         <div className="flex flex-col gap-4">
-                            {signals.map((s, idx) => (
-                                <div
-                                    key={s.label}
-                                    className="bg-white border-2 border-[#111111] rounded-[10px] p-5 iso-card-3d flex items-start gap-4 hover:translate-x-1 transition-all"
-                                >
-                                    <div className="p-2 bg-[#F7F7F7] border border-[#EAEAEA] rounded-[6px] shrink-0">
-                                        {s.icon}
-                                    </div>
-
-                                    <div className="flex-1">
-                                        <div className="flex items-center justify-between mb-1">
-                                            <h3 className="text-[15px] font-bold text-[#111111]">
-                                                {SIG_TEXT[idx].label}
-                                            </h3>
-                                            <span className="text-[10px] font-mono font-bold px-1.5 py-0.5 rounded bg-[#F7F7F7] text-[#555555]">
-                                                {s.code}
-                                            </span>
+                            {signals.map((s, idx) => {
+                                const isSelected = selectedSignal === idx;
+                                return (
+                                    <div
+                                        key={s.label}
+                                        onClick={() => setSelectedSignal(isSelected ? null : idx)}
+                                        className={`border-2 rounded-[10px] p-5 iso-card-3d flex items-start gap-4 cursor-pointer transition-all ${
+                                            isSelected
+                                                ? "bg-[#FFFDF5] border-[#F4B400] ring-4 ring-[#F4B400]/30 scale-[1.01]"
+                                                : "bg-white border-[#111111] hover:border-[#F4B400] hover:translate-x-1"
+                                        }`}
+                                    >
+                                        <div className={`p-2 border rounded-[6px] shrink-0 transition-colors ${
+                                            isSelected ? "bg-[#F4B400] border-[#111111]" : "bg-[#F7F7F7] border-[#EAEAEA]"
+                                        }`}>
+                                            {s.icon}
                                         </div>
-                                        <p className="text-[13px] text-[#666666] leading-relaxed">
-                                            {SIG_TEXT[idx].desc}
-                                        </p>
+
+                                        <div className="flex-1">
+                                            <div className="flex items-center justify-between mb-1">
+                                                <h3 className="text-[15px] font-bold text-[#111111]">
+                                                    {SIG_TEXT[idx].label}
+                                                </h3>
+                                                <span className={`text-[10px] font-mono font-bold px-1.5 py-0.5 rounded ${
+                                                    isSelected ? "bg-[#111111] text-[#F4B400]" : "bg-[#F7F7F7] text-[#555555]"
+                                                }`}>
+                                                    {s.code}
+                                                </span>
+                                            </div>
+                                            <p className="text-[13px] text-[#666666] leading-relaxed">
+                                                {SIG_TEXT[idx].desc}
+                                            </p>
+                                        </div>
                                     </div>
-                                </div>
-                            ))}
+                                );
+                            })}
                         </div>
                     </div>
 

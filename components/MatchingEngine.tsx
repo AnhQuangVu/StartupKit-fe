@@ -19,9 +19,26 @@ export default function MatchingEngine() {
     ];
 
     return (
-        <section className="relative py-28 bg-[#FFFFFF] border-t border-[#EAEAEA] overflow-hidden">
+        <section className="relative py-28 bg-[#FFFFFF] border-t border-[#EAEAEA] overflow-hidden iso-scanline">
             {/* Isometric background grid */}
             <div className="absolute inset-0 iso-grid-bg opacity-30 pointer-events-none" />
+
+            {/* Ambient Breathing Gold Halo */}
+            <div
+                className="absolute top-1/2 right-1/4 w-[650px] h-[450px] pointer-events-none rounded-full iso-ambient-glow"
+                style={{
+                    background: "radial-gradient(circle, rgba(244, 180, 0, 0.13) 0%, transparent 70%)",
+                }}
+            />
+
+            {/* Floating Isometric 3D Geometric Polyhedrons in Background */}
+            <div className="absolute top-16 left-12 iso-float pointer-events-none opacity-25 hidden xl:block">
+                <svg width="72" height="72" viewBox="0 0 72 72" fill="none">
+                    <polygon points="36,6 66,22 36,38 6,22" fill="#FFFFFF" stroke="#111111" strokeWidth="1.6" />
+                    <polygon points="6,22 36,38 36,64 6,48" fill="#F4B400" stroke="#111111" strokeWidth="1.6" />
+                    <polygon points="36,38 66,22 66,48 36,64" fill="#D99B00" stroke="#111111" strokeWidth="1.6" />
+                </svg>
+            </div>
 
             <div className="relative max-w-[1240px] mx-auto px-6 md:px-12">
                 {/* Header */}
@@ -60,7 +77,7 @@ export default function MatchingEngine() {
                         <div className="flex flex-col items-center gap-0 my-4 relative">
                             
                             {/* Node 1: Startup Source */}
-                            <div className="w-full max-w-[320px] bg-white border-2 border-[#111111] rounded-[10px] p-4 iso-card-3d flex items-center justify-between z-10">
+                            <div className="w-full max-w-[320px] bg-white border-2 border-[#111111] rounded-[10px] p-4 iso-card-3d flex items-center justify-between z-10 hover:scale-[1.01] transition-transform">
                                 <div className="flex items-center gap-3.5">
                                     <div className="w-9 h-9 rounded-[6px] bg-[#111111] text-white flex items-center justify-center shrink-0">
                                         <svg width="20" height="20" viewBox="0 0 20 20" fill="none">
@@ -77,15 +94,15 @@ export default function MatchingEngine() {
                                 <span className="text-[10px] font-mono font-bold px-1.5 py-0.5 rounded bg-[#F7F7F7] text-[#888888]">IN</span>
                             </div>
 
-                            {/* Connecting Isometric Circuit Track 1 */}
+                            {/* Connecting Isometric Circuit Track 1 (Smooth Continuous Pulse Conduit) */}
                             <div className="h-10 w-full flex flex-col items-center justify-center relative">
-                                <div className="w-[3px] h-full bg-[#F4B400] relative">
-                                    <div className="w-2.5 h-2.5 rounded-full bg-[#111111] absolute left-1/2 -translate-x-1/2 animate-bounce" />
+                                <div className="w-[4px] h-full iso-pulse-stream rounded-full relative">
+                                    <div className="w-2.5 h-2.5 rounded-full bg-[#111111] border-2 border-[#F4B400] absolute left-1/2 -translate-x-1/2 top-1/2 -translate-y-1/2 animate-pulse" />
                                 </div>
                             </div>
 
                             {/* Node 2: Central AI Engine (Hero Cube) */}
-                            <div className="w-full max-w-[340px] bg-[#111111] text-white border-2 border-[#F4B400] rounded-[10px] p-4.5 iso-card-dark flex items-center justify-between z-20">
+                            <div className="w-full max-w-[340px] bg-[#111111] text-white border-2 border-[#F4B400] rounded-[10px] p-4.5 iso-card-dark flex items-center justify-between z-20 hover:scale-[1.02] transition-transform">
                                 <div className="flex items-center gap-3.5">
                                     <div className="w-10 h-10 rounded-[6px] bg-[#222222] border border-[#F4B400] flex items-center justify-center shrink-0">
                                         <svg width="24" height="24" viewBox="0 0 24 24" fill="none">
@@ -102,15 +119,15 @@ export default function MatchingEngine() {
                                 <span className="text-[10px] font-mono font-bold px-2 py-0.5 rounded bg-[#F4B400] text-[#111111]">AI CORE</span>
                             </div>
 
-                            {/* Connecting Isometric Circuit Track 2 */}
+                            {/* Connecting Isometric Circuit Track 2 (Smooth Continuous Pulse Conduit) */}
                             <div className="h-10 w-full flex flex-col items-center justify-center relative">
-                                <div className="w-[3px] h-full bg-[#F4B400] relative">
-                                    <div className="w-2.5 h-2.5 rounded-full bg-[#111111] absolute left-1/2 -translate-x-1/2 animate-bounce" style={{ animationDelay: "0.5s" }} />
+                                <div className="w-[4px] h-full iso-pulse-stream rounded-full relative">
+                                    <div className="w-2.5 h-2.5 rounded-full bg-[#111111] border-2 border-[#F4B400] absolute left-1/2 -translate-x-1/2 top-1/2 -translate-y-1/2 animate-pulse" />
                                 </div>
                             </div>
 
                             {/* Node 3: Investor & Mentor Pipeline */}
-                            <div className="w-full max-w-[320px] bg-white border-2 border-[#111111] rounded-[10px] p-4 iso-card-3d flex items-center justify-between z-10">
+                            <div className="w-full max-w-[320px] bg-white border-2 border-[#111111] rounded-[10px] p-4 iso-card-3d flex items-center justify-between z-10 hover:scale-[1.01] transition-transform">
                                 <div className="flex items-center gap-3.5">
                                     <div className="w-9 h-9 rounded-[6px] bg-[#F4B400] text-[#111111] flex items-center justify-center shrink-0">
                                         <svg width="20" height="20" viewBox="0 0 20 20" fill="none">
@@ -136,7 +153,7 @@ export default function MatchingEngine() {
                             ENGINE LOGIC SPECIFICATIONS
                         </div>
 
-                        {RULE_TEXT.map((rule, idx) => (
+                        {RULE_TEXT.map((rule) => (
                             <div
                                 key={rule.code}
                                 className="bg-white border-2 border-[#111111] rounded-[10px] p-6 iso-card-3d hover:translate-x-1 transition-all"

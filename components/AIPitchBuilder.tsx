@@ -65,10 +65,54 @@ export default function AIPitchBuilder() {
         "04": { label: ai.step4Label, desc: ai.step4Desc },
     };
 
+    const TIER_TELEMETRY = [
+        {
+            title: "DATA INGESTION ENGINE",
+            status: "100% PARSED",
+            snippet: "Pitch deck PDF & Executive Summary analyzed. 24 data fields extracted across problem, solution, TAM, and traction.",
+            indicator: "READY FOR COMPILATION"
+        },
+        {
+            title: "AI QUANTITATIVE BENCHMARKING",
+            status: "AUDIT ACTIVE",
+            snippet: "Evaluating TAM/SAM/SOM sizing, unit economics (LTV/CAC ratio), moat defensibility and competitive landscape vs 500+ SEA startups.",
+            indicator: "CONFIDENCE: 98.4%"
+        },
+        {
+            title: "EXECUTIVE PITCH SYNTHESIS",
+            status: "DECK GENERATED",
+            snippet: "Auto-generating standardized institutional 10-slide VC memo with AI Credibility Index and institutional financial projections.",
+            indicator: "READINESS SCORE: 92/100"
+        },
+        {
+            title: "VC SYNDICATE ROUTING",
+            status: "12 FUNDS MATCHED",
+            snippet: "Autonomous deal room dispatch to top institutional VC funds and angel investors aligned with your sector and stage.",
+            indicator: "DEAL ROOM DISPATCH ARMED"
+        }
+    ];
+
     return (
-        <section className="relative py-28 bg-[#FAFAFA] border-t border-[#EAEAEA] overflow-hidden">
+        <section className="relative py-28 bg-[#FAFAFA] border-t border-[#EAEAEA] overflow-hidden iso-scanline">
             {/* Background isometric grid */}
             <div className="absolute inset-0 iso-grid-bg opacity-40 pointer-events-none" />
+
+            {/* Ambient Breathing Gold Halo */}
+            <div
+                className="absolute top-1/2 left-1/3 w-[680px] h-[450px] pointer-events-none rounded-full iso-ambient-glow"
+                style={{
+                    background: "radial-gradient(circle, rgba(244, 180, 0, 0.14) 0%, transparent 70%)",
+                }}
+            />
+
+            {/* Floating Isometric 3D Geometric Elements */}
+            <div className="absolute top-16 right-12 iso-float pointer-events-none opacity-25 hidden xl:block">
+                <svg width="80" height="80" viewBox="0 0 80 80" fill="none">
+                    <polygon points="40,8 72,25 40,42 8,25" fill="#FFFFFF" stroke="#111111" strokeWidth="1.6" />
+                    <polygon points="8,25 40,42 40,70 8,53" fill="#F4B400" stroke="#111111" strokeWidth="1.6" />
+                    <polygon points="40,42 72,25 72,53 40,70" fill="#EAEAEA" stroke="#111111" strokeWidth="1.6" />
+                </svg>
+            </div>
 
             <div className="relative max-w-[1240px] mx-auto px-6 md:px-12">
                 <div className="grid grid-cols-1 lg:grid-cols-12 gap-16 items-start">
@@ -93,15 +137,26 @@ export default function AIPitchBuilder() {
                             {ai.desc}
                         </p>
 
-                        {/* Isometric Callout Box */}
-                        <div className="mb-8 p-5 bg-white border-2 border-[#111111] rounded-[10px] iso-card-3d">
-                            <div className="flex items-center gap-2 mb-1.5">
-                                <span className="w-2 h-2 rounded-full bg-[#F4B400]" />
-                                <span className="text-[12px] font-mono font-bold text-[#111111] uppercase">ISO STANDARD FORMAT</span>
+                        {/* Interactive Dynamic Telemetry Callout Box */}
+                        <div className="mb-8 p-5 bg-white border-2 border-[#111111] rounded-[10px] iso-card-3d transition-all">
+                            <div className="flex items-center justify-between mb-2">
+                                <div className="flex items-center gap-2">
+                                    <span className="w-2 h-2 rounded-full bg-[#F4B400] animate-pulse" />
+                                    <span className="text-[11px] font-mono font-bold text-[#111111] uppercase">
+                                        {TIER_TELEMETRY[activeStep]?.title ?? "ISO STANDARD FORMAT"}
+                                    </span>
+                                </div>
+                                <span className="text-[10px] font-mono font-bold px-1.5 py-0.5 rounded bg-[#111111] text-[#F4B400]">
+                                    {TIER_TELEMETRY[activeStep]?.status}
+                                </span>
                             </div>
-                            <p className="text-[13px] text-[#555555] leading-relaxed">
-                                {ai.note}
+                            <p className="text-[13px] text-[#555555] leading-relaxed mb-3">
+                                {TIER_TELEMETRY[activeStep]?.snippet}
                             </p>
+                            <div className="pt-2.5 border-t border-dashed border-[#EAEAEA] flex items-center justify-between text-[11px] font-mono text-[#D99B00]">
+                                <span>{TIER_TELEMETRY[activeStep]?.indicator}</span>
+                                <span className="text-[#888888]">TIER 0{activeStep + 1} LIVE</span>
+                            </div>
                         </div>
 
                         <Link

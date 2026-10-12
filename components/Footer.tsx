@@ -2,11 +2,11 @@ import Image from "next/image";
 import Link from "next/link";
 
 const navLinks = [
-    { label: "Explore", href: "#explore" },
-    { label: "Mentors", href: "#mentors" },
+    { label: "Explore", href: "/market" },
+    { label: "Startups", href: "/market/startups" },
+    { label: "Mentors", href: "/market/mentors" },
+    { label: "Ecosystem", href: "#ecosystem" },
     { label: "Pricing", href: "#pricing" },
-    { label: "Blog", href: "#" },
-    { label: "About", href: "#" },
 ];
 
 const legalLinks = [

@@ -96,11 +96,27 @@ export default function RoleEcosystem() {
             {/* 3D Isometric Background Grid with animated floaters */}
             <div className="absolute inset-0 iso-grid-bg opacity-40 pointer-events-none" />
 
+            {/* Ambient Breathing Gold Halo */}
+            <div
+                className="absolute top-1/3 right-1/4 w-[640px] h-[440px] pointer-events-none rounded-full iso-ambient-glow"
+                style={{
+                    background: "radial-gradient(circle, rgba(244, 180, 0, 0.12) 0%, transparent 70%)",
+                }}
+            />
+
             <div className="absolute top-16 left-12 iso-float pointer-events-none opacity-20 hidden lg:block">
                 <svg width="84" height="84" viewBox="0 0 84 84" fill="none">
                     <polygon points="42,8 74,26 42,44 10,26" fill="#F4B400" stroke="#111111" strokeWidth="2" />
                     <polygon points="10,26 42,44 42,74 10,56" fill="#111111" stroke="#111111" strokeWidth="2" />
                     <polygon points="42,44 74,26 74,56 42,74" fill="#333333" stroke="#111111" strokeWidth="2" />
+                </svg>
+            </div>
+
+            <div className="absolute bottom-20 right-14 iso-float-delay pointer-events-none opacity-20 hidden lg:block">
+                <svg width="76" height="76" viewBox="0 0 76 76" fill="none">
+                    <polygon points="38,8 68,25 38,42 8,25" fill="#FFFFFF" stroke="#111111" strokeWidth="1.8" />
+                    <polygon points="8,25 38,42 38,66 8,49" fill="#F4B400" stroke="#111111" strokeWidth="1.8" />
+                    <polygon points="38,42 68,25 68,49 38,66" fill="#111111" stroke="#111111" strokeWidth="1.8" />
                 </svg>
             </div>
 

@@ -22,16 +22,41 @@ export default function BusinessModel() {
             desc: bm.premDesc,
             features: [bm.premF1, bm.premF2, bm.premF3, bm.premF4],
             cta: bm.premCta,
-            href: "/pricing",
+            href: "/register?plan=pro",
             highlight: true,
             badge: "TIER 02: ADVANCED ISO ENGINE",
         },
     ];
 
     return (
-        <section className="relative py-28 bg-[#FAFAFA] border-t border-[#EAEAEA] overflow-hidden">
+        <section id="pricing" className="relative py-28 bg-[#FAFAFA] border-t border-[#EAEAEA] overflow-hidden iso-scanline">
             {/* Background isometric grid */}
             <div className="absolute inset-0 iso-grid-bg opacity-35 pointer-events-none" />
+
+            {/* Ambient Breathing Gold Halo */}
+            <div
+                className="absolute top-1/2 left-1/2 w-[700px] h-[500px] pointer-events-none rounded-full iso-ambient-glow"
+                style={{
+                    background: "radial-gradient(circle, rgba(244, 180, 0, 0.15) 0%, transparent 70%)",
+                }}
+            />
+
+            {/* Floating Isometric 3D Geometric Accents */}
+            <div className="absolute top-16 left-12 iso-float pointer-events-none opacity-25 hidden xl:block">
+                <svg width="72" height="72" viewBox="0 0 72 72" fill="none">
+                    <polygon points="36,6 66,22 36,38 6,22" fill="#FFFFFF" stroke="#111111" strokeWidth="1.6" />
+                    <polygon points="6,22 36,38 36,64 6,48" fill="#F4B400" stroke="#111111" strokeWidth="1.6" />
+                    <polygon points="36,38 66,22 66,48 36,64" fill="#D99B00" stroke="#111111" strokeWidth="1.6" />
+                </svg>
+            </div>
+
+            <div className="absolute bottom-20 right-16 iso-float-reverse pointer-events-none opacity-20 hidden xl:block">
+                <svg width="64" height="64" viewBox="0 0 64 64" fill="none">
+                    <polygon points="32,7 58,21 32,36 6,21" fill="#FFFFFF" stroke="#111111" strokeWidth="1.6" />
+                    <polygon points="6,21 32,36 32,58 6,43" fill="#111111" stroke="#111111" strokeWidth="1.6" />
+                    <polygon points="32,36 58,21 58,43 32,58" fill="#EAEAEA" stroke="#111111" strokeWidth="1.6" />
+                </svg>
+            </div>
 
             <div className="relative max-w-[1240px] mx-auto px-6 md:px-12">
                 {/* Header */}
