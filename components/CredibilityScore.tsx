@@ -80,18 +80,18 @@ export default function CredibilityScore() {
             <div className="relative max-w-[1240px] mx-auto px-6 md:px-12">
                 <div className="grid grid-cols-1 lg:grid-cols-12 gap-16 items-center">
                     
-                    {/* Left: Isometric 3D Trust Score Pedestal */}
-                    <div className="lg:col-span-5 bg-white border-2 border-[#111111] rounded-[14px] p-8 iso-card-3d flex flex-col items-center">
+                    {/* Left: Trust Score Pedestal */}
+                    <div className="lg:col-span-5 bg-white border border-[#CCCCCC] rounded-[14px] p-8 shadow-sm flex flex-col items-center">
                         <div className="w-full flex items-center justify-between pb-4 border-b border-[#F0F0F0] mb-6">
-                            <span className="text-[11px] font-mono font-bold text-[#111111] uppercase tracking-wider">
-                                ISO REPUTATION INDEX
+                            <span className="text-[11.5px] font-bold text-[#111111] uppercase tracking-wider">
+                                STARTUP CREDIBILITY INDEX (SCI)
                             </span>
-                            <span className="text-[10px] font-mono font-bold px-2 py-0.5 rounded bg-[#F4B400] text-[#111111]">
-                                {selectedSignal !== null ? `SIGNAL 0${selectedSignal + 1} FOCUS` : "VERIFIED AUDIT"}
+                            <span className="text-[10.5px] font-semibold px-2 py-0.5 rounded bg-[#FFF8E1] border border-[#F4B400]/40 text-[#B37700]">
+                                {selectedSignal !== null ? `CHỈ SỐ THÀNH PHẦN 0${selectedSignal + 1}` : "THẨM ĐỊNH XÁC THỰC"}
                             </span>
                         </div>
 
-                        {/* Isometric Score Ring Visual */}
+                        {/* Score Ring Visual */}
                         <div className="relative w-44 h-44 my-2">
                             <svg viewBox="0 0 160 160" className="w-full h-full -rotate-90">
                                 <circle cx="80" cy="80" r="62" stroke="#EAEAEA" strokeWidth="14" fill="none" />
@@ -120,13 +120,13 @@ export default function CredibilityScore() {
                             <div className="text-[12px] text-[#777777] mt-0.5">{cr.gaugeSub}</div>
                         </div>
 
-                        {/* Weighted metric bars with 3D tactile finish */}
+                        {/* Weighted metric bars */}
                         <div className="w-full flex flex-col gap-3.5 pt-4 border-t border-[#F0F0F0]">
                             {signals.map((s, i) => (
                                 <div key={s.label} className="flex flex-col gap-1">
                                     <div className="flex justify-between text-[12px] font-semibold">
                                         <span className="text-[#333333]">{SIG_TEXT[i].value}</span>
-                                        <span className="font-mono text-[#111111]">{s.weight}%</span>
+                                        <span className="text-[#111111] font-bold">{s.weight}%</span>
                                     </div>
                                     <div className="w-full h-2.5 bg-[#F0F0F0] rounded-full overflow-hidden border border-[#EAEAEA]">
                                         <div
@@ -143,7 +143,7 @@ export default function CredibilityScore() {
 
                     {/* Right: Description & Signal Details */}
                     <div className="lg:col-span-7 flex flex-col">
-                        <div className="inline-flex items-center gap-2 px-3 py-1 bg-white border border-[#EAEAEA] rounded-[6px] mb-3 text-[12px] font-bold text-[#D99B00] uppercase tracking-wider iso-btn w-fit">
+                        <div className="inline-flex items-center gap-2 px-3 py-1 bg-white border border-[#EAEAEA] rounded-[6px] mb-3 text-[12px] font-semibold text-[#D99B00] uppercase tracking-wider shadow-sm w-fit">
                             <span className="w-1.5 h-1.5 rounded-full bg-[#F4B400]" />
                             {cr.label}
                         </div>
@@ -161,18 +161,18 @@ export default function CredibilityScore() {
                             {cr.sub}
                         </p>
 
-                        {/* 3 Isometric Signal Cards (Interactive) */}
-                        <div className="flex flex-col gap-4">
+                        {/* 3 Signal Cards (Interactive) */}
+                        <div className="flex flex-col gap-3.5">
                             {signals.map((s, idx) => {
                                 const isSelected = selectedSignal === idx;
                                 return (
                                     <div
                                         key={s.label}
                                         onClick={() => setSelectedSignal(isSelected ? null : idx)}
-                                        className={`border-2 rounded-[10px] p-5 iso-card-3d flex items-start gap-4 cursor-pointer transition-all ${
+                                        className={`rounded-[10px] p-5 flex items-start gap-4 cursor-pointer transition-all border ${
                                             isSelected
-                                                ? "bg-[#FFFDF5] border-[#F4B400] ring-4 ring-[#F4B400]/30 scale-[1.01]"
-                                                : "bg-white border-[#111111] hover:border-[#F4B400] hover:translate-x-1"
+                                                ? "bg-[#FFFDF5] border-[#F4B400] shadow-md ring-2 ring-[#F4B400]/20"
+                                                : "bg-white border-[#EAEAEA] hover:border-[#CCCCCC] shadow-sm hover:shadow"
                                         }`}
                                     >
                                         <div className={`p-2 border rounded-[6px] shrink-0 transition-colors ${
@@ -186,13 +186,13 @@ export default function CredibilityScore() {
                                                 <h3 className="text-[15px] font-bold text-[#111111]">
                                                     {SIG_TEXT[idx].label}
                                                 </h3>
-                                                <span className={`text-[10px] font-mono font-bold px-1.5 py-0.5 rounded ${
+                                                <span className={`text-[10px] font-bold px-2 py-0.5 rounded ${
                                                     isSelected ? "bg-[#111111] text-[#F4B400]" : "bg-[#F7F7F7] text-[#555555]"
                                                 }`}>
                                                     {s.code}
                                                 </span>
                                             </div>
-                                            <p className="text-[13px] text-[#666666] leading-relaxed">
+                                            <p className="text-[13.5px] text-[#666666] leading-relaxed">
                                                 {SIG_TEXT[idx].desc}
                                             </p>
                                         </div>

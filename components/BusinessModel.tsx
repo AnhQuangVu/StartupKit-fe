@@ -15,7 +15,7 @@ export default function BusinessModel() {
             cta: bm.freeCta,
             href: "/register",
             highlight: false,
-            badge: "TIER 01: OPEN ACCESS",
+            badge: "TIER 01: STANDARD MEMBERSHIP",
         },
         {
             name: bm.premName,
@@ -24,7 +24,7 @@ export default function BusinessModel() {
             cta: bm.premCta,
             href: "/register?plan=pro",
             highlight: true,
-            badge: "TIER 02: ADVANCED ISO ENGINE",
+            badge: "TIER 02: VENTURE PRO & INSTITUTIONAL",
         },
     ];
 
@@ -61,7 +61,7 @@ export default function BusinessModel() {
             <div className="relative max-w-[1240px] mx-auto px-6 md:px-12">
                 {/* Header */}
                 <div className="text-center mb-18 max-w-[540px] mx-auto">
-                    <div className="inline-flex items-center gap-2 px-3 py-1 bg-white border border-[#EAEAEA] rounded-[6px] mb-3 text-[12px] font-bold text-[#D99B00] uppercase tracking-wider iso-btn">
+                    <div className="inline-flex items-center gap-2 px-3 py-1 bg-white border border-[#EAEAEA] rounded-[6px] mb-3 text-[12px] font-semibold text-[#D99B00] uppercase tracking-wider shadow-sm">
                         <span className="w-1.5 h-1.5 rounded-full bg-[#F4B400]" />
                         {bm.label}
                     </div>
@@ -78,21 +78,21 @@ export default function BusinessModel() {
                     </p>
                 </div>
 
-                {/* 2 Isometric Pricing Tiers */}
+                {/* 2 Institutional Pricing Tiers */}
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-8 max-w-[900px] mx-auto mb-14">
                     {tiers.map((tier) => (
                         <div
                             key={tier.name}
-                            className={`rounded-[14px] p-8 md:p-10 border-2 flex flex-col justify-between ${
+                            className={`rounded-[14px] p-8 md:p-10 border transition-all duration-300 flex flex-col justify-between ${
                                 tier.highlight
-                                    ? "bg-[#111111] border-[#F4B400] text-white iso-card-dark"
-                                    : "bg-white border-[#111111] text-[#111111] iso-card-3d"
+                                    ? "bg-[#111111] border-[#F4B400] text-white shadow-lg"
+                                    : "bg-white border-[#EAEAEA] text-[#111111] shadow-sm hover:border-[#CCCCCC] hover:shadow-md"
                             }`}
                         >
                             <div>
                                 <div className="flex items-center justify-between mb-4">
-                                    <span className={`text-[10px] font-mono font-bold px-2 py-0.5 rounded-[4px] ${
-                                        tier.highlight ? "bg-[#222222] text-[#F4B400]" : "bg-[#F7F7F7] text-[#111111]"
+                                    <span className={`text-[10.5px] font-bold px-2.5 py-1 rounded-[4px] ${
+                                        tier.highlight ? "bg-[#222222] text-[#F4B400]" : "bg-[#F5F5F5] text-[#333333]"
                                     }`}>
                                         {tier.badge}
                                     </span>
@@ -111,7 +111,7 @@ export default function BusinessModel() {
                                     {tier.desc}
                                 </p>
 
-                                <div className="pt-6 border-t border-dashed border-[#EAEAEA]/40 flex flex-col gap-3.5">
+                                <div className="pt-6 border-t border-dashed border-[#EAEAEA]/30 flex flex-col gap-3.5">
                                     {tier.features.map((f) => (
                                         <div key={f} className="flex items-start gap-3 text-[14px]">
                                             <div className="mt-1 shrink-0">
@@ -132,10 +132,10 @@ export default function BusinessModel() {
                             <div className="mt-10 pt-4">
                                 <Link
                                     href={tier.href}
-                                    className={`w-full inline-flex items-center justify-center gap-2 text-[15px] font-bold py-3.5 px-6 rounded-[8px] transition-all ${
+                                    className={`w-full inline-flex items-center justify-center gap-2 text-[15px] font-semibold py-3.5 px-6 rounded-[8px] transition-all shadow-sm ${
                                         tier.highlight
-                                            ? "bg-[#F4B400] text-[#111111] iso-btn-gold hover:bg-[#FFC933]"
-                                            : "bg-[#111111] text-white iso-btn hover:bg-[#F4B400] hover:text-[#111111]"
+                                            ? "bg-[#F4B400] text-[#111111] hover:bg-[#FFC933] hover:shadow-md"
+                                            : "bg-[#111111] text-white hover:bg-[#222222] hover:shadow"
                                     }`}
                                 >
                                     {tier.cta}
@@ -148,9 +148,9 @@ export default function BusinessModel() {
                     ))}
                 </div>
 
-                {/* Success fee note as an Isometric Protocol Strip */}
-                <div className="max-w-[700px] mx-auto p-6 bg-white border-2 border-[#111111] rounded-[12px] flex items-start gap-5 iso-card-3d">
-                    <div className="w-11 h-11 rounded-[8px] bg-[#FFF8E1] border border-[#F4B400] flex items-center justify-center shrink-0">
+                {/* Success fee note */}
+                <div className="max-w-[700px] mx-auto p-6 bg-white border border-[#EAEAEA] rounded-[12px] flex items-start gap-5 shadow-sm">
+                    <div className="w-11 h-11 rounded-[8px] bg-[#FFF8E1] border border-[#F4B400]/40 flex items-center justify-center shrink-0">
                         <svg width="24" height="24" viewBox="0 0 24 24" fill="none">
                             <polygon points="12,3 21,8 12,13 3,8" fill="#F4B400" />
                             <polygon points="3,8 12,13 12,20 3,15" fill="#111111" />
@@ -160,11 +160,11 @@ export default function BusinessModel() {
                     <div>
                         <div className="flex items-center gap-2 mb-1">
                             <span className="text-[15px] font-bold text-[#111111]">{bm.feeTitle}</span>
-                            <span className="text-[10px] font-mono font-bold px-1.5 py-0.5 rounded bg-[#F4B400] text-[#111111]">
+                            <span className="text-[10px] font-bold px-2 py-0.5 rounded bg-[#FFF8E1] border border-[#F4B400]/40 text-[#B37700]">
                                 ZERO UPFRONT
                             </span>
                         </div>
-                        <p className="text-[13px] text-[#666666] leading-relaxed">
+                        <p className="text-[13.5px] text-[#666666] leading-relaxed">
                             {bm.feeDesc}
                         </p>
                     </div>

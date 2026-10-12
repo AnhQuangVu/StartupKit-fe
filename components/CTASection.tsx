@@ -38,11 +38,11 @@ export default function CTASection() {
             </div>
 
             <div className="relative max-w-[1240px] mx-auto px-6 md:px-12 text-center flex flex-col items-center gap-7">
-                {/* Isometric Tag */}
-                <div className="inline-flex items-center gap-2 bg-[#222222] border border-[#F4B400]/40 text-[#F4B400] rounded-[6px] px-3.5 py-1.5 text-[12px] font-mono font-bold uppercase tracking-widest shadow-md">
+                {/* Institutional Tag */}
+                <div className="inline-flex items-center gap-2 bg-[#222222] border border-[#F4B400]/40 text-[#F4B400] rounded-[6px] px-3.5 py-1.5 text-[12px] font-semibold uppercase tracking-wider shadow-sm">
                     <span className="w-2 h-2 rounded-full bg-[#F4B400] animate-pulse" />
                     {cta.label}
-                    <span className="text-white/40 pl-1 border-l border-white/20">ISO NETWORK</span>
+                    <span className="text-white/40 pl-2 border-l border-white/20">VENTURE NETWORK</span>
                 </div>
 
                 <h2 className="text-[36px] sm:text-[46px] md:text-[54px] font-black text-white leading-[1.12] max-w-[720px] tracking-tight">
@@ -53,11 +53,11 @@ export default function CTASection() {
                     {cta.sub}
                 </p>
 
-                {/* Tactile 3D Action Buttons */}
+                {/* Clean Institutional Buttons */}
                 <div className="flex flex-col sm:flex-row gap-4 mt-3">
                     <Link
                         href="/register"
-                        className="inline-flex items-center justify-center gap-2.5 bg-[#F4B400] text-[#111111] text-[16px] font-extrabold px-9 py-4 rounded-[8px] iso-btn-gold hover:bg-[#FFC933] transition-all"
+                        className="inline-flex items-center justify-center gap-2.5 bg-[#F4B400] hover:bg-[#FFC933] text-[#111111] text-[15.5px] font-bold px-8 py-3.5 rounded-[8px] transition-all shadow-md hover:shadow-lg"
                     >
                         {cta.btn1}
                         <svg width="16" height="16" viewBox="0 0 16 16" fill="none">
@@ -67,7 +67,7 @@ export default function CTASection() {
 
                     <Link
                         href="/market/mentors"
-                        className="inline-flex items-center justify-center gap-2 border-2 border-[#444444] text-white text-[16px] font-bold px-9 py-4 rounded-[8px] iso-btn hover:border-[#FFFFFF] hover:bg-white/5 transition-all"
+                        className="inline-flex items-center justify-center gap-2 border border-[#444444] hover:border-white text-white text-[15.5px] font-semibold px-8 py-3.5 rounded-[8px] transition-all hover:bg-white/5 shadow-sm"
                     >
                         {cta.btn2}
                     </Link>

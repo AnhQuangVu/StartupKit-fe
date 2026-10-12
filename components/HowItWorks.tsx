@@ -9,7 +9,7 @@ export default function HowItWorks() {
     const steps = [
         {
             number: "01",
-            level: "LEVEL 01: FOUNDATION",
+            level: "GIAI ĐOẠN 01: HỒ SƠ ĐẦU TƯ",
             title: hw.step1Title,
             description: hw.step1Desc,
             artwork: (
@@ -24,7 +24,7 @@ export default function HowItWorks() {
         },
         {
             number: "02",
-            level: "LEVEL 02: SYNERGY",
+            level: "GIAI ĐOẠN 02: KẾT NỐI CỐ VẤN",
             title: hw.step2Title,
             description: hw.step2Desc,
             artwork: (
@@ -40,7 +40,7 @@ export default function HowItWorks() {
         },
         {
             number: "03",
-            level: "LEVEL 03: ELEVATION",
+            level: "GIAI ĐOẠN 03: GỌI VỐN THÀNH CÔNG",
             title: hw.step3Title,
             description: hw.step3Desc,
             artwork: (
@@ -80,7 +80,7 @@ export default function HowItWorks() {
             <div className="relative max-w-[1240px] mx-auto px-6 md:px-12">
                 {/* Header */}
                 <div className="text-center mx-auto max-w-[520px] mb-20">
-                    <div className="inline-flex items-center gap-2 px-3 py-1 bg-[#F7F7F7] border border-[#EAEAEA] rounded-[6px] mb-3 text-[12px] font-bold text-[#D99B00] uppercase tracking-wider iso-btn">
+                    <div className="inline-flex items-center gap-2 px-3 py-1 bg-[#F7F7F7] border border-[#EAEAEA] rounded-[6px] mb-3 text-[12px] font-semibold text-[#D99B00] uppercase tracking-wider shadow-sm">
                         <span className="w-1.5 h-1.5 rounded-full bg-[#F4B400]" />
                         {hw.label}
                     </div>
@@ -89,31 +89,31 @@ export default function HowItWorks() {
                     </h2>
                 </div>
 
-                {/* 3-Column Stepped Isometric Progression */}
+                {/* 3-Column Stepped Progression */}
                 <div className="grid grid-cols-1 md:grid-cols-3 gap-8 items-stretch">
                     {steps.map((s, idx) => (
                         <div
                             key={s.number}
-                            className={`border-2 border-[#111111] rounded-[12px] p-8 flex flex-col justify-between iso-card-3d group transition-all duration-300 ${
-                                idx === 2 ? "bg-[#FFFDF5] border-[#111111]" : "bg-white"
+                            className={`border rounded-[12px] p-8 flex flex-col justify-between group transition-all duration-300 shadow-sm hover:shadow-md ${
+                                idx === 2 ? "bg-[#FFFDF5] border-[#F4B400]" : "bg-white border-[#EAEAEA] hover:border-[#CCCCCC]"
                             }`}
                         >
                             <div>
                                 <div className="flex items-center justify-between mb-4">
-                                    <span className="text-[10px] font-mono font-bold px-2 py-0.5 rounded bg-[#111111] text-white">
+                                    <span className="text-[11px] font-semibold px-2.5 py-1 rounded-[4px] bg-[#F5F5F5] text-[#333333]">
                                         {s.level}
                                     </span>
-                                    <span className="text-[20px] font-mono font-black text-[#D99B00]">
+                                    <span className="text-[20px] font-black text-[#D99B00]">
                                         #{s.number}
                                     </span>
                                 </div>
 
-                                {/* Custom Isometric Step Illustration */}
+                                {/* Custom Step Illustration */}
                                 <div className="my-5 p-3 bg-white border border-[#EAEAEA] rounded-[8px] flex items-center justify-center transition-transform group-hover:scale-105 duration-300">
                                     {s.artwork}
                                 </div>
 
-                                <h3 className="text-[20px] font-extrabold text-[#111111] mb-2.5">
+                                <h3 className="text-[20px] font-bold text-[#111111] mb-2.5">
                                     {s.title}
                                 </h3>
                                 <p className="text-[14px] text-[#666666] leading-relaxed">
@@ -121,10 +121,10 @@ export default function HowItWorks() {
                                 </p>
                             </div>
 
-                            <div className="mt-8 pt-4 border-t border-[#F0F0F0] flex items-center justify-between text-[11px] font-mono text-[#888888]">
-                                <span>STAGE 0{idx + 1}/03</span>
+                            <div className="mt-8 pt-4 border-t border-[#F0F0F0] flex items-center justify-between text-[11.5px] text-[#888888]">
+                                <span className="font-medium">TIẾN TRÌNH 0{idx + 1}/03</span>
                                 <span className="font-semibold text-[#111111] group-hover:text-[#D99B00] transition-colors">
-                                    PHASE CLEAR →
+                                    XEM THÊM →
                                 </span>
                             </div>
                         </div>

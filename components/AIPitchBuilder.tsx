@@ -7,7 +7,7 @@ import Link from "next/link";
 const steps = [
     {
         id: "01",
-        code: "INPUT_LAYER",
+        code: "FOUNDER_INPUT",
         icon: (
             <svg width="22" height="22" viewBox="0 0 22 22" fill="none">
                 <polygon points="11,2 20,7 11,12 2,7" fill="#FFFFFF" stroke="#111111" strokeWidth="1.4" />
@@ -18,7 +18,7 @@ const steps = [
     },
     {
         id: "02",
-        code: "AI_CORE_PROCESSOR",
+        code: "METRICS_AUDIT",
         icon: (
             <svg width="22" height="22" viewBox="0 0 22 22" fill="none">
                 <polygon points="11,2 20,7 11,12 2,7" fill="#FFF8E1" stroke="#111111" strokeWidth="1.4" />
@@ -29,7 +29,7 @@ const steps = [
     },
     {
         id: "03",
-        code: "PITCH_SYNTHESIS",
+        code: "INVESTMENT_MEMO",
         icon: (
             <svg width="22" height="22" viewBox="0 0 22 22" fill="none">
                 <polygon points="11,3 19,7 11,11 3,7" fill="#FFFFFF" stroke="#111111" strokeWidth="1.4" />
@@ -41,7 +41,7 @@ const steps = [
     },
     {
         id: "04",
-        code: "VC_DISTRIBUTION",
+        code: "DEAL_ROOM_MATCH",
         icon: (
             <svg width="22" height="22" viewBox="0 0 22 22" fill="none">
                 <polygon points="11,2 20,7 11,12 2,7" fill="#FFFFFF" stroke="#111111" strokeWidth="1.4" />
@@ -67,28 +67,28 @@ export default function AIPitchBuilder() {
 
     const TIER_TELEMETRY = [
         {
-            title: "DATA INGESTION ENGINE",
-            status: "100% PARSED",
-            snippet: "Pitch deck PDF & Executive Summary analyzed. 24 data fields extracted across problem, solution, TAM, and traction.",
-            indicator: "READY FOR COMPILATION"
+            title: "HỒ SƠ ĐẦU VÀO NHÀ SÁNG LẬP",
+            status: "DỮ LIỆU ĐẦY ĐỦ",
+            snippet: "Phân tích cấu trúc mô hình kinh doanh, quy mô thị trường (TAM/SAM/SOM), chỉ số tăng trưởng MoM và chân dung co-founders.",
+            indicator: "SẴN SÀNG CHUẨN HÓA"
         },
         {
-            title: "AI QUANTITATIVE BENCHMARKING",
-            status: "AUDIT ACTIVE",
-            snippet: "Evaluating TAM/SAM/SOM sizing, unit economics (LTV/CAC ratio), moat defensibility and competitive landscape vs 500+ SEA startups.",
-            indicator: "CONFIDENCE: 98.4%"
+            title: "THẨM ĐỊNH CHỈ SỐ TÀI CHÍNH",
+            status: "ĐỐI SOÁT XONG",
+            snippet: "Kiểm tra tính hợp lý của LTV/CAC, Runway, Moat và lợi thế phòng thủ so với cơ sở dữ liệu của hơn 500 startup trong khu vực.",
+            indicator: "ĐỘ TIN CẬY: 98.4%"
         },
         {
-            title: "EXECUTIVE PITCH SYNTHESIS",
-            status: "DECK GENERATED",
-            snippet: "Auto-generating standardized institutional 10-slide VC memo with AI Credibility Index and institutional financial projections.",
-            indicator: "READINESS SCORE: 92/100"
+            title: "XUẤT BẢN VC INVESTMENT MEMO",
+            status: "HỒ SƠ SẴN SÀNG",
+            snippet: "Hồ sơ 10 mục chuẩn hóa theo định dạng thẩm định của các quỹ đầu tư mạo hiểm và nhà đầu tư thiên thần.",
+            indicator: "ĐIỂM SẴN SÀNG GỌI VỐN: 92/100"
         },
         {
-            title: "VC SYNDICATE ROUTING",
-            status: "12 FUNDS MATCHED",
-            snippet: "Autonomous deal room dispatch to top institutional VC funds and angel investors aligned with your sector and stage.",
-            indicator: "DEAL ROOM DISPATCH ARMED"
+            title: "KẾT NỐI VÀO VIRTUAL DEAL ROOM",
+            status: "12 QUỸ PHÙ HỢP",
+            snippet: "Phân phối thông minh đến đúng các quỹ có khẩu vị giải ngân khớp với lĩnh vực, quy mô vòng gọi và chỉ số tăng trưởng.",
+            indicator: "SẴN SÀNG TIẾP CẬN DEAL ROOM"
         }
     ];
 
@@ -137,31 +137,31 @@ export default function AIPitchBuilder() {
                             {ai.desc}
                         </p>
 
-                        {/* Interactive Dynamic Telemetry Callout Box */}
-                        <div className="mb-8 p-5 bg-white border-2 border-[#111111] rounded-[10px] iso-card-3d transition-all">
+                        {/* Interactive VC Memo Preview Box */}
+                        <div className="mb-8 p-5 bg-white border border-[#CCCCCC] rounded-[10px] shadow-sm transition-all">
                             <div className="flex items-center justify-between mb-2">
                                 <div className="flex items-center gap-2">
                                     <span className="w-2 h-2 rounded-full bg-[#F4B400] animate-pulse" />
-                                    <span className="text-[11px] font-mono font-bold text-[#111111] uppercase">
-                                        {TIER_TELEMETRY[activeStep]?.title ?? "ISO STANDARD FORMAT"}
+                                    <span className="text-[12px] font-bold text-[#111111] uppercase tracking-wide">
+                                        {TIER_TELEMETRY[activeStep]?.title ?? "CHUẨN HÓA HỒ SƠ ĐẦU TƯ"}
                                     </span>
                                 </div>
-                                <span className="text-[10px] font-mono font-bold px-1.5 py-0.5 rounded bg-[#111111] text-[#F4B400]">
+                                <span className="text-[11px] font-semibold px-2 py-0.5 rounded bg-[#111111] text-[#F4B400]">
                                     {TIER_TELEMETRY[activeStep]?.status}
                                 </span>
                             </div>
-                            <p className="text-[13px] text-[#555555] leading-relaxed mb-3">
+                            <p className="text-[13.5px] text-[#555555] leading-relaxed mb-3">
                                 {TIER_TELEMETRY[activeStep]?.snippet}
                             </p>
-                            <div className="pt-2.5 border-t border-dashed border-[#EAEAEA] flex items-center justify-between text-[11px] font-mono text-[#D99B00]">
-                                <span>{TIER_TELEMETRY[activeStep]?.indicator}</span>
-                                <span className="text-[#888888]">TIER 0{activeStep + 1} LIVE</span>
+                            <div className="pt-2.5 border-t border-dashed border-[#EAEAEA] flex items-center justify-between text-[11.5px] text-[#D99B00]">
+                                <span className="font-semibold">{TIER_TELEMETRY[activeStep]?.indicator}</span>
+                                <span className="text-[#888888] font-medium">BƯỚC 0{activeStep + 1}/04</span>
                             </div>
                         </div>
 
                         <Link
                             href="/register?role=startup"
-                            className="inline-flex items-center gap-2.5 bg-[#111111] text-white text-[15px] font-bold px-7 py-3.5 rounded-[8px] iso-btn hover:bg-[#F4B400] hover:text-[#111111] transition-all"
+                            className="inline-flex items-center gap-2.5 bg-[#111111] hover:bg-[#222222] text-white text-[15px] font-semibold px-7 py-3.5 rounded-[8px] transition-all shadow-sm hover:shadow"
                         >
                             {ai.cta}
                             <svg width="14" height="14" viewBox="0 0 14 14" fill="none">
@@ -170,11 +170,11 @@ export default function AIPitchBuilder() {
                         </Link>
                     </div>
 
-                    {/* Right: Stacked Isometric Architectural Slabs */}
+                    {/* Right: Stacked Architectural Step Cards */}
                     <div className="lg:col-span-7 flex flex-col gap-4">
-                        <div className="text-[11px] font-mono font-bold uppercase text-[#888888] tracking-widest mb-1 flex items-center justify-between">
-                            <span>4-TIER ARCHITECTURAL PIPELINE</span>
-                            <span className="text-[#D99B00]">INTERACTIVE VIEW</span>
+                        <div className="text-[11px] font-semibold uppercase text-[#888888] tracking-wider mb-1 flex items-center justify-between">
+                            <span>QUY TRÌNH CHUẨN HÓA 4 BƯỚC</span>
+                            <span className="text-[#D99B00] font-bold">CHỌN ĐỂ XEM CHI TIẾT</span>
                         </div>
 
                         {steps.map((step, index) => {
@@ -183,22 +183,22 @@ export default function AIPitchBuilder() {
                                 <div
                                     key={step.id}
                                     onClick={() => setActiveStep(index)}
-                                    className={`cursor-pointer border-2 rounded-[12px] p-6 transition-all duration-300 iso-card-3d ${
+                                    className={`cursor-pointer rounded-[12px] p-6 transition-all duration-300 border ${
                                         isCurrent
-                                            ? "bg-[#111111] text-white border-[#111111] scale-[1.01]"
-                                            : "bg-white text-[#111111] border-[#EAEAEA] hover:border-[#111111]"
+                                            ? "bg-[#111111] text-white border-[#111111] shadow-md scale-[1.01]"
+                                            : "bg-white text-[#111111] border-[#EAEAEA] hover:border-[#CCCCCC] shadow-sm hover:shadow"
                                     }`}
                                 >
                                     <div className="flex items-start justify-between gap-4">
-                                        <div className="flex items-center gap-3.5">
+                                        <div className="flex items-center gap-3">
                                             {/* Step number badge */}
-                                            <span className={`text-[12px] font-mono font-bold px-2 py-0.5 rounded-[4px] ${
-                                                isCurrent ? "bg-[#222222] text-[#F4B400]" : "bg-[#F7F7F7] text-[#111111]"
+                                            <span className={`text-[11px] font-bold px-2 py-0.5 rounded-[4px] ${
+                                                isCurrent ? "bg-[#222222] text-[#F4B400]" : "bg-[#F5F5F5] text-[#111111]"
                                             }`}>
-                                                TIER {step.id}
+                                                BƯỚC {step.id}
                                             </span>
 
-                                            <span className="text-[10px] font-mono tracking-wider text-[#888888]">
+                                            <span className="text-[11px] font-semibold tracking-wide text-[#888888]">
                                                 {step.code}
                                             </span>
                                         </div>
@@ -214,20 +214,20 @@ export default function AIPitchBuilder() {
                                         }`}>
                                             {STEP_TEXT[step.id].label}
                                         </h3>
-                                        <p className={`text-[13px] leading-relaxed ${
+                                        <p className={`text-[13.5px] leading-relaxed ${
                                             isCurrent ? "text-[#CCCCCC]" : "text-[#666666]"
                                         }`}>
                                             {STEP_TEXT[step.id].desc}
                                         </p>
                                     </div>
 
-                                    {/* Active Isometric Indicator Bar */}
-                                    <div className="mt-4 pt-3 border-t border-dashed border-[#EAEAEA]/30 flex items-center justify-between text-[11px] font-mono">
-                                        <span className={isCurrent ? "text-[#F4B400]" : "text-[#999999]"}>
-                                            {isCurrent ? "● ACTIVE LAYER COMPLETED" : "○ READY FOR INGESTION"}
+                                    {/* Active Step Indicator */}
+                                    <div className="mt-4 pt-3 border-t border-dashed border-[#EAEAEA]/30 flex items-center justify-between text-[11px]">
+                                        <span className={`font-semibold ${isCurrent ? "text-[#F4B400]" : "text-[#999999]"}`}>
+                                            {isCurrent ? "● ĐANG CHỌN XEM" : "○ BẤM ĐỂ XEM BƯỚC NÀY"}
                                         </span>
-                                        <span className={isCurrent ? "text-white" : "text-[#888888]"}>
-                                            LAYER 0{index + 1}/04
+                                        <span className={isCurrent ? "text-white/80" : "text-[#888888]"}>
+                                            0{index + 1} / 04
                                         </span>
                                     </div>
                                 </div>

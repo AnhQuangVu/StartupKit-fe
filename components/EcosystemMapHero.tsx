@@ -60,11 +60,11 @@ export default function EcosystemMapHero() {
                     
                     {/* Left Column: Hero Typography & Actions */}
                     <div className="lg:col-span-5 flex flex-col items-start z-10">
-                        {/* 3D Isometric Tag Badge */}
-                        <div className="inline-flex items-center gap-2.5 bg-[#111111] text-white rounded-[8px] px-4 py-2 mb-6 iso-btn shadow-md">
-                            <span className="w-2.5 h-2.5 rounded-full bg-[#F4B400] animate-pulse" />
-                            <span className="text-[12px] font-mono font-bold tracking-wider uppercase">{h.badge}</span>
-                            <span className="text-[11px] text-[#F4B400] font-mono pl-2 border-l border-[#333333]">3D ISO ECOSYSTEM</span>
+                        {/* Institutional Venture Badge */}
+                        <div className="inline-flex items-center gap-2.5 bg-[#111111] text-white rounded-[8px] px-3.5 py-1.5 mb-6 shadow-sm border border-[#222222]">
+                            <span className="w-2 h-2 rounded-full bg-[#F4B400] animate-pulse" />
+                            <span className="text-[12px] font-semibold tracking-wide uppercase">{h.badge}</span>
+                            <span className="text-[11px] text-[#F4B400] font-medium pl-2.5 border-l border-[#333333]">VENTURE NETWORK</span>
                         </div>
 
                         <p className="text-[13px] font-extrabold text-[#D99B00] uppercase tracking-[0.22em] mb-3">
@@ -93,15 +93,15 @@ export default function EcosystemMapHero() {
                             {h.sub}
                         </p>
 
-                        {/* Interactive Isometric Filter Buttons */}
-                        <div className="flex flex-wrap gap-2 mb-8 bg-[#F7F7F7] p-2 rounded-[10px] border-2 border-[#111111] iso-card-3d">
+                        {/* Interactive Filter Pills */}
+                        <div className="flex flex-wrap gap-1.5 mb-8 bg-[#F7F7F7] p-1.5 rounded-[10px] border border-[#EAEAEA]">
                             {(["all", "startups", "investors", "mentors"] as TabMode[]).map((tab) => (
                                 <button
                                     key={tab}
                                     onClick={() => setActiveTab(tab)}
-                                    className={`text-[13px] font-bold px-4 py-2 rounded-[6px] transition-all capitalize ${
+                                    className={`text-[13px] font-semibold px-4 py-2 rounded-[7px] transition-all capitalize ${
                                         activeTab === tab
-                                            ? "bg-[#111111] text-white shadow-md scale-105"
+                                            ? "bg-[#111111] text-white shadow-sm"
                                             : "text-[#555555] hover:text-[#111111] hover:bg-white"
                                     }`}
                                 >
@@ -110,11 +110,11 @@ export default function EcosystemMapHero() {
                             ))}
                         </div>
 
-                        {/* Action buttons with strong 3D depth */}
-                        <div className="flex flex-col sm:flex-row gap-4 w-full sm:w-auto">
+                        {/* Clean Institutional Action Buttons */}
+                        <div className="flex flex-col sm:flex-row gap-3.5 w-full sm:w-auto">
                             <a
                                 href="#ecosystem"
-                                className="inline-flex items-center justify-center gap-2.5 bg-[#111111] text-white text-[15px] font-bold px-8 py-4 rounded-[10px] iso-btn hover:bg-[#F4B400] hover:text-[#111111] transition-all shadow-md"
+                                className="inline-flex items-center justify-center gap-2.5 bg-[#111111] hover:bg-[#222222] text-white text-[15px] font-semibold px-7 py-3.5 rounded-[8px] transition-all shadow-sm hover:shadow"
                             >
                                 {h.cta1}
                                 <span className="flex items-center justify-center w-5 h-5 rounded-full bg-[#F4B400] text-[#111111]">
@@ -132,7 +132,7 @@ export default function EcosystemMapHero() {
 
                             <Link
                                 href="/register"
-                                className="inline-flex items-center justify-center gap-2 bg-white border-2 border-[#111111] text-[#111111] text-[15px] font-bold px-8 py-4 rounded-[10px] iso-btn hover:bg-[#F7F7F7] transition-all shadow-md"
+                                className="inline-flex items-center justify-center gap-2 bg-white hover:bg-[#F9F9F9] border border-[#CCCCCC] hover:border-[#111111] text-[#111111] text-[15px] font-semibold px-7 py-3.5 rounded-[8px] transition-all shadow-sm"
                             >
                                 {h.cta2}
                             </Link>
@@ -385,102 +385,102 @@ export default function EcosystemMapHero() {
                     </div>
                 </div>
 
-                {/* Prominent, Spacious 3D Isometric Modules Grid (Interactive & Connected to Filter Tabs) */}
+                {/* Institutional Venture Modules Grid */}
                 <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mt-6">
                     
-                    {/* Big Module 1: STARTUP ENGINE */}
+                    {/* Module 1: STARTUP PIPELINE */}
                     <div
                         onClick={() => setActiveTab(activeTab === "startups" ? "all" : "startups")}
-                        className={`border-2 rounded-[14px] p-6 iso-card-3d flex flex-col justify-between cursor-pointer transition-all duration-300 ${
+                        className={`rounded-[12px] p-6 border transition-all duration-300 flex flex-col justify-between cursor-pointer ${
                             activeTab === "startups"
-                                ? "bg-[#FFFDF5] border-[#F4B400] ring-4 ring-[#F4B400]/30 scale-[1.02]"
-                                : "bg-white border-[#111111] hover:border-[#F4B400]"
+                                ? "bg-[#FFFDF5] border-[#F4B400] shadow-md ring-2 ring-[#F4B400]/20"
+                                : "bg-white border-[#EAEAEA] hover:border-[#111111] shadow-sm hover:shadow"
                         }`}
                     >
                         <div>
                             <div className="flex items-center justify-between mb-3">
-                                <span className={`text-[11px] font-mono font-bold px-2.5 py-1 rounded-[4px] ${
-                                    activeTab === "startups" ? "bg-[#F4B400] text-[#111111]" : "bg-[#111111] text-white"
+                                <span className={`text-[11px] font-semibold tracking-wide px-2.5 py-1 rounded-[6px] ${
+                                    activeTab === "startups" ? "bg-[#F4B400] text-[#111111]" : "bg-[#F5F5F5] text-[#333333]"
                                 }`}>
-                                    FOUNDER PIPELINE {activeTab === "startups" && "• ACTIVE FOCUS"}
+                                    FOUNDER PIPELINE {activeTab === "startups" && "• ĐANG XEM"}
                                 </span>
-                                <span className="w-2.5 h-2.5 rounded-full bg-[#F4B400]" />
+                                <span className="w-2 h-2 rounded-full bg-[#F4B400]" />
                             </div>
-                            <div className="text-[28px] font-black text-[#111111] leading-none mb-1">
+                            <div className="text-[28px] font-black text-[#111111] leading-none mb-2">
                                 +500 Startups
                             </div>
-                            <p className="text-[13px] text-[#666666] leading-relaxed">
-                                Giai đoạn từ Seed đến Series A trên toàn Việt Nam và Đông Nam Á.
+                            <p className="text-[13.5px] text-[#666666] leading-relaxed">
+                                Giai đoạn từ Pre-Seed đến Series A trên toàn Việt Nam và Đông Nam Á.
                             </p>
                         </div>
-                        <div className="mt-4 pt-4 border-t border-[#F0F0F0] flex items-center justify-between text-[12px]">
-                            <span className="text-[#888888] font-medium">Hồ sơ đầu tư AI</span>
-                            <span className="font-bold text-[#D99B00]">100% Miễn phí</span>
+                        <div className="mt-5 pt-4 border-t border-[#F0F0F0] flex items-center justify-between text-[12px]">
+                            <span className="text-[#777777] font-medium">Hồ sơ Thẩm định & Deal Room</span>
+                            <span className="font-semibold text-[#D99B00]">Chuẩn hóa</span>
                         </div>
                     </div>
 
-                    {/* Big Module 2: CAPITAL VAULT (High Contrast) */}
+                    {/* Module 2: CAPITAL VAULT */}
                     <div
                         onClick={() => setActiveTab(activeTab === "investors" ? "all" : "investors")}
-                        className={`text-white border-2 rounded-[14px] p-6 iso-card-dark flex flex-col justify-between cursor-pointer transition-all duration-300 ${
+                        className={`text-white rounded-[12px] p-6 border transition-all duration-300 flex flex-col justify-between cursor-pointer ${
                             activeTab === "investors"
-                                ? "bg-[#1A1A1A] border-[#F4B400] ring-4 ring-[#F4B400]/40 scale-[1.02]"
-                                : "bg-[#111111] border-[#F4B400] hover:border-[#FFC933]"
+                                ? "bg-[#1A1A1A] border-[#F4B400] shadow-md ring-2 ring-[#F4B400]/30"
+                                : "bg-[#111111] border-[#222222] hover:border-[#F4B400] shadow-sm hover:shadow"
                         }`}
                     >
                         <div>
                             <div className="flex items-center justify-between mb-3">
                                 <div className="flex items-center gap-2">
-                                    <span className="w-2 h-2 rounded-full bg-[#F4B400] animate-ping" />
-                                    <span className="text-[11px] font-mono text-[#F4B400] font-bold">
-                                        CAPITAL FLOW {activeTab === "investors" && "• ACTIVE FOCUS"}
+                                    <span className="w-2 h-2 rounded-full bg-[#F4B400] animate-pulse" />
+                                    <span className="text-[11px] font-semibold text-[#F4B400] tracking-wide">
+                                        CAPITAL NETWORK {activeTab === "investors" && "• ĐANG XEM"}
                                     </span>
                                 </div>
-                                <span className="text-[11px] text-[#AAAAAA] font-mono">80+ VCs & Angels</span>
+                                <span className="text-[11px] text-[#888888]">80+ VCs & Angels</span>
                             </div>
-                            <div className="text-[32px] font-black text-[#F4B400] leading-none mb-1">
+                            <div className="text-[32px] font-black text-[#F4B400] leading-none mb-2">
                                 $18.5M+
                             </div>
-                            <p className="text-[13px] text-[#CCCCCC] leading-relaxed">
+                            <p className="text-[13.5px] text-[#CCCCCC] leading-relaxed">
                                 Mạng lưới quỹ đầu tư mạo hiểm và thiên thần công khai khẩu vị đầu tư.
                             </p>
                         </div>
-                        <div className="mt-4 pt-4 border-t border-[#222222] flex items-center justify-between text-[12px]">
-                            <span className="text-[#888888]">Lọc Deal tự động</span>
-                            <span className="font-bold text-white">Deal Room Xác minh</span>
+                        <div className="mt-5 pt-4 border-t border-[#222222] flex items-center justify-between text-[12px]">
+                            <span className="text-[#888888]">Luận điểm đầu tư</span>
+                            <span className="font-semibold text-white">Deal Room Xác minh</span>
                         </div>
                     </div>
 
-                    {/* Big Module 3: AI MATCHING CORE */}
+                    {/* Module 3: THESIS MATCHING ENGINE */}
                     <div
                         onClick={() => setActiveTab(activeTab === "mentors" ? "all" : "mentors")}
-                        className={`border-2 rounded-[14px] p-6 iso-card-3d flex flex-col justify-between cursor-pointer transition-all duration-300 ${
+                        className={`rounded-[12px] p-6 border transition-all duration-300 flex flex-col justify-between cursor-pointer ${
                             activeTab === "mentors"
-                                ? "bg-[#FFFDF5] border-[#111111] ring-4 ring-[#F4B400]/40 scale-[1.02]"
-                                : "bg-white border-[#111111] hover:border-[#F4B400]"
+                                ? "bg-[#FFFDF5] border-[#F4B400] shadow-md ring-2 ring-[#F4B400]/20"
+                                : "bg-white border-[#EAEAEA] hover:border-[#111111] shadow-sm hover:shadow"
                         }`}
                     >
                         <div>
                             <div className="flex items-center justify-between mb-3">
-                                <span className={`text-[11px] font-mono font-bold px-2.5 py-1 border rounded-[4px] ${
+                                <span className={`text-[11px] font-semibold tracking-wide px-2.5 py-1 rounded-[6px] ${
                                     activeTab === "mentors"
-                                        ? "bg-[#F4B400] border-[#F4B400] text-[#111111]"
-                                        : "bg-[#FFF8E1] border-[#F4B400] text-[#B37700]"
+                                        ? "bg-[#F4B400] text-[#111111]"
+                                        : "bg-[#F5F5F5] text-[#333333]"
                                 }`}>
-                                    MATCHING ENGINE {activeTab === "mentors" && "• ACTIVE FOCUS"}
+                                    MATCHING ENGINE {activeTab === "mentors" && "• ĐANG XEM"}
                                 </span>
-                                <span className="w-2.5 h-2.5 rounded-full bg-[#111111]" />
+                                <span className="w-2 h-2 rounded-full bg-[#111111]" />
                             </div>
-                            <div className="text-[28px] font-black text-[#111111] leading-none mb-1">
+                            <div className="text-[28px] font-black text-[#111111] leading-none mb-2">
                                 98.2%
                             </div>
-                            <p className="text-[13px] text-[#666666] leading-relaxed">
-                                Độ khớp mục tiêu giữa năng lực nhà sáng lập và chuyên môn của Cố vấn / Nhà đầu tư.
+                            <p className="text-[13.5px] text-[#666666] leading-relaxed">
+                                Độ khớp mục tiêu giữa năng lực nhà sáng lập và khẩu vị của Cố vấn / Quỹ đầu tư.
                             </p>
                         </div>
-                        <div className="mt-4 pt-4 border-t border-[#F0F0F0] flex items-center justify-between text-[12px]">
-                            <span className="text-[#888888]">Xử lý thuật toán</span>
-                            <span className="font-bold text-[#111111]">Tự động hóa hoàn toàn</span>
+                        <div className="mt-5 pt-4 border-t border-[#F0F0F0] flex items-center justify-between text-[12px]">
+                            <span className="text-[#777777] font-medium">Sàng lọc đa chiều</span>
+                            <span className="font-semibold text-[#111111]">Tự động & Bảo mật</span>
                         </div>
                     </div>
 
