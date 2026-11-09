@@ -13,6 +13,10 @@ const MENTORS = [
     { id: "m4", name: "Linh Pham", title: "CTO · Healthtech", expertise: ["Tech", "AI/ML", "Healthtech"], score: 89, sessions: 65, rate: "$70/hr", bio: "Built AI diagnostic systems deployed across 12 provincial hospitals in Vietnam.", avatarSeed: "woman2mentor" },
     { id: "m5", name: "Bao Vo", title: "GTM Strategist · Agritech", expertise: ["Go-to-Market", "Agritech", "Rural"], score: 93, sessions: 110, rate: "$55/hr", bio: "Deep experience in rural Vietnam distribution and last-mile market expansion.", avatarSeed: "man3mentor" },
     { id: "m6", name: "Thu Dao", title: "COO · Series A startup", expertise: ["Operations", "SaaS", "Scaling"], score: 88, sessions: 79, rate: "$65/hr", bio: "Ex-COO of two successful Series A startups. Expert in ops frameworks from 0→1.", avatarSeed: "woman3mentor" },
+    { id: "m7", name: "Minh Vu", title: "General Counsel · Tech M&A", expertise: ["Legal", "Finance", "Fundraising"], score: 94, sessions: 96, rate: "$95/hr", bio: "Structured 35+ SAFE/Series A term sheets and Singapore Flip holdings for VN founders.", avatarSeed: "man4mentor" },
+    { id: "m8", name: "Khanh Dang", title: "VP Engineering · Grab VN", expertise: ["Tech", "SaaS", "Product"], score: 96, sessions: 128, rate: "$90/hr", bio: "Scaled distributed microservices handling 10M+ daily transactions across SEA.", avatarSeed: "man5mentor" },
+    { id: "m9", name: "Huong Nguyen", title: "Enterprise Sales Director", expertise: ["Go-to-Market", "Marketing", "SaaS"], score: 92, sessions: 84, rate: "$75/hr", bio: "Built B2B enterprise sales playbooks from $0 to $5M ARR for 4 regional SaaS leaders.", avatarSeed: "woman4mentor" },
+    { id: "m10", name: "Son Tran", title: "Supply Chain & ESG Advisor", expertise: ["Operations", "Agritech", "Go-to-Market"], score: 90, sessions: 72, rate: "$65/hr", bio: "15 years in cold-chain logistics, agricultural export compliance, and green supply chains.", avatarSeed: "man6mentor" },
 ];
 
 function Skeleton() {
@@ -101,12 +105,6 @@ export default function MentorMarketPage() {
                 ) : (
                     <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
                         {filtered.map(m => <MentorCard key={m.id} {...m} locale={locale} />)}
-                    </div>
-                )}
-
-                {filtered.length > 0 && (
-                    <div className="flex justify-center mt-10">
-                        <button className="border border-[#EAEAEA] text-[14px] font-semibold text-[#111111] px-8 py-3 rounded-[8px] hover:border-[#111111] transition-colors">{dict.common.loadMore}</button>
                     </div>
                 )}
             </div>

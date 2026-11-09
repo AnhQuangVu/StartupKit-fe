@@ -9,10 +9,14 @@ import InvestorCard from "@/components/cards/InvestorCard";
 const INVESTORS = [
     { id: "i1", firmName: "Mekong Capital", focus: ["Fintech", "Consumer"], stages: ["Seed", "Series A"], ticketMin: "$500k", ticketMax: "$3M", portfolio: 48, avatarSeed: "mekong" },
     { id: "i2", firmName: "Do Ventures", focus: ["SaaS", "Edtech", "Deep Tech"], stages: ["Pre-seed", "Seed"], ticketMin: "$100k", ticketMax: "$1M", portfolio: 31, avatarSeed: "doventures" },
-    { id: "i3", firmName: "Monk's Hill", focus: ["Fintech", "Healthtech"], stages: ["Series A", "B+"], ticketMin: "$1M", ticketMax: "$8M", portfolio: 27, avatarSeed: "monkshill" },
+    { id: "i3", firmName: "Monk's Hill", focus: ["Fintech", "Healthtech"], stages: ["Series A", "Series B+"], ticketMin: "$1M", ticketMax: "$8M", portfolio: 27, avatarSeed: "monkshill" },
     { id: "i4", firmName: "500 Startups VN", focus: ["Agritech", "Logistics"], stages: ["Pre-seed", "Seed"], ticketMin: "$50k", ticketMax: "$500k", portfolio: 62, avatarSeed: "500startups" },
     { id: "i5", firmName: "Vertex Ventures", focus: ["SaaS", "Fintech"], stages: ["Seed", "Series A"], ticketMin: "$500k", ticketMax: "$5M", portfolio: 44, avatarSeed: "vertex" },
-    { id: "i6", firmName: "Touchstone", focus: ["Deep Tech", "Healthtech"], stages: ["Seed", "Series A"], ticketMin: "$200k", ticketMax: "$2M", portfolio: 19, avatarSeed: "touchstone" },
+    { id: "i6", firmName: "Touchstone Partners", focus: ["Deep Tech", "Healthtech", "CleanTech"], stages: ["Seed", "Series A"], ticketMin: "$200k", ticketMax: "$2M", portfolio: 19, avatarSeed: "touchstone" },
+    { id: "i7", firmName: "VinaCapital Ventures", focus: ["Fintech", "Logistics", "Agritech"], stages: ["Seed", "Series A"], ticketMin: "$500k", ticketMax: "$4M", portfolio: 36, avatarSeed: "vinacapital" },
+    { id: "i8", firmName: "CyberAgent Capital VN", focus: ["E-commerce", "SaaS", "Edtech"], stages: ["Pre-seed", "Seed"], ticketMin: "$100k", ticketMax: "$1.5M", portfolio: 54, avatarSeed: "cyberagent" },
+    { id: "i9", firmName: "Ascend Vietnam Ventures", focus: ["SaaS", "Fintech", "Deep Tech"], stages: ["Pre-seed", "Seed"], ticketMin: "$150k", ticketMax: "$2M", portfolio: 25, avatarSeed: "ascendvn" },
+    { id: "i10", firmName: "ThinkZone Ventures", focus: ["Edtech", "Fintech", "Logistics"], stages: ["Pre-seed", "Seed"], ticketMin: "$100k", ticketMax: "$1M", portfolio: 29, avatarSeed: "thinkzone" },
 ];
 
 function Skeleton() {
@@ -36,7 +40,7 @@ export default function InvestorDirectory() {
 
     const ALL_FOC = dict.filters.allFocus;
     const ALL_STG = dict.filters.allStages;
-    const FOCUS_AREAS = [ALL_FOC, "Fintech", "Edtech", "Healthtech", "Agritech", "SaaS", "Deep Tech"];
+    const FOCUS_AREAS = [ALL_FOC, "Fintech", "Edtech", "Healthtech", "Agritech", "SaaS", "Deep Tech", "Logistics", "CleanTech"];
     const STAGE_PREFS = [ALL_STG, "Pre-seed", "Seed", "Series A", "Series B+"];
 
     const [search, setSearch] = useState("");
@@ -101,12 +105,6 @@ export default function InvestorDirectory() {
                         {filtered.map(inv => (
                             <InvestorCard key={inv.id} {...inv} locale={locale} />
                         ))}
-                    </div>
-                )}
-
-                {filtered.length > 0 && (
-                    <div className="flex justify-center mt-12">
-                        <button className="border border-[#EAEAEA] text-[14px] font-semibold text-[#111111] px-8 py-3 rounded-[8px] hover:border-[#111111] transition-colors">{dict.common.loadMore}</button>
                     </div>
                 )}
             </div>

@@ -12,6 +12,14 @@ export interface AuthUser {
     email: string;
     role: UserRole;
     avatarSeed: string;
+    provider?: "email" | "google" | "linkedin";
+}
+
+export interface SocialLoginPayload {
+    provider: "google" | "linkedin";
+    email: string;
+    name?: string;
+    role?: UserRole;
 }
 
 interface AuthContextValue {
@@ -19,6 +27,7 @@ interface AuthContextValue {
     isAuthenticated: boolean;
     isLoading: boolean;
     login: (email: string, password: string) => Promise<AuthUser>;
+    socialLogin: (payload: SocialLoginPayload) => Promise<AuthUser>;
     register: (payload: RegisterRequest) => Promise<void>;
     switchRole: (role: UserRole) => void;
     logout: () => void;
@@ -27,7 +36,48 @@ interface AuthContextValue {
 const ROLE_COOKIE_KEY = "startupkit_role";
 const ACCESS_TOKEN_KEY = "startupkit_token";
 const REFRESH_TOKEN_KEY = "startupkit_refresh_token";
+const STORED_USER_KEY = "startupkit_auth_user";
+const REGISTERED_USERS_KEY = "startupkit_registered_users";
 
+interface LocalAccount {
+    id: string;
+    name: string;
+    email: string;
+    password?: string;
+    role: UserRole;
+    provider?: "email" | "google" | "linkedin";
+}
+
+const DEFAULT_DEMO_ACCOUNTS: LocalAccount[] = [
+    {
+        id: "u-startup-1",
+        name: "Nguyễn Văn Minh",
+        email: "founder@agribot.vn",
+        role: "STARTUP",
+        provider: "google",
+    },
+    {
+        id: "u-investor-1",
+        name: "Phạm Thanh Hưng (Partner VC)",
+        email: "investor@mekongcapital.vn",
+        role: "INVESTOR",
+        provider: "linkedin",
+    },
+    {
+        id: "u-mentor-1",
+        name: "TS. Nguyễn Hữu Hải",
+        email: "mentor@startupkit.vn",
+        role: "MENTOR",
+        provider: "linkedin",
+    },
+    {
+        id: "u-admin-1",
+        name: "Admin Ecosystem",
+        email: "admin@startupkit.vn",
+        role: "ADMIN",
+        provider: "email",
+    },
+];
 
 const setRoleCookie = (role: UserRole) => {
     if (typeof document === "undefined") return;
@@ -47,10 +97,50 @@ const setStoredTokens = (accessToken: string, refreshToken?: string) => {
     }
 };
 
+const getStoredUser = (): AuthUser | null => {
+    if (typeof window === "undefined") return null;
+    try {
+        const raw = window.localStorage.getItem(STORED_USER_KEY);
+        if (!raw) return null;
+        return JSON.parse(raw) as AuthUser;
+    } catch {
+        return null;
+    }
+};
+
+const setStoredUser = (u: AuthUser | null) => {
+    if (typeof window === "undefined") return;
+    if (!u) {
+        window.localStorage.removeItem(STORED_USER_KEY);
+    } else {
+        window.localStorage.setItem(STORED_USER_KEY, JSON.stringify(u));
+    }
+};
+
+const loadLocalAccounts = (): LocalAccount[] => {
+    if (typeof window === "undefined") return DEFAULT_DEMO_ACCOUNTS;
+    try {
+        const raw = window.localStorage.getItem(REGISTERED_USERS_KEY);
+        if (!raw) return DEFAULT_DEMO_ACCOUNTS;
+        const parsed = JSON.parse(raw) as LocalAccount[];
+        return Array.isArray(parsed) && parsed.length > 0 ? parsed : DEFAULT_DEMO_ACCOUNTS;
+    } catch {
+        return DEFAULT_DEMO_ACCOUNTS;
+    }
+};
+
+const saveLocalAccount = (account: LocalAccount) => {
+    if (typeof window === "undefined") return;
+    const all = loadLocalAccounts();
+    const filtered = all.filter((a) => a.email.toLowerCase() !== account.email.toLowerCase());
+    window.localStorage.setItem(REGISTERED_USERS_KEY, JSON.stringify([account, ...filtered]));
+};
+
 const clearStoredTokens = () => {
     if (typeof window === "undefined") return;
     window.localStorage.removeItem(ACCESS_TOKEN_KEY);
     window.localStorage.removeItem(REFRESH_TOKEN_KEY);
+    window.localStorage.removeItem(STORED_USER_KEY);
 };
 
 function mapRoleFromProfile(profile: unknown): UserRole {
@@ -101,6 +191,9 @@ const AuthContext = createContext<AuthContextValue>({
     login: async () => {
         throw new Error("AuthProvider is not mounted");
     },
+    socialLogin: async () => {
+        throw new Error("AuthProvider is not mounted");
+    },
     register: async () => {
         throw new Error("AuthProvider is not mounted");
     },
@@ -108,11 +201,6 @@ const AuthContext = createContext<AuthContextValue>({
     logout: () => { },
 });
 
-/**
- * AuthProvider — wraps the app.
- * Always starts as GUEST. Use /dev-role to switch roles during development.
- * Cookie is written on login/logout for middleware route protection only.
- */
 export function AuthProvider({ children }: { children: ReactNode }) {
     const [user, setUser] = useState<AuthUser | null>(null);
     const [isLoading, setIsLoading] = useState(true);
@@ -121,7 +209,17 @@ export function AuthProvider({ children }: { children: ReactNode }) {
         let mounted = true;
 
         const hydrate = async () => {
+            const cachedUser = getStoredUser();
             const token = getStoredAccessToken();
+            if (cachedUser && token) {
+                if (mounted) {
+                    setUser(cachedUser);
+                    setRoleCookie(cachedUser.role);
+                    setIsLoading(false);
+                }
+                return;
+            }
+
             if (!token) {
                 if (mounted) {
                     setUser(null);
@@ -135,6 +233,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
                 const nextUser = mapAuthUser(profileRes.result);
                 if (mounted) {
                     setUser(nextUser);
+                    setStoredUser(nextUser);
                     setRoleCookie(nextUser.role);
                 }
             } catch {
@@ -162,6 +261,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
 
         const handleAuthExpired = () => {
             setUser(null);
+            setStoredUser(null);
         };
 
         window.addEventListener("startupkit:auth-expired", handleAuthExpired);
@@ -178,17 +278,105 @@ export function AuthProvider({ children }: { children: ReactNode }) {
             const profileRes = await usersApi.getProfile();
             const nextUser = mapAuthUser(profileRes.result);
             setUser(nextUser);
+            setStoredUser(nextUser);
             setRoleCookie(nextUser.role);
             return nextUser;
         } catch (error) {
+            const apiErr = error as ApiError | undefined;
+            if (!apiErr || apiErr.status === 0 || apiErr.status >= 500) {
+                // Fallback to local accounts when backend is offline
+                const cleanEmail = email.trim().toLowerCase();
+                const accounts = loadLocalAccounts();
+                const found = accounts.find((a) => a.email.toLowerCase() === cleanEmail);
+                const inferredRole: UserRole = found?.role
+                    ?? (cleanEmail.includes("investor") || cleanEmail.includes("shark") || cleanEmail.includes("vc")
+                        ? "INVESTOR"
+                        : cleanEmail.includes("mentor")
+                            ? "MENTOR"
+                            : cleanEmail.includes("admin")
+                                ? "ADMIN"
+                                : "STARTUP");
+                const name = found?.name || cleanEmail.split("@")[0].replace(/[._-]/g, " ").replace(/\b\w/g, (c) => c.toUpperCase());
+                const fallbackUser: AuthUser = {
+                    id: found?.id || `u-${Date.now()}`,
+                    name,
+                    email: cleanEmail,
+                    role: inferredRole,
+                    avatarSeed: cleanEmail,
+                    provider: "email",
+                };
+                setStoredTokens(`local-jwt-${Date.now()}`);
+                setStoredUser(fallbackUser);
+                setRoleCookie(fallbackUser.role);
+                setUser(fallbackUser);
+                return fallbackUser;
+            }
             throw new Error(parseApiErrorMessage(error));
         }
+    };
+
+    const socialLogin = async ({ provider, email, name, role }: SocialLoginPayload): Promise<AuthUser> => {
+        const cleanEmail = email.trim().toLowerCase();
+        const accounts = loadLocalAccounts();
+        const existing = accounts.find((a) => a.email.toLowerCase() === cleanEmail);
+
+        const resolvedRole: UserRole = role
+            ?? existing?.role
+            ?? (cleanEmail.includes("investor") || cleanEmail.includes("shark") || cleanEmail.includes("vc")
+                ? "INVESTOR"
+                : cleanEmail.includes("mentor")
+                    ? "MENTOR"
+                    : "STARTUP");
+
+        const resolvedName =
+            name?.trim() ||
+            existing?.name ||
+            cleanEmail
+                .split("@")[0]
+                .replace(/[._-]/g, " ")
+                .replace(/\b\w/g, (c) => c.toUpperCase());
+
+        const socialUser: AuthUser = {
+            id: existing?.id || `${provider}-${Date.now()}`,
+            name: resolvedName,
+            email: cleanEmail,
+            role: resolvedRole,
+            avatarSeed: cleanEmail,
+            provider,
+        };
+
+        saveLocalAccount({
+            id: socialUser.id,
+            name: socialUser.name,
+            email: socialUser.email,
+            role: socialUser.role,
+            provider,
+        });
+
+        setStoredTokens(`social-${provider}-jwt-${Date.now()}`);
+        setStoredUser(socialUser);
+        setRoleCookie(socialUser.role);
+        setUser(socialUser);
+        return socialUser;
     };
 
     const register = async (payload: RegisterRequest) => {
         try {
             await usersApi.register(payload);
         } catch (error) {
+            const apiErr = error as ApiError | undefined;
+            if (!apiErr || apiErr.status === 0 || apiErr.status >= 500) {
+                // Save to local registered accounts so user can log in immediately
+                saveLocalAccount({
+                    id: `u-${Date.now()}`,
+                    name: payload.fullName.trim(),
+                    email: payload.email.trim().toLowerCase(),
+                    password: payload.password,
+                    role: payload.userType,
+                    provider: "email",
+                });
+                return;
+            }
             throw new Error(parseApiErrorMessage(error));
         }
     };
@@ -209,6 +397,8 @@ export function AuthProvider({ children }: { children: ReactNode }) {
             avatarSeed: role.toLowerCase(),
         };
 
+        setStoredTokens(`dev-jwt-${role.toLowerCase()}`);
+        setStoredUser(devUser);
         setRoleCookie(role);
         setUser(devUser);
     };
@@ -225,6 +415,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
             isAuthenticated: user !== null,
             isLoading,
             login,
+            socialLogin,
             register,
             switchRole,
             logout,

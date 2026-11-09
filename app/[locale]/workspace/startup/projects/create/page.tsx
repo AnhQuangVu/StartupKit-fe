@@ -11,7 +11,7 @@ import { Textarea } from "@/components/ui/textarea";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Checkbox } from "@/components/ui/checkbox";
 import { Separator } from "@/components/ui/separator";
-import { ArrowLeft, ArrowRight, Save, Send, Edit2, CheckCircle2, ChevronRight, MessageCircle } from "lucide-react";
+import { ArrowLeft, ArrowRight, Save, Send, Edit2, CheckCircle2, ChevronRight, MessageCircle, Sparkles, Loader2 } from "lucide-react";
 import {
   createProjectId,
   emptyProjectSections,
@@ -210,6 +210,52 @@ function CreateProjectPageContent() {
   const [projectId] = useState(routeProjectId ?? createProjectId());
   const [projectStatus, setProjectStatus] = useState<ProjectStatus>("Draft");
   const [assistantInput, setAssistantInput] = useState("");
+  const [isAiGenerating, setIsAiGenerating] = useState(false);
+
+  const handleAiGenerateDescription = async (mode: "problemSolution" | "product" | "all" = "all") => {
+    if (isAiGenerating) return;
+    setIsAiGenerating(true);
+    try {
+      const res = await fetch("/api/ai/generate-description", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          startupName: formData.basicInfo.startupName || "Startup",
+          industry: formData.basicInfo.industry || "saas",
+          targetMarket: formData.market.targetMarket || formData.market.customerSegment,
+          keyFeatures: formData.product.techStack || formData.problemSolution.solution,
+          currentDescription: formData.product.description || formData.problemSolution.valueProposition,
+          stage: formData.product.stage,
+          locale,
+        }),
+      });
+      if (res.ok) {
+        const data = await res.json();
+        setFormData((prev) => ({
+          ...prev,
+          problemSolution:
+            mode === "problemSolution" || mode === "all"
+              ? {
+                  problem: data.problem || prev.problemSolution.problem,
+                  solution: data.solution || prev.problemSolution.solution,
+                  valueProposition: data.valueProposition || prev.problemSolution.valueProposition,
+                }
+              : prev.problemSolution,
+          product:
+            mode === "product" || mode === "all"
+              ? {
+                  ...prev.product,
+                  description: data.productDescription || data.description || prev.product.description,
+                }
+              : prev.product,
+        }));
+      }
+    } catch (err) {
+      console.error("AI generate error:", err);
+    } finally {
+      setIsAiGenerating(false);
+    }
+  };
   const [assistantMessages, setAssistantMessages] = useState<Array<{ role: "assistant" | "user"; content: string }>>([
     { role: "assistant", content: T.assistant.welcome },
   ]);
@@ -500,6 +546,37 @@ function CreateProjectPageContent() {
 
             {currentStep === 2 && (
               <div className="space-y-6">
+                <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 p-4 rounded-xl bg-[#FFFDF5] border border-[#F4B400]/40">
+                  <div>
+                    <p className="text-sm font-bold text-[#111111] flex items-center gap-1.5">
+                      <Sparkles className="w-4 h-4 text-[#F4B400]" />
+                      {locale === "vi" ? "Trợ lý AI viết hồ sơ gọi vốn" : "AI Pitch Synthesizer"}
+                    </p>
+                    <p className="text-xs text-[#666666] mt-0.5">
+                      {locale === "vi"
+                        ? "Tự động tạo Vấn đề, Giải pháp & Định vị giá trị chuẩn VC dựa trên tên và lĩnh vực startup."
+                        : "Auto-generate investor-ready Problem, Solution & Value Proposition from your startup info."}
+                    </p>
+                  </div>
+                  <Button
+                    type="button"
+                    onClick={() => handleAiGenerateDescription("problemSolution")}
+                    disabled={isAiGenerating}
+                    className="bg-[#111111] hover:bg-[#F4B400] text-white hover:text-[#111111] font-semibold text-xs shrink-0 gap-1.5"
+                  >
+                    {isAiGenerating ? (
+                      <>
+                        <Loader2 className="w-3.5 h-3.5 animate-spin" />
+                        {locale === "vi" ? "Đang tạo bằng AI..." : "Generating..."}
+                      </>
+                    ) : (
+                      <>
+                        <Sparkles className="w-3.5 h-3.5 text-[#F4B400]" />
+                        {locale === "vi" ? "AI Tạo Nội Dung Tự Động" : "AI Generate Pitch"}
+                      </>
+                    )}
+                  </Button>
+                </div>
                 <div>
                   <Label htmlFor="problem">{T.problemSolution.problem} *</Label>
                   <Textarea id="problem" placeholder={T.problemSolution.problemPlaceholder} value={formData.problemSolution.problem} onChange={(e) => updateFormData("problemSolution", "problem", e.target.value)} className="mt-1 min-h-[120px]" />
@@ -531,7 +608,27 @@ function CreateProjectPageContent() {
                   </Select>
                 </div>
                 <div>
-                  <Label htmlFor="productDescription">{T.product.description} *</Label>
+                  <div className="flex items-center justify-between mb-1">
+                    <Label htmlFor="productDescription">{T.product.description} *</Label>
+                    <button
+                      type="button"
+                      onClick={() => handleAiGenerateDescription("product")}
+                      disabled={isAiGenerating}
+                      className="inline-flex items-center gap-1.5 px-3 py-1 rounded-md text-xs font-semibold bg-[#111111] text-white hover:bg-[#F4B400] hover:text-[#111111] transition-colors disabled:opacity-60"
+                    >
+                      {isAiGenerating ? (
+                        <>
+                          <Loader2 className="w-3.5 h-3.5 animate-spin" />
+                          {locale === "vi" ? "Đang viết..." : "Writing..."}
+                        </>
+                      ) : (
+                        <>
+                          <Sparkles className="w-3.5 h-3.5 text-[#F4B400]" />
+                          {locale === "vi" ? "AI Viết Mô Tả Sản Phẩm" : "AI Generate Description"}
+                        </>
+                      )}
+                    </button>
+                  </div>
                   <Textarea id="productDescription" placeholder={T.product.descriptionPlaceholder} value={formData.product.description} onChange={(e) => updateFormData("product", "description", e.target.value)} className="mt-1 min-h-[120px]" />
                 </div>
                 <div>

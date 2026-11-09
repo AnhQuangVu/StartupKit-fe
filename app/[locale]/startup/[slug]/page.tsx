@@ -9,6 +9,7 @@ import { useDictionary } from "@/lib/dict-context";
 import { useAuth } from "@/lib/auth-context";
 import { createInvestmentRequest } from "@/lib/investment-store";
 import { createNotification } from "@/lib/notification-store";
+import { loadFounderProjects } from "@/lib/project-store";
 
 const LANDING_PROJECTS_STORAGE_KEY = "startupkit_founder_projects";
 
@@ -101,17 +102,14 @@ export default function StartupLandingPage() {
   const [notes, setNotes] = useState("");
 
   useEffect(() => {
-    const raw = window.localStorage.getItem(LANDING_PROJECTS_STORAGE_KEY);
-    if (raw) {
-      const stored = JSON.parse(raw) as LandingProject[];
-      const found = stored.find((item) => item.slug === slug);
-      if (found) {
-        setProject(found);
-        return;
-      }
+    const stored = loadFounderProjects() as unknown as LandingProject[];
+    const found = stored.find((item) => item.slug === slug || item.id === slug);
+    if (found) {
+      setProject(found);
+      return;
     }
 
-    setProject(FALLBACK_DATA[slug] ?? null);
+    setProject(FALLBACK_DATA[slug] ?? stored[0] ?? null);
   }, [slug]);
 
   const startupName = project?.basicInfo?.startupName || project?.startupName || "-";
