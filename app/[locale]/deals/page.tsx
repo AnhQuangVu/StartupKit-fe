@@ -28,61 +28,73 @@ const DEALS: Deal[] = [
         id: "s1", name: "Coolmate", founder: "Phạm Chí Nhu", industry: "E-commerce", stage: "Series B",
         location: "Hà Nội", pitch: "Nền tảng mua sắm thời trang nam ứng dụng công nghệ D2C số 1 Việt Nam. Đạt $26M ARR, hơn 1.5 triệu khách hàng thân thiết và lợi nhuận ròng dương.",
         score: 98, target: "$5M", raised: "$3.8M", pct: 76, investors: 8, logoColor: "#111111",
+        logo: "/images/startups/coolmate.jpg",
     },
     {
         id: "s2", name: "Dat Bike", founder: "Nguyễn Bá Cảnh Sơn", industry: "CleanTech", stage: "Series B",
         location: "TP. Hồ Chí Minh", pitch: "Hãng xe máy điện hiệu suất cao tiên phong tại Đông Nam Á. Tầm hoạt động 200km/lần sạc, làm chủ công nghệ pin và hệ thống điều khiển động cơ tại Việt Nam.",
         score: 97, target: "$8M", raised: "$5.3M", pct: 66, investors: 14, logoColor: "#FF5722",
+        logo: "/images/startups/datbike.jpg",
     },
     {
         id: "s3", name: "BuyMed (Thuocsi.vn)", founder: "Hoàng Nguyễn", industry: "Healthtech", stage: "Series B",
         location: "TP. Hồ Chí Minh", pitch: "Sàn thương mại điện tử dược phẩm B2B minh bạch phục vụ 35,000+ nhà thuốc & phòng khám trên 63 tỉnh thành toàn quốc.",
         score: 98, target: "$10M", raised: "$7.5M", pct: 75, investors: 11, logoColor: "#0F766E",
+        logo: "/images/startups/buymed.jpg",
     },
     {
         id: "s4", name: "TopCV Vietnam", founder: "Trần Trung Hiếu", industry: "SaaS", stage: "Growth",
         location: "Hà Nội", pitch: "Hệ sinh thái HRTech & tuyển dụng ứng dụng AI thông minh kết nối 6 triệu ứng viên với hơn 200,000 doanh nghiệp hàng đầu tại Việt Nam.",
         score: 97, target: "$4M", raised: "$3.2M", pct: 80, investors: 6, logoColor: "#00B14F",
+        logo: "/images/startups/topcv.jpg",
     },
     {
         id: "s5", name: "Kamereo", founder: "Taku Tanaka", industry: "Agritech", stage: "Series A",
         location: "TP. Hồ Chí Minh", pitch: "Chuỗi cung ứng thực phẩm B2B trực tiếp từ nông trại Đà Lạt đến hơn 3,000 nhà hàng, khách sạn và siêu thị với công nghệ quản lý tồn kho thời gian thực.",
         score: 94, target: "$2M", raised: "$1.4M", pct: 70, investors: 5, logoColor: "#3D6B35",
+        logo: "/images/startups/kamereo.jpg",
     },
     {
         id: "s6", name: "Selex Motors", founder: "TS. Nguyễn Hữu Phước Nguyên", industry: "CleanTech", stage: "Series A",
         location: "Hà Nội", pitch: "Hệ sinh thái xe máy điện & mạng lưới trạm đổi pin thông minh tự động 2 phút độc quyền cho các tập đoàn logistics lớn (Grab, Lazada, Shopee).",
         score: 96, target: "$3M", raised: "$2.1M", pct: 70, investors: 7, logoColor: "#2563EB",
+        logo: "/images/startups/selex.jpg",
     },
     {
         id: "s7", name: "Gimo", founder: "Nguyễn Anh Quân", industry: "Fintech", stage: "Series A",
         location: "Hà Nội", pitch: "Nền tảng nhận lương linh hoạt (EWA) và an sinh tài chính phục vụ 500,000+ người lao động tại hơn 100 nhà máy sản xuất FDI lớn trên toàn quốc.",
         score: 95, target: "$4.5M", raised: "$3.1M", pct: 69, investors: 8, logoColor: "#7C3AED",
+        logo: "/images/startups/gimo.png",
     },
     {
         id: "s8", name: "MindX Technology School", founder: "Nguyễn Thị Thu Hà", industry: "Edtech", stage: "Series B",
         location: "Hà Nội", pitch: "Hệ sinh thái trường học đào tạo kỹ năng công nghệ chuẩn quốc tế với 40+ cơ sở toàn quốc và hơn 50,000 học viên tốt nghiệp.",
         score: 95, target: "$3.5M", raised: "$2.8M", pct: 80, investors: 6, logoColor: "#EA580C",
+        logo: "/images/startups/mindx.jpg",
     },
     {
         id: "s9", name: "Cricket One", founder: "Đặng Cao Nam", industry: "Agritech", stage: "Series A",
         location: "Bình Phước", pitch: "Nhà sản xuất nguyên liệu protein bền vững từ dế đạt chuẩn chứng nhận EFSA Châu Âu xuất khẩu sang 12 quốc gia phát triển.",
         score: 93, target: "$2.5M", raised: "$1.8M", pct: 72, investors: 4, logoColor: "#854D0E",
+        logo: "/images/startups/cricketone.jpg",
     },
     {
         id: "s10", name: "ELSA Speak", founder: "Văn Đinh Hồng Vũ", industry: "Edtech", stage: "Series C",
         location: "TP. Hồ Chí Minh", pitch: "Trợ lý gia sư AI phát hiện lỗi phát âm tiếng Anh từng âm tiết theo thời gian thực phục vụ hơn 54 triệu người dùng tại 101 quốc gia.",
         score: 98, target: "$12M", raised: "$9.2M", pct: 77, investors: 15, logoColor: "#0284C7",
+        logo: "/images/startups/elsa.jpg",
     },
     {
         id: "s11", name: "Finhay", founder: "Nghiêm Xuân Huy", industry: "Fintech", stage: "Series B",
         location: "Hà Nội", pitch: "Ứng dụng tích lũy và đầu tư tài chính thông minh phục vụ 2.7 triệu người dùng trẻ, sở hữu giấy phép chứng khoán chính thức.",
         score: 96, target: "$6M", raised: "$4.5M", pct: 75, investors: 9, logoColor: "#16A34A",
+        logo: "/images/startups/finhay.jpg",
     },
     {
         id: "s12", name: "Haravan", founder: "Huỳnh Lâm Hồ", industry: "SaaS", stage: "Growth",
         location: "TP. Hồ Chí Minh", pitch: "Nền tảng thương mại điện tử đa kênh Omnichannel phục vụ 50,000+ doanh nghiệp bán lẻ, đối tác chiến lược cấp cao của Google và Meta.",
         score: 97, target: "$5M", raised: "$3.7M", pct: 74, investors: 8, logoColor: "#2563EB",
+        logo: "/images/startups/haravan.jpg",
     },
 ];
 

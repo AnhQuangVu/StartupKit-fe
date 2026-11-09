@@ -13,6 +13,7 @@ interface MentorCardProps {
     rate: string;
     avatarSeed: string;
     locale: string;
+    avatarUrl?: string;
 }
 
 /**
@@ -20,9 +21,10 @@ interface MentorCardProps {
  * Layout: portrait photo → name + title → expertise chips → bio → score + CTA
  */
 export default function MentorCard({
-    id, name, title, expertise, bio, score, sessions, rate, avatarSeed, locale,
+    id, name, title, expertise, bio, score, sessions, rate, avatarSeed, locale, avatarUrl,
 }: MentorCardProps) {
     const dict = useDictionary();
+    const photoSrc = avatarUrl || (avatarSeed.startsWith("http") || avatarSeed.startsWith("/") ? avatarSeed : `https://i.pravatar.cc/600?u=${avatarSeed}`);
     return (
         <article className="bg-white border border-[#EAEAEA] rounded-[10px] overflow-hidden hover:shadow-lg hover:-translate-y-0.5 transition-all duration-200 flex flex-col h-full">
 
@@ -30,7 +32,7 @@ export default function MentorCard({
             <div className="relative w-full" style={{ paddingTop: "56.25%" }}>
                 {/* eslint-disable-next-line @next/next/no-img-element */}
                 <img
-                    src={`https://i.pravatar.cc/600?u=${avatarSeed}`}
+                    src={photoSrc}
                     alt={name}
                     className="absolute inset-0 w-full h-full object-cover object-top"
                     loading="lazy"

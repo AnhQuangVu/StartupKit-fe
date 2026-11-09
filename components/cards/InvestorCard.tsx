@@ -11,6 +11,8 @@ interface InvestorCardProps {
     portfolio: number;        // companies invested
     avatarSeed: string;
     locale: string;
+    coverUrl?: string;
+    logoUrl?: string;
 }
 
 /**
@@ -19,9 +21,10 @@ interface InvestorCardProps {
  * NOT a deal card — this is the investor profile on /market/investments.
  */
 export default function InvestorCard({
-    id, firmName, focus, stages, ticketMin, ticketMax, portfolio, avatarSeed, locale,
+    id, firmName, focus, stages, ticketMin, ticketMax, portfolio, avatarSeed, locale, coverUrl, logoUrl,
 }: InvestorCardProps) {
     const dict = useDictionary();
+    const photoSrc = coverUrl || (avatarSeed.startsWith("http") || avatarSeed.startsWith("/") ? avatarSeed : `https://picsum.photos/seed/${avatarSeed}vc/600/338`);
     return (
         <article className="bg-white border border-[#EAEAEA] rounded-[10px] overflow-hidden hover:shadow-lg hover:-translate-y-0.5 transition-all duration-200 flex flex-col h-full">
 
@@ -29,7 +32,7 @@ export default function InvestorCard({
             <div className="relative w-full" style={{ paddingTop: "56.25%" }}>
                 {/* eslint-disable-next-line @next/next/no-img-element */}
                 <img
-                    src={`https://picsum.photos/seed/${avatarSeed}vc/600/338`}
+                    src={photoSrc}
                     alt={firmName}
                     className="absolute inset-0 w-full h-full object-cover"
                     loading="lazy"
