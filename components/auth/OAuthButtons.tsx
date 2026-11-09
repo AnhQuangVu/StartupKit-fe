@@ -1,8 +1,10 @@
 "use client";
 
-import { useParams } from "next/navigation";
+import { useParams, useRouter } from "next/navigation";
+import { useAuth } from "@/lib/auth-context";
 import { authApi } from "@/lib/api";
 import type { Locale } from "@/lib/i18n";
+import { useState } from "react";
 
 interface OAuthButtonsProps {
     action: "login" | "register";
@@ -10,19 +12,41 @@ interface OAuthButtonsProps {
 
 export default function OAuthButtons({ action }: OAuthButtonsProps) {
     const params = useParams();
+    const router = useRouter();
+    const { loginWithOAuth } = useAuth();
     const locale = ((params?.locale as Locale) || "vi");
     const isVi = locale === "vi";
+    const [loadingProvider, setLoadingProvider] = useState<string | null>(null);
 
     const label = action === "login"
         ? (isVi ? "Tiếp tục với" : "Continue with")
         : (isVi ? "Đăng ký với" : "Sign up with");
 
-    const handleOAuth = (provider: "google" | "linkedin") => {
-        if (provider === "google") {
-            window.location.href = authApi.getGoogleOAuthAuthorizeUrl();
-            return;
+    const handleOAuth = async (provider: "google" | "linkedin") => {
+        try {
+            setLoadingProvider(provider);
+            const isProdBackend = process.env.NEXT_PUBLIC_API_URL && !process.env.NEXT_PUBLIC_API_URL.includes("localhost");
+            const useRealOAuth = process.env.NEXT_PUBLIC_USE_REAL_OAUTH === "true";
+
+            if (isProdBackend && useRealOAuth) {
+                const url = provider === "google"
+                    ? authApi.getGoogleOAuthAuthorizeUrl()
+                    : authApi.getLinkedInOAuthAuthorizeUrl();
+                window.location.href = url;
+                return;
+            }
+
+            const user = await loginWithOAuth(provider);
+            if (user) {
+                const roleLower = user.role.toLowerCase();
+                const target = user.role === "STARTUP" ? `/${locale}/workspace/startup/projects` : `/${locale}/workspace/${roleLower}`;
+                router.push(target);
+            }
+        } catch (err) {
+            console.error("OAuth error:", err);
+        } finally {
+            setLoadingProvider(null);
         }
-        window.location.href = authApi.getLinkedInOAuthAuthorizeUrl();
     };
 
     return (
@@ -30,21 +54,23 @@ export default function OAuthButtons({ action }: OAuthButtonsProps) {
             {/* Google OAuth2 */}
             <button
                 type="button"
+                disabled={loadingProvider !== null}
                 onClick={() => handleOAuth("google")}
-                className="flex items-center justify-center gap-3 w-full border border-[#EAEAEA] rounded-[8px] px-4 py-2.5 text-[14px] font-medium text-[#111111] hover:border-[#CCCCCC] hover:bg-[#FAFAFA] transition-colors cursor-pointer"
+                className="flex items-center justify-center gap-3 w-full border border-[#EAEAEA] rounded-[8px] px-4 py-2.5 text-[14px] font-medium text-[#111111] hover:border-[#CCCCCC] hover:bg-[#FAFAFA] transition-colors cursor-pointer disabled:opacity-60"
             >
                 <GoogleIcon />
-                {label} Google
+                {loadingProvider === "google" ? (isVi ? "Đang xác thực Google..." : "Connecting Google...") : `${label} Google`}
             </button>
 
             {/* LinkedIn OAuth2 */}
             <button
                 type="button"
+                disabled={loadingProvider !== null}
                 onClick={() => handleOAuth("linkedin")}
-                className="flex items-center justify-center gap-3 w-full border border-[#EAEAEA] rounded-[8px] px-4 py-2.5 text-[14px] font-medium text-[#111111] hover:border-[#0A66C2] hover:bg-[#F5F9FF] transition-colors cursor-pointer"
+                className="flex items-center justify-center gap-3 w-full border border-[#EAEAEA] rounded-[8px] px-4 py-2.5 text-[14px] font-medium text-[#111111] hover:border-[#0A66C2] hover:bg-[#F5F9FF] transition-colors cursor-pointer disabled:opacity-60"
             >
                 <LinkedInIcon />
-                {label} LinkedIn
+                {loadingProvider === "linkedin" ? (isVi ? "Đang xác thực LinkedIn..." : "Connecting LinkedIn...") : `${label} LinkedIn`}
             </button>
         </div>
     );
@@ -64,9 +90,7 @@ function GoogleIcon() {
 function LinkedInIcon() {
     return (
         <svg width="18" height="18" viewBox="0 0 18 18" fill="none">
-            <rect width="18" height="18" rx="3" fill="#0A66C2" />
-            <path d="M4.5 7H6.5V13.5H4.5V7ZM5.5 6C4.95 6 4.5 5.55 4.5 5C4.5 4.45 4.95 4 5.5 4C6.05 4 6.5 4.45 6.5 5C6.5 5.55 6.05 6 5.5 6Z" fill="white" />
-            <path d="M8 7H9.9V7.9H9.93C10.2 7.36 10.9 6.8 11.95 6.8C13.95 6.8 14.3 8.1 14.3 9.8V13.5H12.3V10.2C12.3 9.5 12.28 8.6 11.3 8.6C10.3 8.6 10.15 9.35 10.15 10.15V13.5H8.15V7H8Z" fill="white" />
+            <path d="M16 0H2C.9 0 0 .9 0 2v14c0 1.1.9 2 2 2h14c1.1 0 2-.9 2-2V2c0-1.1-.9-2-2-2zM5.3 15.3H2.7V6.7h2.6v8.6zM4 5.5c-.8 0-1.5-.7-1.5-1.5s.7-1.5 1.5-1.5 1.5.7 1.5 1.5-.7 1.5-1.5 1.5zm11.3 9.8h-2.6v-4.2c0-1-.02-2.3-1.4-2.3-1.4 0-1.6 1.1-1.6 2.2v4.3H7.1V6.7h2.5v1.2h.04c.35-.7 1.2-1.4 2.5-1.4 2.7 0 3.2 1.8 3.2 4.1v4.7z" fill="#0A66C2" />
         </svg>
     );
 }
