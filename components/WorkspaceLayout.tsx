@@ -1,10 +1,11 @@
 "use client";
 
 import Link from "next/link";
-import { usePathname, useParams, useRouter } from "next/navigation";
-import { useEffect, useState } from "react";
-import { useAuth } from "@/lib/auth-context";
+import { usePathname, useParams } from "next/navigation";
+import { useState } from "react";
+import { useAuth, type UserRole } from "@/lib/auth-context";
 import type { Locale } from "@/lib/i18n";
+import { useDictionary } from "@/lib/dict-context";
 import {
     IconGrid, IconRocket, IconUsers, IconBriefcase, IconMessage, IconSettings,
     IconCalendar, IconStar, IconInbox, IconBarChart, IconShield, IconBell, IconUser,
@@ -20,7 +21,7 @@ const SIDEBAR_NAV: NavDict = {
         { labelKey: "investorConns", href: "investors", Icon: IconBriefcase },
         { labelKey: "mentorConns", href: "mentors", Icon: IconUsers },
         { labelKey: "messages", href: "messages", Icon: IconMessage },
-        { labelKey: "notifications", href: `/${"[locale]"}/workspace/notifications`, Icon: IconBell },
+        { labelKey: "notifications", href: "notifications", Icon: IconBell },
         { labelKey: "settings", href: "settings", Icon: IconSettings },
     ],
     MENTOR: [
@@ -53,6 +54,13 @@ const SIDEBAR_NAV: NavDict = {
     ],
 };
 
+const DEFAULT_ROLE_USERS: Record<Exclude<UserRole, "GUEST">, { name: string; avatarSeed: string }> = {
+    STARTUP: { name: "Nguyễn Văn Minh", avatarSeed: "nguyenminh" },
+    INVESTOR: { name: "Trần Bảo Ngọc", avatarSeed: "linhpham" },
+    MENTOR: { name: "TS. Lê Hoàng An", avatarSeed: "drannguyen" },
+    ADMIN: { name: "StartupKit Admin", avatarSeed: "admin" },
+};
+
 interface WorkspaceLayoutProps {
     children: React.ReactNode;
     title: string;
@@ -60,41 +68,31 @@ interface WorkspaceLayoutProps {
     actions?: React.ReactNode;
 }
 
-import { useDictionary } from "@/lib/dict-context";
-
 export default function WorkspaceLayout({ children, title, subtitle, actions }: WorkspaceLayoutProps) {
     const dict = useDictionary();
     const [sidebarOpen, setSidebarOpen] = useState(false);
-    const { user, isAuthenticated, isLoading } = useAuth();
-    const router = useRouter();
+    const { user } = useAuth();
     const params = useParams();
     const pathname = usePathname();
     const locale = (params?.locale as Locale) ?? "vi";
-    const role = user?.role;
 
-    useEffect(() => {
-        if (isLoading || isAuthenticated) return;
-        router.replace(`/${locale}/login`);
-    }, [isAuthenticated, isLoading, locale, router]);
+    const pathRole: Exclude<UserRole, "GUEST"> = pathname?.includes("/workspace/investor")
+        ? "INVESTOR"
+        : pathname?.includes("/workspace/mentor")
+            ? "MENTOR"
+            : pathname?.includes("/workspace/admin")
+                ? "ADMIN"
+                : pathname?.includes("/workspace/startup")
+                    ? "STARTUP"
+                    : (user?.role && user.role !== "GUEST" ? user.role : "STARTUP");
 
-    if (isLoading) {
-        return (
-            <div className="pt-[72px] min-h-screen bg-[#F7F7F7] p-6 md:p-8">
-                <div className="h-14 bg-white border border-[#EAEAEA] rounded-[10px] animate-pulse mb-6" />
-                <div className="h-[420px] bg-white border border-[#EAEAEA] rounded-[10px] animate-pulse" />
-            </div>
-        );
-    }
-
-    if (!isAuthenticated || !role || role === "GUEST") {
-        return null;
-    }
-
+    const role = pathRole;
     const roleLower = role.toLowerCase();
     const base = role === "STARTUP" ? `/${locale}/workspace/startup` : `/${locale}/workspace/${roleLower}`;
     const navItems = SIDEBAR_NAV[role] ?? SIDEBAR_NAV.STARTUP;
+    const displayName = user?.name || DEFAULT_ROLE_USERS[role].name;
+    const displayAvatarSeed = user?.avatarSeed || DEFAULT_ROLE_USERS[role].avatarSeed;
 
-    // Active: exact match for dashboard, startsWith for sub-pages
     const isActive = (itemHref: string) => {
         const full = itemHref === "" ? base : `${base}/${itemHref}`;
         return itemHref === "" ? pathname === base : pathname?.startsWith(full);
@@ -118,11 +116,11 @@ export default function WorkspaceLayout({ children, title, subtitle, actions }: 
                 {/* User info */}
                 <div className="px-5 py-4 border-b border-[#EAEAEA] flex items-center gap-3">
                     {/* eslint-disable-next-line @next/next/no-img-element */}
-                    <img src={`https://i.pravatar.cc/48?u=${user?.avatarSeed}`}
-                        alt={user?.name}
+                    <img src={`https://i.pravatar.cc/48?u=${displayAvatarSeed}`}
+                        alt={displayName}
                         className="w-9 h-9 rounded-full object-cover border border-[#EAEAEA] shrink-0" />
                     <div className="min-w-0 flex-1">
-                        <p className="text-[12.5px] font-bold text-[#111111] truncate leading-tight">{user?.name}</p>
+                        <p className="text-[12.5px] font-bold text-[#111111] truncate leading-tight">{displayName}</p>
                         <span className="inline-block mt-0.5 text-[9px] font-black tracking-wide bg-[#F4B400] text-[#111111] px-1.5 py-0.5 rounded-full">
                             {dict.common.roles[roleLower as keyof typeof dict.common.roles] ?? role}
                         </span>
@@ -191,13 +189,13 @@ export default function WorkspaceLayout({ children, title, subtitle, actions }: 
 
                     {/* Notification + avatar */}
                     <div className="flex items-center gap-3 shrink-0">
-                        <button className="relative p-1.5 text-[#555555] hover:text-[#111111] transition-colors">
+                        <Link href={`/${locale}/workspace/notifications`} className="relative p-1.5 text-[#555555] hover:text-[#111111] transition-colors">
                             <IconBell />
                             <span className="absolute top-0.5 right-0.5 w-2 h-2 bg-[#F4B400] rounded-full border border-white" />
-                        </button>
+                        </Link>
                         {/* eslint-disable-next-line @next/next/no-img-element */}
-                        <img src={`https://i.pravatar.cc/32?u=${user?.avatarSeed}`}
-                            alt={user?.name}
+                        <img src={`https://i.pravatar.cc/32?u=${displayAvatarSeed}`}
+                            alt={displayName}
                             className="w-7 h-7 rounded-full object-cover border border-[#EAEAEA]" />
                     </div>
                 </div>

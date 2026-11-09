@@ -59,52 +59,39 @@ export default function Navbar() {
     };
 
     return (
-        <header className="sticky top-0 left-0 right-0 z-50 bg-white/95 backdrop-blur-md border-b border-[#EAEAEA] transition-all">
-            <div className="max-w-[1240px] mx-auto px-6 md:px-12 flex items-center h-[72px] gap-8">
+        <header className="fixed top-0 left-0 right-0 z-50 bg-white border-b border-[#EAEAEA]">
+            <div className="max-w-[1200px] mx-auto px-6 md:px-12 flex items-center h-[72px] gap-8">
 
-                {/* Logo & Network Tag */}
-                <Link href={base} className="flex items-center shrink-0 mr-2 group">
+                {/* Logo */}
+                <Link href={base} className="flex items-center shrink-0 mr-2">
                     <div className="flex items-center overflow-hidden h-8 w-[130px]">
                         <Image src="/Logo.jpg" alt="StartupKit" width={160} height={44}
-                            className="w-full h-auto object-contain transition-transform group-hover:scale-[1.02]"
+                            className="w-full h-auto object-contain"
                             style={{ mixBlendMode: "multiply" }} priority />
                     </div>
-                    <span className="hidden lg:inline-flex items-center gap-1.5 px-2.5 py-0.5 ml-3 rounded-full text-[11px] font-semibold bg-[#F7F7F7] text-[#555555] border border-[#EAEAEA] tracking-wide">
-                        <span className="w-1.5 h-1.5 rounded-full bg-[#F4B400]" />
-                        VENTURE NETWORK
-                    </span>
                 </Link>
 
                 {/* Desktop Nav */}
-                <nav className="hidden md:flex items-center gap-1.5 flex-1">
-                    {navItems.map(item => {
-                        const active = isActive(item.href);
-                        return (
-                            <Link key={item.href} href={item.href}
-                                className={`text-[13.5px] font-medium px-3.5 py-1.5 rounded-[6px] whitespace-nowrap transition-all ${
-                                    active
-                                        ? "text-[#111111] bg-[#F7F7F7] font-semibold border border-[#EAEAEA]"
-                                        : "text-[#555555] hover:text-[#111111] hover:bg-[#F9F9F9]"
+                <nav className="hidden md:flex items-center gap-5 flex-1">
+                    {navItems.map(item => (
+                        <Link key={item.href} href={item.href}
+                            className={`text-[13.5px] font-medium whitespace-nowrap transition-colors ${isActive(item.href) ? "text-[#F4B400] font-semibold" : "text-[#333333] hover:text-[#F4B400]"
                                 }`}>
-                                {item.label}
-                            </Link>
-                        );
-                    })}
+                            {item.label}
+                        </Link>
+                    ))}
                     {/* Workspace link — only when authenticated */}
                     {isAuthenticated && (
                         <Link href={`${base}/workspace`}
-                            className={`text-[13.5px] font-medium px-3.5 py-1.5 rounded-[6px] whitespace-nowrap transition-all ${
-                                isActive(`${base}/workspace`)
-                                    ? "text-[#111111] bg-[#F7F7F7] font-semibold border border-[#EAEAEA]"
-                                    : "text-[#555555] hover:text-[#111111] hover:bg-[#F9F9F9]"
-                            }`}>
+                            className={`text-[13.5px] font-medium whitespace-nowrap transition-colors ${isActive(`${base}/workspace`) ? "text-[#F4B400] font-semibold" : "text-[#333333] hover:text-[#F4B400]"
+                                }`}>
                             {dict.nav.workspace ?? "Workspace"}
                         </Link>
                     )}
                 </nav>
 
                 {/* Right section */}
-                <div className="hidden md:flex items-center gap-3.5 ml-auto shrink-0">
+                <div className="hidden md:flex items-center gap-3 ml-auto shrink-0">
                     <LanguageSwitcher />
 
                     {isAuthenticated && user ? (
@@ -140,8 +127,8 @@ export default function Navbar() {
                                     {/* Menu items */}
                                     <div className="py-1">
                                         {[
-                                             { label: "My Profile", href: `${base}/profile/${user.id}` },
-                                             { label: "Workspace", href: `${base}/workspace` },
+                                            { label: "My Profile", href: `${base}/profile/${user.id}` },
+                                            { label: "Workspace", href: `${base}/workspace` },
                                         ].map(item => (
                                             <Link key={item.href} href={item.href}
                                                 onClick={() => setDropdown(false)}
@@ -161,16 +148,16 @@ export default function Navbar() {
                         </div>
                     ) : (
                         /* ── Guest: Login + Register ──────────── */
-                        <div className="flex items-center gap-2.5">
+                        <>
                             <Link href={`${base}/login`}
-                                className="text-[13.5px] text-[#444444] hover:text-[#111111] px-3 py-1.5 rounded-[6px] hover:bg-[#F7F7F7] transition-all font-medium">
+                                className="text-[13.5px] text-[#333333] hover:text-[#F4B400] transition-colors font-medium">
                                 {dict.nav.login}
                             </Link>
                             <Link href={`${base}/register`}
-                                className="text-[13.5px] font-semibold bg-[#111111] hover:bg-[#222222] text-white px-4 py-2 rounded-[8px] transition-all shadow-sm hover:shadow active:scale-[0.98] whitespace-nowrap">
+                                className="text-[13.5px] font-semibold bg-[#111111] text-white px-4 py-2 rounded-[8px] hover:bg-[#F4B400] hover:text-[#111111] transition-colors whitespace-nowrap">
                                 {dict.nav.signup}
                             </Link>
-                        </div>
+                        </>
                     )}
                 </div>
 

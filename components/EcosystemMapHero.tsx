@@ -1,453 +1,261 @@
 "use client";
 
-import { useState } from "react";
-import Link from "next/link";
+import { useState, useEffect } from "react";
+import { ComposableMap, Geographies, Geography, Marker } from "react-simple-maps";
 import { useDictionary } from "@/lib/dict-context";
+import Link from "next/link";
 
-type SectorFilter = "all" | "fintech" | "ai" | "climate";
+const GEO_URL = "https://cdn.jsdelivr.net/npm/world-atlas@2/countries-110m.json";
+const GEO_FALLBACK_URL = "https://unpkg.com/world-atlas@2/countries-110m.json"; // secondary CDN
+const VIETNAM_ID = "704";
+const HANOI: [number, number] = [105.8412, 21.0245];
+const HCMC: [number, number] = [106.6602, 10.7769];
+const HOANGSA: [number, number] = [112.3, 16.5];   // Paracel Islands
+const TRUONGSA: [number, number] = [114.3, 10.0];  // Spratly Islands
 
-interface FeaturedDeal {
-    id: string;
-    name: string;
-    sector: string;
-    sectorLabel: string;
-    stage: string;
-    tagline: string;
-    targetAmount: string;
-    committedAmount: string;
-    percentFilled: number;
-    sciScore: number;
-    mrr: string;
-    momGrowth: string;
-    runway: string;
-    coInvestors: string[];
-    location: string;
+type MapState =
+    | { status: "loading" }
+    | { status: "ready"; geoData: unknown }
+    | { status: "error" };
+
+async function fetchGeoWithFallback(): Promise<unknown> {
+    // Try primary CDN first, then fallback
+    for (const url of [GEO_URL, GEO_FALLBACK_URL]) {
+        try {
+            const res = await fetch(url, { signal: AbortSignal.timeout(8000) });
+            if (!res.ok) throw new Error(`HTTP ${res.status}`);
+            return await res.json();
+        } catch {
+            // Silently try next URL
+        }
+    }
+    throw new Error("All CDN sources failed");
 }
 
-const FEATURED_DEALS: Record<SectorFilter, FeaturedDeal> = {
-    all: {
-        id: "finflow",
-        name: "FinFlow Treasury",
-        sector: "fintech",
-        sectorLabel: "B2B FinTech",
-        stage: "Seed Round",
-        tagline: "Hạ tầng quản trị thanh toán đa tiền tệ và tối ưu dòng tiền B2B cho doanh nghiệp xuất khẩu.",
-        targetAmount: "$1,000,000",
-        committedAmount: "$680,000",
-        percentFilled: 68,
-        sciScore: 94,
-        mrr: "$48,500",
-        momGrowth: "+24% MoM",
-        runway: "18 tháng",
-        coInvestors: ["Nextrans", "500 Global", "Do Ventures"],
-        location: "TP. Hồ Chí Minh"
-    },
-    fintech: {
-        id: "finflow",
-        name: "FinFlow Treasury",
-        sector: "fintech",
-        sectorLabel: "B2B FinTech",
-        stage: "Seed Round",
-        tagline: "Hạ tầng quản trị thanh toán đa tiền tệ và tối ưu dòng tiền B2B cho doanh nghiệp xuất khẩu.",
-        targetAmount: "$1,000,000",
-        committedAmount: "$680,000",
-        percentFilled: 68,
-        sciScore: 94,
-        mrr: "$48,500",
-        momGrowth: "+24% MoM",
-        runway: "18 tháng",
-        coInvestors: ["Nextrans", "500 Global", "Do Ventures"],
-        location: "TP. Hồ Chí Minh"
-    },
-    ai: {
-        id: "vinai-flow",
-        name: "OmniAI Platform",
-        sector: "ai",
-        sectorLabel: "Enterprise AI SaaS",
-        stage: "Pre-Series A",
-        tagline: "Giải pháp AI tự động hóa chuỗi cung ứng và phân tích tài liệu hợp đồng thời gian thực.",
-        targetAmount: "$1,500,000",
-        committedAmount: "$1,120,000",
-        percentFilled: 75,
-        sciScore: 96,
-        mrr: "$78,000",
-        momGrowth: "+31% MoM",
-        runway: "22 tháng",
-        coInvestors: ["Golden Gate", "CyberAgent", "VNG Syndicate"],
-        location: "Hà Nội"
-    },
-    climate: {
-        id: "agrigreen",
-        name: "AgriCarbon Nexus",
-        sector: "climate",
-        sectorLabel: "ClimateTech / AgriTech",
-        stage: "Seed Round",
-        tagline: "Sàn giao dịch tín chỉ carbon nông nghiệp và giám sát phát thải chuỗi cung ứng xuất khẩu.",
-        targetAmount: "$750,000",
-        committedAmount: "$480,000",
-        percentFilled: 64,
-        sciScore: 90,
-        mrr: "$28,000",
-        momGrowth: "+19% MoM",
-        runway: "16 tháng",
-        coInvestors: ["Reapra", "Touchstone Partners", "Angel Network"],
-        location: "Đà Nẵng"
-    }
-};
-
-export default function EcosystemMapHero() {
-    const dict = useDictionary();
-    const [selectedSector, setSelectedSector] = useState<SectorFilter>("all");
-    const [searchQuery, setSearchQuery] = useState("");
-    const [savedNotification, setSavedNotification] = useState(false);
-
-    const activeDeal = FEATURED_DEALS[selectedSector] || FEATURED_DEALS.all;
-
-    const handleSaveDeal = () => {
-        setSavedNotification(true);
-        setTimeout(() => setSavedNotification(false), 2400);
-    };
-
+/** Fallback visual when map CDN is unavailable */
+function MapFallback() {
     return (
-        <section className="relative w-full bg-[#FFFFFF] border-b border-[#EAEAEA] overflow-hidden pt-8 pb-16 lg:pt-14 lg:pb-24">
-            {/* Subtle background ambient dot grid */}
-            <div className="absolute inset-0 fintech-grid-bg opacity-70 pointer-events-none" />
+        <div className="absolute inset-0 flex items-center justify-center overflow-hidden bg-[#F9F9F7]">
+            {/* Decorative dot grid */}
+            <svg
+                className="absolute inset-0 w-full h-full opacity-40"
+                xmlns="http://www.w3.org/2000/svg"
+            >
+                <defs>
+                    <pattern id="dot-grid" x="0" y="0" width="28" height="28" patternUnits="userSpaceOnUse">
+                        <circle cx="1.5" cy="1.5" r="1.5" fill="#CCCCCC" />
+                    </pattern>
+                </defs>
+                <rect width="100%" height="100%" fill="url(#dot-grid)" />
+            </svg>
 
-            {/* Subtle warm atmospheric glow */}
+            {/* Radial glow behind Vietnam marker area */}
             <div
-                className="absolute top-1/4 left-1/2 -translate-x-1/2 w-[900px] h-[500px] pointer-events-none rounded-full"
+                className="absolute rounded-full pointer-events-none"
                 style={{
-                    background: "radial-gradient(circle, rgba(244, 180, 0, 0.12) 0%, rgba(244, 180, 0, 0.02) 50%, transparent 75%)",
+                    width: 340,
+                    height: 340,
+                    top: "18%",
+                    left: "50%",
+                    transform: "translateX(-50%)",
+                    background: "radial-gradient(circle, rgba(244,180,0,0.18) 0%, transparent 70%)",
                 }}
             />
 
-            <div className="relative max-w-[1280px] mx-auto px-6 md:px-12">
-                
-                {/* 2-Column Split: Value Proposition & Interactive Venture Terminal */}
-                <div className="grid grid-cols-1 lg:grid-cols-12 gap-12 lg:gap-14 items-center mb-16">
-                    
-                    {/* Left Column: Heading, Search & Value Prop */}
-                    <div className="lg:col-span-6 flex flex-col items-start z-10">
-                        
-                        {/* Institutional Network Badge */}
-                        <div className="inline-flex items-center gap-2.5 bg-[#F8F9FA] border border-[#E5E7EB] rounded-full px-3.5 py-1.5 mb-6 shadow-xs">
-                            <span className="w-2 h-2 rounded-full bg-[#F4B400] animate-pulse" />
-                            <span className="text-[12px] font-semibold text-[#1F2937] tracking-wide">
-                                VIETNAM & SEA VENTURE NETWORK
-                            </span>
-                            <span className="text-[11px] text-[#D97706] font-bold bg-[#FEF3C7] px-2 py-0.5 rounded-full">
-                                500+ DEALS
-                            </span>
-                        </div>
+            {/* Simplified Vietnam silhouette placeholder */}
+            <div className="relative flex flex-col items-center" style={{ marginTop: "-80px" }}>
+                <svg
+                    viewBox="0 0 80 160"
+                    width="80"
+                    height="160"
+                    fill="none"
+                    xmlns="http://www.w3.org/2000/svg"
+                    className="drop-shadow-md"
+                >
+                    {/* Rough Vietnam shape */}
+                    <path
+                        d="M38 4 C30 6 22 14 18 24 C14 34 16 46 20 54 C24 62 20 70 18 80 C16 90 14 100 18 110 C22 120 28 130 36 138 C40 142 44 148 48 152 C52 148 56 140 58 132 C62 122 60 112 56 104 C52 96 54 88 56 80 C58 72 62 64 60 54 C58 44 62 34 58 24 C54 14 46 6 38 4Z"
+                        fill="#F4B400"
+                        fillOpacity="0.9"
+                        stroke="#FFFFFF"
+                        strokeWidth="2"
+                    />
+                </svg>
 
-                        {/* Hero Headline */}
-                        <h1 className="text-[38px] sm:text-[48px] lg:text-[54px] font-black text-[#111827] leading-[1.12] tracking-tight mb-5">
-                            Kết nối Dòng vốn
-                            <br />
-                            <span className="text-[#111827] relative inline-block">
-                                & Cố vấn Thể chế
-                                <span className="absolute bottom-1.5 left-0 right-0 h-[6px] bg-[#F4B400]/40 -z-10 rounded-sm" />
-                            </span>
-                            <br />
-                            <span className="text-[#4B5563] text-[32px] sm:text-[42px] lg:text-[46px] font-bold">
-                                cho Khởi nghiệp.
-                            </span>
-                        </h1>
+                {/* Hanoi pulse dot */}
+                <div
+                    className="absolute"
+                    style={{ top: 38, left: "50%", transform: "translateX(-50%)" }}
+                >
+                    <span className="relative flex h-3 w-3">
+                        <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-[#F4B400] opacity-75" />
+                        <span className="relative inline-flex rounded-full h-3 w-3 bg-[#F4B400] border-2 border-white" />
+                    </span>
+                </div>
+            </div>
+        </div>
+    );
+}
 
-                        {/* Subtitle */}
-                        <p className="text-[16px] text-[#4B5563] leading-[1.7] mb-8 max-w-[540px]">
-                            Hạ tầng kết nối trực tiếp Nhà sáng lập xuất sắc, Cố vấn thực chiến và Mạng lưới Quỹ đầu tư mạo hiểm. Chuẩn hóa hồ sơ gọi vốn, thẩm định minh bạch, cam kết <strong className="text-[#111827]">Zero Upfront (10% Phí thành công)</strong>.
-                        </p>
+export default function EcosystemMapHero() {
+    const dict = useDictionary();
+    const h = dict.hero;
 
-                        {/* Interactive Search & Filter Bar */}
-                        <div className="w-full max-w-[540px] bg-white border border-[#D1D5DB] rounded-[12px] p-2 shadow-sm mb-6 focus-within:border-[#111827] focus-within:ring-2 focus-within:ring-[#111827]/10 transition-all">
-                            <div className="flex items-center gap-2 px-2 pb-2 border-b border-[#F3F4F6]">
-                                <svg width="18" height="18" viewBox="0 0 20 20" fill="none" className="text-[#9CA3AF]">
-                                    <path d="M9 17A8 8 0 1 0 9 1a8 8 0 0 0 0 16zM18 18l-4.35-4.35" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
-                                </svg>
-                                <input
-                                    type="text"
-                                    value={searchQuery}
-                                    onChange={(e) => setSearchQuery(e.target.value)}
-                                    placeholder="Tìm kiếm startup, ngành, vòng gọi vốn, hoặc quỹ VC..."
-                                    className="w-full text-[14px] text-[#111827] placeholder-[#9CA3AF] outline-none bg-transparent"
-                                />
-                                <Link
-                                    href={`/market/startups${searchQuery ? `?q=${encodeURIComponent(searchQuery)}` : ""}`}
-                                    className="shrink-0 bg-[#111827] hover:bg-[#1F2937] text-white text-[12.5px] font-semibold px-3.5 py-1.5 rounded-[8px] transition-colors"
-                                >
-                                    Khám phá
-                                </Link>
-                            </div>
+    const [mapState, setMapState] = useState<MapState>({ status: "loading" });
 
-                            {/* Sector Filter Chips */}
-                            <div className="flex flex-wrap items-center gap-1.5 pt-2 px-1">
-                                <span className="text-[11.5px] font-medium text-[#6B7280] mr-1">Lĩnh vực:</span>
-                                {[
-                                    { key: "all", label: "Tất cả" },
-                                    { key: "fintech", label: "FinTech" },
-                                    { key: "ai", label: "AI & SaaS" },
-                                    { key: "climate", label: "ClimateTech" },
-                                ].map((tab) => (
-                                    <button
-                                        key={tab.key}
-                                        onClick={() => setSelectedSector(tab.key as SectorFilter)}
-                                        className={`text-[12px] font-medium px-2.5 py-1 rounded-[6px] transition-all ${
-                                            selectedSector === tab.key
-                                                ? "bg-[#111827] text-white font-semibold shadow-xs"
-                                                : "bg-[#F3F4F6] text-[#4B5563] hover:bg-[#E5E7EB] hover:text-[#111827]"
-                                        }`}
-                                    >
-                                        {tab.label}
-                                    </button>
-                                ))}
-                            </div>
-                        </div>
+    useEffect(() => {
+        let cancelled = false;
+        fetchGeoWithFallback()
+            .then((data) => {
+                if (!cancelled) setMapState({ status: "ready", geoData: data });
+            })
+            .catch(() => {
+                if (!cancelled) setMapState({ status: "error" });
+            });
+        return () => { cancelled = true; };
+    }, []);
 
-                        {/* Action Buttons */}
-                        <div className="flex flex-col sm:flex-row gap-3.5 w-full sm:w-auto mb-6">
-                            <Link
-                                href="/market/investments"
-                                className="inline-flex items-center justify-center gap-2 bg-[#111827] hover:bg-[#1F2937] text-white text-[15px] font-semibold px-7 py-3.5 rounded-[10px] shadow-sm hover:shadow transition-all"
-                            >
-                                Khám phá Luồng Deal (Dealflow)
-                                <svg width="15" height="15" viewBox="0 0 16 16" fill="none">
-                                    <path d="M3 8h10M9 4l4 4-4 4" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
-                                </svg>
-                            </Link>
+    return (
+        <section
+            className="relative w-full bg-white overflow-hidden"
+            style={{ height: "90vh", minHeight: "580px", paddingTop: "72px" }}
+        >
+            {/* Layer 1: World Map or Fallback */}
+            <div className="absolute inset-0">
+                {mapState.status === "loading" && (
+                    // Skeleton shimmer while fetching
+                    <div className="w-full h-full bg-[#F0F0F0] animate-pulse" />
+                )}
 
-                            <Link
-                                href="/register?role=startup"
-                                className="inline-flex items-center justify-center gap-2 bg-white hover:bg-[#F9FAFB] border border-[#D1D5DB] hover:border-[#111827] text-[#111827] text-[15px] font-semibold px-7 py-3.5 rounded-[10px] shadow-xs transition-all"
-                            >
-                                Tạo Hồ sơ Gọi vốn (Miễn phí)
-                            </Link>
-                        </div>
+                {mapState.status === "error" && <MapFallback />}
 
-                        {/* Trust Micro-Bullets */}
-                        <div className="flex flex-wrap items-center gap-y-2 gap-x-5 text-[12.5px] text-[#4B5563]">
-                            <span className="flex items-center gap-1.5 font-medium">
-                                <svg width="14" height="14" viewBox="0 0 16 16" fill="none" className="text-emerald-600">
-                                    <path d="M13.3 4.3L6 11.6 2.7 8.3" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
-                                </svg>
-                                10% Phí thành công khi giải ngân
-                            </span>
-                            <span className="flex items-center gap-1.5 font-medium">
-                                <svg width="14" height="14" viewBox="0 0 16 16" fill="none" className="text-emerald-600">
-                                    <path d="M13.3 4.3L6 11.6 2.7 8.3" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
-                                </svg>
-                                Virtual Deal Room bảo mật
-                            </span>
-                        </div>
-
-                    </div>
-
-                    {/* Right Column: Interactive Venture Terminal (Real Product Mockup) */}
-                    <div className="lg:col-span-6 relative">
-                        
-                        {/* Terminal Outer Frame */}
-                        <div className="relative bg-white border border-[#E5E7EB] rounded-[18px] shadow-xl overflow-hidden transition-all">
-                            
-                            {/* Window Topbar */}
-                            <div className="bg-[#F9FAFB] border-b border-[#E5E7EB] px-5 py-3.5 flex items-center justify-between">
-                                <div className="flex items-center gap-2">
-                                    <span className="w-3 h-3 rounded-full bg-[#EF4444]/80" />
-                                    <span className="w-3 h-3 rounded-full bg-[#F59E0B]/80" />
-                                    <span className="w-3 h-3 rounded-full bg-[#10B981]/80" />
-                                    <span className="text-[12px] font-mono font-medium text-[#6B7280] ml-2">
-                                        startupkit.vn/dealroom/{activeDeal.id}
-                                    </span>
-                                </div>
-                                <div className="flex items-center gap-2">
-                                    <span className="inline-flex items-center gap-1.5 text-[11px] font-semibold text-emerald-700 bg-emerald-50 border border-emerald-200 px-2.5 py-0.5 rounded-full">
-                                        <span className="w-1.5 h-1.5 rounded-full bg-emerald-500 animate-pulse" />
-                                        LIVE DEAL
-                                    </span>
-                                </div>
-                            </div>
-
-                            {/* Deal Spotlight Body */}
-                            <div className="p-6 md:p-7">
-                                
-                                {/* Deal Title & Verification */}
-                                <div className="flex items-start justify-between gap-4 mb-4">
-                                    <div className="flex items-center gap-3.5">
-                                        <div className="w-12 h-12 rounded-[12px] bg-[#111827] text-white flex items-center justify-center font-black text-[18px] shadow-sm">
-                                            {activeDeal.name.slice(0, 2).toUpperCase()}
-                                        </div>
-                                        <div>
-                                            <div className="flex items-center gap-2">
-                                                <h3 className="text-[19px] font-bold text-[#111827]">
-                                                    {activeDeal.name}
-                                                </h3>
-                                                <span className="text-[11px] font-semibold bg-[#FEF3C7] text-[#92400E] border border-[#FDE68A] px-2 py-0.5 rounded-[4px]">
-                                                    {activeDeal.stage}
-                                                </span>
-                                            </div>
-                                            <p className="text-[12.5px] text-[#6B7280]">
-                                                {activeDeal.sectorLabel} • {activeDeal.location}
-                                            </p>
-                                        </div>
-                                    </div>
-
-                                    {/* Startup Credibility Index (SCI) Badge */}
-                                    <div className="flex flex-col items-end">
-                                        <div className="flex items-center gap-1.5 bg-[#F8F9FA] border border-[#E5E7EB] px-3 py-1 rounded-[8px]">
-                                            <span className="text-[10px] font-bold text-[#6B7280]">SCI SCORE</span>
-                                            <span className="text-[15px] font-black text-[#111827]">{activeDeal.sciScore}</span>
-                                            <span className="text-[10px] text-[#9CA3AF]">/100</span>
-                                        </div>
-                                        <span className="text-[10px] font-semibold text-emerald-600 mt-1">
-                                            ✓ Verified Audit
-                                        </span>
-                                    </div>
-                                </div>
-
-                                {/* One-line Pitch */}
-                                <p className="text-[13.5px] text-[#4B5563] leading-relaxed mb-6 bg-[#F9FAFB] p-3 rounded-[8px] border border-[#F3F4F6]">
-                                    "{activeDeal.tagline}"
-                                </p>
-
-                                {/* Live Funding Progress Bar */}
-                                <div className="mb-6">
-                                    <div className="flex items-center justify-between text-[13px] mb-2 font-medium">
-                                        <span className="text-[#374151]">
-                                            Đã cam kết: <strong className="text-[#111827] font-bold">{activeDeal.committedAmount}</strong>
-                                        </span>
-                                        <span className="text-[#6B7280]">
-                                            Mục tiêu: <strong className="text-[#111827]">{activeDeal.targetAmount}</strong> ({activeDeal.percentFilled}%)
-                                        </span>
-                                    </div>
-                                    <div className="w-full h-2.5 bg-[#F3F4F6] rounded-full overflow-hidden border border-[#E5E7EB]">
-                                        <div
-                                            className="h-full bg-[#F4B400] rounded-full transition-all duration-700"
-                                            style={{ width: `${activeDeal.percentFilled}%` }}
+                {mapState.status === "ready" && (
+                    <ComposableMap
+                        projection="geoNaturalEarth1"
+                        projectionConfig={{ rotate: [-107, -12, 0], scale: 500 }}
+                        style={{ width: "100%", height: "100%", transform: "translateY(-14%)" }}
+                    >
+                        <Geographies geography={mapState.geoData as object}>
+                            {({ geographies }) =>
+                                geographies.map((geo) => {
+                                    const isVN = geo.id === VIETNAM_ID;
+                                    return (
+                                        <Geography
+                                            key={geo.rsmKey}
+                                            geography={geo}
+                                            style={{
+                                                default: {
+                                                    fill: isVN ? "#F4B400" : "#E5E5E5",
+                                                    fillOpacity: isVN ? 0.92 : 1,
+                                                    stroke: "#FFFFFF",
+                                                    strokeWidth: isVN ? 0.8 : 0.5,
+                                                    outline: "none",
+                                                },
+                                                hover: { fill: isVN ? "#F4B400" : "#D8D8D8", outline: "none" },
+                                                pressed: { outline: "none" },
+                                            }}
                                         />
-                                    </div>
-                                </div>
+                                    );
+                                })
+                            }
+                        </Geographies>
 
-                                {/* Key Traction Metrics Grid */}
-                                <div className="grid grid-cols-3 gap-3 mb-6">
-                                    <div className="bg-[#FFFFFF] border border-[#E5E7EB] p-3 rounded-[10px] text-center">
-                                        <span className="text-[11px] text-[#6B7280] font-medium block">MRR HIỆN TẠI</span>
-                                        <span className="text-[15px] font-black text-[#111827] block mt-0.5">{activeDeal.mrr}</span>
-                                    </div>
-                                    <div className="bg-[#FFFFFF] border border-[#E5E7EB] p-3 rounded-[10px] text-center">
-                                        <span className="text-[11px] text-[#6B7280] font-medium block">TĂNG TRƯỞNG</span>
-                                        <span className="text-[15px] font-black text-emerald-600 block mt-0.5">{activeDeal.momGrowth}</span>
-                                    </div>
-                                    <div className="bg-[#FFFFFF] border border-[#E5E7EB] p-3 rounded-[10px] text-center">
-                                        <span className="text-[11px] text-[#6B7280] font-medium block">RUNWAY</span>
-                                        <span className="text-[15px] font-black text-[#111827] block mt-0.5">{activeDeal.runway}</span>
-                                    </div>
-                                </div>
+                        <Marker coordinates={HANOI}>
+                            <circle r={0} fill="none" stroke="#F4B400" strokeWidth={1.5}>
+                                <animate attributeName="r" values="5;16;5" dur="2.2s" repeatCount="indefinite" />
+                                <animate attributeName="stroke-opacity" values="0.8;0;0.8" dur="2.2s" repeatCount="indefinite" />
+                            </circle>
+                            <circle r={4} fill="#F4B400" stroke="#FFFFFF" strokeWidth={1.2} />
+                        </Marker>
 
-                                {/* Backed by & Co-Investors */}
-                                <div className="flex items-center justify-between pt-4 border-t border-[#F3F4F6] mb-5">
-                                    <div className="flex items-center gap-2">
-                                        <span className="text-[11.5px] font-semibold text-[#6B7280]">Đồng đầu tư:</span>
-                                        <div className="flex items-center gap-1.5">
-                                            {activeDeal.coInvestors.map((investor) => (
-                                                <span
-                                                    key={investor}
-                                                    className="text-[11px] font-semibold bg-[#F3F4F6] text-[#374151] px-2 py-0.5 rounded-[4px] border border-[#E5E7EB]"
-                                                >
-                                                    {investor}
-                                                </span>
-                                            ))}
-                                        </div>
-                                    </div>
-                                </div>
+                        <Marker coordinates={HCMC}>
+                            <circle r={3.5} fill="#F4B400" stroke="#FFFFFF" strokeWidth={1} />
+                        </Marker>
 
-                                {/* Deal Action Footer */}
-                                <div className="flex items-center gap-3">
-                                    <Link
-                                        href="/market/investments"
-                                        className="flex-1 inline-flex items-center justify-center gap-2 bg-[#111827] hover:bg-[#1F2937] text-white text-[13.5px] font-semibold py-2.5 px-4 rounded-[8px] transition-all shadow-xs"
-                                    >
-                                        Xem Virtual Deal Room
-                                        <svg width="14" height="14" viewBox="0 0 16 16" fill="none">
-                                            <path d="M3 8h10M9 4l4 4-4 4" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
-                                        </svg>
-                                    </Link>
-                                    <button
-                                        onClick={handleSaveDeal}
-                                        className="inline-flex items-center justify-center gap-1.5 bg-white hover:bg-[#F9FAFB] border border-[#D1D5DB] text-[#374151] text-[13px] font-medium py-2.5 px-3.5 rounded-[8px] transition-colors"
-                                    >
-                                        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
-                                            <path d="M19 21l-7-5-7 5V5a2 2 0 0 1 2-2h10a2 2 0 0 1 2 2z"/>
-                                        </svg>
-                                        {savedNotification ? "Đã lưu ✓" : "Lưu Deal"}
-                                    </button>
-                                </div>
+                        <Marker coordinates={HOANGSA}>
+                            <circle r={2.5} fill="#F4B400" stroke="#FFFFFF" strokeWidth={1} />
+                        </Marker>
 
-                            </div>
+                        <Marker coordinates={TRUONGSA}>
+                            <circle r={2.5} fill="#F4B400" stroke="#FFFFFF" strokeWidth={1} />
+                        </Marker>
+                    </ComposableMap>
+                )}
+            </div>
 
-                            {/* Live activity ticker */}
-                            <div className="bg-[#F9FAFB] border-t border-[#E5E7EB] px-5 py-2.5 flex items-center justify-between text-[11.5px] text-[#6B7280]">
-                                <span className="flex items-center gap-2">
-                                    <span className="w-1.5 h-1.5 rounded-full bg-emerald-500" />
-                                    <span>Quỹ <strong>Nextrans</strong> vừa xem hồ sơ của {activeDeal.name}</span>
-                                </span>
-                                <span className="font-mono text-[#9CA3AF]">2 phút trước</span>
-                            </div>
+            {/* Layer 2: Gradient fade from map to text */}
+            <div
+                className="absolute bottom-0 left-0 right-0 z-10"
+                style={{ height: "60%", background: "linear-gradient(to bottom, transparent 0%, rgba(255,255,255,0.6) 25%, rgba(255,255,255,0.92) 55%, white 80%)" }}
+            />
 
-                        </div>
+            {/* Layer 3: Vietnam badge (desktop) */}
+            <div
+                className="absolute z-20 hidden md:flex items-center gap-1.5 bg-[#111111] text-white rounded-[8px] px-3 py-1.5"
+                style={{ top: "30%", left: "59%" }}
+            >
+                <span className="w-1.5 h-1.5 rounded-full bg-[#F4B400] shrink-0" />
+                <span className="text-[11px] font-semibold whitespace-nowrap">{h.badge}</span>
+            </div>
 
+            {/* Layer 4: Text overlay */}
+            <div className="absolute inset-x-0 bottom-0 z-30 flex flex-col items-center text-center px-6 pb-12">
+                <div className="max-w-[580px]">
+                    {/* Mobile badge */}
+                    <div className="md:hidden inline-flex items-center gap-1.5 bg-[#111111] text-white rounded-[8px] px-3 py-1.5 mb-4">
+                        <span className="w-1.5 h-1.5 rounded-full bg-[#F4B400] inline-block" />
+                        <span className="text-[11px] font-semibold">{h.badge}</span>
                     </div>
 
+                    <p className="text-[12px] font-semibold text-[#F4B400] uppercase tracking-widest mb-3">
+                        {h.powered}
+                    </p>
+
+                    <div className="relative flex items-start justify-center">
+                        <span
+                            className="hidden md:block absolute -left-6 top-2 w-[3px] rounded-full bg-[#F4B400]"
+                            style={{ height: "calc(100% - 8px)" }}
+                        />
+                        <h1 className="text-[40px] md:text-[54px] font-bold text-[#111111] leading-[1.1]">
+                            {h.title1}
+                            <br />
+                            {h.title2}
+                        </h1>
+                    </div>
+
+                    <div className="flex justify-center mt-3 mb-3">
+                        <div className="w-[60px] h-[2px] bg-[#F4B400] rounded-full" />
+                    </div>
+
+                    <p className="text-[13px] font-medium text-[#888888] mb-4 leading-[1.6]">{h.ai}</p>
+                    <p className="text-[16px] text-[#555555] leading-[1.7] mb-8">{h.sub}</p>
+
+                    <div className="flex flex-col sm:flex-row gap-3 items-center justify-center">
+                        <a
+                            href="#ecosystem"
+                            className="inline-flex items-center gap-2 bg-[#111111] text-white text-[15px] font-semibold px-7 py-3 rounded-[8px] hover:bg-[#F4B400] hover:text-[#111111] transition-colors"
+                        >
+                            {h.cta1}
+                            <span className="flex items-center justify-center w-5 h-5 rounded-full bg-[#F4B400] text-[#111111]">
+                                <svg width="10" height="10" viewBox="0 0 10 10" fill="none">
+                                    <path
+                                        d="M2 5h6M5.5 2.5L8 5l-2.5 2.5"
+                                        stroke="currentColor"
+                                        strokeWidth="1.5"
+                                        strokeLinecap="round"
+                                        strokeLinejoin="round"
+                                    />
+                                </svg>
+                            </span>
+                        </a>
+                        <Link
+                            href="/register"
+                            className="inline-flex items-center gap-2 bg-white border border-[#CCCCCC] text-[#111111] text-[15px] font-semibold px-7 py-3 rounded-[8px] hover:border-[#111111] transition-colors"
+                        >
+                            {h.cta2}
+                        </Link>
+                    </div>
                 </div>
-
-                {/* 3 High-Trust Metric Bento Cards at Bottom of Hero */}
-                <div className="grid grid-cols-1 md:grid-cols-3 gap-6 pt-4 border-t border-[#F3F4F6]">
-                    
-                    <div className="bg-white border border-[#E5E7EB] rounded-[14px] p-6 shadow-xs hover:border-[#111827] hover:shadow-sm transition-all">
-                        <div className="flex items-center justify-between mb-2">
-                            <span className="text-[12px] font-semibold text-[#6B7280] tracking-wide uppercase">
-                                THẨM ĐỊNH NGUỒN DEAL
-                            </span>
-                            <span className="w-2 h-2 rounded-full bg-[#F4B400]" />
-                        </div>
-                        <div className="text-[32px] font-black text-[#111827] leading-none mb-2">
-                            +500 Startups
-                        </div>
-                        <p className="text-[13.5px] text-[#4B5563] leading-relaxed">
-                            Hồ sơ Pre-Seed đến Series A tại Việt Nam được chuẩn hóa đầy đủ số liệu tài chính sống.
-                        </p>
-                    </div>
-
-                    <div className="bg-white border border-[#E5E7EB] rounded-[14px] p-6 shadow-xs hover:border-[#111827] hover:shadow-sm transition-all">
-                        <div className="flex items-center justify-between mb-2">
-                            <span className="text-[12px] font-semibold text-[#6B7280] tracking-wide uppercase">
-                                THANH KHOẢN VỐN ĐẦU TƯ
-                            </span>
-                            <span className="w-2 h-2 rounded-full bg-emerald-500" />
-                        </div>
-                        <div className="text-[32px] font-black text-[#111827] leading-none mb-2">
-                            $18.5M+
-                        </div>
-                        <p className="text-[13.5px] text-[#4B5563] leading-relaxed">
-                            Quy mô vốn mở vòng từ hơn 80+ quỹ đầu tư mạo hiểm và nhà đầu tư thiên thần công khai khẩu vị.
-                        </p>
-                    </div>
-
-                    <div className="bg-white border border-[#E5E7EB] rounded-[14px] p-6 shadow-xs hover:border-[#111827] hover:shadow-sm transition-all">
-                        <div className="flex items-center justify-between mb-2">
-                            <span className="text-[12px] font-semibold text-[#6B7280] tracking-wide uppercase">
-                                CHUẨN XÁC THEO LUẬN ĐIỂM
-                            </span>
-                            <span className="w-2 h-2 rounded-full bg-[#111827]" />
-                        </div>
-                        <div className="text-[32px] font-black text-[#111827] leading-none mb-2">
-                            98.2%
-                        </div>
-                        <p className="text-[13.5px] text-[#4B5563] leading-relaxed">
-                            Khớp lệnh tự động giữa năng lực đội ngũ sáng lập với khẩu vị giải ngân của nhà đầu tư.
-                        </p>
-                    </div>
-
-                </div>
-
             </div>
         </section>
     );

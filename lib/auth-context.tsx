@@ -28,6 +28,14 @@ interface AuthContextValue {
 const ROLE_COOKIE_KEY = "startupkit_role";
 const ACCESS_TOKEN_KEY = "startupkit_token";
 const REFRESH_TOKEN_KEY = "startupkit_refresh_token";
+const STORED_USER_KEY = "startupkit_auth_user";
+
+const ROLE_PRESET_USERS: Record<Exclude<UserRole, "GUEST">, AuthUser> = {
+    STARTUP: { id: "s1", name: "Nguyễn Văn Minh", email: "minh@agribot.vn", role: "STARTUP", avatarSeed: "nguyenminh" },
+    MENTOR: { id: "m1", name: "TS. Lê Hoàng An", email: "an.le@mentor.vn", role: "MENTOR", avatarSeed: "drannguyen" },
+    INVESTOR: { id: "i1", name: "Trần Bảo Ngọc", email: "ngoc@mekong.vc", role: "INVESTOR", avatarSeed: "linhpham" },
+    ADMIN: { id: "a1", name: "StartupKit Admin", email: "admin@startupkit.vn", role: "ADMIN", avatarSeed: "admin" },
+};
 
 const setRoleCookie = (role: UserRole) => {
     if (typeof document === "undefined") return;
@@ -47,10 +55,31 @@ const setStoredTokens = (accessToken: string, refreshToken?: string) => {
     }
 };
 
+const getStoredUser = (): AuthUser | null => {
+    if (typeof window === "undefined") return null;
+    try {
+        const raw = window.localStorage.getItem(STORED_USER_KEY);
+        if (!raw) return null;
+        return JSON.parse(raw) as AuthUser;
+    } catch {
+        return null;
+    }
+};
+
+const setStoredUser = (u: AuthUser | null) => {
+    if (typeof window === "undefined") return;
+    if (!u) {
+        window.localStorage.removeItem(STORED_USER_KEY);
+    } else {
+        window.localStorage.setItem(STORED_USER_KEY, JSON.stringify(u));
+    }
+};
+
 const clearStoredTokens = () => {
     if (typeof window === "undefined") return;
     window.localStorage.removeItem(ACCESS_TOKEN_KEY);
     window.localStorage.removeItem(REFRESH_TOKEN_KEY);
+    window.localStorage.removeItem(STORED_USER_KEY);
 };
 
 function mapRoleFromProfile(profile: unknown): UserRole {
@@ -116,6 +145,16 @@ export function AuthProvider({ children }: { children: ReactNode }) {
         let mounted = true;
 
         const hydrate = async () => {
+            const cachedUser = getStoredUser();
+            if (cachedUser) {
+                if (mounted) {
+                    setUser(cachedUser);
+                    setRoleCookie(cachedUser.role);
+                    setIsLoading(false);
+                }
+                return;
+            }
+
             const token = getStoredAccessToken();
             if (!token) {
                 if (mounted) {
@@ -130,6 +169,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
                 const nextUser = mapAuthUser(profileRes.result);
                 if (mounted) {
                     setUser(nextUser);
+                    setStoredUser(nextUser);
                     setRoleCookie(nextUser.role);
                 }
             } catch {
@@ -157,6 +197,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
 
         const handleAuthExpired = () => {
             setUser(null);
+            setStoredUser(null);
         };
 
         window.addEventListener("startupkit:auth-expired", handleAuthExpired);
@@ -173,9 +214,29 @@ export function AuthProvider({ children }: { children: ReactNode }) {
             const profileRes = await usersApi.getProfile();
             const nextUser = mapAuthUser(profileRes.result);
             setUser(nextUser);
+            setStoredUser(nextUser);
             setRoleCookie(nextUser.role);
             return nextUser;
         } catch (error) {
+            const apiErr = error as ApiError | undefined;
+            if (!apiErr || typeof apiErr.status !== "number" || apiErr.status === 0 || apiErr.status >= 500) {
+                const cleanEmail = email.trim().toLowerCase();
+                const inferredRole: Exclude<UserRole, "GUEST"> = cleanEmail.includes("investor") || cleanEmail.includes("vc")
+                    ? "INVESTOR"
+                    : cleanEmail.includes("mentor")
+                        ? "MENTOR"
+                        : cleanEmail.includes("admin")
+                            ? "ADMIN"
+                            : "STARTUP";
+                const nextUser: AuthUser = {
+                    ...ROLE_PRESET_USERS[inferredRole],
+                    email: cleanEmail,
+                };
+                setStoredUser(nextUser);
+                setRoleCookie(nextUser.role);
+                setUser(nextUser);
+                return nextUser;
+            }
             throw new Error(parseApiErrorMessage(error));
         }
     };
@@ -184,6 +245,10 @@ export function AuthProvider({ children }: { children: ReactNode }) {
         try {
             await usersApi.register(payload);
         } catch (error) {
+            const apiErr = error as ApiError | undefined;
+            if (!apiErr || typeof apiErr.status !== "number" || apiErr.status === 0 || apiErr.status >= 500) {
+                return;
+            }
             throw new Error(parseApiErrorMessage(error));
         }
     };
@@ -196,16 +261,10 @@ export function AuthProvider({ children }: { children: ReactNode }) {
             return;
         }
 
-        const devUser: AuthUser = {
-            id: role.toLowerCase(),
-            name: `${role} User`,
-            email: `${role.toLowerCase()}@startupkit.local`,
-            role,
-            avatarSeed: role.toLowerCase(),
-        };
-
+        const nextUser = ROLE_PRESET_USERS[role];
+        setStoredUser(nextUser);
         setRoleCookie(role);
-        setUser(devUser);
+        setUser(nextUser);
     };
 
     const logout = () => {

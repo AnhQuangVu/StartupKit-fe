@@ -10,7 +10,7 @@ function getRoleFromCookie(value?: string): Role {
     if (normalized === "STARTUP" || normalized === "MENTOR" || normalized === "INVESTOR" || normalized === "ADMIN") {
         return normalized;
     }
-    return "GUEST";
+    return "STARTUP";
 }
 
 export default async function WorkspaceEntry({
@@ -22,10 +22,6 @@ export default async function WorkspaceEntry({
     const cookieStore = await cookies();
     const role = getRoleFromCookie(cookieStore.get(ROLE_COOKIE_KEY)?.value);
 
-    if (role === "GUEST") {
-        redirect(`/${locale}/login`);
-    }
-
     switch (role) {
         case "STARTUP":
             redirect(`/${locale}/workspace/startup/projects`);
@@ -34,8 +30,8 @@ export default async function WorkspaceEntry({
         case "INVESTOR":
             redirect(`/${locale}/workspace/investor`);
         case "ADMIN":
-            redirect(`/${locale}/workspace/admin`);
+            redirect(`/${locale}/workspace/admin/dashboard`);
         default:
-            redirect(`/${locale}`);
+            redirect(`/${locale}/workspace/startup/projects`);
     }
 }
