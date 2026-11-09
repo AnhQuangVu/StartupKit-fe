@@ -104,10 +104,10 @@ export default function AdminReportsPage() {
       <div className="space-y-5">
         <AdminStats
           items={[
-            { label: "Open Reports", value: openCount },
-            { label: "Investigating", value: investigatingCount },
-            { label: "High Risk Active", value: highSeverityCount },
-            { label: "Resolved Cases", value: resolvedCount },
+            { label: "Open Reports", value: String(openCount) },
+            { label: "Investigating", value: String(investigatingCount) },
+            { label: "High Risk Active", value: String(highSeverityCount) },
+            { label: "Resolved Cases", value: String(resolvedCount) },
           ]}
         />
 
