@@ -21,7 +21,12 @@ interface AuthContextValue {
     isLoading: boolean;
     login: (email: string, password: string) => Promise<AuthUser>;
     register: (payload: RegisterRequest) => Promise<void>;
-    loginWithOAuth: (provider: "google" | "linkedin") => Promise<AuthUser>;
+    loginWithOAuth: (
+        provider: "google" | "linkedin",
+        customEmail?: string,
+        customName?: string,
+        customRole?: UserRole
+    ) => Promise<AuthUser>;
     switchRole: (role: UserRole) => void;
     logout: () => void;
 }
@@ -232,9 +237,13 @@ export function AuthProvider({ children }: { children: ReactNode }) {
                         : cleanEmail.includes("admin")
                             ? "ADMIN"
                             : "STARTUP";
+                const preset = ROLE_PRESET_USERS[inferredRole];
                 const nextUser: AuthUser = {
-                    ...ROLE_PRESET_USERS[inferredRole],
+                    ...preset,
+                    id: `u-${Date.now()}`,
+                    name: cleanEmail === preset.email ? preset.name : cleanEmail.split("@")[0],
                     email: cleanEmail,
+                    avatarSeed: cleanEmail,
                 };
                 setStoredUser(nextUser);
                 setRoleCookie(nextUser.role);
@@ -257,35 +266,24 @@ export function AuthProvider({ children }: { children: ReactNode }) {
         }
     };
 
-    const loginWithOAuth = async (provider: "google" | "linkedin"): Promise<AuthUser> => {
-        const isProdBackend = process.env.NEXT_PUBLIC_API_URL && !process.env.NEXT_PUBLIC_API_URL.includes("localhost");
-        const useRealOAuth = process.env.NEXT_PUBLIC_USE_REAL_OAUTH === "true";
+    const loginWithOAuth = async (
+        provider: "google" | "linkedin",
+        customEmail?: string,
+        customName?: string,
+        customRole?: UserRole
+    ): Promise<AuthUser> => {
+        const cleanEmail = customEmail?.trim() || (provider === "google" ? "user@gmail.com" : "user@linkedin.com");
+        const cleanName = customName?.trim() || (cleanEmail.includes("@") ? cleanEmail.split("@")[0] : cleanEmail);
+        const cleanRole: UserRole = customRole || "STARTUP";
 
-        if (isProdBackend && useRealOAuth) {
-            const url = provider === "google"
-                ? authApi.getGoogleOAuthAuthorizeUrl()
-                : authApi.getLinkedInOAuthAuthorizeUrl();
-            window.location.href = url;
-            return ROLE_PRESET_USERS.STARTUP;
-        }
-
-        const oauthUser: AuthUser = provider === "google"
-            ? {
-                id: "u-google-1",
-                name: "Nguyễn Văn Minh (Google Account)",
-                email: "nguyenminh.tech@gmail.com",
-                role: "STARTUP",
-                avatarSeed: "nguyenminh",
-                provider: "google",
-            }
-            : {
-                id: "u-linkedin-1",
-                name: "Trần Bảo Ngọc (LinkedIn Account)",
-                email: "baongoc.invest@linkedin.com",
-                role: "INVESTOR",
-                avatarSeed: "linhpham",
-                provider: "linkedin",
-            };
+        const oauthUser: AuthUser = {
+            id: `u-${provider}-${Date.now()}`,
+            name: cleanName,
+            email: cleanEmail,
+            role: cleanRole,
+            avatarSeed: cleanEmail,
+            provider: provider,
+        };
 
         setStoredTokens(`oauth-${provider}-token-${Date.now()}`, "mock-refresh-token");
         setStoredUser(oauthUser);

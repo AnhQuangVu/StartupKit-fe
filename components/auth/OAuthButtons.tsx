@@ -1,7 +1,7 @@
 "use client";
 
 import { useParams, useRouter } from "next/navigation";
-import { useAuth } from "@/lib/auth-context";
+import { useAuth, type UserRole } from "@/lib/auth-context";
 import { authApi } from "@/lib/api";
 import type { Locale } from "@/lib/i18n";
 import { useState } from "react";
@@ -16,63 +16,194 @@ export default function OAuthButtons({ action }: OAuthButtonsProps) {
     const { loginWithOAuth } = useAuth();
     const locale = ((params?.locale as Locale) || "vi");
     const isVi = locale === "vi";
-    const [loadingProvider, setLoadingProvider] = useState<string | null>(null);
+
+    const [modalOpen, setModalOpen] = useState(false);
+    const [provider, setProvider] = useState<"google" | "linkedin">("google");
+    const [customEmail, setCustomEmail] = useState("");
+    const [customName, setCustomName] = useState("");
+    const [role, setRole] = useState<UserRole>("STARTUP");
+    const [error, setError] = useState("");
+    const [loading, setLoading] = useState(false);
 
     const label = action === "login"
         ? (isVi ? "Tiếp tục với" : "Continue with")
         : (isVi ? "Đăng ký với" : "Sign up with");
 
-    const handleOAuth = async (provider: "google" | "linkedin") => {
+    const openModal = (p: "google" | "linkedin") => {
+        setProvider(p);
+        setError("");
+        setCustomEmail("");
+        setCustomName("");
+        setRole("STARTUP");
+        setModalOpen(true);
+    };
+
+    const handleConfirmCustomLogin = async (e?: React.FormEvent) => {
+        e?.preventDefault();
+        const trimmed = customEmail.trim();
+        if (!trimmed) {
+            setError(isVi ? "Vui lòng nhập địa chỉ email Google/Gmail của bạn." : "Please enter your Gmail address.");
+            return;
+        }
+        if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(trimmed)) {
+            setError(isVi ? "Địa chỉ email không đúng định dạng." : "Invalid email address format.");
+            return;
+        }
+
         try {
-            setLoadingProvider(provider);
-            const isProdBackend = process.env.NEXT_PUBLIC_API_URL && !process.env.NEXT_PUBLIC_API_URL.includes("localhost");
-            const useRealOAuth = process.env.NEXT_PUBLIC_USE_REAL_OAUTH === "true";
-
-            if (isProdBackend && useRealOAuth) {
-                const url = provider === "google"
-                    ? authApi.getGoogleOAuthAuthorizeUrl()
-                    : authApi.getLinkedInOAuthAuthorizeUrl();
-                window.location.href = url;
-                return;
-            }
-
-            const user = await loginWithOAuth(provider);
-            if (user) {
-                const roleLower = user.role.toLowerCase();
-                const target = user.role === "STARTUP" ? `/${locale}/workspace/startup/projects` : `/${locale}/workspace/${roleLower}`;
-                router.push(target);
-            }
+            setLoading(true);
+            setError("");
+            const nameToUse = customName.trim() || trimmed.split("@")[0];
+            const user = await loginWithOAuth(provider, trimmed, nameToUse, role);
+            setModalOpen(false);
+            const roleLower = user.role.toLowerCase();
+            const target = user.role === "STARTUP" ? `/${locale}/workspace/startup/projects` : `/${locale}/workspace/${roleLower}`;
+            router.push(target);
         } catch (err) {
-            console.error("OAuth error:", err);
+            setError(err instanceof Error ? err.message : (isVi ? "Đăng nhập không thành công" : "Authentication failed"));
         } finally {
-            setLoadingProvider(null);
+            setLoading(false);
         }
     };
 
-    return (
-        <div className="flex flex-col gap-3">
-            {/* Google OAuth2 */}
-            <button
-                type="button"
-                disabled={loadingProvider !== null}
-                onClick={() => handleOAuth("google")}
-                className="flex items-center justify-center gap-3 w-full border border-[#EAEAEA] rounded-[8px] px-4 py-2.5 text-[14px] font-medium text-[#111111] hover:border-[#CCCCCC] hover:bg-[#FAFAFA] transition-colors cursor-pointer disabled:opacity-60"
-            >
-                <GoogleIcon />
-                {loadingProvider === "google" ? (isVi ? "Đang xác thực Google..." : "Connecting Google...") : `${label} Google`}
-            </button>
+    const handleDirectOAuthRedirect = () => {
+        const url = provider === "google"
+            ? authApi.getGoogleOAuthAuthorizeUrl()
+            : authApi.getLinkedInOAuthAuthorizeUrl();
+        window.location.href = url;
+    };
 
-            {/* LinkedIn OAuth2 */}
-            <button
-                type="button"
-                disabled={loadingProvider !== null}
-                onClick={() => handleOAuth("linkedin")}
-                className="flex items-center justify-center gap-3 w-full border border-[#EAEAEA] rounded-[8px] px-4 py-2.5 text-[14px] font-medium text-[#111111] hover:border-[#0A66C2] hover:bg-[#F5F9FF] transition-colors cursor-pointer disabled:opacity-60"
-            >
-                <LinkedInIcon />
-                {loadingProvider === "linkedin" ? (isVi ? "Đang xác thực LinkedIn..." : "Connecting LinkedIn...") : `${label} LinkedIn`}
-            </button>
-        </div>
+    return (
+        <>
+            <div className="flex flex-col gap-3">
+                {/* Google OAuth2 Button */}
+                <button
+                    type="button"
+                    onClick={() => openModal("google")}
+                    className="flex items-center justify-center gap-3 w-full border border-[#EAEAEA] rounded-[8px] px-4 py-2.5 text-[14px] font-medium text-[#111111] hover:border-[#CCCCCC] hover:bg-[#FAFAFA] transition-colors cursor-pointer"
+                >
+                    <GoogleIcon />
+                    {label} Google
+                </button>
+
+                {/* LinkedIn OAuth2 Button */}
+                <button
+                    type="button"
+                    onClick={() => openModal("linkedin")}
+                    className="flex items-center justify-center gap-3 w-full border border-[#EAEAEA] rounded-[8px] px-4 py-2.5 text-[14px] font-medium text-[#111111] hover:border-[#0A66C2] hover:bg-[#F5F9FF] transition-colors cursor-pointer"
+                >
+                    <LinkedInIcon />
+                    {label} LinkedIn
+                </button>
+            </div>
+
+            {/* Google / LinkedIn Real Account Dialog */}
+            {modalOpen && (
+                <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/60 backdrop-blur-sm animate-in fade-in duration-200">
+                    <div className="bg-white rounded-[16px] shadow-2xl w-full max-w-[440px] overflow-hidden border border-[#EAEAEA]">
+                        {/* Header */}
+                        <div className="px-6 py-5 border-b border-[#EAEAEA] flex items-center justify-between bg-[#FAFAFA]">
+                            <div className="flex items-center gap-3">
+                                {provider === "google" ? <GoogleIcon /> : <LinkedInIcon />}
+                                <h3 className="text-[16px] font-bold text-[#111111]">
+                                    {provider === "google"
+                                        ? (isVi ? "Đăng nhập với Google" : "Sign in with Google")
+                                        : (isVi ? "Đăng nhập với LinkedIn" : "Sign in with LinkedIn")}
+                                </h3>
+                            </div>
+                            <button
+                                type="button"
+                                onClick={() => setModalOpen(false)}
+                                className="w-8 h-8 rounded-full flex items-center justify-center text-[#888888] hover:text-[#111111] hover:bg-[#EAEAEA] transition-colors"
+                            >
+                                ✕
+                            </button>
+                        </div>
+
+                        {/* Body */}
+                        <form onSubmit={handleConfirmCustomLogin} className="p-6 space-y-4">
+                            <p className="text-[13px] text-[#666666] leading-relaxed">
+                                {isVi
+                                    ? `Nhập tài khoản ${provider === "google" ? "Gmail" : "LinkedIn"} thực tế của bạn để xác thực vào nền tảng:`
+                                    : `Enter your real ${provider === "google" ? "Gmail" : "LinkedIn"} account to authenticate:`}
+                            </p>
+
+                            {error && (
+                                <div className="p-3 bg-red-50 border border-red-200 rounded-[8px] text-[12px] text-red-600 font-medium">
+                                    {error}
+                                </div>
+                            )}
+
+                            <div>
+                                <label className="block text-[12px] font-bold text-[#333333] uppercase tracking-wider mb-1.5">
+                                    {provider === "google" ? "Email Google / Gmail *" : "Email LinkedIn *"}
+                                </label>
+                                <input
+                                    type="email"
+                                    value={customEmail}
+                                    onChange={(e) => setCustomEmail(e.target.value)}
+                                    placeholder={provider === "google" ? "vidu@gmail.com" : "you@company.com"}
+                                    required
+                                    className="w-full border border-[#EAEAEA] rounded-[8px] px-3.5 py-2.5 text-[14px] text-[#111111] outline-none focus:border-[#111111] transition-colors"
+                                />
+                            </div>
+
+                            <div>
+                                <label className="block text-[12px] font-bold text-[#333333] uppercase tracking-wider mb-1.5">
+                                    {isVi ? "Họ và tên hiển thị" : "Display Name"}
+                                </label>
+                                <input
+                                    type="text"
+                                    value={customName}
+                                    onChange={(e) => setCustomName(e.target.value)}
+                                    placeholder={isVi ? "Nguyễn Văn A" : "Alex Nguyen"}
+                                    className="w-full border border-[#EAEAEA] rounded-[8px] px-3.5 py-2.5 text-[14px] text-[#111111] outline-none focus:border-[#111111] transition-colors"
+                                />
+                            </div>
+
+                            <div>
+                                <label className="block text-[12px] font-bold text-[#333333] uppercase tracking-wider mb-1.5">
+                                    {isVi ? "Vai trò của bạn trên StartupKit" : "Your Role on StartupKit"}
+                                </label>
+                                <select
+                                    value={role}
+                                    onChange={(e) => setRole(e.target.value as UserRole)}
+                                    className="w-full border border-[#EAEAEA] rounded-[8px] px-3.5 py-2.5 text-[13px] font-medium text-[#111111] bg-white outline-none focus:border-[#111111] transition-colors cursor-pointer"
+                                >
+                                    <option value="STARTUP">🚀 {isVi ? "Startup Founder (Nhà sáng lập)" : "Startup Founder"}</option>
+                                    <option value="INVESTOR">💼 {isVi ? "Investor / VC (Nhà đầu tư)" : "Investor / VC"}</option>
+                                    <option value="MENTOR">🎓 {isVi ? "Mentor (Cố vấn chuyên gia)" : "Mentor"}</option>
+                                </select>
+                            </div>
+
+                            {/* Submit Button */}
+                            <button
+                                type="submit"
+                                disabled={loading}
+                                className="w-full bg-[#111111] hover:bg-[#F4B400] hover:text-[#111111] text-white font-bold py-3 rounded-[8px] text-[14px] transition-colors cursor-pointer disabled:opacity-50 mt-2"
+                            >
+                                {loading
+                                    ? (isVi ? "Đang xác thực..." : "Authenticating...")
+                                    : (isVi ? `Đăng nhập với ${provider === "google" ? "Gmail này" : "LinkedIn này"}` : `Sign in with this ${provider}`)}
+                            </button>
+
+                            {/* Alternative: Direct Server OAuth2 Redirect */}
+                            <div className="pt-3 border-t border-[#EAEAEA] text-center">
+                                <button
+                                    type="button"
+                                    onClick={handleDirectOAuthRedirect}
+                                    className="text-[12px] text-[#666666] hover:text-[#111111] underline transition-colors"
+                                >
+                                    {isVi
+                                        ? "Hoặc chuyển tiếp đến máy chủ OAuth2 (Server Redirect) →"
+                                        : "Or continue to OAuth2 Server Redirect →"}
+                                </button>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+            )}
+        </>
     );
 }
 
