@@ -33,7 +33,7 @@
 
 ### 4. Liên kết Production, GitHub & Tài liệu
 - **GitHub Repository (Giao diện mới):** [https://github.com/startupkit-team/fe](https://github.com/startupkit-team/fe)
-- **Vercel Deployment:** [https://startup-kit-fe.vercel.app](https://startup-kit-fe.vercel.app)
+- **Tên miền chính thức (Production Domain):** [https://startupkit.com.vn](https://startupkit.com.vn)
 - **Backend API & Swagger Docs (Render):** [https://startup-kit-be.onrender.com/docs](https://startup-kit-be.onrender.com/docs)
 - **Tài liệu Đặc tả Dự án (Google Docs):** [Xem tài liệu](https://docs.google.com/document/d/1kDQ3UUiZsJvk4931_OkbV3yjxJAAs_z-/edit?usp=sharing&ouid=110333927040690664017&rtpof=true&sd=true)
 
