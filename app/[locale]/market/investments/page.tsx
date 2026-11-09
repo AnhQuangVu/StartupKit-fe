@@ -7,16 +7,16 @@ import type { Locale } from "@/lib/i18n";
 import InvestorCard from "@/components/cards/InvestorCard";
 
 const INVESTORS = [
-    { id: "i1", firmName: "Mekong Capital", focus: ["Fintech", "Consumer"], stages: ["Seed", "Series A"], ticketMin: "$500k", ticketMax: "$3M", portfolio: 48, avatarSeed: "mekong" },
-    { id: "i2", firmName: "Do Ventures", focus: ["SaaS", "Edtech", "Deep Tech"], stages: ["Pre-seed", "Seed"], ticketMin: "$100k", ticketMax: "$1M", portfolio: 31, avatarSeed: "doventures" },
-    { id: "i3", firmName: "Monk's Hill", focus: ["Fintech", "Healthtech"], stages: ["Series A", "Series B+"], ticketMin: "$1M", ticketMax: "$8M", portfolio: 27, avatarSeed: "monkshill" },
-    { id: "i4", firmName: "500 Startups VN", focus: ["Agritech", "Logistics"], stages: ["Pre-seed", "Seed"], ticketMin: "$50k", ticketMax: "$500k", portfolio: 62, avatarSeed: "500startups" },
-    { id: "i5", firmName: "Vertex Ventures", focus: ["SaaS", "Fintech"], stages: ["Seed", "Series A"], ticketMin: "$500k", ticketMax: "$5M", portfolio: 44, avatarSeed: "vertex" },
-    { id: "i6", firmName: "Touchstone Partners", focus: ["Deep Tech", "Healthtech", "CleanTech"], stages: ["Seed", "Series A"], ticketMin: "$200k", ticketMax: "$2M", portfolio: 19, avatarSeed: "touchstone" },
-    { id: "i7", firmName: "VinaCapital Ventures", focus: ["Fintech", "Logistics", "Agritech"], stages: ["Seed", "Series A"], ticketMin: "$500k", ticketMax: "$4M", portfolio: 36, avatarSeed: "vinacapital" },
-    { id: "i8", firmName: "CyberAgent Capital VN", focus: ["E-commerce", "SaaS", "Edtech"], stages: ["Pre-seed", "Seed"], ticketMin: "$100k", ticketMax: "$1.5M", portfolio: 54, avatarSeed: "cyberagent" },
-    { id: "i9", firmName: "Ascend Vietnam Ventures", focus: ["SaaS", "Fintech", "Deep Tech"], stages: ["Pre-seed", "Seed"], ticketMin: "$150k", ticketMax: "$2M", portfolio: 25, avatarSeed: "ascendvn" },
-    { id: "i10", firmName: "ThinkZone Ventures", focus: ["Edtech", "Fintech", "Logistics"], stages: ["Pre-seed", "Seed"], ticketMin: "$100k", ticketMax: "$1M", portfolio: 29, avatarSeed: "thinkzone" },
+    { id: "i1", firmName: "Do Ventures", focus: ["Fintech", "SaaS", "Edtech", "E-commerce"], stages: ["Pre-seed", "Seed", "Series A"], ticketMin: "$200k", ticketMax: "$2M", portfolio: 35, avatarSeed: "doventures" },
+    { id: "i2", firmName: "ThinkZone Ventures", focus: ["Edtech", "Fintech", "Logistics", "SaaS"], stages: ["Seed", "Series A"], ticketMin: "$200k", ticketMax: "$1.5M", portfolio: 32, avatarSeed: "thinkzone" },
+    { id: "i3", firmName: "VinaCapital Ventures", focus: ["Fintech", "Logistics", "Agritech", "Deep Tech"], stages: ["Seed", "Series A", "Series B+"], ticketMin: "$500k", ticketMax: "$5M", portfolio: 38, avatarSeed: "vinacapital" },
+    { id: "i4", firmName: "Vertex Ventures SE Asia", focus: ["E-commerce", "SaaS", "Fintech"], stages: ["Seed", "Series A", "Series B+"], ticketMin: "$1M", ticketMax: "$6M", portfolio: 45, avatarSeed: "vertex" },
+    { id: "i5", firmName: "Touchstone Partners", focus: ["Deep Tech", "Healthtech", "CleanTech", "Agritech"], stages: ["Pre-seed", "Seed", "Series A"], ticketMin: "$250k", ticketMax: "$2M", portfolio: 24, avatarSeed: "touchstone" },
+    { id: "i6", firmName: "Mekong Capital", focus: ["E-commerce", "Consumer", "Logistics"], stages: ["Series A", "Series B+"], ticketMin: "$1M", ticketMax: "$10M", portfolio: 52, avatarSeed: "mekong" },
+    { id: "i7", firmName: "500 Global (500 Startups VN)", focus: ["Agritech", "SaaS", "Edtech", "AI"], stages: ["Pre-seed", "Seed"], ticketMin: "$100k", ticketMax: "$500k", portfolio: 75, avatarSeed: "500startups" },
+    { id: "i8", firmName: "Genesia Ventures", focus: ["SaaS", "Healthtech", "Agritech"], stages: ["Seed", "Series A"], ticketMin: "$300k", ticketMax: "$2.5M", portfolio: 28, avatarSeed: "genesia" },
+    { id: "i9", firmName: "Nextrans Vietnam", focus: ["CleanTech", "Mobility", "SaaS", "Healthtech"], stages: ["Pre-seed", "Seed"], ticketMin: "$150k", ticketMax: "$1.5M", portfolio: 36, avatarSeed: "nextrans" },
+    { id: "i10", firmName: "Zone Startups Vietnam", focus: ["Deep Tech", "B2B SaaS", "Logistics"], stages: ["Pre-seed", "Seed"], ticketMin: "$100k", ticketMax: "$1M", portfolio: 22, avatarSeed: "zonestartups" },
 ];
 
 function Skeleton() {

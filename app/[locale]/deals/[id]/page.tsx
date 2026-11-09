@@ -39,31 +39,136 @@ export default function DealDetail() {
     };
 
     // Mock data — replace with API fetch by `id`
-    const deal = {
-        name: "AgriBot Vietnam",
-        founder: "Nguyen Minh",
-        industry: "Agritech",
-        stage: "Seed",
-        location: "Hà Nội, Vietnam",
-        seeking: "$500k",
-        raised: "$120k",
-        pct: 24,
-        investors: 3,
-        minTicket: "$10k",
-        score: 94,
-        logoColor: "#3D6B35",
-        problem: "Vietnamese rice farmers lack access to modern crop monitoring tools. 10M+ farmers rely on manual methods leading to 30% crop loss annually.",
-        solution: "AI-driven IoT sensors + mobile app providing real-time crop health monitoring and optimal harvest timing recommendations.",
-        market: "Vietnam has 10M rice farmers and a $12B agritech market growing at 18% year-over-year across SEA.",
-        traction: "Pilot with 230 Mekong Delta farmers. 87% retention. 3 provincial governments in evaluation for scale.",
-        use_of_funds: "40% R&D · 35% Sales & Distribution · 15% Operations · 10% Legal & Compliance",
-        team: [
-            { name: "Nguyen Minh", role: "CEO / Founder", bg: "10 years agricultural R&D, prev. VAAS" },
-            { name: "Le Thi Nga", role: "CTO", bg: "AI/ML engineer, prev. FPT Software" },
-            { name: "Tran Duc", role: "CFO", bg: "Southeast Asia financial modeling, prev. Mekong Capital" },
-        ],
-        highlights: ["230 farms piloting", "$12B Vietnam agritech market", "87% 30-day retention", "3 gov evaluations"],
+    interface DealTeamMember {
+    name: string;
+    role: string;
+    bg?: string;
+    bio?: string;
+}
+
+interface DealDetailItem {
+    name: string;
+    founder: string;
+    industry: string;
+    stage: string;
+    location: string;
+    seeking: string;
+    raised: string;
+    pct: number;
+    investors: number;
+    minTicket: string;
+    score: number;
+    logoColor: string;
+    problem: string;
+    solution: string;
+    market: string;
+    traction: string;
+    use_of_funds: string;
+    team: DealTeamMember[];
+    highlights: string[];
+}
+
+    const DEALS_MAP: Record<string, DealDetailItem> = {
+        s1: {
+            name: "Coolmate",
+            founder: "Phạm Chí Nhu",
+            industry: "E-commerce",
+            stage: "Series B",
+            location: "Hà Nội, Việt Nam",
+            seeking: "$5M",
+            raised: "$3.8M",
+            pct: 76,
+            investors: 8,
+            minTicket: "$50k",
+            score: 98,
+            logoColor: "#111111",
+            problem: "Thị trường thời trang nam phân mảnh, chuỗi bán lẻ truyền thống tốn kém chi phí mặt bằng và trung gian khiến sản phẩm đội giá cao.",
+            solution: "Mô hình D2C ứng dụng dữ liệu chuỗi cung ứng, tự động hoá hoàn tất đơn hàng và dịch vụ đổi trả 60 ngày miễn phí.",
+            market: "Thị trường thời trang Việt Nam đạt $6.5 tỷ, phân khúc thương mại điện tử tăng trưởng trên 25%/năm.",
+            traction: "$26M ARR, 1.5M khách hàng, lợi nhuận ròng dương, được đầu tư bởi Vertex Ventures & Kairous Capital.",
+            use_of_funds: "45% Mở rộng dòng sản phẩm thể thao & phụ kiện · 35% Tiếp thị & Mở rộng thị trường Thái Lan · 20% Nâng cấp hạ tầng kho bãi",
+            team: [
+                { name: "Phạm Chí Nhu", role: "Co-founder & CEO", bg: "10 năm kinh nghiệm ngành dệt may & thương mại điện tử" },
+                { name: "Nguyễn Hoài Xuân Lan", role: "Co-founder & CMO", bg: "Chuyên gia tiếp thị số & xây dựng thương hiệu" },
+                { name: "Nguyễn Văn Hiệp", role: "CTO", bg: "Kiến trúc sư phần mềm ERP chuỗi cung ứng" },
+            ],
+            highlights: ["$26M ARR năm 2025", "1.5M khách hàng thân thiết", "Tỷ lệ mua lại 48%", "Đã đầu tư bởi Vertex Ventures"],
+        },
+        s2: {
+            name: "Dat Bike",
+            founder: "Nguyễn Bá Cảnh Sơn",
+            industry: "CleanTech",
+            stage: "Series B",
+            location: "TP. Hồ Chí Minh, Việt Nam",
+            seeking: "$8M",
+            raised: "$5.3M",
+            pct: 66,
+            investors: 14,
+            minTicket: "$100k",
+            score: 97,
+            logoColor: "#FF5722",
+            problem: "250 triệu xe máy xăng tại Đông Nam Á xả thải lượng lớn khói bụi; xe điện hiện tại yếu, quãng đường ngắn và sạc chậm.",
+            solution: "Tự nghiên cứu và sản xuất xe máy điện hiệu suất tương đương xe xăng 125cc, đi được 200km/lần sạc và sạc nhanh 20 phút.",
+            market: "Thị trường xe máy Việt Nam đạt $4 tỷ hàng năm với 65 triệu xe đang lưu hành.",
+            traction: "Huy động thành công hơn $15M từ Jungle Ventures & GSR Ventures; sở hữu nhà máy công nghệ cao tại Bình Dương.",
+            use_of_funds: "50% Mở rộng công suất nhà máy sản xuất · 30% Mạng lưới trạm sạc siêu nhanh Dat Charge · 20% R&D thế hệ xe mới",
+            team: [
+                { name: "Nguyễn Bá Cảnh Sơn", role: "Founder & CEO", bg: "Cựu kỹ sư phần mềm Silicon Valley, giải quốc tế tin học" },
+                { name: "Minh Tran", role: "VP Manufacturing", bg: "15 năm quản lý sản xuất ô tô xe máy" },
+            ],
+            highlights: ["$15M+ tổng vốn đã huy động", "Nhà máy sản xuất tại Bình Dương", "Tầm hoạt động 200km", "Sạc nhanh 20 phút đi 100km"],
+        },
+        s3: {
+            name: "BuyMed (Thuocsi.vn)",
+            founder: "Hoàng Nguyễn",
+            industry: "Healthtech",
+            stage: "Series B",
+            location: "TP. Hồ Chí Minh, Việt Nam",
+            seeking: "$10M",
+            raised: "$7.5M",
+            pct: 75,
+            investors: 11,
+            minTicket: "$150k",
+            score: 98,
+            logoColor: "#0F766E",
+            problem: "Nhà thuốc truyền thống phải nhập hàng qua nhiều tầng trung gian, giá thuốc bị đẩy cao và rủi ro thuốc giả.",
+            solution: "Sàn thương mại điện tử dược phẩm B2B với kho thuốc chuẩn GSP, giao hàng trong 24h và cam kết 100% nguồn gốc chính hãng.",
+            market: "Thị trường phân phối dược phẩm Việt Nam quy mô $8 tỷ, tốc độ tăng trưởng 11% hàng năm.",
+            traction: "35,000+ nhà thuốc & phòng khám hợp tác, $51.5M vốn gọi Series B dẫn dắt bởi Smilegate Investment.",
+            use_of_funds: "40% Mở rộng mạng lưới kho vận GSP toàn quốc · 35% Đa dạng hóa danh mục thuốc độc quyền · 25% Công nghệ AI dự báo nhu cầu",
+            team: [
+                { name: "Hoàng Nguyễn", role: "Co-founder & CEO", bg: "Kinh nghiệm thương mại điện tử y tế" },
+                { name: "Peter Nguyễn", role: "Co-founder & Chairman", bg: "Chuyên gia tài chính & đầu tư y tế" },
+            ],
+            highlights: ["35k nhà thuốc (50% cả nước)", "$51.5M Series B", "Kho vận đạt chuẩn GSP", "Giao hàng 24h trên 63 tỉnh"],
+        },
+        s4: {
+            name: "TopCV Vietnam",
+            founder: "Trần Trung Hiếu",
+            industry: "SaaS",
+            stage: "Growth",
+            location: "Hà Nội, Việt Nam",
+            seeking: "$4M",
+            raised: "$3.2M",
+            pct: 80,
+            investors: 6,
+            minTicket: "$50k",
+            score: 97,
+            logoColor: "#00B14F",
+            problem: "Doanh nghiệp tốn hàng tuần sàng lọc ứng viên thủ công; tỷ lệ tuyển sai người gây thiệt hại hàng trăm triệu đồng.",
+            solution: "Nền tảng HRTech tích hợp AI Smart Matching và Resume Parser tự động gợi ý ứng viên phù hợp với văn hóa và yêu cầu công việc.",
+            market: "Thị trường tuyển dụng và phần mềm quản trị nhân sự HRTech Việt Nam trị giá hơn $400M.",
+            traction: "6 triệu ứng viên đã đăng ký, 200,000+ nhà tuyển dụng doanh nghiệp, đối tác chiến lược của Mynavi Nhật Bản.",
+            use_of_funds: "40% Nâng cấp mô hình AI đánh giá năng lực · 35% Mở rộng các giải pháp HR SaaS trọn gói · 25% Phát triển thị trường khu vực",
+            team: [
+                { name: "Trần Trung Hiếu", role: "Founder & CEO", bg: "Nhân tài Đất Việt, Forbes 30 Under 30" },
+                { name: "Nguyễn Khắc Nhật", role: "CTO", bg: "Kiến trúc sư phần mềm & Big Data" },
+            ],
+            highlights: ["6M+ hồ sơ ứng viên", "200k+ doanh nghiệp", "Giải thưởng Nhân tài Đất Việt", "Đối tác chiến lược Mynavi"],
+        },
     };
+
+    const deal = DEALS_MAP[id] ?? DEALS_MAP.s1;
 
     const initials = deal.name.split(" ").slice(0, 2).map(w => w[0]).join("").toUpperCase();
 
