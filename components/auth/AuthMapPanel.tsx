@@ -1,8 +1,11 @@
 import { ComposableMap, Geographies, Geography, Marker } from "react-simple-maps";
+import Logo from "@/components/Logo";
 
 const GEO_URL = "https://cdn.jsdelivr.net/npm/world-atlas@2/countries-110m.json";
 const VIETNAM_ID = "704";
 const HANOI: [number, number] = [105.8412, 21.0245];
+const HOANGSA: [number, number] = [112.3, 16.5];
+const TRUONGSA: [number, number] = [114.3, 10.0];
 
 export default function AuthMapPanel() {
     return (
@@ -47,6 +50,12 @@ export default function AuthMapPanel() {
                         </circle>
                         <circle r={4} fill="#F4B400" stroke="#FFFFFF" strokeWidth={1.2} />
                     </Marker>
+                    <Marker coordinates={HOANGSA}>
+                        <circle r={2.5} fill="#F4B400" stroke="#FFFFFF" strokeWidth={1} />
+                    </Marker>
+                    <Marker coordinates={TRUONGSA}>
+                        <circle r={2.5} fill="#F4B400" stroke="#FFFFFF" strokeWidth={1} />
+                    </Marker>
                 </ComposableMap>
             </div>
 
@@ -66,9 +75,7 @@ export default function AuthMapPanel() {
                         "The tools and network founders need to go global."
                     </p>
                     <div className="flex items-center gap-3">
-                        <div className="w-8 h-8 rounded-full bg-[#111111] flex items-center justify-center shrink-0">
-                            <span className="text-[10px] font-bold text-[#F4B400]">SK</span>
-                        </div>
+                        <Logo height={32} variant="icon-only" />
                         <div>
                             <div className="text-[13px] font-semibold text-[#111111]">StartupKit Team</div>
                             <div className="text-[12px] text-[#999999]">Ho Chi Minh City, Vietnam</div>

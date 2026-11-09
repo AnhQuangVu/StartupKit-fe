@@ -1,7 +1,7 @@
 "use client";
 
 import { useState } from "react";
-import Image from "next/image";
+import Logo from "@/components/Logo";
 import Link from "next/link";
 import { useParams, useRouter } from "next/navigation";
 import { useDictionary } from "@/lib/dict-context";
@@ -65,7 +65,7 @@ export default function RegisterPage() {
     return (
         <div className="w-full max-w-[420px]">
             <Link href={`/${locale}`} className="inline-block mb-8">
-                <Image src="/Logo.jpg" alt="StartupKit" width={120} height={34} className="h-8 w-auto object-contain" />
+                <Logo height={34} />
             </Link>
 
             <div className="mb-6">

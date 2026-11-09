@@ -1,7 +1,7 @@
 "use client";
 
 import { useState, useRef } from "react";
-import Image from "next/image";
+import Logo from "@/components/Logo";
 import Link from "next/link";
 import { useParams } from "next/navigation";
 import { useDictionary } from "@/lib/dict-context";
@@ -46,7 +46,7 @@ export default function TwoFAPage() {
     return (
         <div className="w-full max-w-[380px]">
             <Link href={`/${locale}`} className="inline-block mb-8">
-                <Image src="/Logo.jpg" alt="StartupKit" width={120} height={34} className="h-8 w-auto object-contain" />
+                <Logo height={34} />
             </Link>
 
             <div className="flex items-center justify-center w-12 h-12 rounded-[12px] bg-[#F7F7F7] border border-[#EAEAEA] mb-6">
