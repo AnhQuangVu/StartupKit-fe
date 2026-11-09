@@ -1,4 +1,5 @@
 import Image from "next/image";
+import Logo from "@/components/Logo";
 import Link from "next/link";
 
 const navLinks = [
@@ -22,13 +23,7 @@ export default function Footer() {
                 <div className="grid grid-cols-1 md:grid-cols-3 gap-12">
                     {/* Brand */}
                     <div className="flex flex-col gap-5">
-                        <Image
-                            src="/Logo.jpg"
-                            alt="StartupKit"
-                            width={120}
-                            height={34}
-                            className="h-8 w-auto object-contain"
-                        />
+                        <Logo height={32} />
                         <p className="text-[14px] text-[#666666] leading-[1.7] max-w-[240px]">
                             The founder platform connecting Vietnamese startups with global mentors and investors.
                         </p>

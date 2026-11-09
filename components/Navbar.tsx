@@ -2,6 +2,7 @@
 
 import Image from "next/image";
 import Link from "next/link";
+import Logo from "@/components/Logo";
 import { useState, useRef, useEffect } from "react";
 import { useParams, usePathname, useRouter } from "next/navigation";
 import { useDictionary } from "@/lib/dict-context";
@@ -64,11 +65,7 @@ export default function Navbar() {
 
                 {/* Logo */}
                 <Link href={base} className="flex items-center shrink-0 mr-2">
-                    <div className="flex items-center overflow-hidden h-8 w-[130px]">
-                        <Image src="/Logo.jpg" alt="StartupKit" width={160} height={44}
-                            className="w-full h-auto object-contain"
-                            style={{ mixBlendMode: "multiply" }} priority />
-                    </div>
+                    <Logo height={32} />
                 </Link>
 
                 {/* Desktop Nav */}
