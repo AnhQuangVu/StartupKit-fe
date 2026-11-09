@@ -42,6 +42,25 @@ export function getGoogleOAuthAuthorizeUrl() {
   return `${baseUrl}${normalizedPath}`
 }
 
+export function getLinkedInOAuthAuthorizeUrl() {
+  const explicitUrl = process.env.NEXT_PUBLIC_LINKEDIN_OAUTH_URL?.trim()
+  if (explicitUrl) return explicitUrl
+
+  const baseUrl = (process.env.NEXT_PUBLIC_API_URL ?? "http://localhost:8080").replace(/\/+$/, "")
+  const oauthPath = process.env.NEXT_PUBLIC_LINKEDIN_OAUTH_PATH?.trim() || "/oauth2/authorization/linkedin"
+  const normalizedPath = oauthPath.startsWith("/") ? oauthPath : `/${oauthPath}`
+
+  return `${baseUrl}${normalizedPath}`
+}
+
+export function exchangeOAuthCode(code: string) {
+  return post<ApiResponse<LoginResponse>>(
+    `/v1/auth/exchange?code=${encodeURIComponent(code)}`,
+    {},
+    { skipAuthRefresh: true }
+  )
+}
+
 export function login(body: LoginRequest) {
   return post<ApiResponse<LoginResponse>>("/v1/auth/login", body)
 }
