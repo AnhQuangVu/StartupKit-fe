@@ -7,6 +7,8 @@ import ChatBot from "../components/common/ChatBot";
 import { useAuth } from "../context/AuthContext";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { useNavigate } from "react-router-dom";
+import StartupList from "../components/common/StartupList";
+import MentorList from "../components/common/MentorList";
 import {
   faRocket,
   faGlobe,
@@ -204,6 +206,48 @@ export default function TrangChu() {
               </div>
             ))}
           </div>
+        </section>
+
+        {/* Featured Startups Showcase */}
+        <section className="mb-12">
+          <div className="flex flex-col sm:flex-row sm:items-center justify-between mb-6 gap-2">
+            <div>
+              <h3 className="text-2xl md:text-3xl font-extrabold text-gray-900">
+                Dự Án Khởi Nghiệp Nổi Bật
+              </h3>
+              <p className="text-sm text-gray-600 mt-1">
+                Các startup tiềm năng đang hoàn thiện sản phẩm và kêu gọi vốn vòng Seed
+              </p>
+            </div>
+            <button
+              onClick={() => navigate("/kham-pha")}
+              className="inline-flex items-center gap-1 text-sm font-semibold text-amber-600 hover:text-amber-700 hover:underline cursor-pointer"
+            >
+              Xem tất cả dự án &rarr;
+            </button>
+          </div>
+          <StartupList columns={3} rows={2} />
+        </section>
+
+        {/* Featured Mentors Showcase */}
+        <section className="mb-12">
+          <div className="flex flex-col sm:flex-row sm:items-center justify-between mb-6 gap-2">
+            <div>
+              <h3 className="text-2xl md:text-3xl font-extrabold text-gray-900">
+                Chuyên Gia & Cố Vấn Đồng Hành
+              </h3>
+              <p className="text-sm text-gray-600 mt-1">
+                Kết nối 1-1 cùng các chuyên gia hàng đầu trong ngành công nghệ và tài chính
+              </p>
+            </div>
+            <button
+              onClick={() => navigate("/kham-pha")}
+              className="inline-flex items-center gap-1 text-sm font-semibold text-amber-600 hover:text-amber-700 hover:underline cursor-pointer"
+            >
+              Xem tất cả cố vấn &rarr;
+            </button>
+          </div>
+          <MentorList small />
         </section>
 
         {/* Student insights */}
