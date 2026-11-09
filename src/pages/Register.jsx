@@ -12,6 +12,8 @@ import "react-toastify/dist/ReactToastify.css";
 import logo from "../assets/images/logo.png";
 import { API_BASE, fetchWithTimeout } from "../config/api";
 import { useAuth } from "../context/AuthContext";
+import { faGoogle, faLinkedin } from "@fortawesome/free-brands-svg-icons";
+import SocialAuthModal from "../components/auth/SocialAuthModal";
 
 const Register = () => {
   const [formData, setFormData] = useState({
@@ -30,6 +32,21 @@ const Register = () => {
   const [errors, setErrors] = useState({});
   const navigate = useNavigate();
   const { login } = useAuth();
+  const [socialModalOpen, setSocialModalOpen] = useState(false);
+  const [socialProvider, setSocialProvider] = useState("google");
+
+  const handleOpenSocial = (provider) => {
+    setSocialProvider(provider);
+    setSocialModalOpen(true);
+  };
+
+  const handleSocialSuccess = (token, user) => {
+    login(token, user);
+    toast.success(`Đăng ký thành công với ${socialProvider === 'google' ? 'Google' : 'LinkedIn'}! Chào mừng ${user?.full_name || 'bạn'}.`);
+    setTimeout(() => {
+      navigate("/");
+    }, 600);
+  };
 
   const handleInputChange = (e) => {
     const { name, value, type, checked } = e.target;
@@ -483,6 +500,33 @@ const Register = () => {
                 Tạo tài khoản
               </button>
 
+              {/* Divider */}
+              <div className="flex items-center my-3">
+                <div className="flex-1 h-px bg-gray-200"></div>
+                <span className="px-2 text-xs text-gray-400">Hoặc đăng ký nhanh bằng</span>
+                <div className="flex-1 h-px bg-gray-200"></div>
+              </div>
+
+              {/* Social register buttons */}
+              <div className="grid grid-cols-2 gap-3">
+                <button
+                  type="button"
+                  onClick={() => handleOpenSocial("google")}
+                  className="flex items-center justify-center gap-2 border border-gray-300 py-2.5 rounded-lg bg-white hover:bg-red-50 hover:border-red-300 transition-all text-xs font-semibold text-gray-700 shadow-sm cursor-pointer"
+                >
+                  <FontAwesomeIcon icon={faGoogle} className="text-[#EA4335] text-sm" />
+                  <span>Google</span>
+                </button>
+                <button
+                  type="button"
+                  onClick={() => handleOpenSocial("linkedin")}
+                  className="flex items-center justify-center gap-2 border border-gray-300 py-2.5 rounded-lg bg-white hover:bg-blue-50 hover:border-blue-300 transition-all text-xs font-semibold text-gray-700 shadow-sm cursor-pointer"
+                >
+                  <FontAwesomeIcon icon={faLinkedin} className="text-[#0A66C2] text-sm" />
+                  <span>LinkedIn</span>
+                </button>
+              </div>
+
               {/* Login Link */}
               <div className="text-center text-xs text-gray-600">
                 Đã có tài khoản?{" "}
@@ -496,6 +540,15 @@ const Register = () => {
             </form>
           </div>
         </div>
+              {/* Social Auth Modal */}
+        <SocialAuthModal
+          isOpen={socialModalOpen}
+          onClose={() => setSocialModalOpen(false)}
+          provider={socialProvider}
+          mode="register"
+          defaultRole={formData.userType}
+          onSuccess={handleSocialSuccess}
+        />
       </main>
       <ToastContainer position="top-center" autoClose={2000} />
     </div>

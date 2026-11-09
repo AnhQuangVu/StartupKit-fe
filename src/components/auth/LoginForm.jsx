@@ -7,6 +7,7 @@ import { Link, useNavigate } from "react-router-dom";
 import logo from "../../assets/images/logo.png";
 import { API_BASE, fetchWithTimeout } from '../../config/api';
 import { useAuth } from "../../context/AuthContext";
+import SocialAuthModal from "./SocialAuthModal";
 
 export default function LoginForm() {
   const [email, setEmail] = useState("");
@@ -16,8 +17,23 @@ export default function LoginForm() {
   const [formError, setFormError] = useState("");
   const [successMsg, setSuccessMsg] = useState("");
   const [loading, setLoading] = useState(false);
+  const [socialModalOpen, setSocialModalOpen] = useState(false);
+  const [socialProvider, setSocialProvider] = useState("google");
   const { login } = useAuth();
   const navigate = useNavigate();
+
+  const handleOpenSocial = (provider) => {
+    setSocialProvider(provider);
+    setSocialModalOpen(true);
+  };
+
+  const handleSocialSuccess = (token, user) => {
+    login(token, user);
+    toast.success(`Đăng nhập thành công với ${socialProvider === 'google' ? 'Google' : 'LinkedIn'}! Chào mừng ${user?.full_name || 'bạn'}.`);
+    setTimeout(() => {
+      navigate("/");
+    }, 600);
+  };
 
   const handleSubmit = async (e) => {
     e.preventDefault();
@@ -98,93 +114,124 @@ export default function LoginForm() {
         }
         setTimeout(() => {
           navigate("/");
-        }, 2000);
+        }, 1000);
       } else {
-        const msg = Array.isArray(data.detail)
-          ? data.detail.map((d) => d.msg).join(", ")
-          : data.detail || data.message || "Đăng nhập thất bại. Vui lòng thử lại.";
+        // Hiển thị lỗi từ backend nếu có
+        const msg = data?.detail || "Đăng nhập thất bại. Vui lòng kiểm tra lại thông tin.";
+        setFormError(msg);
         toast.error(msg);
-        setFormError("");
       }
-    } catch (error) {
-      if (error?.message && (
-        error.message.includes('Failed to fetch') ||
-        error.message.includes('NetworkError') ||
-        error.message.includes('ERR_CONNECTION_REFUSED')
-      )) {
-        toast.error("Không thể kết nối đến máy chủ. Vui lòng kiểm tra API_BASE hoặc trạng thái máy chủ.");
-      } else if (error?.name === 'AbortError') {
-        toast.error("Máy chủ phản hồi quá lâu (timeout). Vui lòng thử lại sau.");
-      } else {
-        toast.error("Có lỗi xảy ra. Vui lòng thử lại sau.");
-      }
-      setFormError("");
-    }
-    finally {
+    } catch (err) {
+      const msg = "Lỗi kết nối máy chủ hoặc máy chủ phản hồi quá lâu. Vui lòng thử lại sau.";
+      setFormError(msg);
+      toast.error(msg);
+    } finally {
       setLoading(false);
     }
   };
 
   return (
-    <div className="flex items-center justify-center min-h-screen bg-gradient-to-br from-yellow-100 via-white to-yellow-50 px-2">
-      <div className="w-full max-w-sm bg-white rounded-2xl shadow-xl border border-gray-100 p-6">
-        {/* Logo thay cho tiêu đề */}
-        <div className="flex justify-center mb-7">
-          <img
-            src={logo}
-            alt="Logo"
-            style={{ maxWidth: "150px", height: "auto" }}
-          />
+    <div className="min-h-screen flex items-center justify-center bg-gray-50 px-4 py-8">
+      <ToastContainer
+        position="top-right"
+        autoClose={3000}
+        hideProgressBar={false}
+        newestOnTop
+        closeOnClick
+        rtl={false}
+        pauseOnFocusLoss
+        draggable
+        pauseOnHover
+      />
+
+      {/* Social Auth Modal */}
+      <SocialAuthModal
+        isOpen={socialModalOpen}
+        onClose={() => setSocialModalOpen(false)}
+        provider={socialProvider}
+        mode="login"
+        onSuccess={handleSocialSuccess}
+      />
+
+      <div className="max-w-md w-full bg-white rounded-2xl shadow-xl p-8 border border-gray-100">
+        {/* Logo */}
+        <div className="flex justify-center mb-6">
+          <img src={logo} alt="StartupKit Logo" className="h-10 w-auto" />
         </div>
 
-        <ToastContainer position="top-center" autoClose={2000} />
-        {/* Error message đã chuyển sang toast, không hiện dưới input */}
+        {/* Title */}
+        <h2 className="text-xl font-bold text-center text-gray-800 mb-1">
+          Đăng Nhập
+        </h2>
+        <p className="text-xs text-center text-gray-500 mb-6">
+          Chào mừng bạn quay lại với nền tảng StartupKit
+        </p>
+
+        {/* Thông báo lỗi tổng quát */}
+        {formError && (
+          <div className="mb-4 text-xs text-red-600 bg-red-50 border border-red-200 rounded-lg p-2.5">
+            {formError}
+          </div>
+        )}
+
+        {/* Thông báo thành công tổng quát */}
+        {successMsg && (
+          <div className="mb-4 text-xs text-green-700 bg-green-50 border border-green-200 rounded-lg p-2.5">
+            {successMsg}
+          </div>
+        )}
 
         {/* Form */}
-        <form className="space-y-5" onSubmit={handleSubmit} noValidate>
+        <form onSubmit={handleSubmit} className="space-y-4">
           {/* Email */}
           <div>
-            <label className="block text-sm font-semibold text-gray-700 mb-2">
-              Email <span className="text-red-500">*</span>
+            <label className="block text-xs font-semibold text-gray-700 mb-1">
+              Email
             </label>
             <input
-              type="email"
+              type="text"
               name="email"
-              autoComplete="email"
+              autoComplete="username"
               value={email}
-              onChange={(e) => setEmail(e.target.value)}
-              placeholder="Nhập email của bạn"
-              required
-              aria-required="true"
-              aria-invalid={!!errorEmail}
-              className="w-full border border-gray-300 rounded-lg px-3 py-2 text-sm bg-yellow-50 focus:outline-none focus:ring-2 focus:ring-yellow-400 focus:border-yellow-400 transition-all"
+              onChange={(e) => {
+                setEmail(e.target.value);
+                if (errorEmail) setErrorEmail("");
+              }}
+              placeholder="tenban@email.com"
+              className={`w-full px-3 py-2 border rounded-lg text-sm focus:outline-none focus:ring-2 transition-all ${
+                errorEmail
+                  ? "border-red-400 focus:ring-red-200"
+                  : "border-gray-300 focus:ring-yellow-400 focus:border-transparent"
+              }`}
             />
             {errorEmail && (
-              <div className="mt-1 text-xs text-red-500">{errorEmail}</div>
+              <p className="text-[11px] text-red-500 mt-1">{errorEmail}</p>
             )}
           </div>
 
           {/* Password */}
           <div>
-            <label className="block text-sm font-semibold text-gray-700 mb-2">
-              Mật khẩu <span className="text-red-500">*</span>
+            <label className="block text-xs font-semibold text-gray-700 mb-1">
+              Mật khẩu
             </label>
-            <div className="relative">
             <input
-                type="password"
-              name="current-password"
+              type="password"
+              name="password"
               autoComplete="current-password"
               value={password}
-              onChange={(e) => setPassword(e.target.value)}
-              placeholder="Nhập mật khẩu"
-              required
-              aria-required="true"
-              aria-invalid={!!errorPassword}
-              className="w-full border border-gray-300 rounded-lg px-3 py-2 text-sm bg-yellow-50 focus:outline-none focus:ring-2 focus:ring-yellow-400 focus:border-yellow-400 transition-all"
+              onChange={(e) => {
+                setPassword(e.target.value);
+                if (errorPassword) setErrorPassword("");
+              }}
+              placeholder="••••••••"
+              className={`w-full px-3 py-2 border rounded-lg text-sm focus:outline-none focus:ring-2 transition-all ${
+                errorPassword
+                  ? "border-red-400 focus:ring-red-200"
+                  : "border-gray-300 focus:ring-yellow-400 focus:border-transparent"
+              }`}
             />
-            </div>
             {errorPassword && (
-              <div className="mt-1 text-xs text-red-500">{errorPassword}</div>
+              <p className="text-[11px] text-red-500 mt-1">{errorPassword}</p>
             )}
           </div>
 
@@ -219,24 +266,28 @@ export default function LoginForm() {
 
         {/* Social login */}
         <div className="space-y-3">
-          <button className="flex items-center justify-center gap-2 w-full border border-gray-300 py-2 rounded-lg bg-white hover:bg-yellow-50 transition-all shadow-sm text-xs">
+          <button
+            type="button"
+            onClick={() => handleOpenSocial("google")}
+            className="flex items-center justify-center gap-2.5 w-full border border-gray-300 py-2.5 rounded-lg bg-white hover:bg-red-50 hover:border-red-200 transition-all shadow-sm text-xs font-medium text-gray-700"
+          >
             <FontAwesomeIcon
               icon={faGoogle}
-              className="w-5 h-5 text-gray-700"
+              className="w-4 h-4 text-[#EA4335]"
             />
-            <span className="font-medium text-gray-700">
-              Đăng nhập với Google
-            </span>
+            <span>Đăng nhập với Google</span>
           </button>
 
-          <button className="flex items-center justify-center gap-2 w-full border border-gray-300 py-2 rounded-lg bg-white hover:bg-yellow-50 transition-all shadow-sm text-xs">
+          <button
+            type="button"
+            onClick={() => handleOpenSocial("linkedin")}
+            className="flex items-center justify-center gap-2.5 w-full border border-gray-300 py-2.5 rounded-lg bg-white hover:bg-blue-50 hover:border-blue-200 transition-all shadow-sm text-xs font-medium text-gray-700"
+          >
             <FontAwesomeIcon
               icon={faLinkedin}
-              className="w-5 h-5 text-gray-700"
+              className="w-4 h-4 text-[#0A66C2]"
             />
-            <span className="font-medium text-gray-700">
-              Đăng nhập với LinkedIn
-            </span>
+            <span>Đăng nhập với LinkedIn</span>
           </button>
         </div>
 
