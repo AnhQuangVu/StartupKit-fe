@@ -60,7 +60,7 @@ export default function Navbar() {
     };
 
     return (
-        <header className="fixed top-0 left-0 right-0 z-50 bg-white border-b border-[#EAEAEA]">
+        <header className="fixed top-0 left-0 right-0 z-50 bg-white/95 backdrop-blur-md border-b border-[#EAEAEA]">
             <div className="max-w-[1200px] mx-auto px-6 md:px-12 flex items-center h-[72px] gap-8">
 
                 {/* Logo */}

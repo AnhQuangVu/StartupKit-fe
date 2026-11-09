@@ -80,6 +80,10 @@ function MapFallback() {
                         stroke="#FFFFFF"
                         strokeWidth="2"
                     />
+                    {/* Hoang Sa */}
+                    <circle cx="66" cy="68" r="2.5" fill="#F4B400" stroke="#FFFFFF" strokeWidth="1" />
+                    {/* Truong Sa */}
+                    <circle cx="70" cy="118" r="2.5" fill="#F4B400" stroke="#FFFFFF" strokeWidth="1" />
                 </svg>
 
                 {/* Hanoi pulse dot */}
@@ -173,11 +177,13 @@ export default function EcosystemMapHero() {
                         </Marker>
 
                         <Marker coordinates={HOANGSA}>
-                            <circle r={2.5} fill="#F4B400" stroke="#FFFFFF" strokeWidth={1} />
+                            <circle r={3} fill="#F4B400" stroke="#FFFFFF" strokeWidth={1} />
+                            <text textAnchor="start" x={7} y={3} style={{ fill: "#222222", fontSize: "9px", fontFamily: "inherit", fontWeight: 700 }}>QĐ. Hoàng Sa</text>
                         </Marker>
 
                         <Marker coordinates={TRUONGSA}>
-                            <circle r={2.5} fill="#F4B400" stroke="#FFFFFF" strokeWidth={1} />
+                            <circle r={3} fill="#F4B400" stroke="#FFFFFF" strokeWidth={1} />
+                            <text textAnchor="start" x={7} y={3} style={{ fill: "#222222", fontSize: "9px", fontFamily: "inherit", fontWeight: 700 }}>QĐ. Trường Sa</text>
                         </Marker>
                     </ComposableMap>
                 )}
