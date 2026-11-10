@@ -227,29 +227,6 @@ export function AuthProvider({ children }: { children: ReactNode }) {
             setRoleCookie(nextUser.role);
             return nextUser;
         } catch (error) {
-            const apiErr = error as ApiError | undefined;
-            if (!apiErr || typeof apiErr.status !== "number" || apiErr.status === 0 || apiErr.status >= 500) {
-                const cleanEmail = email.trim().toLowerCase();
-                const inferredRole: Exclude<UserRole, "GUEST"> = cleanEmail.includes("investor") || cleanEmail.includes("vc")
-                    ? "INVESTOR"
-                    : cleanEmail.includes("mentor")
-                        ? "MENTOR"
-                        : cleanEmail.includes("admin")
-                            ? "ADMIN"
-                            : "STARTUP";
-                const preset = ROLE_PRESET_USERS[inferredRole];
-                const nextUser: AuthUser = {
-                    ...preset,
-                    id: `u-${Date.now()}`,
-                    name: cleanEmail === preset.email ? preset.name : cleanEmail.split("@")[0],
-                    email: cleanEmail,
-                    avatarSeed: cleanEmail,
-                };
-                setStoredUser(nextUser);
-                setRoleCookie(nextUser.role);
-                setUser(nextUser);
-                return nextUser;
-            }
             throw new Error(parseApiErrorMessage(error));
         }
     };
