@@ -152,7 +152,7 @@ export default function RegisterPage() {
                             userType: roleMap[form.role],
                         });
 
-                        router.push(`/${locale}/login`);
+                        router.push(`/${locale}/login?registered=${encodeURIComponent(form.email.trim())}`);
                     } catch (error) {
                         setSubmitError(error instanceof Error ? error.message : "Registration failed. Please try again.");
                     } finally {

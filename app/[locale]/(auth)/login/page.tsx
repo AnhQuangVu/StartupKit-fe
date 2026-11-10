@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import Logo from "@/components/Logo";
 import Link from "next/link";
 import { useParams, useRouter } from "next/navigation";
@@ -20,6 +20,21 @@ export default function LoginPage() {
     const [showPw, setShowPw] = useState(false);
     const [errors, setErrors] = useState<Record<string, string>>({});
     const [loading, setLoading] = useState(false);
+    const [registeredNotice, setRegisteredNotice] = useState("");
+
+    useEffect(() => {
+        if (typeof window === "undefined") return;
+        const params = new URLSearchParams(window.location.search);
+        const reg = params.get("registered");
+        if (reg) {
+            setEmail(reg);
+            setRegisteredNotice(
+                locale === "vi"
+                    ? `Đăng ký tài khoản ${reg} thành công! Hãy nhập mật khẩu để đăng nhập.`
+                    : `Account ${reg} registered successfully! Please enter your password to sign in.`
+            );
+        }
+    }, [locale]);
 
     const validate = () => {
         const e: Record<string, string> = {};
@@ -63,7 +78,14 @@ export default function LoginPage() {
             </Link>
 
             <h1 className="text-[26px] font-bold text-[#111111] mb-1">{d.title}</h1>
-            <p className="text-[14px] text-[#888888] mb-8">{d.sub}</p>
+            <p className="text-[14px] text-[#888888] mb-6">{d.sub}</p>
+
+            {registeredNotice && (
+                <div className="mb-6 p-3.5 bg-emerald-50 border border-emerald-200 rounded-[8px] text-[13px] text-emerald-800 leading-relaxed flex items-center gap-2.5">
+                    <span className="text-emerald-600 font-bold">✓</span>
+                    {registeredNotice}
+                </div>
+            )}
 
             <OAuthButtons action="login" />
 

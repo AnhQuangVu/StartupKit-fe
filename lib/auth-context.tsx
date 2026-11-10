@@ -258,10 +258,6 @@ export function AuthProvider({ children }: { children: ReactNode }) {
         try {
             await usersApi.register(payload);
         } catch (error) {
-            const apiErr = error as ApiError | undefined;
-            if (!apiErr || typeof apiErr.status !== "number" || apiErr.status === 0 || apiErr.status >= 500) {
-                return;
-            }
             throw new Error(parseApiErrorMessage(error));
         }
     };
