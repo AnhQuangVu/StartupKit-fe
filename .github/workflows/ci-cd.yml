@@ -1,0 +1,93 @@
+name: Frontend CI/CD Pipeline
+
+on:
+  push:
+    branches:
+      - main
+      - develop
+      - qqa_ManageReport
+  pull_request:
+    branches:
+      - main
+      - develop
+  workflow_dispatch:
+
+jobs:
+  lint-and-typecheck:
+    name: Lint & Typecheck (Next.js 16)
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: 📥 Checkout repository
+        uses: actions/checkout@v4
+
+      - name: 🟢 Set up Node.js 20
+        uses: actions/setup-node@v4
+        with:
+          node-version: 20
+          cache: 'npm'
+
+      - name: 📦 Install dependencies
+        run: npm ci
+
+      - name: 🔍 TypeScript Strict Typecheck
+        run: npx tsc --noEmit
+
+  build:
+    name: Build Next.js Production Bundle
+    needs: lint-and-typecheck
+    runs-on: ubuntu-latest
+    env:
+      NEXT_PUBLIC_APP_URL: https://startupkit.com.vn
+      NEXT_PUBLIC_API_URL: https://startup-kit-be.onrender.com
+
+    steps:
+      - name: 📥 Checkout repository
+        uses: actions/checkout@v4
+
+      - name: 🟢 Set up Node.js 20
+        uses: actions/setup-node@v4
+        with:
+          node-version: 20
+          cache: 'npm'
+
+      - name: 📦 Install dependencies
+        run: npm ci
+
+      - name: ⚡ Build Next.js App
+        run: npm run build
+
+  deploy:
+    name: Continuous Deployment
+    needs: build
+    if: github.ref == 'refs/heads/main'
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: 📥 Checkout repository
+        uses: actions/checkout@v4
+
+      - name: 🌐 Check Production Domain Availability
+        run: |
+          echo "Checking https://startupkit.com.vn..."
+          STATUS=$(curl -s -o /dev/null -w "%{http_code}" https://startupkit.com.vn/vi || true)
+          echo "Production Domain Status Code: $STATUS"
+
+      - name: 🖥️ Deploy to Server via SSH (if VPS secrets configured)
+        if: env.VPS_HOST != ''
+        env:
+          VPS_HOST: ${{ secrets.VPS_HOST }}
+          VPS_USER: ${{ secrets.VPS_USER || 'root' }}
+          VPS_SSH_KEY: ${{ secrets.VPS_SSH_KEY }}
+        uses: appleboy/ssh-action@v1
+        with:
+          host: ${{ secrets.VPS_HOST }}
+          username: ${{ secrets.VPS_USER || 'root' }}
+          key: ${{ secrets.VPS_SSH_KEY }}
+          script: |
+            echo "Deploying StartupKit Frontend to server..."
+            if [ -d "/root/app/fe" ]; then
+              cd /root/app/fe
+              git pull origin main
+              docker compose up -d --build
+            fi
